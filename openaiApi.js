@@ -20,11 +20,3 @@ const openaiApi = async (messages) => {
 };
 
 module.exports = openaiApi; 
-
-// // Testing the API with a series of messages
-// const testMessages = [
-//   {"role": "system", "content": "You are a helpful assistant."},
-//   {"role": "user", "content": "recommend books to be successful in life"}
-// ];
-
-// openaiApi(testMessages).then(response => console.log("Response:", response));
