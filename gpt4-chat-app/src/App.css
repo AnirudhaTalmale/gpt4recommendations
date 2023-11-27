@@ -1,0 +1,106 @@
+.App {
+  display: flex;
+  flex-direction: column; /* Keep the main direction as column for stacking */
+  height: 100vh;
+}
+
+.chat-area {
+  flex: 1; /* Take remaining space */
+  display: flex;
+  flex-direction: column; /* To organize children vertically */
+  padding: 20px;
+  margin-left: 250px; /* Same as the .input-area left value */
+}
+
+.input-area {
+  position: fixed;
+  bottom: 0;
+  left: 250px; /* It should start after the history pane, make sure it's the same as .chat-area margin-left */
+  right: 0;
+  display: flex;
+  align-items: center; /* Vertically center the contents */
+  background: white; /* Ensure the background covers any content beneath */
+  z-index: 2; /* Make sure it's on top of other elements */
+}
+
+.input-box-container {
+  display: flex;
+  flex-grow: 1;
+  margin: 10px;
+  border-radius: 10px;
+  border: 1.5px solid #D3D3D3;
+  overflow: hidden; /* This will contain the button inside the input box */
+}
+
+.input-box {
+  flex-grow: 1;
+  border: none;
+  padding: 10px 10px 10px 10px; /* Adjusted padding */
+}
+
+.send-button {
+  background-color: #ddd;
+  border: 1px solid #D3D3D3;
+  border-left: none; /* Remove the left border to make it seamless with the input */
+  padding: 10px;
+  border-radius: 10px;
+  margin: 5px;
+}
+
+.message {
+  /* Rest of your styles */
+  border: 1px solid #D3D3D3; /* Add border to match GPT-4 app */
+  border-radius: 8px; /* Increase border-radius */
+  background-color: #f1f1f1; /* Match the color to GPT-4 app */
+  margin-bottom: 10px; /* Add some space between messages */
+  padding: 16px; /* Add more padding inside messages */
+  width: auto; /* Ensure it doesn't stretch full width */
+  max-width: 600px; /* Set a max-width for message bubbles */
+}
+
+.user-message {
+  background-color: #007bff;
+  color: white;
+  text-align: left; /* Align to left instead of right */
+}
+
+.history-pane {
+  background-color: #333; 
+  color: #fff;
+  width: 210px; /* Adjust width as needed */
+  padding: 20px;
+  overflow-y: auto;
+  position: fixed; /* Make it stay on the left */
+  left: 0;
+  top: 0;
+  bottom: 0;
+  z-index: 1;
+}
+
+.history-entry {
+  /* Add styles for individual history entries here */
+  padding: 10px;
+  border-bottom: 1px solid #444; /* Add a subtle separator */
+  cursor: pointer; 
+  &:hover {
+    background-color: #555; /* Darken the entry on hover */
+  }
+}
+
+/* Optional: add media query for responsive design */
+@media (max-width: 768px) {
+  .history-pane {
+    display: none; /* Hide history pane on small screens */
+  }
+}
+
+.new-session-button {
+  padding: 10px 20px;
+  margin: 10px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  z-index: 2;
+}
