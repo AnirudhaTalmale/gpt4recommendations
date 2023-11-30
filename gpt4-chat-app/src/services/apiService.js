@@ -1,17 +1,21 @@
 // apiService.js
 import axios from 'axios';
 
-// Updated to handle a single query string
-export const sendQuery = async (query) => {
+export const sendQuery = async (sessionId, content) => {
+  console.log('Sending query with sessionId:', sessionId);
+  console.log('Content being sent:', content);
   try {
-    // Call the backend API to send the query to OpenAI
     const response = await axios.post(`http://localhost:3000/api/query`, {
-      messages: [{ role: 'user', content: query }] // Wrap the single query in an array to match the expected format
+      sessionId: sessionId,
+      message: {
+        role: 'user', // Specify the role as expected by the backend
+        content: content // The actual message content
+      }
     });
-    // Return the response from OpenAI
+    console.log('Response from backend:', response.data);
     return response.data.response;
   } catch (error) {
-    console.error('Error sending query to backend:', error);
+    console.error('Error in sendQuery:', error);
     throw error;
   }
 };

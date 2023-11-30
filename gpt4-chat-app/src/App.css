@@ -48,14 +48,37 @@
 }
 
 .message {
-  /* Rest of your styles */
-  border: 1px solid #D3D3D3; /* Add border to match GPT-4 app */
-  border-radius: 8px; /* Increase border-radius */
-  background-color: #f1f1f1; /* Match the color to GPT-4 app */
-  margin-bottom: 10px; /* Add some space between messages */
-  padding: 16px; /* Add more padding inside messages */
-  width: auto; /* Ensure it doesn't stretch full width */
-  max-width: 600px; /* Set a max-width for message bubbles */
+  border: 1px solid #D3D3D3;
+  border-radius: 8px;
+  background-color: #f1f1f1;
+  margin-bottom: 10px;
+  padding: 16px;
+  width: auto;
+  max-width: 600px;
+  font-family: 'Arial', sans-serif;
+}
+
+.message-question {
+  color: #333;
+  margin-bottom: 4px;
+}
+
+.message-answer {
+  margin-top: 10px;
+}
+
+.formatted-response p {
+  margin-bottom: 10px;
+}
+
+.formatted-response li {
+  list-style-type: none; /* Remove the default list item styling */
+  margin-bottom: 10px;
+  margin-left: 1em; /* To align with the rest of the text */
+}
+
+.formatted-response strong {
+  font-weight: bold;
 }
 
 .user-message {
