@@ -23,6 +23,4 @@ const openaiApi = async (messages) => {
   }
 };
 
-
-
 module.exports = openaiApi; 

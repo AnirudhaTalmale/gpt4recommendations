@@ -3,6 +3,7 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 const openaiApi = require('./openaiApi');
 const Session = require('./Session');
+const bookRecommendationPrompt = require('./promptTemplate');
 require('dotenv').config();
 
 const app = express();
@@ -20,54 +21,65 @@ app.get('/', (req, res) => {
 });
 
 app.post('/api/query', async (req, res) => {
-  console.log('executing api/query endpoint');
   const { sessionId, message } = req.body;
   console.log(`Received new query for session ID: ${sessionId}`, message);
 
+  const completePrompt = bookRecommendationPrompt(message.content);
+  console.log('Constructed complete prompt:', completePrompt);
+
   try {
-    console.log(`Looking for session with ID: ${sessionId}`);
     const session = await Session.findById(sessionId);
     if (!session) {
       console.log(`Session with ID: ${sessionId} not found`);
       return res.status(404).json({ message: 'Session not found' });
     }
-    console.log(`Session with ID: ${sessionId} found, appending message to session history`);
-    
-    // Retrieve and append new message to session history
-    session.messages.push(message);
-    console.log('New message appended to session history:', message);
 
-    // Log the current state of session.messages to check for duplicates
-    console.log('Current session messages:', session.messages.map(m => m.content));
+    const userMessage = {
+      ...message,
+      contentType: 'simple' // Assuming all user messages are simple text
+    };
 
-    // Send entire conversation history to GPT-4
-    console.log('Sending conversation history to GPT-4 API:', JSON.stringify(session.messages));
+    session.messages.push(userMessage);
+    console.log('User query appended to session history:', userMessage);
 
-    const response = await openaiApi(session.messages);
+    let response = await openaiApi([{ role: 'system', content: completePrompt }]);
+    console.log('Raw response from GPT model:', response);
 
-    // Append GPT-4's response to the session
-    if (response) {
-      console.log('Received response from GPT-4 API:', response);
+    let responseContent = response; // Default to raw response
+    let contentType = 'simple'; // Default to simple
 
-      // Log to check if the response already exists in the session messages
-      console.log('Checking if the GPT-4 response is already in the session messages:', session.messages.map(m => m.content).includes(response));
-
-      session.messages.push({ role: 'assistant', content: response });
-      console.log('Appending GPT-4 response to session history');
-      await session.save();
-      console.log('Session history updated and saved with GPT-4 response');
-    } else {
-      console.log('No response received from GPT-4 API');
+    // Check if the response is stringified JSON (starts with '[' or '{')
+    if (typeof response === 'string' && (response.startsWith('[') || response.startsWith('{'))) {
+      try {
+        responseContent = JSON.parse(response); // Parse if it's a JSON string
+        contentType = 'bookRecommendation'; // Set to bookRecommendation if parsing is successful
+      } catch (e) {
+        console.error('Failed to parse response:', e);
+        // If parsing fails, it's still a simple response
+      }
     }
 
-    res.json({ response });
-    console.log('Response sent back to client');
+    // Generate a temporary _id if not present (for GPT-4 responses)
+    const tempId = new mongoose.Types.ObjectId(); // Generates a new unique ObjectId
+
+    // Push the assistant's response with the string representation of the temporary _id
+    session.messages.push({ 
+      role: 'assistant', 
+      contentType, 
+      content: responseContent,
+      _id: tempId.toString() // Directly use the string representation
+    });
+
+    console.log('Assistant response appended to session history:', { contentType, content: responseContent });
+    await session.save();
+    console.log('Session saved with new messages.');
+
+    res.status(200).json({ message: 'Response processed and saved' }); 
   } catch (error) {
     console.error('Error processing query:', error);
     res.status(500).json({ message: 'Error processing your query', error: error.toString() });
   }
 });
-
 
 
 app.listen(port, () => {
@@ -93,7 +105,7 @@ app.post('/api/session', async (req, res) => {
 app.get('/api/sessions', async (req, res) => {
   console.log('GET /api/sessions - Retrieving all sessions');
   try {
-    const sessions = await Session.find().populate('messages');
+    const sessions = await Session.find();
     console.log('GET /api/sessions - Retrieved sessions:', sessions);
 
     res.json(sessions);
@@ -103,3 +115,18 @@ app.get('/api/sessions', async (req, res) => {
   }
 });
 
+// DELETE endpoint for deleting a session
+app.delete('/api/session/:sessionId', async (req, res) => {
+  const { sessionId } = req.params;
+  console.log(`DELETE /api/session/:sessionId - Deleting session with ID: ${sessionId}`);
+  try { 
+    const session = await Session.findByIdAndDelete(sessionId);
+    if (!session) {
+      return res.status(404).json({ message: 'Session not found' });
+    } 
+    res.status(200).json({ message: 'Session deleted' });
+  } catch (error) {
+    console.error('DELETE /api/session/:sessionId - Error:', error);
+    res.status(500).json({ message: 'Error deleting the session', error: error.toString() });
+  }
+});
