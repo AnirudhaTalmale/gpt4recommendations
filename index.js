@@ -20,61 +20,49 @@ app.get('/', (req, res) => {
   res.send('Hello World!');
 });
 
+app.listen(port, () => {
+  console.log(`Server running on port ${port}`);
+});
+
 app.post('/api/query', async (req, res) => {
   const { sessionId, message } = req.body;
-  console.log(`Received new query for session ID: ${sessionId}`, message);
-
-  const completePrompt = bookRecommendationPrompt(message.content);
-  console.log('Constructed complete prompt:', completePrompt);
 
   try {
+    // Construct the prompt for GPT-4
+    const completePrompt = bookRecommendationPrompt(message.content);
+
+    // Get the response from GPT-4
+    let response = await openaiApi([{ role: 'system', content: completePrompt }]);
+
+    // Parse the response if it's JSON (for book recommendations)
+    let parsedResponse = response;
+    if (response.startsWith('[') || response.startsWith('{')) {
+      parsedResponse = JSON.parse(response);
+    }
+
+    // Find the session and update it with the new message and response
     const session = await Session.findById(sessionId);
     if (!session) {
-      console.log(`Session with ID: ${sessionId} not found`);
       return res.status(404).json({ message: 'Session not found' });
     }
 
-    const userMessage = {
-      ...message,
-      contentType: 'simple' // Assuming all user messages are simple text
-    };
-
-    session.messages.push(userMessage);
-    console.log('User query appended to session history:', userMessage);
-
-    let response = await openaiApi([{ role: 'system', content: completePrompt }]);
-    console.log('Raw response from GPT model:', response);
-
-    let responseContent = response; // Default to raw response
-    let contentType = 'simple'; // Default to simple
-
-    // Check if the response is stringified JSON (starts with '[' or '{')
-    if (typeof response === 'string' && (response.startsWith('[') || response.startsWith('{'))) {
-      try {
-        responseContent = JSON.parse(response); // Parse if it's a JSON string
-        contentType = 'bookRecommendation'; // Set to bookRecommendation if parsing is successful
-      } catch (e) {
-        console.error('Failed to parse response:', e);
-        // If parsing fails, it's still a simple response
-      }
-    }
-
-    // Generate a temporary _id if not present (for GPT-4 responses)
-    const tempId = new mongoose.Types.ObjectId(); // Generates a new unique ObjectId
-
-    // Push the assistant's response with the string representation of the temporary _id
-    session.messages.push({ 
-      role: 'assistant', 
-      contentType, 
-      content: responseContent,
-      _id: tempId.toString() // Directly use the string representation
+    // Add the user message
+    session.messages.push({
+      role: 'user',
+      contentType: 'simple',
+      content: message.content
     });
 
-    console.log('Assistant response appended to session history:', { contentType, content: responseContent });
-    await session.save();
-    console.log('Session saved with new messages.');
+    // Add the assistant's response
+    session.messages.push({
+      role: 'assistant',
+      contentType: Array.isArray(parsedResponse) ? 'bookRecommendation' : 'simple',
+      content: parsedResponse
+    });
 
-    res.status(200).json({ message: 'Response processed and saved' }); 
+    await session.save();
+    // Return the response to the front-end
+    res.status(200).json({ response: parsedResponse });
   } catch (error) {
     console.error('Error processing query:', error);
     res.status(500).json({ message: 'Error processing your query', error: error.toString() });
@@ -82,9 +70,6 @@ app.post('/api/query', async (req, res) => {
 });
 
 
-app.listen(port, () => {
-  console.log(`Server running on port ${port}`);
-});
 
 // POST endpoint for creating a new session
 app.post('/api/session', async (req, res) => {
@@ -103,10 +88,10 @@ app.post('/api/session', async (req, res) => {
 
 // GET endpoint for retrieving all sessions with their messages
 app.get('/api/sessions', async (req, res) => {
-  console.log('GET /api/sessions - Retrieving all sessions');
+  // console.log('GET /api/sessions - Retrieving all sessions');
   try {
     const sessions = await Session.find();
-    console.log('GET /api/sessions - Retrieved sessions:', sessions);
+    // console.log('GET /api/sessions - Retrieved sessions:', sessions);
 
     res.json(sessions);
   } catch (error) {

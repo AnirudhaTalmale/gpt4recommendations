@@ -4,7 +4,7 @@ import '../App.css';
 function AnswerDisplay({ question, response }) {
   const formatResponse = (response) => {
     if (!response) return 'No response provided';
-    if (response === 'Waiting for response...') return <p>Loading response...</p>;
+    if (response === 'Waiting for response...') return <p>Waiting for response...</p>;
     if (Array.isArray(response)) return response.map((book, i) => <BookData key={i} book={book} />);
     return response.split('\n').map((item, i) => <p key={i}>{item}</p>);
   };
