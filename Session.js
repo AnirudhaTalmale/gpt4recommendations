@@ -1,7 +1,6 @@
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
-
 // Message Schema
 const messageSchema = new Schema({
   role: { type: String, enum: ['user', 'assistant'], required: true },
@@ -11,8 +10,6 @@ const messageSchema = new Schema({
     required: true 
   } 
 });
-
-// No discriminator is used here. The content type will be managed by application logic.
 
 // Session Schema
 const sessionSchema = new Schema({

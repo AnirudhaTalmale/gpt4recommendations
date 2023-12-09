@@ -24,6 +24,7 @@ app.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });
 
+
 app.post('/api/query', async (req, res) => {
   const { sessionId, message } = req.body;
 
