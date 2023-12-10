@@ -1,16 +1,24 @@
-const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const openaiApi = require('./openaiApi');
 const Session = require('./Session');
+
+const express = require('express');
+const http = require('http');
+const { Server } = require('socket.io');
+
+
 const bookRecommendationPrompt = require('./promptTemplate');
 require('dotenv').config();
 
 const app = express();
-const port = process.env.PORT || 3000;
+const server = http.createServer(app);
 
 app.use(express.json());
 app.use(cors());
+const io = new Server(server, {
+  cors: {} // Allow all origins and methods by default
+});
 
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log('MongoDB Connected'))
@@ -20,28 +28,18 @@ app.get('/', (req, res) => {
   res.send('Hello World!');
 });
 
-app.listen(port, () => {
-  console.log(`Server running on port ${port}`);
+const PORT = process.env.PORT || 3000;
+server.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });
 
+io.on('connection', (socket) => {
+  console.log('A user connected');
 
-app.post('/api/query', async (req, res) => {
-  const { sessionId, message } = req.body;
+  socket.on('query', async (data) => {
+    const { sessionId, message } = data;
 
-  try {
-    // Construct the prompt for GPT-4
-    const completePrompt = bookRecommendationPrompt(message.content);
-
-    // Get the response from GPT-4
-    let response = await openaiApi([{ role: 'system', content: completePrompt }]);
-
-    // Parse the response if it's JSON (for book recommendations)
-    let parsedResponse = response;
-    if (response.startsWith('[') || response.startsWith('{')) {
-      parsedResponse = JSON.parse(response);
-    }
-
-    // Find the session and update it with the new message and response
+     // Find the session and update it with the new message and response
     const session = await Session.findById(sessionId);
     if (!session) {
       return res.status(404).json({ message: 'Session not found' });
@@ -54,22 +52,26 @@ app.post('/api/query', async (req, res) => {
       content: message.content
     });
 
-    // Add the assistant's response
-    session.messages.push({
-      role: 'assistant',
-      contentType: Array.isArray(parsedResponse) ? 'bookRecommendation' : 'simple',
-      content: parsedResponse
-    });
+    console.log("Saving user message");
 
     await session.save();
-    // Return the response to the front-end
-    res.status(200).json({ response: parsedResponse });
-  } catch (error) {
-    console.error('Error processing query:', error);
-    res.status(500).json({ message: 'Error processing your query', error: error.toString() });
-  }
-});
 
+    try {
+      const completePrompt = bookRecommendationPrompt(message.content);
+
+      // Call openaiApi to process and emit chunks
+      await openaiApi([{ role: 'user', content: completePrompt }], socket, session);
+
+    } catch (error) {
+      console.error('Error processing query:', error);
+      socket.emit('error', 'Error processing your request'); // Emit error to the client
+    }
+  });
+
+  socket.on('disconnect', () => {
+    console.log('A user disconnected');
+  });
+});
 
 
 // POST endpoint for creating a new session

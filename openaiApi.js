@@ -1,26 +1,40 @@
 // openaiApi.js
-const axios = require('axios');
-require('dotenv').config(); 
+const { OpenAI } = require('openai');
+require('dotenv').config();
 
-const openaiApi = async (messages) => {
-  // Map through the messages and pick only the necessary fields
+const openai = new OpenAI(process.env.OPENAI_API_KEY);
+
+const openaiApi = async (messages, socket, session) => {
   const filteredMessages = messages.map(({ role, content }) => ({ role, content }));
 
   try {
-    const response = await axios.post('https://api.openai.com/v1/chat/completions', {
+    const stream = await openai.chat.completions.create({
       model: "gpt-4",
-      messages: filteredMessages, // Send the filtered messages
-    }, {
-      headers: {
-        'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`
-      }
+      messages: filteredMessages,
+      stream: true,
     });
-    console.log('openaiApi - Response from OpenAI API:', response.data);
-    return response.data.choices[0].message.content;
+
+    let completeResponse = "";
+    for await (const chunk of stream) {
+      let chunkContent = chunk.choices[0]?.delta?.content || "";
+      completeResponse += chunkContent;
+      socket.emit('chunk', chunkContent);
+    }
+
+    // Add the assistant's response to the session here
+    session.messages.push({
+      role: 'assistant',
+      contentType: 'simple',
+      content: completeResponse
+    });
+
+    await session.save();
+
   } catch (error) {
     console.error('openaiApi - Error calling OpenAI API:', error);
-    throw error; // Throw the error instead of returning null
+    throw error;
   }
 };
 
-module.exports = openaiApi; 
+
+module.exports = openaiApi;

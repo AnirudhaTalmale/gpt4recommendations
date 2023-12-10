@@ -1,72 +1,97 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import InputBox from './InputBox';
 import AnswerDisplay from './AnswerDisplay';
 import HistoryPane from './HistoryPane';
 import '../App.css';
-import { sendQuery } from '../services/apiService';
+// import { sendQuery } from '../services/apiService';
+import socket from './socket';
 
 function Chat() {
   const [sessions, setSessions] = useState([]);
   const [currentSessionIndex, setCurrentSessionIndex] = useState(-1);
   const [isLoading, setIsLoading] = useState(false);
 
-  useEffect(() => {
-    loadSessions();
-  }, []);
-
-  useEffect(() => {
-    console.log("Updated sessions state:", sessions);
-    console.log("Updated currentSessionIndex state:", currentSessionIndex);
-  }, [sessions, currentSessionIndex]);
-  
-
-  const loadSessions = async () => {
+  const loadSessions = useCallback(async () => {
     try {
       const res = await axios.get('http://localhost:3000/api/sessions');
       setSessions(res.data);
+      
       setCurrentSessionIndex(res.data.length - 1);
     } catch (error) {
       console.error('Error loading sessions:', error);
     }
-  };
-  
-  
+  }, []); // Add dependencies if there are any
 
-  const updateSessionMessages = (messageContent, contentType = 'simple', isUserMessage = true) => {
+  const updateSessionMessages = useCallback((messageContent, contentType = 'simple', isUserMessage = true) => {
     setSessions(prevSessions => {
+      // Clone the previous sessions array
       const updatedSessions = [...prevSessions];
+      // Clone the current session
       const currentSession = { ...updatedSessions[currentSessionIndex] };
+
+      // Handle the case for streamed content for the assistant's messages
+      if (contentType === 'streamed' && !isUserMessage) {
+        // Clone the messages array from the current session
+        let updatedMessages = [...currentSession.messages];
+        const lastMessageIndex = updatedMessages.length - 1;
   
-      const newMessage = {
-        role: isUserMessage ? 'user' : 'assistant',
-        contentType: contentType, // Use the passed contentType
-        content: messageContent,
-      };
+        if (lastMessageIndex >= 0 && updatedMessages[lastMessageIndex].role === 'assistant') {
+          // Create a new message object with the concatenated content
+          updatedMessages[lastMessageIndex] = {
+            ...updatedMessages[lastMessageIndex],
+            content: updatedMessages[lastMessageIndex].content + messageContent,
+          };
+        } else {
+          // Append a new message object to the cloned messages array
+          updatedMessages.push({ role: 'assistant', contentType, content: messageContent });
+        }
   
-      currentSession.messages = [...currentSession.messages, newMessage];
+        // Set the updated messages array back to the current session
+        currentSession.messages = updatedMessages;
+      } else {
+        // Handle the user's message or a non-streamed assistant's message
+        const newMessage = {
+          role: isUserMessage ? 'user' : 'assistant',
+          contentType,
+          content: messageContent,
+        };
+        // Append the new message to the cloned messages array
+        currentSession.messages = [...currentSession.messages, newMessage];
+      }
+      
+      // Update the current session in the sessions array
       updatedSessions[currentSessionIndex] = currentSession;
+      // Return the new sessions array to update the state
       return updatedSessions;
     });
-  };
+  }, [currentSessionIndex]); // Add dependencies if there are any
+
+  useEffect(() => {
+    loadSessions();
+
+    socket.on('chunk', (chunk) => {
+      updateSessionMessages(chunk, 'streamed', false);
+    });
+
+    return () => {
+      socket.off('chunk');
+    };
+  }, [loadSessions, updateSessionMessages]); // Include the functions in the dependency array
 
   const handleQuerySubmit = async (query) => {
     setIsLoading(true);
     updateSessionMessages(query, 'simple', true); // true for user message
   
-    try {
-      const response = await sendQuery(sessions[currentSessionIndex]._id, query);
-      // Determine the contentType of the response
-      const contentType = Array.isArray(response) ? 'bookRecommendation' : 'simple';
-      updateSessionMessages(response, contentType, false); // false for assistant message
-    } catch (error) {
-      console.error('Error in handleQuerySubmit:', error);
-      updateSessionMessages('Error fetching response.', 'simple', false); // false for assistant message
-    } finally {
-      setIsLoading(false);
-    }
+    // Emit the query to the server
+    socket.emit('query', {
+      sessionId: sessions[currentSessionIndex]._id,
+      message: {
+        role: 'user',
+        content: query,
+      }
+    });
   };  
-
 
   const handleNewSession = async () => {
     try {

@@ -14,7 +14,6 @@
   overflow-y: auto; /* Add this to enable scrolling */
 }
 
-
 .input-area {
   position: fixed;
   bottom: 0;
