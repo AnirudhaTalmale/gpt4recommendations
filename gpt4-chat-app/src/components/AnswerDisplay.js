@@ -10,7 +10,7 @@ function AnswerDisplay({ role, content, contentType }) {
 
   return (
     <div className={`message ${role}`}>
-      {role === 'user' && <p className="message-question"><strong>Q:</strong> {content}</p>}
+      {role === 'user' && <p className="message-question">{content}</p>}
       {role === 'assistant' && (
         <div className="message-answer">
           <div dangerouslySetInnerHTML={createMarkup(content)} />

@@ -116,6 +116,14 @@
   .history-pane {
     display: none; /* Hide history pane on small screens */
   }
+
+  .chat-area {
+    margin-left: 0; /* Remove margin to allow expansion */
+  }
+
+  .input-area {
+    left: 0; /* Align input area with the full width of the window */
+  }
 }
 
 .new-session-button {
