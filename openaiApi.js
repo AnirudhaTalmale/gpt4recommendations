@@ -5,11 +5,12 @@ require('dotenv').config();
 const openai = new OpenAI(process.env.OPENAI_API_KEY);
 
 const openaiApi = async (messages, socket, session) => {
-  const filteredMessages = messages.map(({ role, content }) => ({ role, content }));
 
+  const filteredMessages = messages.map(({ role, content }) => ({ role, content }));
+  console.log('filteredMessages is ', filteredMessages);
   try {
     const stream = await openai.chat.completions.create({
-      model: "gpt-4",
+      model: "gpt-4-1106-preview",
       messages: filteredMessages,
       stream: true,
     });

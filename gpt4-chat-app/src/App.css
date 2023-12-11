@@ -23,6 +23,7 @@
   align-items: center; /* Vertically center the contents */
   background: white; /* Ensure the background covers any content beneath */
   z-index: 2; /* Make sure it's on top of other elements */
+  font-family: SÃ¶hne,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif,Helvetica Neue,Arial,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji;
 }
 
 .input-box-container {
@@ -50,14 +51,16 @@
 }
 
 .message {
+  line-height: 1.5;
   border-radius: 8px;
   /* background: white; */
   margin-bottom: 10px;
   padding: 16px;
   width: auto;
   max-width: 600px;
-  font-family: 'Arial', sans-serif;
+  font-family: SÃ¶hne,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif,Helvetica Neue,Arial,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji;
 }
+
 
 .message-question {
   color: #333;

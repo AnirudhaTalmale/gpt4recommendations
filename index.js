@@ -28,45 +28,64 @@ app.get('/', (req, res) => {
   res.send('Hello World!');
 });
 
+
+
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
+
+function estimateTokenCount(text) {
+  // Rough estimate of token count for a given text
+  return text.trim().split(/\s+/).length;
+}
 
 io.on('connection', (socket) => {
   console.log('A user connected');
 
   socket.on('query', async (data) => {
     const { sessionId, message } = data;
-
-     // Find the session and update it with the new message and response
+  
+    // Find the session and update it with the new message and response
     const session = await Session.findById(sessionId);
     if (!session) {
       return res.status(404).json({ message: 'Session not found' });
     }
-
-    // Add the user message
+  
+    // Generate the complete prompt using the bookRecommendationPrompt function
+    const completePrompt = bookRecommendationPrompt(message.content);
+  
+    let totalTokenCount = estimateTokenCount(completePrompt);
+    const messagesForGPT4 = [{ role: 'user', content: completePrompt }];
+  
+    // Iterate through past messages in reverse order and add them until the token limit is near
+    for (let i = session.messages.length - 1; i >= 0 && totalTokenCount < 1500; i--) {
+      const msg = session.messages[i];
+      const tokenCount = estimateTokenCount(msg.content);
+      if (totalTokenCount + tokenCount < 1500) {
+        messagesForGPT4.unshift({ role: msg.role, content: msg.content }); // Add to the beginning of the array
+        totalTokenCount += tokenCount;
+      } else {
+        break; // Stop if adding the next message would exceed the limit
+      }
+    }
+  
+    // Add the user message to the session and save
     session.messages.push({
       role: 'user',
       contentType: 'simple',
       content: message.content
     });
-
-    console.log("Saving user message");
-
+  
     await session.save();
-
+  
     try {
-      const completePrompt = bookRecommendationPrompt(message.content);
-
-      // Call openaiApi to process and emit chunks
-      await openaiApi([{ role: 'user', content: completePrompt }], socket, session);
-
+      await openaiApi(messagesForGPT4, socket, session);
     } catch (error) {
       console.error('Error processing query:', error);
-      socket.emit('error', 'Error processing your request'); // Emit error to the client
+      socket.emit('error', 'Error processing your request');
     }
-  });
+  });  
 
   socket.on('disconnect', () => {
     console.log('A user disconnected');
