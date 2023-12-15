@@ -1,11 +1,12 @@
 import React from 'react';
 import '../App.css';
 
+
 function AnswerDisplay({ role, content, contentType }) {
 
   // Function to create HTML from a string
   const createMarkup = (htmlString) => {
-    return {__html: htmlString};
+    return { __html: htmlString };
   };
 
   return (
