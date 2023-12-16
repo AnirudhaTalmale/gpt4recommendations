@@ -27,6 +27,14 @@ const openaiApi = async (messages, socket, session) => {
       stream: true,
     });
 
+    // Create a new message entry for this stream.
+    const messageIndex = session.messages.push({
+      role: 'assistant',
+      contentType: 'simple',
+      content: ''
+    }) - 1;
+    await session.save();
+
     let completeResponse = "";
     let pausedEmit = ""; // Variable to hold paused chunks
     let isPaused = false; // Flag to check if emitting is paused
@@ -56,6 +64,9 @@ const openaiApi = async (messages, socket, session) => {
           
           // Emit pausedEmit and reset
           completeResponse += pausedEmit;
+          // Update the current message with the new chunk.
+          session.messages[messageIndex].content += pausedEmit;
+          await session.save();
           socket.emit('chunk', pausedEmit);
           pausedEmit = "";
         } else {
@@ -69,18 +80,12 @@ const openaiApi = async (messages, socket, session) => {
       } else {
         // Normal emit when not paused
         completeResponse += chunkContent;
+        // Update the current message with the new chunk.
+        session.messages[messageIndex].content += chunkContent;
+        await session.save();
         socket.emit('chunk', chunkContent);
       }
     }
-    
-    // Add the assistant's response to the session here
-    session.messages.push({
-      role: 'assistant',
-      contentType: 'simple',
-      content: completeResponse
-    });
-
-    await session.save();
 
   } catch (error) {
     console.error('openaiApi - Error calling OpenAI API:', error);

@@ -1,7 +1,7 @@
 // promptTemplate.js
 const bookRecommendationPrompt = (userQuery) => {
   return `User query is "${userQuery}". If the query is related to books recommended in previous chats then immediately reply to it using appropriate html tags. Else if the query is anything other than book recommendation then immediately reply - Please ask question about book recommendation or previously recommended book. 
-  Else in following format, recommend two books as per given user query based on your training data and previous chats: 
+  Else in following format, recommend one book as per given user query based on your training data and previous chats: 
   <h3>"Book title by author name" enclosed within asterisk</h3>
 
   <b>Detailed Analysis and Review</b>
@@ -24,7 +24,7 @@ const bookRecommendationPrompt = (userQuery) => {
 
   <b>Similar Books</b>
   <ol>
-    <li>List books that are similar in genre, theme, or style, providing a brief comparison for each. Make sure to enclose "book title by author name" within asterisk</li>
+    <li><b>List books that are similar in genre, theme, or style. Make sure to enclose "book title by author name" within asterisk.</b> <p>Explain the reason of similarity for each of them.</p></li>
   </ol>
 
   <b>Endorsements and Influential Praise</b>

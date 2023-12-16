@@ -21,7 +21,7 @@ function HistoryPane({ sessions, onNewSession, onSelectSession, onDeleteSession 
   return (
     <div className="history-pane">
       <button onClick={handleNewSession} className="new-session-button">
-        New Chat
+        <i class="fa-regular fa-pen-to-square"></i>
       </button>
       {[...sessions].reverse().map((session, index) => (
         <div key={session._id} className="history-entry">
@@ -29,7 +29,7 @@ function HistoryPane({ sessions, onNewSession, onSelectSession, onDeleteSession 
             {`Chat Session ${sessions.length - index}`}
           </div>
           <button onClick={() => onDeleteSession(session._id)} className="delete-session-button">
-            Delete
+          <i class="fa-solid fa-trash"></i>
           </button>
         </div>
       ))}

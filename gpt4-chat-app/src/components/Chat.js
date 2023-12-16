@@ -121,22 +121,20 @@ function Chat() {
         onSelectSession={setCurrentSessionIndex}
         onDeleteSession={handleDeleteSession}
       />
-      <div className="chat-container">
-        <div className="chat-area">
-          {sessions[currentSessionIndex]?.messages.map((msg, index) => {
-            // Generate a key using MongoDB's _id
-            const messageKey = msg._id ? msg._id.$oid : `temp-${index}`;
-            
-            return (
-              <AnswerDisplay
-                key={messageKey}
-                role={msg.role}
-                content={msg.content}
-                contentType={msg.contentType} // Add this line
-              />
-            );
-          })}
-        </div>
+      <div className="chat-area">
+        {sessions[currentSessionIndex]?.messages.map((msg, index) => {
+          // Generate a key using MongoDB's _id
+          const messageKey = msg._id ? msg._id.$oid : `temp-${index}`;
+          
+          return (
+            <AnswerDisplay
+              key={messageKey}
+              role={msg.role}
+              content={msg.content}
+              contentType={msg.contentType} // Add this line
+            />
+          );
+        })}
       </div>
       <InputBox onSubmit={handleQuerySubmit} isLoading={isLoading} />
     </div>

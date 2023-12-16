@@ -6,7 +6,7 @@ const { Schema } = mongoose;
 const messageSchema = new Schema({
   role: { type: String, enum: ['user', 'assistant'], required: true },
   contentType: { type: String, default: 'simple', required: true },
-  content: { type: String, required: true } 
+  content: { type: String } 
 });
 
 // Session Schema

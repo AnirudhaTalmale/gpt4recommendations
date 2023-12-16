@@ -10,15 +10,17 @@
   display: flex;
   flex-direction: column;
   padding: 20px;
-  margin-left: 250px;
+  margin-left: 260px;
   padding-bottom: 60px; /* Added padding at the bottom */
   overflow-y: auto; /* Add this to enable scrolling */
+  /* background-color: red; */
 }
 
 .input-area {
+  background-color: black;
   position: fixed;
   bottom: 0;
-  left: 250px; /* It should start after the history pane, make sure it's the same as .chat-area margin-left */
+  left: 260px; /* It should start after the history pane, make sure it's the same as .chat-area margin-left */
   right: 0;
   display: flex;
   align-items: center; /* Vertically center the contents */
@@ -53,49 +55,32 @@
 
 .message {
   /* background: yellow; */
-  margin-bottom: 10px;
-  /* padding: 16px; */
+  margin-bottom: 1.7rem;
+  margin-left: auto;
+  margin-right: auto;
+  display: block; /* or display: flex; */
   width: auto;
   max-width: 600px;
-  font-family: SÃ¶hne,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif,Helvetica Neue,Arial,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji;
+  font-family: Söhne, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, sans-serif, Helvetica Neue, Arial, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
   font-size: 1rem;
-  line-height: 1.5rem;
-  
+  line-height: 1.3rem;
+  width: 100%;
+  text-align: justify;
 }
 
 
-.message-question {
-  margin-bottom: 4px;
-}
-
-.message-answer {
-  margin-top: 10px;
-}
-
-.formatted-response p {
-  margin-bottom: 10px;
-}
-
-.formatted-response li {
-  list-style-type: none; /* Remove the default list item styling */
-  margin-bottom: 10px;
-  margin-left: 1em; /* To align with the rest of the text */
-}
-
-.formatted-response strong {
-  font-weight: bold;
-}
-
-.user-message {
-  color: white;
-  text-align: left; /* Align to left instead of right */
+.message-icon {
+  font-weight: bold; /* Make the icon text bold */
+  font-family: Söhne, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, sans-serif, Helvetica Neue, Arial, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
+  margin-bottom: -0.5rem;
+  color: rgb(14, 156, 52)
 }
 
 .history-pane {
   background-color: rgba(0, 0, 0, 0.923);
   color: #fff;
-  width: 210px; /* Adjust width as needed */
-  padding: 20px;
+  width: 244px; /* Adjust width as needed */
+  padding: 0.5rem;
   overflow-y: auto;
   position: fixed; /* Make it stay on the left */
   left: 0;
@@ -106,22 +91,41 @@
 
 .history-entry {
   /* Add styles for individual history entries here */
-  padding: 10px;
+  font-family: Söhne, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, sans-serif, Helvetica Neue, Arial, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
+  padding: 0.7rem;
   cursor: pointer; 
   &:hover {
-    background-color: #555; /* Darken the entry on hover */
+    background-color: hsla(0,0%,100%,.1);
+    border-radius: 0.5rem;
   }
   display: flex; /* Use Flexbox */
   justify-content: space-between; /* Space between items */
   align-items: center; /* Align items vertically */
+  font-size: 0.9rem;
+  color: #d9d9e3;
 }
 
 .delete-session-button {
   margin-left: auto; /* Push the button to the right */
+  cursor: pointer; 
+  color: #d9d9e3;
+  background: none;
+  border: none;
+  font-size: 0.9rem;
+}
+
+.new-session-button {
+  margin: 10px;
+  color: #d9d9e3;
+  border: none;
+  cursor: pointer;
+  z-index: 2;
+  background: none;
+  font-size: 1rem;
 }
 
 /* Optional: add media query for responsive design */
-@media (max-width: 768px) {
+@media (max-width: 760px) {
   .history-pane {
     display: none; /* Hide history pane on small screens */
   }
@@ -135,52 +139,42 @@
   }
 }
 
-.new-session-button {
-  padding: 10px 20px;
-  margin: 10px;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  z-index: 2;
-}
-
-
-button {
+.message button {
   background-color: #FF9900; /* Amazon's signature orange color */
   color: white;
-  font-family: Arial, sans-serif;
-  font-size: 16px;
-  font-weight: bold;
+  font-family: Söhne, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, sans-serif, Helvetica Neue, Arial, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
+  text-align: justify;
+  font-size: 1rem;
   padding: 10px 20px;
   border: none;
-  border-radius: 100rem;
+  border-radius: 2rem;
   cursor: pointer;
   text-align: center;
   text-decoration: none;
   display: inline-block;
   transition: background-color 0.3s ease;
-  margin-bottom: 1rem;
+  margin-bottom: 0.3rem;
+  margin-top: 0.3rem;
 }
 
-button:hover {
+.message button:hover {
   background-color: #cc7a00; /* A darker shade of orange for hover effect */
 }
 
-button:active {
+.message button:active {
   background-color: #e68a00; /* A lighter shade for active state */
 }
 
-button:focus {
+.message button:focus {
   outline: none; /* Remove outline on focus */
   box-shadow: 0 0 0 2px #fff, 0 0 0 4px #FF9900; /* Optional: Add a focus ring */
 }
 
 h3 div img {
-  margin-top: 1rem;
+  margin-top: 0.8rem;
 }
 
 div img {
-  margin-top: 0.3rem;
+  margin-top: 0.6rem;
+  margin-bottom: -0.4rem;
 }
