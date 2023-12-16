@@ -17,12 +17,38 @@ function Chat() {
       const res = await axios.get('http://localhost:3000/api/sessions');
       setSessions(res.data);
       
-      setCurrentSessionIndex(res.data.length - 1);
+      // setCurrentSessionIndex(res.data.length - 1);
     } catch (error) {
       console.error('Error loading sessions:', error);
     }
   }, []); // Add dependencies if there are any
 
+  useEffect(() => {
+    // Load sessions from the server
+    loadSessions();
+  }, [loadSessions]);
+  
+  useEffect(() => {
+    // Save the current session index to localStorage whenever it changes
+    if (currentSessionIndex !== -1) {
+      localStorage.setItem('currentSessionIndex', currentSessionIndex);
+    }
+  }, [currentSessionIndex]);
+  
+  useEffect(() => {
+    // Retrieve the current session index from localStorage when the component mounts
+    const savedSessionIndex = localStorage.getItem('currentSessionIndex');
+    if (savedSessionIndex) {
+      setCurrentSessionIndex(parseInt(savedSessionIndex, 10));
+    } else {
+      // If there is no saved index, load the latest session
+      setCurrentSessionIndex(sessions.length - 1);
+    }
+  }, [sessions.length]);
+  
+
+  
+  
   const updateSessionMessages = useCallback((messageContent, contentType = 'simple', isUserMessage = true) => {
     setSessions(prevSessions => {
       // Clone the previous sessions array
