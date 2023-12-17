@@ -1,80 +1,70 @@
 .App {
   display: flex;
   flex-direction: column; /* Keep the main direction as column for stacking */
-  height: 100vh;
-
 }
 
 .chat-area {
-  flex: 1; 
   display: flex;
   flex-direction: column;
   padding: 20px;
   margin-left: 260px;
   padding-bottom: 60px; /* Added padding at the bottom */
-  overflow-y: auto; /* Add this to enable scrolling */
   /* background-color: red; */
 }
 
 .input-area {
-  background-color: black;
   position: fixed;
-  bottom: 0;
+  bottom: 0rem;
   left: 260px; /* It should start after the history pane, make sure it's the same as .chat-area margin-left */
   right: 0;
   display: flex;
   align-items: center; /* Vertically center the contents */
-  background: white; /* Ensure the background covers any content beneath */
-  z-index: 2; /* Make sure it's on top of other elements */
-  font-family: SÃ¶hne,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif,Helvetica Neue,Arial,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji;
+  background: white;
 }
 
 .input-box-container {
   display: flex;
   flex-grow: 1;
-  margin: 10px;
-  border-radius: 10px;
+  margin: 1rem;
+  border-radius: 1rem;
   border: 1.5px solid #D3D3D3;
   overflow: hidden; /* This will contain the button inside the input box */
+  /* background-color: black; */
+  height: 3rem;
+}
+
+.input-box-container:focus-within {
+  border-color: #A9A9A9; /* Darker border color when input box is focused */
 }
 
 .input-box {
   flex-grow: 1;
   border: none;
-  padding: 10px 10px 10px 10px; /* Adjusted padding */
+  padding: 0.5rem 0.5rem 0.5rem 0.5rem; /* Adjusted padding */
+  /* background-color: black; */
+  outline: none; 
+  font-family: SÃ¶hne,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif,Helvetica Neue,Arial,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji;
+  font-size: 1rem;
+  padding-left: 1rem;
 }
 
 .send-button {
   background-color: #ddd;
   border: 1px solid #D3D3D3;
-  border-left: none; /* Remove the left border to make it seamless with the input */
-  padding: 10px;
-  border-radius: 10px;
-  margin: 5px;
+  font-size: 1.1rem;
+  border-radius: 0.4rem;
+  width: 2rem;
+  margin-right: 0.48rem;
+  margin-top: 0.48rem;
+  height: 2rem;
+  color: white;
+  /* background-color: black; */
 }
 
-.message {
-  /* background: yellow; */
-  margin-bottom: 1.7rem;
-  margin-left: auto;
-  margin-right: auto;
-  display: block; /* or display: flex; */
-  width: auto;
-  max-width: 600px;
-  font-family: Söhne, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, sans-serif, Helvetica Neue, Arial, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
-  font-size: 1rem;
-  line-height: 1.3rem;
-  width: 100%;
-  text-align: justify;
+.send-button.active {
+  background-color: black;
 }
 
-
-.message-icon {
-  font-weight: bold; /* Make the icon text bold */
-  font-family: Söhne, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, sans-serif, Helvetica Neue, Arial, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
-  margin-bottom: -0.5rem;
-  color: rgb(14, 156, 52)
-}
 
 .history-pane {
   background-color: rgba(0, 0, 0, 0.923);
@@ -103,6 +93,8 @@
   align-items: center; /* Align items vertically */
   font-size: 0.9rem;
   color: #d9d9e3;
+  /* background-color: yellow;
+  border: 1px solid blue; */
 }
 
 .delete-session-button {
@@ -137,6 +129,29 @@
   .input-area {
     left: 0; /* Align input area with the full width of the window */
   }
+}
+
+.message {
+  /* background: yellow; */
+  margin-bottom: 1.7rem;
+  margin-left: auto;
+  margin-right: auto;
+  display: block; /* or display: flex; */
+  width: auto;
+  max-width: 600px;
+  font-family: Söhne, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, sans-serif, Helvetica Neue, Arial, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
+  font-size: 1rem;
+  line-height: 1.3rem;
+  width: 100%;
+  text-align: justify;
+}
+
+
+.message-icon {
+  font-weight: bold; /* Make the icon text bold */
+  font-family: Söhne, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, sans-serif, Helvetica Neue, Arial, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
+  margin-bottom: -0.5rem;
+  color: rgb(14, 156, 52)
 }
 
 .message button {

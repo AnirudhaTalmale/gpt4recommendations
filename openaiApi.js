@@ -6,14 +6,40 @@ const axios = require('axios');
 
 const getBookCover = async (title) => {
   try {
-    const response = await axios.get(`https://www.googleapis.com/books/v1/volumes?q=intitle:${encodeURIComponent(title)}&key=${process.env.GOOGLE_BOOKS_API_KEY}`);
+    // Remove any occurrences of opening or closing quotes
+    const cleanedTitle = title.replace(/"/g, '');
+
+    // Split the cleaned title into book title and author
+    const splitTitle = cleanedTitle.split(' by ');
+    const bookTitle = splitTitle[0];
+    const author = splitTitle.length > 1 ? splitTitle[1] : null;
+
+    // Log the book title and author (if available)
+    console.log("book title:", bookTitle);
+    if (author) {
+      console.log("author:", author);
+    }
+
+    // Construct the query based on whether the author is available or not
+    let query = `intitle:${encodeURIComponent(bookTitle)}`;
+    if (author) {
+      query += `+inauthor:${encodeURIComponent(author)}`;
+    }
+
+    // Update the API call to include the query
+    const response = await axios.get(`https://www.googleapis.com/books/v1/volumes?q=${query}&key=${process.env.GOOGLE_BOOKS_API_KEY}`);
     const coverImageUrl = response.data.items[0]?.volumeInfo?.imageLinks?.thumbnail;
-    return coverImageUrl || 'default-cover.jpg'; // Return a default cover image if none is found
+
+    // Return the cover image URL or a default cover image
+    return coverImageUrl || 'default-cover.jpg';
   } catch (error) {
     console.error(`Error fetching book cover for ${title}:`, error);
     return 'default-cover.jpg';
   }
 };
+
+
+
 
 const openai = new OpenAI(process.env.OPENAI_API_KEY);
 
@@ -41,7 +67,6 @@ const openaiApi = async (messages, socket, session) => {
 
     for await (const chunk of stream) {
       let chunkContent = chunk.choices[0]?.delta?.content || "";
-      console.log(chunkContent);
 
       if (chunkContent.includes('*')) {
         if (isPaused) {
