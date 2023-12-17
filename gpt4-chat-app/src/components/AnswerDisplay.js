@@ -12,12 +12,14 @@ function AnswerDisplay({ role, content, contentType }) {
       {role === 'user' && (
         <>
           <div className="message-icon">You</div>
-          <p className="message-question">{content}</p>
+          <br></br>
+          <div className="message-question">{content}</div>
         </>
       )}
       {role === 'assistant' && (
         <>
           <div className="message-icon">ChatGPT</div>
+          <br></br>
           <div className="message-answer" dangerouslySetInnerHTML={createMarkup(content)} />
         </>
       )}

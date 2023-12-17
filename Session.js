@@ -2,7 +2,6 @@ const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
 // Message Schema
-// Note: The content type is String as only simple text is used.
 const messageSchema = new Schema({
   role: { type: String, enum: ['user', 'assistant'], required: true },
   contentType: { type: String, default: 'simple', required: true },
@@ -11,6 +10,7 @@ const messageSchema = new Schema({
 
 // Session Schema
 const sessionSchema = new Schema({
+  sessionName: { type: String, default: 'New Chat' }, // Set default name as "New Chat"
   messages: [messageSchema]
 });
 
