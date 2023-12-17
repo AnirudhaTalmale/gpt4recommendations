@@ -25,7 +25,7 @@
 .input-box-container {
   display: flex;
   flex-grow: 1;
-  margin: 1rem;
+  margin: 0rem 1rem 1rem 1rem;
   border-radius: 1rem;
   border: 1.5px solid #D3D3D3;
   overflow: hidden; /* This will contain the button inside the input box */
