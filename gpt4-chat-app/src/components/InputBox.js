@@ -9,7 +9,9 @@ function InputBox({ onSubmit }) {
     e.preventDefault();
     onSubmit(input);
     setInput('');
+    setIsInputNotEmpty(false); // Add this line
   };
+  
 
   const handleInputChange = (e) => {
     setInput(e.target.value);

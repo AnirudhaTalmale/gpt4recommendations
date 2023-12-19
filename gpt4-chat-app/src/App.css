@@ -51,12 +51,12 @@
 .send-button {
   background-color: #ddd;
   border: 1px solid #D3D3D3;
-  font-size: 1.1rem;
+  font-size: 1rem;
   border-radius: 0.4rem;
-  width: 2rem;
-  margin-right: 0.48rem;
-  margin-top: 0.48rem;
-  height: 2rem;
+  width: 1.85rem;
+  margin-right: 0.55rem;
+  margin-top: 0.54rem;
+  height: 1.85rem;
   color: white;
   /* background-color: black; */
 }
