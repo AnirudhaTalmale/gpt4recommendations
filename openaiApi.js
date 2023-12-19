@@ -3,6 +3,7 @@ const { OpenAI } = require('openai');
 require('dotenv').config();
 
 const axios = require('axios');
+const Book = require('./Book');
 
 const getBookCover = async (title) => {
   try {
@@ -20,6 +21,13 @@ const getBookCover = async (title) => {
       console.log("author:", author);
     }
 
+    // Check if the book cover is already in the database using bookTitle
+    const existingBook = await Book.findOne({ title: bookTitle });
+    if (existingBook) {
+      console.log("retrieved image from database");
+      return existingBook.coverImageUrl; // Return the cover image URL from the database
+    }
+
     // Construct the query based on whether the author is available or not
     let query = `intitle:${encodeURIComponent(bookTitle)}`;
     if (author) {
@@ -29,6 +37,10 @@ const getBookCover = async (title) => {
     // Update the API call to include the query
     const response = await axios.get(`https://www.googleapis.com/books/v1/volumes?q=${query}&key=${process.env.GOOGLE_BOOKS_API_KEY}`);
     const coverImageUrl = response.data.items[0]?.volumeInfo?.imageLinks?.thumbnail;
+
+    // Save the new book cover in the database
+    const newBook = new Book({ title: bookTitle, coverImageUrl });
+    await newBook.save();
 
     // Return the cover image URL or a default cover image
     return coverImageUrl || 'default-cover.jpg';
@@ -67,6 +79,7 @@ const openaiApi = async (messages, socket, session) => {
 
     for await (const chunk of stream) {
       let chunkContent = chunk.choices[0]?.delta?.content || "";
+      // console.log(chunkContent);
 
       if (chunkContent.includes('*')) {
         if (isPaused) {
@@ -80,9 +93,11 @@ const openaiApi = async (messages, socket, session) => {
           // Fetch book cover image
           const coverImageUrl = await getBookCover(bookTitle);
 
-          // Concatenate div tag with the book cover image tag
-          const imageDiv = `<div><img src="${coverImageUrl}" alt="Book cover for ${bookTitle}"></div>`;
-          pausedEmit = pausedEmit.replace(bookTitleMatch[0], bookTitleMatch[0] + imageDiv);
+          // If the cover image URL is not the default, concatenate div tag with the image tag
+          if (coverImageUrl !== 'default-cover.jpg') {
+            const imageDiv = `<div><img src="${coverImageUrl}" alt="Book cover for ${bookTitle}"></div>`;
+            pausedEmit = pausedEmit.replace(bookTitleMatch[0], bookTitleMatch[0] + imageDiv);
+          }
 
           // Replace first and last '*' with <h3> and </h3>
           pausedEmit = pausedEmit.replace(/\*/g, "");

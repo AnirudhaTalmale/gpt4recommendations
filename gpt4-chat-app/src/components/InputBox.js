@@ -24,7 +24,7 @@ function InputBox({ onSubmit }) {
           className="input-box"
           value={input} 
           onChange={handleInputChange} 
-          placeholder="Ask me anything..."
+          placeholder="Ask me about books..."
         />
         <button type="submit" className={`send-button ${isInputNotEmpty ? 'active' : ''}`}>
           <i className="fa-solid fa-arrow-up"></i>

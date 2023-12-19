@@ -65,8 +65,17 @@
   background-color: black;
 }
 
+/* Style for the fixed button to toggle the history pane */
+.pane-toggle-button {
+  position: fixed; /* Fix the position so it doesn't move with the pane */
+  left: 0; /* Place it at the left edge of the screen */
+  top: 10px; /* Adjust this value based on your header or desired position */
+  z-index: 2; /* Make sure it's above other content */
+}
 
+/* Styles for the history pane */
 .history-pane {
+  transition: transform 0.2s ease-in-out;
   background-color: rgba(0, 0, 0, 0.923);
   color: #fff;
   width: 244px; /* Adjust width as needed */
@@ -76,8 +85,54 @@
   left: 0;
   top: 0;
   bottom: 0;
-  z-index: 1;
+  z-index: 1; /* Ensure pane is below the toggle button */
+  display: flex;
+  flex-direction: column;
 }
+
+/* Style when the pane is closed */
+.history-pane.closed {
+  transform: translateX(-100%); /* Slide the pane out of view */
+}
+
+/* Styles for the container of the buttons inside the history pane */
+.top-button-container {
+  display: flex; /* Establish a flex container */
+  justify-content: space-between; /* Space between the buttons */
+  padding: 0 0.5rem; /* Add padding on the sides */
+  margin-top: 0.6rem;
+  margin-bottom: 1.9rem;
+}
+
+/* Style for the close pane button inside the history pane */
+.close-pane-button {
+  cursor: pointer; 
+  color: #d9d9d9; /* Adjust color for visibility */
+  background: none;
+  border: none;
+  font-size: 0.9rem;
+  margin-top: 0.7rem;
+  margin-bottom: 1.7rem;
+  margin-left: 1.03rem;
+}
+
+.close-pane-button-closed {
+  color: black; /* Change the color to black */
+}
+
+.new-session-button {
+  margin-left: auto; /* Push the button to the right */
+  margin-top: 0.64rem;
+  margin-bottom: 1.7rem;
+  margin-right: 0.5rem;
+  color: #d9d9e3;
+  border: none;
+  cursor: pointer;
+  z-index: 2;
+  background: none;
+  font-size: 1rem;
+}
+
 
 .history-entry {
   /* Add styles for individual history entries here */
@@ -106,15 +161,6 @@
   font-size: 0.9rem;
 }
 
-.new-session-button {
-  margin: 10px;
-  color: #d9d9e3;
-  border: none;
-  cursor: pointer;
-  z-index: 2;
-  background: none;
-  font-size: 1rem;
-}
 
 /* Optional: add media query for responsive design */
 @media (max-width: 760px) {

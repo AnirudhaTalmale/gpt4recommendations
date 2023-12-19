@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import '../App.css';
 
 function HistoryPane({ sessions, onNewSession, onSelectSession, onDeleteSession }) {
-  
+  const [isPaneOpen, setIsPaneOpen] = useState(true);
+
   // Custom function to handle new session creation
   const handleNewSession = () => {
     if (sessions.length > 0 && isSessionEmpty(sessions[sessions.length - 1])) {
@@ -16,11 +17,26 @@ function HistoryPane({ sessions, onNewSession, onSelectSession, onDeleteSession 
     return session.messages.length === 0;
   };
 
+  // Add a function to handle the close action
+  const handleClosePane = () => {
+    setIsPaneOpen(!isPaneOpen);
+    console.log('Close pane clicked');
+  };
+
   return (
-    <div className="history-pane">
-        <button onClick={handleNewSession} className="new-session-button">
-            <i className="fa-regular fa-pen-to-square"></i>
+    <div>
+      <div className="pane-toggle-button">
+      <button onClick={handleClosePane} className={`close-pane-button ${!isPaneOpen ? 'close-pane-button-closed' : ''}`}>
+          <i className="fa-solid fa-bars"></i>
         </button>
+      </div>
+
+      <div className={`history-pane ${isPaneOpen ? '' : 'closed'}`}>
+        {/* <div className="top-button-container"> */}
+          <button onClick={handleNewSession} className="new-session-button">
+            <i className="fa-regular fa-pen-to-square"></i>
+          </button>
+        {/* </div> */}
         {[...sessions].reverse().map((session, index) => (
             <div key={session._id} className="history-entry" onClick={() => onSelectSession(sessions.length - index - 1)}>
                 <div>
@@ -31,6 +47,7 @@ function HistoryPane({ sessions, onNewSession, onSelectSession, onDeleteSession 
                 </button>
             </div>
         ))}
+      </div>
     </div>
   );
 }

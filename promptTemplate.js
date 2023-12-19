@@ -22,11 +22,6 @@ const bookRecommendationPrompt = (userQuery) => {
   <b>Achievements of Book</b>
   <p>Detail any awards, recognitions, or significant milestones achieved by the book since its publication.</p>
 
-  <b>Similar Books</b>
-  <ol>
-    <li><b>List books that are similar in genre, theme, or style. Make sure to enclose "book title by author name" within asterisk.</b> <p>Explain the reason of similarity for each of them.</p></li>
-  </ol>
-
   <b>Endorsements and Influential Praise</b>
   <p>Include notable endorsements or praise the book has received from influential figures or institutions.</p>
 
@@ -35,6 +30,11 @@ const bookRecommendationPrompt = (userQuery) => {
 
   <b>Social and Cultural Impact</b>
   <p>Analyze the book's impact on society and culture, including how it might have influenced public opinion, policy, or other books and media.</p>
+
+  <b>Similar Books</b>
+  <ol>
+    <li><b>List 4 books that are similar in genre, theme, or style. Make sure to enclose "book title by author name" within asterisk.</b> <p>Explain the reason of similarity for each of them.</p></li>
+  </ol>
 
   <a href="https://www.amazon.in/s?k=BookTitleByAuthorName" target="_blank"><button>Buy now on Amazon</button></a>
   </br>
