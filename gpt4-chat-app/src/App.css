@@ -178,22 +178,30 @@
 }
 
 .message {
-  /* background: yellow; */
+  display: flex;
+  align-items: flex-start; /* Aligns items at the start of the container */
   margin-bottom: 1.7rem;
-  margin-left: auto;
-  margin-right: auto;
-  display: block; /* or display: flex; */
-  width: auto;
   max-width: 600px;
-  font-family: Söhne, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, sans-serif, Helvetica Neue, Arial, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
+  font-family: SÃ¶hne, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, sans-serif, Helvetica Neue, Arial, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
   font-size: 1rem;
   line-height: 1.3rem;
   width: 100%;
   text-align: justify;
+  margin-left: 1rem;
+}
+
+.message-icon {
+  margin-right: 1rem; /* Adjust as needed */
+  /* Add styles for your icons here */
+}
+
+.message-content {
+  flex-grow: 1;
 }
 
 
-.message-icon {
+
+.message-sender {
   font-weight: bold; /* Make the icon text bold */
   font-family: Söhne, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, sans-serif, Helvetica Neue, Arial, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
   margin-bottom: -0.7rem;
