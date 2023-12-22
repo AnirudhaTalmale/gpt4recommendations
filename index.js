@@ -60,6 +60,23 @@ app.get('/api/check-auth', (req, res) => {
   }
 }); 
 
+app.get('/api/user-info', (req, res) => {
+  if (req.isAuthenticated()) {
+    // Assuming 'user' is the authenticated user's document from the database
+    res.json({
+      isAuthenticated: true,
+      user: {
+        name: req.user.displayName,
+        email: req.user.email,
+        image: req.user.image // URL of the Google account image
+      }
+    });
+  } else {
+    res.status(401).json({ isAuthenticated: false });
+  }
+});
+
+
 app.get('/auth/logout', (req, res, next) => {
   const accessToken = req.user.accessToken; // Retrieve the stored access token
   req.logout(function(err) {

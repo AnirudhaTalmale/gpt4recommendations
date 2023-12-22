@@ -26,7 +26,6 @@ function HistoryPane({ sessions, onNewSession, onSelectSession, onDeleteSession 
   }
 };
 
-  
 
   const isSessionEmpty = (session) => {
     return session.messages.length === 0;
@@ -63,9 +62,12 @@ function HistoryPane({ sessions, onNewSession, onSelectSession, onDeleteSession 
             </div>
         ))}
 
-        <button onClick={handleLogout} className="logout-button">
-          Sign out
-        </button>
+        <div className="bottom-container">
+          <button onClick={handleLogout} className="logout-button">
+            <i class="fa-solid fa-arrow-right-from-bracket"></i> Log out
+          </button>
+        </div>
+
       </div>
     </div>
   );

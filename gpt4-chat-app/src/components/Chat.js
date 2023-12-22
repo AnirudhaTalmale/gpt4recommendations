@@ -11,6 +11,8 @@ function Chat() {
   const [sessions, setSessions] = useState([]);
   const [currentSessionIndex, setCurrentSessionIndex] = useState(-1);
   const [isLoading, setIsLoading] = useState(false);
+  const [userData, setUserData] = useState(null);
+
 
   const loadSessions = useCallback(async () => {
     try {
@@ -48,20 +50,22 @@ function Chat() {
   
   const checkAuthStatus = useCallback(async () => {
     try {
-      // This endpoint should be implemented in your backend to check the auth status
       const response = await axios.get('http://localhost:3000/api/check-auth', { withCredentials: true });
       if (response.status === 200 && response.data.isAuthenticated) {
-        // User is authenticated, continue as normal
+        // Fetch user data
+        const userInfoResponse = await axios.get('http://localhost:3000/api/user-info', { withCredentials: true });
+        if (userInfoResponse.status === 200 && userInfoResponse.data.isAuthenticated) {
+          setUserData(userInfoResponse.data.user);
+        }
       } else {
-        // User is not authenticated, redirect to backend OAuth route
         window.location.href = 'http://localhost:3001/auth/login';
       }
     } catch (error) {
       console.error('Error checking authentication status:', error);
-      // On error or if not authenticated, redirect to backend OAuth route
       window.location.href = 'http://localhost:3001/auth/login';
     }
   }, []);
+  
 
   useEffect(() => {
     checkAuthStatus();
@@ -167,19 +171,18 @@ function Chat() {
         onDeleteSession={handleDeleteSession}
       />
       <div className="chat-area">
-        {sessions[currentSessionIndex]?.messages.map((msg, index) => {
-          // Generate a key using MongoDB's _id
-          const messageKey = msg._id ? msg._id.$oid : `temp-${index}`;
-          
-          return (
-            <AnswerDisplay
-              key={messageKey}
-              role={msg.role}
-              content={msg.content}
-              contentType={msg.contentType} // Add this line
-            />
-          );
-        })}
+      {sessions[currentSessionIndex]?.messages.map((msg, index) => {
+        const messageKey = msg._id ? msg._id.$oid : `temp-${index}`;
+        return (
+          <AnswerDisplay
+            key={messageKey}
+            role={msg.role}
+            content={msg.content}
+            contentType={msg.contentType}
+            userImage={userData?.image}// Passing the user data as a prop
+          />
+        );
+      })}
       </div>
       <InputBox onSubmit={handleQuerySubmit} isLoading={isLoading} />
     </div>

@@ -153,12 +153,27 @@
 }
 
 .logout-button {
-  color: white;
+  font-family: Söhne, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, sans-serif, Helvetica Neue, Arial, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
+  font-size: 0.9rem;
+  color: #d9d9e3;
   background-color: blue;
   padding: 10px;
-  margin-top: 10px;
   cursor: pointer;
+  width: 100%; /* Width of the button */
+  height: 2rem; /* Height of the button */
+  display: flex; /* Enables flexbox */
+  justify-content: center; /* Centers content horizontally */
+  align-items: center; /* Centers content vertically */
 }
+
+.bottom-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end; /* Aligns child to the end */
+  height: 100%; /* Ensures it takes full height */
+  /* margin-bottom: 1rem; */
+}
+
 
 .login-container {
   display: flex;
@@ -215,8 +230,15 @@
 }
 
 .message-icon {
-  margin-right: 1rem; /* Adjust as needed */
+  margin-right: 0.8rem; /* Adjust as needed */
   /* Add styles for your icons here */
+}
+
+.display-image {
+  margin-top: 0rem;
+  width: 1.6rem;
+  height: 1.6rem;
+  border-radius: 50%;
 }
 
 .message-content {
