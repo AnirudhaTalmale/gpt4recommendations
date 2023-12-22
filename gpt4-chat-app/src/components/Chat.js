@@ -46,8 +46,27 @@ function Chat() {
     }
   }, [sessions.length]);
   
+  const checkAuthStatus = useCallback(async () => {
+    try {
+      // This endpoint should be implemented in your backend to check the auth status
+      const response = await axios.get('http://localhost:3000/api/check-auth', { withCredentials: true });
+      if (response.status === 200 && response.data.isAuthenticated) {
+        // User is authenticated, continue as normal
+      } else {
+        // User is not authenticated, redirect to backend OAuth route
+        window.location.href = 'http://localhost:3001/auth/login';
+      }
+    } catch (error) {
+      console.error('Error checking authentication status:', error);
+      // On error or if not authenticated, redirect to backend OAuth route
+      window.location.href = 'http://localhost:3001/auth/login';
+    }
+  }, []);
 
-  
+  useEffect(() => {
+    checkAuthStatus();
+  }, [checkAuthStatus]);
+
   
   const updateSessionMessages = useCallback((messageContent, contentType = 'simple', isUserMessage = true) => {
     setSessions(prevSessions => {

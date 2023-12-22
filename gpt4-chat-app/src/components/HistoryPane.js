@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 import '../App.css';
 
 function HistoryPane({ sessions, onNewSession, onSelectSession, onDeleteSession }) {
@@ -13,6 +14,20 @@ function HistoryPane({ sessions, onNewSession, onSelectSession, onDeleteSession 
     }
   };
 
+  const handleLogout = async () => {
+  try {
+    const response = await axios.get('http://localhost:3000/auth/logout', { withCredentials: true });
+    if (response.data.message === 'Logged out successfully') {
+      // Redirect to the home page or login page
+      window.location.href = 'http://localhost:3001';
+    }
+  } catch (error) {
+    console.error('Error during logout:', error);
+  }
+};
+
+  
+
   const isSessionEmpty = (session) => {
     return session.messages.length === 0;
   };
@@ -26,7 +41,7 @@ function HistoryPane({ sessions, onNewSession, onSelectSession, onDeleteSession 
   return (
     <div>
       <div className="pane-toggle-button">
-      <button onClick={handleClosePane} className={`close-pane-button ${!isPaneOpen ? 'close-pane-button-closed' : ''}`}>
+        <button onClick={handleClosePane} className={`close-pane-button ${!isPaneOpen ? 'close-pane-button-closed' : ''}`}>
           <i className="fa-solid fa-bars"></i>
         </button>
       </div>
@@ -47,6 +62,10 @@ function HistoryPane({ sessions, onNewSession, onSelectSession, onDeleteSession 
                 </button>
             </div>
         ))}
+
+        <button onClick={handleLogout} className="logout-button">
+          Sign out
+        </button>
       </div>
     </div>
   );

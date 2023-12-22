@@ -152,6 +152,30 @@
   border: 1px solid blue; */
 }
 
+.logout-button {
+  color: white;
+  background-color: blue;
+  padding: 10px;
+  margin-top: 10px;
+  cursor: pointer;
+}
+
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh; /* Use full viewport height */
+}
+
+.login-button {
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  /* Add more styling as needed */
+}
+
+
+
 .delete-session-button {
   margin-left: auto; /* Push the button to the right */
   cursor: pointer; 
@@ -198,8 +222,6 @@
 .message-content {
   flex-grow: 1;
 }
-
-
 
 .message-sender {
   font-weight: bold; /* Make the icon text bold */
