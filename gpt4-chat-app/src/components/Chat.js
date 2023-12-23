@@ -107,6 +107,20 @@ function Chat() {
     checkAuthStatus();
   }, [checkAuthStatus]);
 
+  const updateSessionName = useCallback(({ sessionId, sessionName }) => {
+    setSessions(prevSessions => prevSessions.map(session => 
+      session._id === sessionId ? { ...session, sessionName } : session
+    ));
+  }, []);  
+
+  useEffect(() => {
+    socket.on('updateSessionName', updateSessionName);
+  
+    return () => {
+      socket.off('updateSessionName', updateSessionName);
+    };
+  }, [updateSessionName]);
+  
   
   const updateSessionMessages = useCallback((messageContent, contentType = 'simple', isUserMessage = true) => {
     setSessions(prevSessions => {
@@ -166,6 +180,7 @@ function Chat() {
 
   const handleQuerySubmit = async (query) => {
     setIsLoading(true);
+    const isFirstQuery = sessions[currentSessionIndex]?.messages?.length === 0;
     updateSessionMessages(query, 'simple', true); // true for user message
   
     // Emit the query to the server
@@ -174,6 +189,7 @@ function Chat() {
       message: {
         role: 'user',
         content: query,
+        isFirstQuery 
       }
     });
   };  

@@ -50,9 +50,6 @@ const getBookCover = async (title) => {
   }
 };
 
-
-
-
 const openai = new OpenAI(process.env.OPENAI_API_KEY);
 
 const openaiApi = async (messages, socket, session) => {
@@ -95,7 +92,7 @@ const openaiApi = async (messages, socket, session) => {
 
           // If the cover image URL is not the default, concatenate div tag with the image tag
           if (coverImageUrl !== 'default-cover.jpg') {
-            const imageDiv = `<div><img src="${coverImageUrl}" alt="Book cover for ${bookTitle}"></div>`;
+            const imageDiv = `<div><img src="${coverImageUrl}" alt=""></div>`;
             pausedEmit = pausedEmit.replace(bookTitleMatch[0], bookTitleMatch[0] + imageDiv);
           }
 
@@ -133,5 +130,25 @@ const openaiApi = async (messages, socket, session) => {
   }
 };
 
+openaiApi.getSummary = async (text) => {
+  try {
+    const prompt = `Summarize the following text in 4 words:\n\n"${text}"\n\nSummary:`;
+
+    const response = await openai.chat.completions.create({
+      model: "gpt-4-1106-preview",
+      messages: [{ role: 'system', content: prompt }],
+      max_tokens: 10, // Adjust as needed to ensure brevity
+    });
+
+    let summary = response.choices[0]?.message?.content.trim() || "New Chat";
+    // Remove any full stops from the summary
+    summary = summary.replace(/\./g, '');
+    
+    return summary;
+  } catch (error) {
+    console.error('Error getting summary:', error);
+    return "Brief Summary";
+  }
+};
 
 module.exports = openaiApi;

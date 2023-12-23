@@ -77,6 +77,7 @@ app.get('/api/user-info', (req, res) => {
 });
 
 
+
 app.get('/auth/logout', (req, res, next) => {
   const accessToken = req.user.accessToken; // Retrieve the stored access token
   req.logout(function(err) {
@@ -120,6 +121,16 @@ io.on('connection', (socket) => {
     const session = await Session.findById(sessionId);
     if (!session) {
       return res.status(404).json({ message: 'Session not found' });
+    }
+
+    if (message.isFirstQuery) {
+      // Get the 4-word summary
+      const summary = await openaiApi.getSummary(message.content);
+      session.sessionName = summary; // Update the session name with the summary
+      await session.save(); // Don't forget to save the updated session
+
+      // Emit an event to update the session name in the frontend
+      socket.emit('updateSessionName', { sessionId: session._id, sessionName: summary });
     }
   
     // Generate the complete prompt using the bookRecommendationPrompt function
@@ -165,11 +176,9 @@ io.on('connection', (socket) => {
 
 // POST endpoint for creating a new session
 app.post('/api/session', async (req, res) => {
-  console.log('POST /api/session - Creating a new session');
   try {
     const newSession = new Session({ messages: [] });
     await newSession.save();
-    console.log('POST /api/session - New session saved:', newSession);
 
     res.json(newSession);
   } catch (error) {
@@ -180,7 +189,6 @@ app.post('/api/session', async (req, res) => {
 
 // GET endpoint for retrieving all sessions with their messages
 app.get('/api/sessions', async (req, res) => {
-  // console.log('GET /api/sessions - Retrieving all sessions');
   try {
     const sessions = await Session.find();
     // console.log('GET /api/sessions - Retrieved sessions:', sessions);
@@ -195,7 +203,6 @@ app.get('/api/sessions', async (req, res) => {
 // DELETE endpoint for deleting a session
 app.delete('/api/session/:sessionId', async (req, res) => {
   const { sessionId } = req.params;
-  console.log(`DELETE /api/session/:sessionId - Deleting session with ID: ${sessionId}`);
   try { 
     const session = await Session.findByIdAndDelete(sessionId);
     if (!session) {

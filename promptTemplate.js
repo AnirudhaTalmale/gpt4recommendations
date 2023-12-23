@@ -33,7 +33,7 @@ const bookRecommendationPrompt = (userQuery) => {
 
   <b>Similar Books</b>
   <ol>
-    <li><b>List 4 books that are similar in genre, theme, or style. Make sure to enclose "book title by author name" within asterisk.</b> <p>Explain the reason of similarity for each of them.</p></li>
+    <li><b>List 4 similar books that are aligned with the user query. Make sure to enclose "book title by author name" within asterisk.</b> <p>Explain the reason of similarity for each of them.</p></li>
   </ol>
 
   <a href="https://www.amazon.in/s?k=BookTitleByAuthorName" target="_blank"><button>Buy now on Amazon</button></a>
