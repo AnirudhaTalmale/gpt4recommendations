@@ -152,18 +152,16 @@
   border: 1px solid blue; */
 }
 
-.logout-button {
-  font-family: Söhne, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, sans-serif, Helvetica Neue, Arial, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
-  font-size: 0.9rem;
-  color: #d9d9e3;
-  background-color: blue;
-  padding: 10px;
-  cursor: pointer;
-  width: 100%; /* Width of the button */
-  height: 2rem; /* Height of the button */
-  display: flex; /* Enables flexbox */
-  justify-content: center; /* Centers content horizontally */
-  align-items: center; /* Centers content vertically */
+
+
+.history-pane-image {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  margin-left: 0.8rem;
+  margin-right: 0.8rem;
+  margin-bottom: 0.6rem;
+  user-select: none;
 }
 
 .bottom-container {
@@ -174,7 +172,6 @@
   /* margin-bottom: 1rem; */
 }
 
-
 .login-container {
   display: flex;
   justify-content: center;
@@ -182,14 +179,69 @@
   height: 100vh; /* Use full viewport height */
 }
 
+.user-info-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  margin-bottom: 0.7rem;
+  position: relative;
+  /* background-color: orange; */
+  height: 3rem;
+  width: 92%;
+  position: absolute;
+  bottom: 0rem;
+}
+
+.dropdown-menu li {
+  list-style-type: none;
+  width: 96%;
+  margin-left: -2.35rem;
+  padding: 0.6rem;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  background-color: orange;
+  height: 2rem;
+  border-radius: 0.5rem;
+  background-color: hsla(0,0%,100%,.1);
+  padding-left: 1rem;
+  cursor: pointer;
+}
+
+.dropdown-menu {
+  position: absolute;
+  bottom: 100%; /* Align the top of the dropdown with the bottom of the user-entry */
+  left: 0; /* Align to the left of the user-entry */
+  width: 92%;
+  margin-bottom: 1.1rem;
+  height: 3rem;
+}
+
+.fa-arrow-right-from-bracket {
+  margin-right: 0.9rem;
+}
+
+.user-entry {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 0.9rem;
+  font-family: SÃ¶hne,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif,Helvetica Neue,Arial,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji;
+  &:hover, &.active { /* Apply the same style for hover and active state */
+      background-color: hsla(0,0%,100%,.1);
+      border-radius: 0.5rem;
+  }
+  user-select: none;
+}
+
+
 .login-button {
   padding: 10px 20px;
   font-size: 16px;
   cursor: pointer;
   /* Add more styling as needed */
 }
-
-
 
 .delete-session-button {
   margin-left: auto; /* Push the button to the right */

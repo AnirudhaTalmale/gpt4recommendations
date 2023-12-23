@@ -169,6 +169,8 @@ function Chat() {
         onNewSession={handleNewSession}
         onSelectSession={setCurrentSessionIndex}
         onDeleteSession={handleDeleteSession}
+        userName={userData?.name}
+        userImage={userData?.image}
       />
       <div className="chat-area">
       {sessions[currentSessionIndex]?.messages.map((msg, index) => {

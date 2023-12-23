@@ -2,8 +2,15 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import '../App.css';
 
-function HistoryPane({ sessions, onNewSession, onSelectSession, onDeleteSession }) {
+function HistoryPane({ sessions, onNewSession, onSelectSession, onDeleteSession, userName, userImage }) {
   const [isPaneOpen, setIsPaneOpen] = useState(true);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isEntryActive, setIsEntryActive] = useState(false);
+
+  const toggleDropdown = () => {
+      setIsDropdownOpen(!isDropdownOpen);
+      setIsEntryActive(!isDropdownOpen); // Toggle the active state along with the dropdown
+  };
 
   // Custom function to handle new session creation
   const handleNewSession = () => {
@@ -62,11 +69,20 @@ function HistoryPane({ sessions, onNewSession, onSelectSession, onDeleteSession 
             </div>
         ))}
 
-        <div className="bottom-container">
-          <button onClick={handleLogout} className="logout-button">
-            <i class="fa-solid fa-arrow-right-from-bracket"></i> Log out
-          </button>
+        <div className="user-info-container">
+          <div className={`user-entry ${isEntryActive ? 'active' : ''}`} onClick={toggleDropdown}>
+            <img src={userImage} alt="User" className="history-pane-image" />
+            <span>{userName}</span>
+          </div>
+          {isDropdownOpen && (
+            <ul className="dropdown-menu">
+              <li onClick={handleLogout} className="logout-list-item">
+                <i class="fa-solid fa-arrow-right-from-bracket"></i> Log out
+              </li>
+            </ul>
+          )}
         </div>
+
 
       </div>
     </div>
