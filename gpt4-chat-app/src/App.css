@@ -1,6 +1,7 @@
 .App {
   display: flex;
   flex-direction: column; /* Keep the main direction as column for stacking */
+  height: 100vh;
 }
 
 .chat-area {
@@ -10,6 +11,8 @@
   margin-left: 260px;
   padding-bottom: 60px; /* Added padding at the bottom */
   /* background-color: red; */
+  overflow-y: auto; 
+  flex-grow: 1;
 }
 
 .input-area {

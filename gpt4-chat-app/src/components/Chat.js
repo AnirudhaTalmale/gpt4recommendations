@@ -1,10 +1,9 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import axios from 'axios';
 import InputBox from './InputBox';
 import AnswerDisplay from './AnswerDisplay';
 import HistoryPane from './HistoryPane';
 import '../App.css';
-// import { sendQuery } from '../services/apiService';
 import socket from './socket';
 
 function Chat() {
@@ -12,6 +11,43 @@ function Chat() {
   const [currentSessionIndex, setCurrentSessionIndex] = useState(-1);
   const [isLoading, setIsLoading] = useState(false);
   const [userData, setUserData] = useState(null);
+
+  const chatAreaRef = useRef(null);
+  const [shouldAutoScroll, setShouldAutoScroll] = useState(false);
+
+  const isUserAtBottom = () => {
+    if (!chatAreaRef.current) return false;
+    const { scrollTop, scrollHeight, clientHeight } = chatAreaRef.current;
+    // Considered at bottom if within 100px of the bottom
+    return scrollTop + clientHeight >= scrollHeight - 5;
+  };
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setShouldAutoScroll(isUserAtBottom());
+    };
+
+    const chatArea = chatAreaRef.current;
+    chatArea.addEventListener('scroll', handleScroll);
+
+    return () => {
+      chatArea.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+
+  useEffect(() => {
+    const messages = sessions[currentSessionIndex]?.messages;
+  
+    // Ensure there are messages before accessing the last message
+    if (messages && messages.length > 0) {
+      const lastMessage = messages[messages.length - 1];
+  
+      if (shouldAutoScroll && lastMessage && lastMessage.contentType === 'streamed') {
+        chatAreaRef.current.scrollTop = chatAreaRef.current.scrollHeight;
+      }
+    }
+  }, [sessions[currentSessionIndex]?.messages, shouldAutoScroll]);
+  
 
 
   const loadSessions = useCallback(async () => {
@@ -172,19 +208,19 @@ function Chat() {
         userName={userData?.name}
         userImage={userData?.image}
       />
-      <div className="chat-area">
-      {sessions[currentSessionIndex]?.messages.map((msg, index) => {
-        const messageKey = msg._id ? msg._id.$oid : `temp-${index}`;
-        return (
-          <AnswerDisplay
-            key={messageKey}
-            role={msg.role}
-            content={msg.content}
-            contentType={msg.contentType}
-            userImage={userData?.image}// Passing the user data as a prop
-          />
-        );
-      })}
+      <div className="chat-area" ref={chatAreaRef}>
+        {sessions[currentSessionIndex]?.messages.map((msg, index) => {
+          const messageKey = msg._id ? msg._id.$oid : `temp-${index}`;
+          return (
+            <AnswerDisplay
+              key={messageKey}
+              role={msg.role}
+              content={msg.content}
+              contentType={msg.contentType}
+              userImage={userData?.image}// Passing the user data as a prop
+            />
+          );
+        })}
       </div>
       <InputBox onSubmit={handleQuerySubmit} isLoading={isLoading} />
     </div>
