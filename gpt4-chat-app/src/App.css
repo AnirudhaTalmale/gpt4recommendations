@@ -13,6 +13,7 @@
   /* background-color: red; */
   overflow-y: auto; 
   flex-grow: 1;
+  padding-right: 3rem;
 }
 
 .input-area {

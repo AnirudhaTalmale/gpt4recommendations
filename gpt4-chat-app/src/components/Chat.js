@@ -14,6 +14,7 @@ function Chat() {
 
   const chatAreaRef = useRef(null);
   const [shouldAutoScroll, setShouldAutoScroll] = useState(false);
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
 
   const isUserAtBottom = () => {
     if (!chatAreaRef.current) return false;
@@ -22,6 +23,21 @@ function Chat() {
     return scrollTop + clientHeight >= scrollHeight - 5;
   };
 
+  const scrollToBottom = () => {
+    setTimeout(() => {
+      if (chatAreaRef.current) {
+        chatAreaRef.current.scrollTop = chatAreaRef.current.scrollHeight;
+      }
+    }, 0.001); // Adjust the timeout duration if needed
+  };
+  
+  useEffect(() => {
+    if (isInitialLoad || currentSessionIndex !== -1) {
+      scrollToBottom();
+    }
+  }, [currentSessionIndex, isInitialLoad]);
+  
+  
   useEffect(() => {
     const handleScroll = () => {
       setShouldAutoScroll(isUserAtBottom());
@@ -48,13 +64,14 @@ function Chat() {
     }
   }, [sessions[currentSessionIndex]?.messages, shouldAutoScroll]);
   
+  
 
 
   const loadSessions = useCallback(async () => {
     try {
       const res = await axios.get('http://localhost:3000/api/sessions');
       setSessions(res.data);
-      
+      setIsInitialLoad(false); 
       // setCurrentSessionIndex(res.data.length - 1);
     } catch (error) {
       console.error('Error loading sessions:', error);
