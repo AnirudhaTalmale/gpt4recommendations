@@ -76,7 +76,15 @@ app.get('/api/user-info', (req, res) => {
   }
 });
 
-
+app.post('/api/stop-stream', (req, res) => {
+  try {
+    openaiApi.stopStream();
+    res.json({ message: 'Stream stopped successfully' });
+  } catch (error) {
+    console.error('Error stopping the stream:', error);
+    res.status(500).json({ message: 'Error stopping the stream', error: error.toString() });
+  }
+});
 
 app.get('/auth/logout', (req, res, next) => {
   const accessToken = req.user.accessToken; // Retrieve the stored access token

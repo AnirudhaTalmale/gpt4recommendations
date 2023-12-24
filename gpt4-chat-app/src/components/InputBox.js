@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import '../App.css';
 
-function InputBox({ onSubmit }) {
+function InputBox({ onSubmit, isStreaming, onStopStreaming }) {
   const [input, setInput] = useState('');
   const [isInputNotEmpty, setIsInputNotEmpty] = useState(false);
   const [rows, setRows] = useState(1);
@@ -69,9 +69,15 @@ function InputBox({ onSubmit }) {
             rows={rows}
           />
         </div>
-        <button type="submit" className={`send-button ${isInputNotEmpty ? 'active' : ''}`}>
-          <i className="fa-solid fa-arrow-up"></i>
-        </button>
+        {isStreaming ? (
+          <button type="button" className="stop-button" onClick={onStopStreaming}>
+            <i class="fa-regular fa-circle-stop"></i>
+          </button>
+        ) : (
+          <button type="submit" className={`send-button ${isInputNotEmpty ? 'active' : ''}`}>
+            <i className="fa-solid fa-arrow-up"></i>
+          </button>
+        )}
       </div>
     </form>
   );

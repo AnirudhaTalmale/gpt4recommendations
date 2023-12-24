@@ -6,11 +6,14 @@ import HistoryPane from './HistoryPane';
 import '../App.css';
 import socket from './socket';
 
+
 function Chat() {
   const [sessions, setSessions] = useState([]);
   const [currentSessionIndex, setCurrentSessionIndex] = useState(-1);
   const [isLoading, setIsLoading] = useState(false);
   const [userData, setUserData] = useState(null);
+  const [isStreaming, setIsStreaming] = useState(false);
+
 
   const chatAreaRef = useRef(null);
   const [shouldAutoScroll, setShouldAutoScroll] = useState(false);
@@ -65,8 +68,6 @@ function Chat() {
   }, [sessions[currentSessionIndex]?.messages, shouldAutoScroll]);
   
   
-
-
   const loadSessions = useCallback(async () => {
     try {
       const res = await axios.get('http://localhost:3000/api/sessions');
@@ -183,17 +184,42 @@ function Chat() {
     });
   }, [currentSessionIndex]); // Add dependencies if there are any
 
+  const handleStopStreaming = useCallback(async () => {
+    try {
+      const response = await axios.post('http://localhost:3000/api/stop-stream');
+      console.log(response.data.message); // Log the response message
+      setIsStreaming(false);
+    } catch (error) {
+      console.error('Error stopping the stream:', error);
+    }
+  }, []);
+
   useEffect(() => {
     loadSessions();
-
-    socket.on('chunk', (chunk) => {
+  
+    let streamTimeout;
+  
+    const handleStreamChunk = (chunk) => {
       updateSessionMessages(chunk, 'streamed', false);
-    });
-
-    return () => {
-      socket.off('chunk');
+      setIsStreaming(true); // Set streaming to true on receiving a chunk
+  
+      // Clear any existing timeout
+      clearTimeout(streamTimeout);
+  
+      // Set a new timeout to invoke handleStopStreaming after a period of inactivity
+      streamTimeout = setTimeout(() => {
+        handleStopStreaming();
+      }, 2000); // 5 seconds
     };
-  }, [loadSessions, updateSessionMessages]); // Include the functions in the dependency array
+  
+    socket.on('chunk', handleStreamChunk);
+  
+    return () => {
+      socket.off('chunk', handleStreamChunk);
+      clearTimeout(streamTimeout); // Clear the timeout when the component is unmounted
+    };
+  }, [loadSessions, updateSessionMessages, handleStopStreaming]); // Depend on the memoized version of handleStopStreaming
+  
 
   const handleQuerySubmit = async (query) => {
     setIsLoading(true);
@@ -255,7 +281,7 @@ function Chat() {
           );
         })}
       </div>
-      <InputBox onSubmit={handleQuerySubmit} isLoading={isLoading} />
+      <InputBox onSubmit={handleQuerySubmit} isLoading={isLoading} isStreaming={isStreaming} onStopStreaming={handleStopStreaming} />
     </div>
   );
 }

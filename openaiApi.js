@@ -52,7 +52,11 @@ const getBookCover = async (title) => {
 
 const openai = new OpenAI(process.env.OPENAI_API_KEY);
 
+let isStreamingActive = false;
+
 const openaiApi = async (messages, socket, session) => {
+
+  isStreamingActive = true;
 
   const filteredMessages = messages.map(({ role, content }) => ({ role, content }));
   try {
@@ -75,6 +79,7 @@ const openaiApi = async (messages, socket, session) => {
     let isPaused = false; // Flag to check if emitting is paused
 
     for await (const chunk of stream) {
+      if (!isStreamingActive) break; 
       let chunkContent = chunk.choices[0]?.delta?.content || "";
       // console.log(chunkContent);
 
@@ -149,6 +154,10 @@ openaiApi.getSummary = async (text) => {
     console.error('Error getting summary:', error);
     return "Brief Summary";
   }
+};
+
+openaiApi.stopStream = () => {
+  isStreamingActive = false; // Set the flag to false to stop the stream
 };
 
 module.exports = openaiApi;
