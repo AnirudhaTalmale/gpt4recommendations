@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon index.js"
   },
   "author": "",
   "license": "ISC",
@@ -23,7 +24,7 @@
     "mongoose": "^8.0.1",
     "node-fetch": "^2.7.0",
     "openai": "^4.24.1",
-    "passport": "^0.7.0",
+    "passport": "^0.7.0", 
     "passport-google-oauth20": "^2.0.0",
     "react-bootstrap": "^2.9.2",
     "react-router-dom": "^6.21.1",
