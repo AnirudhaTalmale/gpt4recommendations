@@ -25,6 +25,7 @@ const getBookCover = async (title) => {
     const existingBook = await Book.findOne({ title: bookTitle });
     if (existingBook) {
       console.log("retrieved image from database");
+      existingBook.coverImageUrl = existingBook.coverImageUrl.replace("&edge=curl", "");
       return existingBook.coverImageUrl; // Return the cover image URL from the database
     }
 
@@ -37,6 +38,10 @@ const getBookCover = async (title) => {
     // Update the API call to include the query
     const response = await axios.get(`https://www.googleapis.com/books/v1/volumes?q=${query}&key=${process.env.GOOGLE_BOOKS_API_KEY}`);
     const coverImageUrl = response.data.items[0]?.volumeInfo?.imageLinks?.thumbnail;
+
+    if (coverImageUrl) {
+      coverImageUrl = coverImageUrl.replace("&edge=curl", "");
+    }
 
     // Save the new book cover in the database
     const newBook = new Book({ title: bookTitle, coverImageUrl });
