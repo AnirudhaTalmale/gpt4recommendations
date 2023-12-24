@@ -18,10 +18,10 @@
 .input-area {
   position: fixed;
   bottom: 0rem;
-  left: 260px; /* It should start after the history pane, make sure it's the same as .chat-area margin-left */
+  left: 260px;
   right: 0;
   display: flex;
-  align-items: center; /* Vertically center the contents */
+  align-items: center;
   background: white;
 }
 
@@ -31,37 +31,38 @@
   margin: 0rem 1rem 1rem 1rem;
   border-radius: 1rem;
   border: 1.5px solid #D3D3D3;
-  overflow: hidden; /* This will contain the button inside the input box */
-  /* background-color: black; */
-  height: 3rem;
+  overflow: hidden;
+  position: relative; /* Add this to position the button absolutely inside this container */
 }
 
-.input-box-container:focus-within {
-  border-color: #A9A9A9; /* Darker border color when input box is focused */
+.textarea-wrapper {
+  width: 100%;
+  max-height: 12rem; /* Set the maximum height for the textarea */
+  overflow-y: auto; /* Allows scrolling for overflow text */
 }
 
 .input-box {
-  flex-grow: 1;
+  width: 100%;
   border: none;
-  padding: 0.5rem 0.5rem 0.5rem 0.5rem; /* Adjusted padding */
-  /* background-color: black; */
-  outline: none; 
-  font-family: SÃ¶hne,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif,Helvetica Neue,Arial,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji;
+  padding: 0.5rem 0.5rem 0.5rem 1rem;
+  outline: none;
+  font-family: Söhne, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, sans-serif, Helvetica Neue, Arial, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
   font-size: 1rem;
-  padding-left: 1rem;
+  resize: none;
+  line-height: 1.5rem;
 }
 
 .send-button {
+  position: absolute;
+  right: 0.6rem;
+  bottom: 0.35rem; /* Adjust as needed */
   background-color: #ddd;
   border: 1px solid #D3D3D3;
   font-size: 1rem;
   border-radius: 0.4rem;
   width: 1.85rem;
-  margin-right: 0.55rem;
-  margin-top: 0.54rem;
   height: 1.85rem;
   color: white;
-  /* background-color: black; */
 }
 
 .send-button.active {
@@ -283,6 +284,11 @@
   text-align: justify;
   margin-left: 1rem;
 }
+
+.message-question {
+  white-space: pre-wrap; /* This will preserve line breaks and spaces as in the input */
+}
+
 
 .message-icon {
   margin-right: 0.8rem; /* Adjust as needed */
