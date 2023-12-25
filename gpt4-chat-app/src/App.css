@@ -82,12 +82,19 @@
   background-color: black;
 }
 
-/* Style for the fixed button to toggle the history pane */
-.pane-toggle-button {
-  position: fixed; /* Fix the position so it doesn't move with the pane */
-  left: 0; /* Place it at the left edge of the screen */
-  top: 10px; /* Adjust this value based on your header or desired position */
-  z-index: 2; /* Make sure it's above other content */
+/* History pane css */
+
+/* Style for the close pane button inside the history pane */
+.close-pane-button {
+  cursor: pointer; 
+  color: #d9d9d9; /* Adjust color for visibility */
+  background: none;
+  border: none;
+  font-size: 0.9rem;
+}
+
+.close-pane-button-closed {
+  color: black; /* Change the color to black */
 }
 
 /* Styles for the history pane */
@@ -97,12 +104,11 @@
   color: #fff;
   width: 244px; /* Adjust width as needed */
   padding: 0.5rem;
-  overflow-y: auto;
   position: fixed; /* Make it stay on the left */
   left: 0;
   top: 0;
   bottom: 0;
-  z-index: 1; /* Ensure pane is below the toggle button */
+  z-index: 2; /* Ensure pane is below the toggle button */
   display: flex;
   flex-direction: column;
 }
@@ -112,44 +118,28 @@
   transform: translateX(-100%); /* Slide the pane out of view */
 }
 
-/* Styles for the container of the buttons inside the history pane */
-.top-button-container {
-  display: flex; /* Establish a flex container */
-  justify-content: space-between; /* Space between the buttons */
-  padding: 0 0.5rem; /* Add padding on the sides */
-  margin-top: 0.6rem;
-  margin-bottom: 1.9rem;
+/* Styles for the new header container */
+.header-container {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem;
+  align-items: center; /* Align buttons vertically */
 }
 
-/* Style for the close pane button inside the history pane */
-.close-pane-button {
-  cursor: pointer; 
-  color: #d9d9d9; /* Adjust color for visibility */
-  background: none;
-  border: none;
-  font-size: 0.9rem;
-  margin-top: 0.7rem;
-  margin-bottom: 1.7rem;
-  margin-left: 1.03rem;
-}
-
-.close-pane-button-closed {
-  color: black; /* Change the color to black */
+/* Styles for the main content area */
+.history-content {
+  overflow-y: auto;
+  flex-grow: 1; /* Take available space */
+  margin-bottom: 3.7rem;
 }
 
 .new-session-button {
-  margin-left: auto; /* Push the button to the right */
-  margin-top: 0.64rem;
-  margin-bottom: 1.7rem;
-  margin-right: 0.5rem;
   color: #d9d9e3;
   border: none;
   cursor: pointer;
-  z-index: 2;
   background: none;
   font-size: 1rem;
 }
-
 
 .history-entry {
   /* Add styles for individual history entries here */
@@ -165,35 +155,18 @@
   align-items: center; /* Align items vertically */
   font-size: 0.9rem;
   color: #d9d9e3;
+  z-index: 1;
   /* background-color: yellow;
   border: 1px solid blue; */
 }
 
-
-
-.history-pane-image {
-  width: 2rem;
-  height: 2rem;
-  border-radius: 50%;
-  margin-left: 0.8rem;
-  margin-right: 0.8rem;
-  margin-bottom: 0.6rem;
-  user-select: none;
-}
-
-.bottom-container {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end; /* Aligns child to the end */
-  height: 100%; /* Ensures it takes full height */
-  /* margin-bottom: 1rem; */
-}
-
-.login-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh; /* Use full viewport height */
+.delete-session-button {
+  margin-left: auto; /* Push the button to the right */
+  cursor: pointer; 
+  color: #d9d9e3;
+  background: none;
+  border: none;
+  font-size: 0.9rem;
 }
 
 .user-info-container {
@@ -204,38 +177,10 @@
   position: relative;
   /* background-color: orange; */
   height: 3rem;
-  width: 92%;
+  width: 100%;
   position: absolute;
-  bottom: 0rem;
-}
-
-.dropdown-menu li {
-  list-style-type: none;
-  width: 96%;
-  margin-left: -2.35rem;
-  padding: 0.6rem;
-  user-select: none;
-  display: flex;
-  align-items: center;
-  background-color: orange;
-  height: 2rem;
-  border-radius: 0.5rem;
-  background-color: hsla(0,0%,100%,.1);
-  padding-left: 1rem;
-  cursor: pointer;
-}
-
-.dropdown-menu {
-  position: absolute;
-  bottom: 100%; /* Align the top of the dropdown with the bottom of the user-entry */
-  left: 0; /* Align to the left of the user-entry */
-  width: 92%;
-  margin-bottom: 1.1rem;
-  height: 3rem;
-}
-
-.fa-arrow-right-from-bracket {
-  margin-right: 0.9rem;
+  bottom: 0;
+  left: 0;
 }
 
 .user-entry {
@@ -250,6 +195,56 @@
       border-radius: 0.5rem;
   }
   user-select: none;
+  
+}
+
+.history-pane-image {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  margin-left: 0.8rem;
+  margin-right: 0.8rem;
+  margin-bottom: 0.6rem;
+  user-select: none;
+}
+
+.dropdown-menu {
+  position: absolute;
+  bottom: 100%; /* Align the top of the dropdown with the bottom of the user-entry */
+  left: 0; /* Align to the left of the user-entry */
+  width: 92%;
+  margin-bottom: 0.8rem;
+  height: 3rem;
+  z-index: 3;
+}
+
+.dropdown-menu li {
+  list-style-type: none;
+  width: 96%;
+  margin-left: -2.35rem;
+  padding: 0.6rem;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  height: 2rem;
+  border-radius: 0.5rem;
+  background-color: hsla(0, 0%, 19%, 1);
+  padding-left: 1rem;
+  cursor: pointer;
+  z-index: 10;
+}
+
+.fa-arrow-right-from-bracket {
+  margin-right: 0.9rem;
+}
+
+/* login page components */
+
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh; /* Use full viewport height */
 }
 
 .login-button {
@@ -283,16 +278,6 @@
   height: 2rem;
   width: 2rem;
   margin: auto;
-}
-
-
-.delete-session-button {
-  margin-left: auto; /* Push the button to the right */
-  cursor: pointer; 
-  color: #d9d9e3;
-  background: none;
-  border: none;
-  font-size: 0.9rem;
 }
 
 

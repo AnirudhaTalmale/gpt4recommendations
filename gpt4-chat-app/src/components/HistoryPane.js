@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
 import '../App.css';
 
@@ -6,6 +6,32 @@ function HistoryPane({ sessions, onNewSession, onSelectSession, onDeleteSession,
   const [isPaneOpen, setIsPaneOpen] = useState(true);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isEntryActive, setIsEntryActive] = useState(false);
+
+  const dropdownRef = useRef(null);
+  const userEntryRef = useRef(null);
+
+  useEffect(() => {
+    // Function to check if the click is outside the dropdown
+    function handleClickOutside(event) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target) &&
+          userEntryRef.current && !userEntryRef.current.contains(event.target)) {
+        setIsDropdownOpen(false);
+      }
+    }
+
+    // Add or remove event listener based on dropdown state
+    if (isDropdownOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    } else {
+      document.removeEventListener('mousedown', handleClickOutside);
+    }
+
+    // Cleanup the event listener
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isDropdownOpen]);
+
 
   const toggleDropdown = () => {
       setIsDropdownOpen(!isDropdownOpen);
@@ -22,17 +48,16 @@ function HistoryPane({ sessions, onNewSession, onSelectSession, onDeleteSession,
   };
 
   const handleLogout = async () => {
-  try {
-    const response = await axios.get('http://localhost:3000/auth/logout', { withCredentials: true });
-    if (response.data.message === 'Logged out successfully') {
-      // Redirect to the home page or login page
-      window.location.href = 'http://localhost:3001';
+    try {
+      const response = await axios.get('http://localhost:3000/auth/logout', { withCredentials: true });
+      if (response.data.message === 'Logged out successfully') {
+        // Redirect to the home page or login page
+        window.location.href = 'http://localhost:3001';
+      }
+    } catch (error) {
+      console.error('Error during logout:', error);
     }
-  } catch (error) {
-    console.error('Error during logout:', error);
-  }
-};
-
+  };
 
   const isSessionEmpty = (session) => {
     return session.messages.length === 0;
@@ -46,19 +71,18 @@ function HistoryPane({ sessions, onNewSession, onSelectSession, onDeleteSession,
 
   return (
     <div>
-      <div className="pane-toggle-button">
-        <button onClick={handleClosePane} className={`close-pane-button ${!isPaneOpen ? 'close-pane-button-closed' : ''}`}>
-          <i className="fa-solid fa-bars"></i>
-        </button>
-      </div>
-
       <div className={`history-pane ${isPaneOpen ? '' : 'closed'}`}>
-        {/* <div className="top-button-container"> */}
+        <div className="header-container">
+          <button onClick={handleClosePane} className={`close-pane-button ${!isPaneOpen ? 'close-pane-button-closed' : ''}`}>
+            <i className="fa-solid fa-bars"></i>
+          </button>
           <button onClick={handleNewSession} className="new-session-button">
             <i className="fa-regular fa-pen-to-square"></i>
           </button>
-        {/* </div> */}
-        {[...sessions].reverse().map((session, index) => (
+        </div>
+
+        <div className="history-content">  
+          {[...sessions].reverse().map((session, index) => (
             <div key={session._id} className="history-entry" onClick={() => onSelectSession(sessions.length - index - 1)}>
                 <div>
                     {session.sessionName} {/* Display the actual session name */}
@@ -67,23 +91,22 @@ function HistoryPane({ sessions, onNewSession, onSelectSession, onDeleteSession,
                     <i className="fa-solid fa-trash"></i>
                 </button>
             </div>
-        ))}
+          ))}
+        </div>
 
         <div className="user-info-container">
-          <div className={`user-entry ${isEntryActive ? 'active' : ''}`} onClick={toggleDropdown}>
+          <div className={`user-entry ${isEntryActive ? 'active' : ''}`} onClick={toggleDropdown} ref={userEntryRef}>
             <img src={userImage} alt="User" className="history-pane-image" />
             <span>{userName}</span>
           </div>
           {isDropdownOpen && (
-            <ul className="dropdown-menu">
-              <li onClick={handleLogout} className="logout-list-item">
+            <ul className="dropdown-menu" ref={dropdownRef}>
+              <li onClick={handleLogout}>
                 <i class="fa-solid fa-arrow-right-from-bracket"></i> Log out
               </li>
             </ul>
           )}
         </div>
-
-
       </div>
     </div>
   );
