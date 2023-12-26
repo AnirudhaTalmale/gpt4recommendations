@@ -37,7 +37,7 @@ const getBookCover = async (title) => {
 
     // Update the API call to include the query
     const response = await axios.get(`https://www.googleapis.com/books/v1/volumes?q=${query}&key=${process.env.GOOGLE_BOOKS_API_KEY}`);
-    const coverImageUrl = response.data.items[0]?.volumeInfo?.imageLinks?.thumbnail;
+    let coverImageUrl = response.data.items[0]?.volumeInfo?.imageLinks?.thumbnail;
 
     if (coverImageUrl) {
       coverImageUrl = coverImageUrl.replace("&edge=curl", "");

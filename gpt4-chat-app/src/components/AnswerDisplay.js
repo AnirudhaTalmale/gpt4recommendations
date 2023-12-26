@@ -1,9 +1,12 @@
 import React from 'react';
+import DOMPurify from 'dompurify';
 import '../App.css';
 
 function AnswerDisplay({ role, content, contentType, userImage }) {
   const createMarkup = (htmlString) => {
-    return { __html: htmlString };
+    // Sanitize the htmlString before setting it as innerHTML
+    const safeHTML = DOMPurify.sanitize(htmlString);
+    return { __html: safeHTML };
   };
 
   return (

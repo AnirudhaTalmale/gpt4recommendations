@@ -1,5 +1,5 @@
 import React from 'react';
-import '../App.css'; // Assuming you want to use styles from App.css
+import '../App.css'; 
 
 function LoginPage() {
   const handleLogin = () => {

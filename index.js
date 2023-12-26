@@ -1,17 +1,22 @@
 const mongoose = require('mongoose');
 const openaiApi = require('./openaiApi');
 const Session = require('./Session');
+const BlogPost = require('./BlogPost'); // Adjust the path as necessary
 const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
 const bookRecommendationPrompt = require('./promptTemplate');
 const passportSetup = require('./passport-setup'); // Import the setup function
 const axios = require('axios');
+const multer = require('multer');
 
 require('dotenv').config();
 
 const app = express();
 const server = http.createServer(app);
+
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
 
 const cors = require('cors');
 
@@ -27,7 +32,11 @@ const io = new Server(server, {
   cors: corsOptions // Use the same CORS options for Socket.io
 });
 
-app.use(express.json()); 
+// For JSON payloads
+app.use(express.json({ limit: '50mb' }));
+
+// For URL-encoded payloads
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
 const session = require('express-session');
 
@@ -222,3 +231,79 @@ app.delete('/api/session/:sessionId', async (req, res) => {
     res.status(500).json({ message: 'Error deleting the session', error: error.toString() });
   }
 });
+
+// End points for Blog posts
+
+app.post('/api/blogposts', upload.single('image'), async (req, res) => {
+  try {
+    // Extract text fields from req.body and file from req.file
+    const { title, content } = req.body;
+    let image;
+    if (req.file) {
+      // Convert file buffer to a string (e.g., Base64) or save to server and get URL
+      image = req.file.buffer.toString('base64'); // Example conversion to Base64
+    }
+
+    const newPost = new BlogPost({ title, content, image });
+    await newPost.save();
+
+    res.status(201).json(newPost);
+  } catch (error) {
+    console.error('POST /api/blogposts - Error:', error);
+    res.status(500).json({ message: 'Error creating a new blog post', error: error.toString() });
+  }
+});
+
+app.get('/api/blogposts', async (req, res) => {
+  try {
+    const blogPosts = await BlogPost.find();
+    res.json(blogPosts);
+  } catch (error) {
+    console.error('GET /api/blogposts - Error:', error);
+    res.status(500).json({ message: 'Error retrieving blog posts', error: error.toString() });
+  }
+});
+
+app.get('/api/blogposts/:postId', async (req, res) => {
+  const { postId } = req.params;
+  try {
+    const blogPost = await BlogPost.findById(postId);
+    if (!blogPost) {
+      return res.status(404).json({ message: 'Blog post not found' });
+    }
+    res.json(blogPost);
+  } catch (error) {
+    console.error('GET /api/blogposts/:postId - Error:', error);
+    res.status(500).json({ message: 'Error retrieving the blog post', error: error.toString() });
+  }
+});
+
+app.delete('/api/blogposts/:postId', async (req, res) => {
+  const { postId } = req.params;
+  try {
+    const blogPost = await BlogPost.findByIdAndDelete(postId);
+    if (!blogPost) {
+      return res.status(404).json({ message: 'Blog post not found' });
+    }
+    res.status(200).json({ message: 'Blog post deleted' });
+  } catch (error) {
+    console.error('DELETE /api/blogposts/:postId - Error:', error);
+    res.status(500).json({ message: 'Error deleting the blog post', error: error.toString() });
+  }
+});
+
+app.put('/api/blogposts/:postId', async (req, res) => {
+  const { postId } = req.params;
+  try {
+    const updatedPost = await BlogPost.findByIdAndUpdate(postId, req.body, { new: true });
+    if (!updatedPost) {
+      return res.status(404).json({ message: 'Blog post not found' });
+    }
+    res.json(updatedPost);
+  } catch (error) {
+    console.error('PUT /api/blogposts/:postId - Error:', error);
+    res.status(500).json({ message: 'Error updating the blog post', error: error.toString() });
+  }
+});
+
+
