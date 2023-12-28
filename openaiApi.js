@@ -5,15 +5,21 @@ require('dotenv').config();
 const axios = require('axios');
 const Book = require('./Book');
 
-const getBookCover = async (title) => {
-  try {
-    // Remove any occurrences of opening or closing quotes
-    const cleanedTitle = title.replace(/"/g, '');
+const parseBookTitle = (bookTitleWithAuthor) => {
+  // Remove any occurrences of opening or closing quotes
+  const cleanedTitle = bookTitleWithAuthor.replace(/"/g, '');
 
-    // Split the cleaned title into book title and author
-    const splitTitle = cleanedTitle.split(' by ');
-    const bookTitle = splitTitle[0];
-    const author = splitTitle.length > 1 ? splitTitle[1] : null;
+  // Split the cleaned title into book title and author
+  const splitTitle = cleanedTitle.split(' by ');
+  const bookTitle = splitTitle[0];
+  const author = splitTitle.length > 1 ? splitTitle[1] : null;
+
+  return { bookTitle, author };
+};
+
+const getBookCover = async (bookTitleWithAuthor) => {
+  try {
+    const { bookTitle, author } = parseBookTitle(bookTitleWithAuthor);
 
     // Log the book title and author (if available)
     console.log("book title:", bookTitle);
@@ -66,7 +72,7 @@ const openaiApi = async (messages, socket, session) => {
   const filteredMessages = messages.map(({ role, content }) => ({ role, content }));
   try {
     const stream = await openai.chat.completions.create({
-      model: "gpt-4-1106-preview",
+      model: "gpt-4",
       messages: filteredMessages,
       stream: true,
     });
@@ -95,10 +101,10 @@ const openaiApi = async (messages, socket, session) => {
 
           // Extract book title enclosed in '*'
           const bookTitleMatch = pausedEmit.match(/\*(.*?)\*/);
-          const bookTitle = bookTitleMatch ? bookTitleMatch[1] : "";
+          const bookTitleWithAuthor = bookTitleMatch ? bookTitleMatch[1] : "";
 
           // Fetch book cover image
-          const coverImageUrl = await getBookCover(bookTitle);
+          const coverImageUrl = await getBookCover(bookTitleWithAuthor);
 
           // If the cover image URL is not the default, concatenate div tag with the image tag
           if (coverImageUrl !== 'default-cover.jpg') {
@@ -106,7 +112,6 @@ const openaiApi = async (messages, socket, session) => {
             pausedEmit = pausedEmit.replace(bookTitleMatch[0], bookTitleMatch[0] + imageDiv);
           }
 
-          // Replace first and last '*' with <h3> and </h3>
           pausedEmit = pausedEmit.replace(/\*/g, "");
           
           // Emit pausedEmit and reset

@@ -33,7 +33,8 @@ const BlogPage = () => {
 
   return (
     <div className="blog-page">
-      <h1>Blog Page</h1>
+      <h1>Blog</h1>
+      <hr /> 
       <div className="blog-posts-container">
         {posts.length > 0 ? (
           posts.map(post => (

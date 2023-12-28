@@ -281,6 +281,7 @@
   height: 2rem;
   width: 2rem;
   margin: auto;
+  border: none;
 }
 
 
@@ -306,7 +307,7 @@
   max-width: 600px;
   font-family: SÃ¶hne, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, sans-serif, Helvetica Neue, Arial, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
   font-size: 1rem;
-  line-height: 1.3rem;
+  line-height: 1.5rem;
   width: 100%;
   text-align: justify;
   margin-left: 1rem;
@@ -350,14 +351,14 @@
   font-size: 1rem;
   padding: 10px 20px;
   border: none;
-  border-radius: 2rem;
+  border-radius: 0.5rem;
   cursor: pointer;
   text-align: center;
   text-decoration: none;
   display: inline-block;
   transition: background-color 0.3s ease;
-  margin-bottom: 0.3rem;
-  margin-top: 0.3rem;
+  margin-bottom: 0.9rem;
+  margin-top: 0.9rem;
 }
 
 .message button:hover {
@@ -373,13 +374,19 @@
   box-shadow: 0 0 0 2px #fff, 0 0 0 4px #FF9900; /* Optional: Add a focus ring */
 }
 
+h3 {
+  line-height: 1.7rem;
+}
+
 h3 div img {
   margin-top: 0.8rem;
+  border: 1px solid black; 
 }
 
 div img {
   margin-top: 0.6rem;
   margin-bottom: -0.4rem;
+  border: 1px solid black; 
 }
 
 /* NewBlogPost page CSS */
@@ -425,15 +432,16 @@ div img {
 /* BlogPostPage.css */
 
 .blogPostContainer {
-  max-width: 800px;
+  max-width: 35rem;
   margin: auto;
-  padding: 20px;
-  font-family: 'Arial', sans-serif;
+  padding: 5rem;
+  font-family: Söhne, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, sans-serif, Helvetica Neue, Arial, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
+  text-align: justify;
 }
 
 .blogPostContainer h1 {
   color: #333;
-  margin-bottom: 20px;
+  margin-bottom: 2rem;
 }
 
 .blogPostContainer img {
@@ -457,6 +465,7 @@ div img {
   cursor: pointer;
   border-radius: 5px;
   transition: background-color 0.3s ease;
+  margin-top: 3rem;
 }
 
 .blogPostContainer button:hover {
@@ -490,19 +499,29 @@ div img {
 /* BlogPage.css */
 
 .blog-page {
-  font-family: 'Roboto', sans-serif; /* This sets Roboto as the font for h2 */
-  font-weight: 700; /* Adjust weight as needed */
   padding: 20px;
 }
 
 .blog-page h1 {
-  text-align: center;
-  margin-bottom: 30px;
+  text-align: left; /* Changed to left align */
+  margin-bottom: 4rem; /* Reduced bottom margin */
+  font-size: 2.625rem;
+  line-height: 110%;
+  letter-spacing: -.01em;
 }
+
+/* Add a style for the horizontal line */
+.blog-page hr {
+  border: 0;
+  height: 1px;
+  background-color: black;
+  margin-bottom: 6rem;
+}
+
 
 .new-post-button {
   display: block;
-  margin: 30px auto 20px;
+  margin: 20rem auto 20px;
   padding: 10px 20px;
   background-color: #007bff;
   color: white;
@@ -519,34 +538,70 @@ div img {
 .blog-posts-container {
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
+  justify-content: space-between;
   gap: 20px;
+}
+
+.blog-posts-container {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); /* 4 columns for large screens */
+  gap: 20px;
+}
+
+/* Media query for medium screens: 2 cards per row */
+@media (max-width: 768px) {
+  .blog-posts-container {
+    grid-template-columns: repeat(2, 1fr); /* 2 columns for medium screens */
+  }
+}
+
+/* Media query for small screens: 1 card per row */
+@media (max-width: 576px) {
+  .blog-posts-container {
+    grid-template-columns: 1fr; /* 1 column for small screens */
+  }
 }
 
 .blog-post-preview {
   border: 1px solid #ccc;
-  border-radius: 8px;
   overflow: hidden;
-  max-width: 300px;
   transition: box-shadow 0.3s ease;
   display: flex;
   flex-direction: column;
-  justify-content: space-between; /* This will push the content to the top and the image to the bottom */
-  height: 100%;
+  justify-content: space-between;
+  height: 120%;
+  width: 100%;
+  font-size: 1rem;
+  line-height: 1.5rem;
+  font-family: Söhne, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, sans-serif, Helvetica Neue, Arial, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
+}
+
+/* Media query for medium screens: 2 cards per row */
+@media (max-width: 768px) {
+  .blog-post-preview {
+    flex: 1 1 calc(50% - 20px); /* Adjusting for the gap */
+  }
+}
+
+/* Media query for small screens: 1 card per row */
+@media (max-width: 576px) {
+  .blog-post-preview {
+    flex: 1 1 100%; /* Take full width */
+  }
 }
 
 .blog-post-preview h2 {
   background-color: #f8f9fa;
   margin-top: 0;
   padding: 10px;
-  font-size: 20px;
+  font-size: 1rem;
   padding-left: 15px; 
-  line-height: 1.75rem;
+  line-height: 1.65rem;
 }
 
 .blog-post-preview img {
   width: 100%;
-  height: 200px; /* Adjust this value as needed */
+  height: 100%; /* Adjust this value as needed */
   object-fit: cover;
   margin-top: auto;
 }
