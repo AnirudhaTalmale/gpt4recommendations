@@ -43,20 +43,30 @@ const getBookCover = async (bookTitleWithAuthor) => {
 
     // Update the API call to include the query
     const response = await axios.get(`https://www.googleapis.com/books/v1/volumes?q=${query}&key=${process.env.GOOGLE_BOOKS_API_KEY}`);
-    let coverImageUrl = response.data.items[0]?.volumeInfo?.imageLinks?.thumbnail;
 
-    if (coverImageUrl) {
-      coverImageUrl = coverImageUrl.replace("&edge=curl", "");
+    // Check if items exist and are not empty
+    if (response.data.items && response.data.items.length > 0) {
+      const book = response.data.items[0];
+
+      // Check if volumeInfo, imageLinks, and thumbnail exist
+      if (book.volumeInfo && book.volumeInfo.imageLinks && book.volumeInfo.imageLinks.thumbnail) {
+        let coverImageUrl = book.volumeInfo.imageLinks.thumbnail;
+        coverImageUrl = coverImageUrl.replace("&edge=curl", "");
+
+        // Save the new book cover in the database
+        const newBook = new Book({ title: bookTitle, coverImageUrl });
+        await newBook.save();
+
+        // Return the cover image URL
+        return coverImageUrl;
+      }
     }
-
-    // Save the new book cover in the database
-    const newBook = new Book({ title: bookTitle, coverImageUrl });
-    await newBook.save();
-
-    // Return the cover image URL or a default cover image
-    return coverImageUrl || 'default-cover.jpg';
+        
+    // Return default cover image if no suitable image is found
+    console.log("No cover image found for the book");
+    return 'default-cover.jpg';
   } catch (error) {
-    console.error(`Error fetching book cover for ${title}:`, error);
+    console.error(`Error fetching book cover for ${bookTitleWithAuthor}:`, error);
     return 'default-cover.jpg';
   }
 };
