@@ -209,7 +209,7 @@ function Chat() {
       // Set a new timeout to invoke handleStopStreaming after a period of inactivity
       streamTimeout = setTimeout(() => {
         handleStopStreaming();
-      }, 4000); // 4 seconds
+      }, 6000); // 6 seconds
     };
   
     socket.on('chunk', handleStreamChunk);

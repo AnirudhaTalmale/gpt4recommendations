@@ -128,11 +128,17 @@ function estimateTokenCount(text) {
   return text.trim().split(/\s+/).length;
 }
 
-// // Function to extract bold and h3 tags
-// function extractTags(content) {
-//   const h3Matches = content.match(/<h3>(.*?)<\/h3>/g) || [];
-//   return h3Matches.join(' ');
-// }
+// Function to extract text between <h3> and <div> tags, excluding the <div> tag and its contents
+function extractTags(content) {
+  // Use a regex to match text between <h3> tags and the start of <div> tags
+  const h3Matches = content.match(/<h3>(.*?)<div>/g) || [];
+  const extractedText = h3Matches.map(match => 
+    match.replace(/<h3>/g, '').replace(/<div>.*/g, '').trim()
+  );
+
+  return extractedText.join('\n'); // Joining with newline character
+}
+
 
 io.on('connection', (socket) => {
   console.log('A user connected');
@@ -156,9 +162,12 @@ io.on('connection', (socket) => {
     await session.save();
 
     const completePrompt = bookRecommendationPrompt(message.content);
-    let totalTokenCount = estimateTokenCount(completePrompt);
+    const currentMessageTokenCount = estimateTokenCount(completePrompt);
+    let pastMessageTokenCount = 0;
+    const pastMessageTokenThreshold = 120; 
+    const currentMessageTokenThreshold = 150; 
 
-    if (totalTokenCount > 200) {
+    if (currentMessageTokenCount > currentMessageTokenThreshold) {
       // Emit a warning message to the client
       socket.emit('chunk', 'Input message too large');
     
@@ -169,7 +178,8 @@ io.on('connection', (socket) => {
         content: 'Input message too large'
       });
       await session.save();
-    } else {
+    } 
+    else {
 
       if (message.isFirstQuery) {
         // Get the 4-word summary
@@ -183,24 +193,24 @@ io.on('connection', (socket) => {
     
       const messagesForGPT4 = [{ role: 'user', content: completePrompt }];
     
-      // // Iterate through past messages in reverse order and add them until the token limit is near
-      // for (let i = session.messages.length - 1; i >= 0 && totalTokenCount < 250; i--) {
-      //   const msg = session.messages[i];
-      //   let contentToInclude = msg.content;
-    
-      //   // Check if there are more than three bold tags
-      //   if ((msg.content.match(/<b>(.*?)<\/b>/g) || []).length > 3) {
-      //     contentToInclude = extractTags(msg.content);
-      //   }
+      // Iterate through past messages in reverse order and add them until the token limit for past messages is near
+      for (let i = session.messages.length - 2; i >= 0 && pastMessageTokenCount < pastMessageTokenThreshold; i--) {
+        const msg = session.messages[i];
+        let contentToInclude = msg.content;
 
-      //   const tokenCount = estimateTokenCount(contentToInclude);
-      //   if (totalTokenCount + tokenCount < 250) {
-      //     messagesForGPT4.unshift({ role: msg.role, content: contentToInclude }); // Add to the beginning of the array
-      //     totalTokenCount += tokenCount;
-      //   } else {
-      //     break; // Stop if adding the next message would exceed the limit
-      //   }
-      // }
+        // Check if the message is from the assistant and has more than three bold tags
+        if (msg.role === 'assistant' && (msg.content.match(/<b>(.*?)<\/b>/g) || []).length > 3) {
+          contentToInclude = extractTags(msg.content);
+        }
+
+        const intermediateTokenCount = estimateTokenCount(contentToInclude);
+        if (pastMessageTokenCount + intermediateTokenCount < pastMessageTokenThreshold) {
+          messagesForGPT4.unshift({ role: msg.role, content: contentToInclude }); // Add to the beginning of the array
+          pastMessageTokenCount += intermediateTokenCount;
+        } else {
+          break; // Stop if adding the next message would exceed the token threshold for past messages
+        }
+      }
 
       try {
         console.log("messagesForGPT4", messagesForGPT4);
@@ -216,7 +226,6 @@ io.on('connection', (socket) => {
     console.log('A user disconnected');
   });
 });
-
 
 // POST endpoint for creating a new session
 app.post('/api/session', async (req, res) => {
