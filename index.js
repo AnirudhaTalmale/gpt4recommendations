@@ -128,6 +128,12 @@ function estimateTokenCount(text) {
   return text.trim().split(/\s+/).length;
 }
 
+// // Function to extract bold and h3 tags
+// function extractTags(content) {
+//   const h3Matches = content.match(/<h3>(.*?)<\/h3>/g) || [];
+//   return h3Matches.join(' ');
+// }
+
 io.on('connection', (socket) => {
   console.log('A user connected');
 
@@ -140,34 +146,6 @@ io.on('connection', (socket) => {
       return res.status(404).json({ message: 'Session not found' });
     }
 
-    if (message.isFirstQuery) {
-      // Get the 4-word summary
-      const summary = await openaiApi.getSummary(message.content);
-      session.sessionName = summary; // Update the session name with the summary
-      await session.save(); // Don't forget to save the updated session
-
-      // Emit an event to update the session name in the frontend
-      socket.emit('updateSessionName', { sessionId: session._id, sessionName: summary });
-    }
-  
-    // Generate the complete prompt using the bookRecommendationPrompt function
-    const completePrompt = bookRecommendationPrompt(message.content);
-  
-    let totalTokenCount = estimateTokenCount(completePrompt);
-    const messagesForGPT4 = [{ role: 'user', content: completePrompt }];
-  
-    // Iterate through past messages in reverse order and add them until the token limit is near
-    for (let i = session.messages.length - 1; i >= 0 && totalTokenCount < 1500; i--) {
-      const msg = session.messages[i];
-      const tokenCount = estimateTokenCount(msg.content);
-      if (totalTokenCount + tokenCount < 1500) {
-        messagesForGPT4.unshift({ role: msg.role, content: msg.content }); // Add to the beginning of the array
-        totalTokenCount += tokenCount;
-      } else {
-        break; // Stop if adding the next message would exceed the limit
-      }
-    }
-  
     // Add the user message to the session and save
     session.messages.push({
       role: 'user',
@@ -176,12 +154,61 @@ io.on('connection', (socket) => {
     });
   
     await session.save();
-  
-    try {
-      await openaiApi(messagesForGPT4, socket, session);
-    } catch (error) {
-      console.error('Error processing query:', error);
-      socket.emit('error', 'Error processing your request');
+
+    const completePrompt = bookRecommendationPrompt(message.content);
+    let totalTokenCount = estimateTokenCount(completePrompt);
+
+    if (totalTokenCount > 200) {
+      // Emit a warning message to the client
+      socket.emit('chunk', 'Input message too large');
+    
+      // Add a response message to the session indicating the issue and save it
+      session.messages.push({
+        role: 'assistant',
+        contentType: 'simple',
+        content: 'Input message too large'
+      });
+      await session.save();
+    } else {
+
+      if (message.isFirstQuery) {
+        // Get the 4-word summary
+        const summary = await openaiApi.getSummary(message.content);
+        session.sessionName = summary; // Update the session name with the summary
+        await session.save(); // Don't forget to save the updated session
+
+        // Emit an event to update the session name in the frontend
+        socket.emit('updateSessionName', { sessionId: session._id, sessionName: summary });
+      }
+    
+      const messagesForGPT4 = [{ role: 'user', content: completePrompt }];
+    
+      // // Iterate through past messages in reverse order and add them until the token limit is near
+      // for (let i = session.messages.length - 1; i >= 0 && totalTokenCount < 250; i--) {
+      //   const msg = session.messages[i];
+      //   let contentToInclude = msg.content;
+    
+      //   // Check if there are more than three bold tags
+      //   if ((msg.content.match(/<b>(.*?)<\/b>/g) || []).length > 3) {
+      //     contentToInclude = extractTags(msg.content);
+      //   }
+
+      //   const tokenCount = estimateTokenCount(contentToInclude);
+      //   if (totalTokenCount + tokenCount < 250) {
+      //     messagesForGPT4.unshift({ role: msg.role, content: contentToInclude }); // Add to the beginning of the array
+      //     totalTokenCount += tokenCount;
+      //   } else {
+      //     break; // Stop if adding the next message would exceed the limit
+      //   }
+      // }
+
+      try {
+        console.log("messagesForGPT4", messagesForGPT4);
+        await openaiApi(messagesForGPT4, socket, session);
+      } catch (error) {
+        console.error('Error processing query:', error);
+        socket.emit('error', 'Error processing your request');
+      }
     }
   });  
 

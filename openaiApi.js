@@ -61,7 +61,7 @@ const getBookCover = async (bookTitleWithAuthor) => {
         return coverImageUrl;
       }
     }
-        
+
     // Return default cover image if no suitable image is found
     console.log("No cover image found for the book");
     return 'default-cover.jpg';
@@ -82,7 +82,7 @@ const openaiApi = async (messages, socket, session) => {
   const filteredMessages = messages.map(({ role, content }) => ({ role, content }));
   try {
     const stream = await openai.chat.completions.create({
-      model: "gpt-4",
+      model: "gpt-4-1106-preview",
       messages: filteredMessages,
       stream: true,
     });
