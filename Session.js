@@ -10,8 +10,10 @@ const messageSchema = new Schema({
 
 // Session Schema
 const sessionSchema = new Schema({
-  sessionName: { type: String, default: 'New Chat' }, // Set default name as "New Chat"
+  user: { type: Schema.Types.ObjectId, ref: 'User' }, // Reference to User model
+  sessionName: { type: String, default: 'New Chat' },
   messages: [messageSchema]
 });
+
 
 module.exports = mongoose.model('Session', sessionSchema);

@@ -71,10 +71,12 @@ app.get('/api/check-auth', (req, res) => {
 
 app.get('/api/user-info', (req, res) => {
   if (req.isAuthenticated()) {
-    // Assuming 'user' is the authenticated user's document from the database
+    console.log('User data being sent:', req.user); // Log the user data
+
     res.json({
       isAuthenticated: true,
       user: {
+        id: req.user._id, // Include the user's ID
         name: req.user.displayName,
         email: req.user.email,
         image: req.user.image // URL of the Google account image
@@ -84,6 +86,7 @@ app.get('/api/user-info', (req, res) => {
     res.status(401).json({ isAuthenticated: false });
   }
 });
+
 
 app.post('/api/stop-stream', (req, res) => {
   try {
@@ -116,7 +119,6 @@ app.get('/auth/logout', (req, res, next) => {
     });
   });
 });
-
 
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
@@ -230,7 +232,12 @@ io.on('connection', (socket) => {
 // POST endpoint for creating a new session
 app.post('/api/session', async (req, res) => {
   try {
-    const newSession = new Session({ messages: [] });
+    const userId = req.body.userId; // Get user ID from the request body
+    if (!userId) {
+      return res.status(400).json({ message: 'User ID is required' });
+    }
+
+    const newSession = new Session({ user: userId, messages: [] });
     await newSession.save();
 
     res.json(newSession);
@@ -240,18 +247,26 @@ app.post('/api/session', async (req, res) => {
   }
 });
 
+
 // GET endpoint for retrieving all sessions with their messages
 app.get('/api/sessions', async (req, res) => {
-  try {
-    const sessions = await Session.find();
-    // console.log('GET /api/sessions - Retrieved sessions:', sessions);
+  const userId = req.query.userId;
+  console.log('Received userId:', userId);
 
+  try {
+    const userId = req.query.userId; // Get user ID from query parameter
+    if (!userId) {
+      return res.status(400).json({ message: 'User ID is required' });
+    }
+
+    const sessions = await Session.find({ user: userId });
     res.json(sessions);
   } catch (error) {
     console.error('GET /api/sessions - Error:', error);
     res.status(500).json({ message: 'Error retrieving sessions', error: error.toString() });
   }
 });
+
 
 // DELETE endpoint for deleting a session
 app.delete('/api/session/:sessionId', async (req, res) => {

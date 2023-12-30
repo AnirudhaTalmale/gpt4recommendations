@@ -14,7 +14,6 @@ function Chat() {
   const [userData, setUserData] = useState(null);
   const [isStreaming, setIsStreaming] = useState(false);
 
-
   const chatAreaRef = useRef(null);
   const [shouldAutoScroll, setShouldAutoScroll] = useState(false);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
@@ -68,21 +67,25 @@ function Chat() {
   }, [sessions[currentSessionIndex]?.messages, shouldAutoScroll]);
   
   
-  const loadSessions = useCallback(async () => {
+  const loadSessions = useCallback(async (currentUserData) => {
+    console.log('loadSessions called with:', currentUserData);
+    // Check if currentUserData.id is used instead of currentUserData.id
+    if (!currentUserData || !currentUserData.id) { // Changed from !_id to .id
+      console.log('User data or ID not available.');
+      return;
+    }
+    
     try {
-      const res = await axios.get('http://localhost:3000/api/sessions');
+      // Adjust the params to use currentUserData.id as well
+      const res = await axios.get('http://localhost:3000/api/sessions', { params: { userId: currentUserData.id } }); // Changed from _id to .id
       setSessions(res.data);
-      setIsInitialLoad(false); 
-      // setCurrentSessionIndex(res.data.length - 1);
+      setIsInitialLoad(false);
     } catch (error) {
       console.error('Error loading sessions:', error);
     }
-  }, []); // Add dependencies if there are any
+  }, []);
 
-  useEffect(() => {
-    // Load sessions from the server
-    loadSessions();
-  }, [loadSessions]);
+  
   
   useEffect(() => {
     // Save the current session index to localStorage whenever it changes
@@ -104,12 +107,18 @@ function Chat() {
   
   const checkAuthStatus = useCallback(async () => {
     try {
-      const response = await axios.get('http://localhost:3000/api/check-auth', { withCredentials: true });
-      if (response.status === 200 && response.data.isAuthenticated) {
-        // Fetch user data
+      const authResponse = await axios.get('http://localhost:3000/api/check-auth', { withCredentials: true });
+      console.log('Auth response:', authResponse.data); // New log
+  
+      if (authResponse.status === 200 && authResponse.data.isAuthenticated) {
         const userInfoResponse = await axios.get('http://localhost:3000/api/user-info', { withCredentials: true });
+        console.log('User info response:', userInfoResponse.data); // New log
+  
         if (userInfoResponse.status === 200 && userInfoResponse.data.isAuthenticated) {
-          setUserData(userInfoResponse.data.user);
+          const currentUserData = userInfoResponse.data.user;
+          console.log('Frontend received user data:', currentUserData);
+          setUserData(currentUserData);
+          loadSessions(currentUserData);
         }
       } else {
         window.location.href = 'http://localhost:3001/auth/login';
@@ -118,9 +127,10 @@ function Chat() {
       console.error('Error checking authentication status:', error);
       window.location.href = 'http://localhost:3001/auth/login';
     }
-  }, []);
+  }, [loadSessions]);
   
 
+    
   useEffect(() => {
     checkAuthStatus();
   }, [checkAuthStatus]);
@@ -195,7 +205,6 @@ function Chat() {
   }, []);
 
   useEffect(() => {
-    loadSessions();
   
     let streamTimeout;
   
@@ -209,7 +218,7 @@ function Chat() {
       // Set a new timeout to invoke handleStopStreaming after a period of inactivity
       streamTimeout = setTimeout(() => {
         handleStopStreaming();
-      }, 6000); // 6 seconds
+      }, 7000); // 7 seconds
     };
   
     socket.on('chunk', handleStreamChunk);
@@ -218,7 +227,7 @@ function Chat() {
       socket.off('chunk', handleStreamChunk);
       clearTimeout(streamTimeout); // Clear the timeout when the component is unmounted
     };
-  }, [loadSessions, updateSessionMessages, handleStopStreaming]); // Depend on the memoized version of handleStopStreaming
+  }, [updateSessionMessages, handleStopStreaming]); // Depend on the memoized version of handleStopStreaming
   
 
   const handleQuerySubmit = async (query) => {
@@ -239,7 +248,10 @@ function Chat() {
 
   const handleNewSession = async () => {
     try {
-      const res = await axios.post('http://localhost:3000/api/session');
+      // Ensure user data is available
+      if (!userData) return;
+  
+      const res = await axios.post('http://localhost:3000/api/session', { userId: userData.id });
       setSessions(prevSessions => [...prevSessions, res.data]);
       setCurrentSessionIndex(sessions.length);
     } catch (error) {
