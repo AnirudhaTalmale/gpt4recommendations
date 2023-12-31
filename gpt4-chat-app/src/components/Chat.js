@@ -205,6 +205,20 @@ function Chat() {
   }, []);
 
   useEffect(() => {
+    // Listen for the 'streamEnd' event from the socket
+    const handleStreamEnd = () => {
+      setIsStreaming(false);
+    };
+  
+    socket.on('streamEnd', handleStreamEnd);
+  
+    return () => {
+      // Cleanup: remove the listener when the component unmounts
+      socket.off('streamEnd', handleStreamEnd);
+    };
+  }, [handleStopStreaming]);
+
+  useEffect(() => {
   
     let streamTimeout;
   

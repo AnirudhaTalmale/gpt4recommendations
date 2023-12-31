@@ -147,6 +147,11 @@ const openaiApi = async (messages, socket, session) => {
         await session.save();
         socket.emit('chunk', chunkContent);
       }
+      const finishReason = chunk.choices[0]?.finish_reason;
+      if (finishReason === 'stop') {
+        socket.emit('streamEnd', 'Stream completed'); // Emit a message indicating stream end
+        break; // Optionally break out of the loop if the stream is finished
+      }
     }
 
   } catch (error) {

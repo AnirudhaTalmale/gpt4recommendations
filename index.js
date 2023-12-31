@@ -144,9 +144,11 @@ function extractTags(content) {
 
 io.on('connection', (socket) => {
   console.log('A user connected');
+  let currentSessionId;
 
   socket.on('query', async (data) => {
     const { sessionId, message } = data;
+    currentSessionId = sessionId; 
   
     // Find the session and update it with the new message and response
     const session = await Session.findById(sessionId);
