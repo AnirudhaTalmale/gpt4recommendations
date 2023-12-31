@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import DOMPurify from 'dompurify';
 import '../App.css';
 
-function AnswerDisplay({ role, content, contentType, userImage, isStreaming }) {
+function AnswerDisplay({ role, content, contentType, userImage, isStreaming, onMoreDetailsClick }) {
   const [dynamicContent, setDynamicContent] = useState(content);
 
   useEffect(() => {
@@ -33,6 +33,12 @@ function AnswerDisplay({ role, content, contentType, userImage, isStreaming }) {
     return { __html: safeHTML };
   };
 
+  const handleMoreDetailsClick = (bookTitle, author) => {
+    if (onMoreDetailsClick) {
+      onMoreDetailsClick(`Explain this one book - ${bookTitle} by ${author}`);
+    }
+  };
+
   return (
     <div className={`message ${role}`}>
       <div className="message-icon">
@@ -58,7 +64,13 @@ function AnswerDisplay({ role, content, contentType, userImage, isStreaming }) {
           <>
             <div className="message-sender">ChatGPT</div>
             <br></br>
-            <div className="message-answer" dangerouslySetInnerHTML={createMarkup()} />
+            <div className="message-answer" dangerouslySetInnerHTML={createMarkup()} onClick={(e) => {
+              if (e.target.classList.contains('more-details-btn')) {
+                const bookTitle = e.target.getAttribute('data-book-title');
+                const author = e.target.getAttribute('data-author');
+                handleMoreDetailsClick(bookTitle, author);
+              }
+            }} />
           </>
         )}
       </div>

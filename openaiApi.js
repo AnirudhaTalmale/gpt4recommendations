@@ -135,7 +135,7 @@ const openaiApi = async (messages, socket, session, sessionId) => {
             pausedEmit = pausedEmit.replace(bookTitleMatch[0], bookTitleMatch[0] + buttonDiv1);
           } else {
             const buttonDiv1 = `<div><a href="${amazonUrl}" target="_blank"><button>Buy now</button></a></div>`;
-            const buttonDiv2 = `<div><button type="button" class="more-details-btn">More Details</button></div>`;
+            const buttonDiv2 = `<div><button type="button" class="more-details-btn" data-book-title="${bookTitle}" data-author="${author}">More Details</button></div>`;
             pausedEmit = pausedEmit.replace(bookTitleMatch[0], bookTitleMatch[0] + buttonDiv1 + buttonDiv2);
           }
           buttonCounter++;

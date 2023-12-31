@@ -307,6 +307,10 @@ function Chat() {
       window.removeEventListener('beforeunload', handleBeforeUnload);
     };
   }, [isStreaming, handleStopStreaming]);
+
+  const handleMoreDetailsRequest = (userQuery) => {
+    handleQuerySubmit(userQuery);
+  };
   
 
   return (
@@ -330,6 +334,7 @@ function Chat() {
               contentType={msg.contentType}
               userImage={userData?.image}
               isStreaming={isStreaming}
+              onMoreDetailsClick={handleMoreDetailsRequest}
             />
           );
         })}
