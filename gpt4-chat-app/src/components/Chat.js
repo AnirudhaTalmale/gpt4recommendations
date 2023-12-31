@@ -283,12 +283,19 @@ function Chat() {
     }
   };
 
+  const setCurrentSessionIndexWithStreamCheck = newIndex => {
+    if (currentSessionIndex !== newIndex && isStreaming) {
+      handleStopStreaming(); // Stop streaming if it's active and session changes
+    }
+    setCurrentSessionIndex(newIndex);
+  };
+
   return (
     <div className="App">
       <HistoryPane
         sessions={sessions}
         onNewSession={handleNewSession}
-        onSelectSession={setCurrentSessionIndex}
+        onSelectSession={setCurrentSessionIndexWithStreamCheck}
         onDeleteSession={handleDeleteSession}
         userName={userData?.name}
         userImage={userData?.image}
