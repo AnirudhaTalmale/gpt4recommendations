@@ -218,7 +218,7 @@ io.on('connection', (socket) => {
 
       try {
         console.log("messagesForGPT4", messagesForGPT4);
-        await openaiApi(messagesForGPT4, socket, session);
+        await openaiApi(messagesForGPT4, socket, session, currentSessionId);
       } catch (error) {
         console.error('Error processing query:', error);
         socket.emit('error', 'Error processing your request');

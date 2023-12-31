@@ -75,7 +75,7 @@ const openai = new OpenAI(process.env.OPENAI_API_KEY);
 
 let isStreamingActive = false;
 
-const openaiApi = async (messages, socket, session) => {
+const openaiApi = async (messages, socket, session, sessionId) => {
 
   isStreamingActive = true;
 
@@ -129,7 +129,7 @@ const openaiApi = async (messages, socket, session) => {
           // Update the current message with the new chunk.
           session.messages[messageIndex].content += pausedEmit;
           await session.save();
-          socket.emit('chunk', pausedEmit);
+          socket.emit('chunk', { content: pausedEmit, sessionId });
           pausedEmit = "";
         } else {
           // If pausing, start adding to pausedEmit including current chunk
@@ -145,11 +145,11 @@ const openaiApi = async (messages, socket, session) => {
         // Update the current message with the new chunk.
         session.messages[messageIndex].content += chunkContent;
         await session.save();
-        socket.emit('chunk', chunkContent);
+        socket.emit('chunk', { content: chunkContent, sessionId });
       }
       const finishReason = chunk.choices[0]?.finish_reason;
       if (finishReason === 'stop') {
-        socket.emit('streamEnd', 'Stream completed'); // Emit a message indicating stream end
+        socket.emit('streamEnd', { message: 'Stream completed', sessionId }); // Emit a message indicating stream end
         break; // Optionally break out of the loop if the stream is finished
       }
     }

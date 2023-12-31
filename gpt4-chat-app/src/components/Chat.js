@@ -206,8 +206,10 @@ function Chat() {
 
   useEffect(() => {
     // Listen for the 'streamEnd' event from the socket
-    const handleStreamEnd = () => {
-      setIsStreaming(false);
+    const handleStreamEnd = ({ message, sessionId }) => {
+      if (sessions[currentSessionIndex]._id === sessionId) {
+        setIsStreaming(false);
+      }
     };
   
     socket.on('streamEnd', handleStreamEnd);
@@ -222,17 +224,19 @@ function Chat() {
   
     let streamTimeout;
   
-    const handleStreamChunk = (chunk) => {
-      updateSessionMessages(chunk, 'streamed', false);
-      setIsStreaming(true); // Set streaming to true on receiving a chunk
-  
-      // Clear any existing timeout
-      clearTimeout(streamTimeout);
-  
-      // Set a new timeout to invoke handleStopStreaming after a period of inactivity
-      streamTimeout = setTimeout(() => {
-        handleStopStreaming();
-      }, 7000); // 7 seconds
+    const handleStreamChunk = ({ content, sessionId }) => {
+      if (sessions[currentSessionIndex]._id === sessionId) {
+        updateSessionMessages(content, 'streamed', false);
+        setIsStreaming(true); // Set streaming to true on receiving a chunk
+    
+        // Clear any existing timeout
+        clearTimeout(streamTimeout);
+    
+        // Set a new timeout to invoke handleStopStreaming after a period of inactivity
+        streamTimeout = setTimeout(() => {
+          handleStopStreaming();
+        }, 7000); // 7 seconds
+      }
     };
   
     socket.on('chunk', handleStreamChunk);
