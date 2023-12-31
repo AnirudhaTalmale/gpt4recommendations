@@ -16,11 +16,22 @@ function AnswerDisplay({ role, content, contentType, userImage, isStreaming, onM
     const buttons = tempDiv.querySelectorAll('.more-details-btn');
     buttons.forEach(button => {
       button.disabled = isStreaming;
-      button.style.backgroundColor = isStreaming ? 'red' : 'green';
+      // Change button color to grey when inactive (streaming) and to a specific hex color when active
+      if (isStreaming) {
+        button.style.backgroundColor = '#808080'; // Grey color in hex
+        // Add additional styles to show inactivity
+        button.style.opacity = '0.6';
+        button.style.cursor = 'not-allowed';
+      } else {
+        button.style.backgroundColor = '#00FF00'; // Green color in hex
+        button.style.opacity = '1';
+        button.style.cursor = 'pointer';
+      }
     });
 
     return tempDiv.innerHTML;
-  }, [isStreaming, dynamicContent]); // Now updateButtonStyles will only change if isStreaming or dynamicContent changes
+  }, [isStreaming, dynamicContent]);
+  
 
   useEffect(() => {
     const updatedContent = updateButtonStyles();

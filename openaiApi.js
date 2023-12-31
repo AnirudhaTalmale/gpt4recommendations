@@ -131,12 +131,12 @@ const openaiApi = async (messages, socket, session, sessionId) => {
 
           // Replace buttonDiv1 with updated Buy Now button HTML
           if (buttonCounter % 3 === 1) {
-            const buttonDiv1 = `<div><a href="${amazonUrl}" target="_blank"><button>Buy now</button></a></div>`;
-            pausedEmit = pausedEmit.replace(bookTitleMatch[0], bookTitleMatch[0] + buttonDiv1);
+            const buyNowButtonHtml = `<div><a href="${amazonUrl}" target="_blank"><button class="buy-now-button">Buy now</button></a></div>`;
+            pausedEmit = pausedEmit.replace(bookTitleMatch[0], bookTitleMatch[0] + buyNowButtonHtml);
           } else {
-            const buttonDiv1 = `<div><a href="${amazonUrl}" target="_blank"><button>Buy now</button></a></div>`;
-            const buttonDiv2 = `<div><button type="button" class="more-details-btn" data-book-title="${bookTitle}" data-author="${author}">More Details</button></div>`;
-            pausedEmit = pausedEmit.replace(bookTitleMatch[0], bookTitleMatch[0] + buttonDiv1 + buttonDiv2);
+            const buyNowButtonHtml = `<div><a href="${amazonUrl}" target="_blank"><button class="buy-now-button">Buy now</button></a></div>`;
+            const moreDetailsButtonHtml = `<div><button type="button" class="more-details-btn" data-book-title="${bookTitle}" data-author="${author}">More Details</button></div>`;
+            pausedEmit = pausedEmit.replace(bookTitleMatch[0], bookTitleMatch[0] + buyNowButtonHtml + moreDetailsButtonHtml);
           }
           buttonCounter++;
 
