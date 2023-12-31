@@ -31,13 +31,16 @@ function InputBox({ onSubmit, isStreaming, onStopStreaming }) {
   const handleKeyDown = (e) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault(); // Prevent default to stop new line
+
+      // Check if streaming is active; if so, do not submit
+      if (isStreaming) {
+        return;
+      }
+
       if (input.trim()) { // Only submit if there's input
         handleSubmit(e);
       }
     } else if (e.key === 'Enter' && e.shiftKey) {
-      // Handle Shift + Enter case
-      // Logic to add a new line goes here (React will handle this automatically)
-      // Optionally, adjust scroll position if necessary
       setTimeout(() => {
         if (textareaRef.current) {
           const currentScrollPosition = textareaRef.current.scrollTop;

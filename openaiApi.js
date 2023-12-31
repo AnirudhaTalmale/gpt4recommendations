@@ -17,6 +17,8 @@ const parseBookTitle = (bookTitleWithAuthor) => {
   return { bookTitle, author };
 };
 
+const encodeForUrl = (text) => encodeURIComponent(text);
+
 const getBookCover = async (bookTitleWithAuthor) => {
   try {
     const { bookTitle, author } = parseBookTitle(bookTitleWithAuthor);
@@ -78,6 +80,7 @@ let isStreamingActive = false;
 const openaiApi = async (messages, socket, session, sessionId) => {
 
   isStreamingActive = true;
+  let buttonCounter = 1; 
 
   const filteredMessages = messages.map(({ role, content }) => ({ role, content }));
   try {
@@ -115,6 +118,27 @@ const openaiApi = async (messages, socket, session, sessionId) => {
 
           // Fetch book cover image
           const coverImageUrl = await getBookCover(bookTitleWithAuthor);
+
+          
+          
+          // Extract book title and author
+          const { bookTitle, author } = parseBookTitle(bookTitleWithAuthor);
+          const encodedTitle = encodeForUrl(bookTitle);
+          const encodedAuthor = author ? `+${encodeForUrl(author)}` : '';
+
+          // Generate Amazon search URL
+          const amazonUrl = `https://www.amazon.in/s?k=${encodedTitle}${encodedAuthor}`;
+
+          // Replace buttonDiv1 with updated Buy Now button HTML
+          if (buttonCounter % 3 === 1) {
+            const buttonDiv1 = `<div><a href="${amazonUrl}" target="_blank"><button>Buy now</button></a></div>`;
+            pausedEmit = pausedEmit.replace(bookTitleMatch[0], bookTitleMatch[0] + buttonDiv1);
+          } else {
+            const buttonDiv1 = `<div><a href="${amazonUrl}" target="_blank"><button>Buy now</button></a></div>`;
+            const buttonDiv2 = `<div><button type="button" class="more-details-btn">More Details</button></div>`;
+            pausedEmit = pausedEmit.replace(bookTitleMatch[0], bookTitleMatch[0] + buttonDiv1 + buttonDiv2);
+          }
+          buttonCounter++;
 
           // If the cover image URL is not the default, concatenate div tag with the image tag
           if (coverImageUrl !== 'default-cover.jpg') {

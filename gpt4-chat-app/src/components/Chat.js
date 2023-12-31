@@ -218,7 +218,7 @@ function Chat() {
       // Cleanup: remove the listener when the component unmounts
       socket.off('streamEnd', handleStreamEnd);
     };
-  }, [handleStopStreaming]);
+  }, [handleStopStreaming, currentSessionIndex, sessions]);
 
   useEffect(() => {
   
@@ -245,7 +245,7 @@ function Chat() {
       socket.off('chunk', handleStreamChunk);
       clearTimeout(streamTimeout); // Clear the timeout when the component is unmounted
     };
-  }, [updateSessionMessages, handleStopStreaming]); // Depend on the memoized version of handleStopStreaming
+  }, [updateSessionMessages, handleStopStreaming, currentSessionIndex, sessions]); // Depend on the memoized version of handleStopStreaming
   
 
   const handleQuerySubmit = async (query) => {
@@ -294,6 +294,21 @@ function Chat() {
     setCurrentSessionIndex(newIndex);
   };
 
+  useEffect(() => {
+    const handleBeforeUnload = (event) => {
+      if (isStreaming) {
+        handleStopStreaming();
+      }
+    };
+  
+    window.addEventListener('beforeunload', handleBeforeUnload);
+  
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, [isStreaming, handleStopStreaming]);
+  
+
   return (
     <div className="App">
       <HistoryPane
@@ -313,7 +328,8 @@ function Chat() {
               role={msg.role}
               content={msg.content}
               contentType={msg.contentType}
-              userImage={userData?.image}// Passing the user data as a prop
+              userImage={userData?.image}
+              isStreaming={isStreaming}
             />
           );
         })}

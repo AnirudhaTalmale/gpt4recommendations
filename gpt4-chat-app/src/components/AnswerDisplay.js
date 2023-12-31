@@ -1,11 +1,35 @@
-import React from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import DOMPurify from 'dompurify';
 import '../App.css';
 
-function AnswerDisplay({ role, content, contentType, userImage }) {
-  const createMarkup = (htmlString) => {
-    // Sanitize the htmlString before setting it as innerHTML
-    const safeHTML = DOMPurify.sanitize(htmlString);
+function AnswerDisplay({ role, content, contentType, userImage, isStreaming }) {
+  const [dynamicContent, setDynamicContent] = useState(content);
+
+  useEffect(() => {
+    setDynamicContent(content);
+  }, [content]);
+
+  const updateButtonStyles = useCallback(() => {
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = dynamicContent;
+
+    const buttons = tempDiv.querySelectorAll('.more-details-btn');
+    buttons.forEach(button => {
+      button.disabled = isStreaming;
+      button.style.backgroundColor = isStreaming ? 'red' : 'green';
+    });
+
+    return tempDiv.innerHTML;
+  }, [isStreaming, dynamicContent]); // Now updateButtonStyles will only change if isStreaming or dynamicContent changes
+
+  useEffect(() => {
+    const updatedContent = updateButtonStyles();
+    setDynamicContent(updatedContent);
+  }, [isStreaming, updateButtonStyles]);
+
+  const createMarkup = () => {
+    // Sanitize and set HTML content
+    const safeHTML = DOMPurify.sanitize(dynamicContent);
     return { __html: safeHTML };
   };
 
@@ -34,7 +58,7 @@ function AnswerDisplay({ role, content, contentType, userImage }) {
           <>
             <div className="message-sender">ChatGPT</div>
             <br></br>
-            <div className="message-answer" dangerouslySetInnerHTML={createMarkup(content)} />
+            <div className="message-answer" dangerouslySetInnerHTML={createMarkup()} />
           </>
         )}
       </div>
