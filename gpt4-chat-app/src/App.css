@@ -12,7 +12,6 @@
 .chat-area-wrapper {
   display: flex;
   justify-content: center; /* Center the child horizontally */
-  flex-grow: 1; /* Ensure it takes full available width */
 }
 
 
@@ -55,10 +54,6 @@ body:not(.history-pane-open) .input-area {
   left: 0;
 }
 
-/* Add similar CSS for InputBox if needed */
-.input-box.expanded {
-  left: 20px; /* Adjust as per your layout */
-}
 
 
 .input-area {
