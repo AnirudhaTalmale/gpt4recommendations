@@ -51,39 +51,41 @@ function AnswerDisplay({ role, content, contentType, userImage, isStreaming, onM
   };
 
   return (
-    <div className={`message ${role}`}>
-      <div className="message-icon">
-        {role === 'user' ? (
-          userImage ? (
-            <div><img src={userImage} alt="/favicon.ico" className="display-image" /></div> // Display user image
+    <div className="chat-area-wrapper">
+      <div className={`message ${role}`}>
+        <div className="message-icon">
+          {role === 'user' ? (
+            userImage ? (
+              <div><img src={userImage} alt="/favicon.ico" className="display-image" /></div> // Display user image
+            ) : (
+              <span>U</span> // Fallback if no image is available
+            )
           ) : (
-            <span>U</span> // Fallback if no image is available
-          )
-        ) : (
-          <div><img src="/favicon.ico" className="display-image" /></div> // Icon for the assistant
-        )}
-      </div>
-      <div className="message-content">
-        {role === 'user' && (
-          <>
-            <div className="message-sender">You</div>
-            <br></br>
-            <div className="message-question">{content}</div>
-          </>
-        )}
-        {role === 'assistant' && (
-          <>
-            <div className="message-sender">ChatGPT</div>
-            <br></br>
-            <div className="message-answer" dangerouslySetInnerHTML={createMarkup()} onClick={(e) => {
-              if (e.target.classList.contains('more-details-btn')) {
-                const bookTitle = e.target.getAttribute('data-book-title');
-                const author = e.target.getAttribute('data-author');
-                handleMoreDetailsClick(bookTitle, author);
-              }
-            }} />
-          </>
-        )}
+            <div><img src="/favicon.ico" className="display-image" /></div> // Icon for the assistant
+          )}
+        </div>
+        <div className="message-content">
+          {role === 'user' && (
+            <>
+              <div className="message-sender">You</div>
+              <br></br>
+              <div className="message-question">{content}</div>
+            </>
+          )}
+          {role === 'assistant' && (
+            <>
+              <div className="message-sender">ChatGPT</div>
+              <br></br>
+              <div className="message-answer" dangerouslySetInnerHTML={createMarkup()} onClick={(e) => {
+                if (e.target.classList.contains('more-details-btn')) {
+                  const bookTitle = e.target.getAttribute('data-book-title');
+                  const author = e.target.getAttribute('data-author');
+                  handleMoreDetailsClick(bookTitle, author);
+                }
+              }} />
+            </>
+          )}
+        </div>
       </div>
     </div>
   );

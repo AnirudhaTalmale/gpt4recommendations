@@ -11,6 +11,11 @@ function HistoryPane({ sessions, onNewSession, onSelectSession, onDeleteSession,
   const userEntryRef = useRef(null);
 
   useEffect(() => {
+    // Apply the class based on the initial state of the pane
+    document.body.classList.toggle('history-pane-open', isPaneOpen);
+  }, [isPaneOpen]);
+
+  useEffect(() => {
     // Function to check if the click is outside the dropdown
     function handleClickOutside(event) {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target) &&
@@ -63,19 +68,22 @@ function HistoryPane({ sessions, onNewSession, onSelectSession, onDeleteSession,
     return session.messages.length === 0;
   };
 
-  // Add a function to handle the close action
   const handleClosePane = () => {
     setIsPaneOpen(!isPaneOpen);
+    document.body.classList.toggle('history-pane-open', !isPaneOpen);
     console.log('Close pane clicked');
   };
+  
 
   return (
     <div>
       <div className={`history-pane ${isPaneOpen ? '' : 'closed'}`}>
+      <button onClick={handleClosePane} className={`close-pane-button ${!isPaneOpen ? 'close-pane-button-closed' : ''}`}>
+        {isPaneOpen ? <i className="fa-solid fa-angle-left"></i> : <i className="fa-solid fa-angle-right"></i>}
+      </button>
+
         <div className="header-container">
-          <button onClick={handleClosePane} className={`close-pane-button ${!isPaneOpen ? 'close-pane-button-closed' : ''}`}>
-            <i className="fa-solid fa-bars"></i>
-          </button>
+          
           <button onClick={handleNewSession} className="new-session-button">
             <i className="fa-regular fa-pen-to-square"></i>
           </button>

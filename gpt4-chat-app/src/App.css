@@ -9,11 +9,19 @@
 
 /* chat area */
 
+.chat-area-wrapper {
+  display: flex;
+  justify-content: center; /* Center the child horizontally */
+  flex-grow: 1; /* Ensure it takes full available width */
+}
+
+
 .chat-area {
   display: flex;
   flex-direction: column;
   padding: 20px;
-  margin-left: 250px;
+  margin-left: 250px; /* Keep your existing left margin */
+  margin-right: calc(250px - 15rem); /* Dynamically calculate right margin */
   padding-bottom: 60px; /* Added padding at the bottom */
   /* background-color: red; */
   overflow-y: auto; 
@@ -21,27 +29,60 @@
   padding-right: 3rem;
 }
 
+
+/* Optional: add media query for responsive design */
+@media (max-width: 760px) {
+  .history-pane {
+    display: none !important; /* Hide history pane on small screens */
+  }
+
+  .chat-area {
+    margin-left: 0; /* Remove margin to allow expansion */
+  }
+
+  .input-area {
+    left: 2rem !important; /* Align input area with the full width of the window */
+  }
+}
+
 /* input area */
+
+body:not(.history-pane-open) .chat-area {
+  margin-left: 0;
+}
+body:not(.history-pane-open) .input-area {
+  
+  left: 0;
+}
+
+/* Add similar CSS for InputBox if needed */
+.input-box.expanded {
+  left: 20px; /* Adjust as per your layout */
+}
+
 
 .input-area {
   position: fixed;
-  bottom: 0rem;
-  left: 260px;
-  right: 0;
+  bottom: 0;
+  left: 285px; /* Match the left margin of the chat-area */
+  right: 20px; /* Match the right margin calculation of the chat-area */
   display: flex;
   align-items: center;
   background: white;
+  max-width: 45rem; /* Adjust if needed */
+  margin-left: auto; /* Centering with auto margins */
+  margin-right: auto; /* Centering with auto margins */
 }
 
 .input-box-container {
-  display: flex;
   flex-grow: 1;
   margin: 0rem 1rem 1rem 1rem;
   border-radius: 1rem;
   border: 1.5px solid #D3D3D3;
   overflow: hidden;
-  position: relative; /* Add this to position the button absolutely inside this container */
+  position: relative;
 }
+
 
 .textarea-wrapper {
   width: 100%;
@@ -97,15 +138,15 @@
 
 /* Style for the close pane button inside the history pane */
 .close-pane-button {
+  position: absolute;
+  top: 50%; /* Center vertically */
+  left: 107%; /* Center horizontally */
+  transform: translate(-50%, -50%);
   cursor: pointer; 
-  color: #d9d9d9; /* Adjust color for visibility */
+  color: grey;
+  font-size: 1.3rem;
   background: none;
   border: none;
-  font-size: 0.9rem;
-}
-
-.close-pane-button-closed {
-  color: black; /* Change the color to black */
 }
 
 /* Styles for the history pane */
@@ -135,6 +176,7 @@
   justify-content: space-between;
   padding: 0.5rem;
   align-items: center; /* Align buttons vertically */
+  position: relative; 
 }
 
 /* Styles for the main content area */
@@ -290,22 +332,6 @@
   width: 2rem;
   margin: auto;
   border: none;
-}
-
-
-/* Optional: add media query for responsive design */
-@media (max-width: 760px) {
-  .history-pane {
-    display: none; /* Hide history pane on small screens */
-  }
-
-  .chat-area {
-    margin-left: 0; /* Remove margin to allow expansion */
-  }
-
-  .input-area {
-    left: 0; /* Align input area with the full width of the window */
-  }
 }
 
 .message {
