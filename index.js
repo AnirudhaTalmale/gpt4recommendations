@@ -71,8 +71,6 @@ app.get('/api/check-auth', (req, res) => {
 
 app.get('/api/user-info', (req, res) => {
   if (req.isAuthenticated()) {
-    console.log('User data being sent:', req.user); // Log the user data
-
     res.json({
       isAuthenticated: true,
       user: {
@@ -252,9 +250,6 @@ app.post('/api/session', async (req, res) => {
 
 // GET endpoint for retrieving all sessions with their messages
 app.get('/api/sessions', async (req, res) => {
-  const userId = req.query.userId;
-  console.log('Received userId:', userId);
-
   try {
     const userId = req.query.userId; // Get user ID from query parameter
     if (!userId) {

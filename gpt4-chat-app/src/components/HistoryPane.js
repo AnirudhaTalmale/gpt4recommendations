@@ -2,8 +2,16 @@ import React, { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
 import '../App.css';
 
-function HistoryPane({ sessions, onNewSession, onSelectSession, onDeleteSession, userName, userImage }) {
-  const [isPaneOpen, setIsPaneOpen] = useState(true);
+function HistoryPane({ 
+  sessions, 
+  onNewSession, // Use the prop from the parent component
+  onSelectSession, 
+  onDeleteSession, 
+  userName, 
+  userImage, 
+  isPaneOpen, 
+  togglePane 
+}) {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isEntryActive, setIsEntryActive] = useState(false);
 
@@ -43,15 +51,6 @@ function HistoryPane({ sessions, onNewSession, onSelectSession, onDeleteSession,
       setIsEntryActive(!isDropdownOpen); // Toggle the active state along with the dropdown
   };
 
-  // Custom function to handle new session creation
-  const handleNewSession = () => {
-    if (sessions.length > 0 && isSessionEmpty(sessions[sessions.length - 1])) {
-      onSelectSession(sessions.length - 1);
-    } else {
-      onNewSession();
-    }
-  };
-
   const handleLogout = async () => {
     try {
       const response = await axios.get('http://localhost:3000/auth/logout', { withCredentials: true });
@@ -64,14 +63,9 @@ function HistoryPane({ sessions, onNewSession, onSelectSession, onDeleteSession,
     }
   };
 
-  const isSessionEmpty = (session) => {
-    return session.messages.length === 0;
-  };
-
   const handleClosePane = () => {
-    setIsPaneOpen(!isPaneOpen);
+    togglePane(); // Use togglePane prop to change pane state
     document.body.classList.toggle('history-pane-open', !isPaneOpen);
-    console.log('Close pane clicked');
   };
   
 
@@ -82,7 +76,7 @@ function HistoryPane({ sessions, onNewSession, onSelectSession, onDeleteSession,
         {isPaneOpen ? <i className="fa-solid fa-angle-left"></i> : <i className="fa-solid fa-angle-right"></i>}
       </button>
 
-        <div onClick={handleNewSession} className="header-container">
+        <div onClick={onNewSession} className="header-container">
 
           <button className="new-session-button">
             ChatGPT

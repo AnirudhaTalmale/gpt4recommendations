@@ -5,10 +5,12 @@ import AnswerDisplay from './AnswerDisplay';
 import HistoryPane from './HistoryPane';
 import '../App.css';
 import socket from './socket';
+import Header from './Header';
 
 
 function Chat() {
   const [sessions, setSessions] = useState([]);
+  const [isPaneOpen, setIsPaneOpen] = useState(true);
   const [currentSessionIndex, setCurrentSessionIndex] = useState(-1);
   const [isLoading, setIsLoading] = useState(false);
   const [userData, setUserData] = useState(null);
@@ -17,6 +19,10 @@ function Chat() {
   const chatAreaRef = useRef(null);
   const [shouldAutoScroll, setShouldAutoScroll] = useState(false);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
+
+  const togglePane = () => {
+    setIsPaneOpen(!isPaneOpen);
+  };
 
   const isUserAtBottom = () => {
     if (!chatAreaRef.current) return false;
@@ -264,16 +270,22 @@ function Chat() {
     });
   };  
 
+  const isSessionEmpty = (session) => {
+    return session.messages.length === 0;
+  };
+
   const handleNewSession = async () => {
-    try {
-      // Ensure user data is available
-      if (!userData) return;
-  
-      const res = await axios.post('http://localhost:3000/api/session', { userId: userData.id });
-      setSessions(prevSessions => [...prevSessions, res.data]);
-      setCurrentSessionIndex(sessions.length);
-    } catch (error) {
-      console.error('Error creating new session:', error);
+    if (sessions.length > 0 && isSessionEmpty(sessions[sessions.length - 1])) {
+      setCurrentSessionIndex(sessions.length - 1);
+    } else {
+      try {
+        if (!userData) return;
+        const res = await axios.post('http://localhost:3000/api/session', { userId: userData.id });
+        setSessions(prevSessions => [...prevSessions, res.data]);
+        setCurrentSessionIndex(sessions.length);
+      } catch (error) {
+        console.error('Error creating new session:', error);
+      }
     }
   };
 
@@ -315,6 +327,7 @@ function Chat() {
 
   return (
     <div className="App">
+      
       <HistoryPane
         sessions={sessions}
         onNewSession={handleNewSession}
@@ -322,8 +335,12 @@ function Chat() {
         onDeleteSession={handleDeleteSession}
         userName={userData?.name}
         userImage={userData?.image}
+        isPaneOpen={isPaneOpen}
+        togglePane={togglePane}
       />
+      <Header isPaneOpen={isPaneOpen} onNewSession={handleNewSession} />
       <div className="chat-area" ref={chatAreaRef}>
+        
         {sessions[currentSessionIndex] && sessions[currentSessionIndex].messages.length === 0 && (
           <div className="chat-heading">
             Discover Your Next Great Read!
