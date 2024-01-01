@@ -82,9 +82,13 @@ function HistoryPane({ sessions, onNewSession, onSelectSession, onDeleteSession,
         {isPaneOpen ? <i className="fa-solid fa-angle-left"></i> : <i className="fa-solid fa-angle-right"></i>}
       </button>
 
-        <div className="header-container">
+        <div onClick={handleNewSession} className="header-container">
+
+          <button className="new-session-button">
+            ChatGPT
+          </button>
           
-          <button onClick={handleNewSession} className="new-session-button">
+          <button  className="new-session-button">
             <i className="fa-regular fa-pen-to-square"></i>
           </button>
         </div>

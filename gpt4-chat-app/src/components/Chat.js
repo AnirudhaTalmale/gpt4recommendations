@@ -324,6 +324,11 @@ function Chat() {
         userImage={userData?.image}
       />
       <div className="chat-area" ref={chatAreaRef}>
+        {sessions[currentSessionIndex] && sessions[currentSessionIndex].messages.length === 0 && (
+          <div className="chat-heading">
+            Discover Your Next Great Read!
+          </div>
+        )}
         {sessions[currentSessionIndex]?.messages.map((msg, index) => {
           const messageKey = msg._id ? msg._id.$oid : `temp-${index}`;
           return (
