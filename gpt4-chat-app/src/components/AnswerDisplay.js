@@ -1,46 +1,10 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React from 'react';
 import DOMPurify from 'dompurify';
 import '../App.css';
 
-function AnswerDisplay({ role, content, contentType, userImage, isStreaming, onMoreDetailsClick }) {
-  const [dynamicContent, setDynamicContent] = useState(content);
-
-  useEffect(() => {
-    setDynamicContent(content);
-  }, [content]);
-
-  const updateButtonStyles = useCallback(() => {
-    const tempDiv = document.createElement('div');
-    tempDiv.innerHTML = dynamicContent;
-
-    const buttons = tempDiv.querySelectorAll('.more-details-btn');
-    buttons.forEach(button => {
-      button.disabled = isStreaming;
-      // Change button color to grey when inactive (streaming) and to a specific hex color when active
-      if (isStreaming) {
-        button.style.backgroundColor = '#808080'; // Grey color in hex
-        // Add additional styles to show inactivity
-        button.style.opacity = '0.6';
-        button.style.cursor = 'not-allowed';
-      } else {
-        button.style.backgroundColor = '#00FF00'; // Green color in hex
-        button.style.opacity = '1';
-        button.style.cursor = 'pointer';
-      }
-    });
-
-    return tempDiv.innerHTML;
-  }, [isStreaming, dynamicContent]);
-  
-
-  useEffect(() => {
-    const updatedContent = updateButtonStyles();
-    setDynamicContent(updatedContent);
-  }, [isStreaming, updateButtonStyles]);
-
+function AnswerDisplay({ role, content, userImage, isStreaming, onMoreDetailsClick }) {
   const createMarkup = () => {
-    // Sanitize and set HTML content
-    const safeHTML = DOMPurify.sanitize(dynamicContent);
+    const safeHTML = DOMPurify.sanitize(content);
     return { __html: safeHTML };
   };
 
@@ -51,7 +15,7 @@ function AnswerDisplay({ role, content, contentType, userImage, isStreaming, onM
   };
 
   return (
-    <div className="chat-area-wrapper">
+    <div className={`chat-area-wrapper ${isStreaming ? 'streaming' : ''}`}>
       <div className={`message ${role}`}>
         <div className="message-icon">
           {role === 'user' ? (

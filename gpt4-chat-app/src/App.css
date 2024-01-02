@@ -29,8 +29,8 @@
 .new-session-button-small-screen {
   border: none;
   background: none;
-  margin-right: 1.3rem;
   font-size: 1rem;
+  margin: 0.7rem 1.3rem;
   cursor: pointer;
 }
 
@@ -91,7 +91,8 @@
   }
 
   .chat-area {
-    margin-left: 0; /* Remove margin to allow expansion */
+    margin-left: -1rem !important;
+    /* background-color: black; */
   }
 
   .input-area {
@@ -114,23 +115,25 @@ body:not(.history-pane-open) .input-area {
 .input-area {
   position: fixed;
   bottom: 0;
-  left: 285px; /* Match the left margin of the chat-area */
-  right: 20px; /* Match the right margin calculation of the chat-area */
+  left: 260px; /* Match the left margin of the chat-area */
+  right: 0px; /* Match the right margin calculation of the chat-area */
   display: flex;
   align-items: center;
   background: white;
   max-width: 45rem; /* Adjust if needed */
   margin-left: auto; /* Centering with auto margins */
   margin-right: auto; /* Centering with auto margins */
+  margin-bottom: 0.2rem;
 }
 
 .input-box-container {
   flex-grow: 1;
   margin: 0rem 1rem 1rem 1rem;
-  border-radius: 1rem;
+  border-radius: 0.7rem;
   border: 1.5px solid #D3D3D3;
   overflow: hidden;
   position: relative;
+  
 }
 
 
@@ -138,7 +141,7 @@ body:not(.history-pane-open) .input-area {
   width: 100%;
   max-height: 12rem; /* Set the maximum height for the textarea */
   overflow-y: auto; /* Allows scrolling for overflow text */
-  
+  /* background-color: black; */
 }
 
 .input-box {
@@ -181,8 +184,6 @@ body:not(.history-pane-open) .input-area {
 .send-button.active {
   background-color: black;
 }
-
-
 
 /* History pane css */
 
@@ -440,70 +441,86 @@ body:not(.history-pane-open) .input-area {
 }
 
 .buy-now-button {
-  background-color: #FF9900; /* Amazon's signature orange color */
-  color: white;
-  font-family: SÃ¶hne, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, sans-serif, Helvetica Neue, Arial, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
+  background: none;
+  border: 1px solid black;
+  font-family: Söhne, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, sans-serif, Helvetica Neue, Arial, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
   text-align: justify;
   font-size: 1rem;
-  padding: 0.4rem 0.6rem;
-  border: none;
+  padding: 0.25rem 0.6rem;
   border-radius: 0.7rem;
   cursor: pointer;
   text-align: center;
   text-decoration: none;
   display: inline-block;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
   margin-bottom: 0.7rem;
   margin-top: 0.7rem;
   width: 8.3rem;
 }
 
 .buy-now-button:hover {
-  background-color: #cc7a00; /* A darker shade of orange for hover effect */
+  background-color: rgba(0, 0, 0, 0.1); /* Subtle shade change on hover */
+  border-color: #333; /* Slightly darker border on hover */
 }
 
 .buy-now-button:active {
-  background-color: #e68a00; /* A lighter shade for active state */
+  background-color: rgba(0, 0, 0, 0.2); /* Slightly darker on active state */
+  border-color: #333;
 }
 
 .buy-now-button:focus {
   outline: none; /* Remove outline on focus */
-  box-shadow: 0 0 0 2px #fff, 0 0 0 4px #FF9900; /* Optional: Add a focus ring */
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1); /* Focus ring with a subtle black shade */
 }
 
 .more-details-btn {
-  background-color: green !important; /* Amazon's signature orange color */
-  color: white;
+  background: none;
+  border: 1px solid black;
   font-family: Söhne, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, sans-serif, Helvetica Neue, Arial, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
   text-align: justify;
   font-size: 1rem;
-  padding: 0.4rem 0.6rem;
-  border: none;
+  padding: 0.25rem 0.6rem;
   border-radius: 0.7rem;
   cursor: pointer;
   text-align: center;
   text-decoration: none;
   display: inline-block;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
   margin-bottom: 0.7rem;
   width: 8.3rem;
 }
 
-/* Hover - Slightly Darker Green */
 .more-details-btn:hover {
-  background-color: #006400 !important; /* Dark green for a subtle hover effect */
+  background-color: rgba(0, 0, 0, 0.1); /* Subtle shade change on hover */
+  border-color: #333; /* Slightly darker border on hover */
 }
 
-/* Active - Slightly Lighter Green */
 .more-details-btn:active {
-  background-color: #00A550 !important; /* Light green for active state */
+  background-color: rgba(0, 0, 0, 0.2); /* Slightly darker on active state */
+  border-color: #333;
 }
 
-/* Focus - Add a contrasting focus ring for accessibility */
 .more-details-btn:focus {
-  outline: none !important; /* Remove default outline */
-  box-shadow: 0 0 0 2px white, 0 0 0 4px #32CD32 !important; /* Focus ring in lime green for visibility */
+  outline: none; /* Remove outline on focus */
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1); /* Focus ring with a subtle black shade */
 }
+
+/* Styles when streaming is active */
+ 
+.streaming .more-details-btn {
+  cursor: not-allowed;
+  opacity: 0.5;
+  pointer-events: none; /* Prevents clicking */
+}
+
+.streaming a {
+  cursor: not-allowed;
+  opacity: 0.5;
+  pointer-events: none; /* Prevents clicking */
+}
+
+/* ... rest of your button styles ... */
+
 
 h3 {
   line-height: 1.7rem;
@@ -511,13 +528,13 @@ h3 {
 
 h3 div img {
   margin-top: 0.8rem;
-  border: 1px solid black; 
+  /* border: 1px solid black;  */
 }
 
 div img {
   margin-top: 0.6rem;
   margin-bottom: -0.4rem;
-  border: 1px solid black; 
+  /* border: 1px solid black;  */
 }
 
 /* NewBlogPost page CSS */

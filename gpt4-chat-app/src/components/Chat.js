@@ -389,7 +389,6 @@ function Chat() {
               key={messageKey}
               role={msg.role}
               content={msg.content}
-              contentType={msg.contentType}
               userImage={userData?.image}
               isStreaming={isStreaming}
               onMoreDetailsClick={handleMoreDetailsRequest}

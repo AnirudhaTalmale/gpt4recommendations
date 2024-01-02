@@ -118,16 +118,16 @@ const openaiApi = async (messages, socket, session, sessionId) => {
 
           // Fetch book cover image
           const coverImageUrl = await getBookCover(bookTitleWithAuthor);
-
-          
           
           // Extract book title and author
           const { bookTitle, author } = parseBookTitle(bookTitleWithAuthor);
           const encodedTitle = encodeForUrl(bookTitle);
-          const encodedAuthor = author ? `+${encodeForUrl(author)}` : '';
+          let amazonUrl = `https://www.amazon.in/s?k=${encodedTitle}`;
 
-          // Generate Amazon search URL
-          const amazonUrl = `https://www.amazon.in/s?k=${encodedTitle}${encodedAuthor}`;
+          if (author) {
+            const encodedAuthor = `+by+${encodeForUrl(author)}`;
+            amazonUrl += encodedAuthor;
+          }
 
           // Replace buttonDiv1 with updated Buy Now button HTML
           if (buttonCounter % 3 === 1) {
