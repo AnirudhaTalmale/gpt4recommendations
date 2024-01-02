@@ -10,11 +10,12 @@ import Header from './Header';
 
 function Chat() {
   const [sessions, setSessions] = useState([]);
-  const [isPaneOpen, setIsPaneOpen] = useState(true);
+  const [isPaneOpen, setIsPaneOpen] = useState(window.innerWidth >= 760 ? true : false);
   const [currentSessionIndex, setCurrentSessionIndex] = useState(-1);
   const [isLoading, setIsLoading] = useState(false);
   const [userData, setUserData] = useState(null);
   const [isStreaming, setIsStreaming] = useState(false);
+  const historyPaneRef = useRef(null);
 
   const chatAreaRef = useRef(null);
   const [shouldAutoScroll, setShouldAutoScroll] = useState(false);
@@ -23,6 +24,22 @@ function Chat() {
   const togglePane = () => {
     setIsPaneOpen(!isPaneOpen);
   };
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 760) {
+        setIsPaneOpen(false); // Close the pane for smaller screens
+      }
+    };
+
+    // Add event listener
+    window.addEventListener('resize', handleResize);
+
+    // Cleanup function
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
 
   const isUserAtBottom = () => {
     if (!chatAreaRef.current) return false;
@@ -323,12 +340,31 @@ function Chat() {
   const handleMoreDetailsRequest = (userQuery) => {
     handleQuerySubmit(userQuery);
   };
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (historyPaneRef.current && !historyPaneRef.current.contains(event.target)) {
+        // Check if the screen is less than 760px and the pane is open
+        if (window.innerWidth < 760 && isPaneOpen) {
+          togglePane();
+        }
+      }
+    };
+  
+    document.addEventListener('mousedown', handleClickOutside);
+  
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isPaneOpen, togglePane]);
+  
   
 
   return (
     <div className="App">
-      
+
       <HistoryPane
+        ref={historyPaneRef}
         sessions={sessions}
         onNewSession={handleNewSession}
         onSelectSession={setCurrentSessionIndexWithStreamCheck}
@@ -338,7 +374,7 @@ function Chat() {
         isPaneOpen={isPaneOpen}
         togglePane={togglePane}
       />
-      <Header isPaneOpen={isPaneOpen} onNewSession={handleNewSession} />
+      <Header isPaneOpen={isPaneOpen} onNewSession={handleNewSession} togglePane={togglePane} />
       <div className="chat-area" ref={chatAreaRef}>
         
         {sessions[currentSessionIndex] && sessions[currentSessionIndex].messages.length === 0 && (

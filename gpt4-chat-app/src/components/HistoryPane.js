@@ -1,17 +1,17 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, forwardRef } from 'react';
 import axios from 'axios';
 import '../App.css';
 
-function HistoryPane({ 
+const HistoryPane = forwardRef(({
   sessions, 
-  onNewSession, // Use the prop from the parent component
+  onNewSession,
   onSelectSession, 
   onDeleteSession, 
   userName, 
   userImage, 
   isPaneOpen, 
   togglePane 
-}) {
+}, ref) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isEntryActive, setIsEntryActive] = useState(false);
 
@@ -67,16 +67,29 @@ function HistoryPane({
     togglePane(); // Use togglePane prop to change pane state
     document.body.classList.toggle('history-pane-open', !isPaneOpen);
   };
+
+  const handleNewSessionCreation = async () => {
+    await onNewSession();
+    if (window.innerWidth < 760) { // Check if screen size is less than 760px
+      togglePane(); // Collapse the pane
+    }
+  };
   
+  const handleSessionSelect = (index) => {
+    onSelectSession(index);
+    if (window.innerWidth < 760) { // Check if screen size is less than 760px
+      togglePane(); // Collapse the pane
+    }
+  };
 
   return (
-    <div>
+    <div ref={ref}>
       <div className={`history-pane ${isPaneOpen ? '' : 'closed'}`}>
       <button onClick={handleClosePane} className={`close-pane-button ${!isPaneOpen ? 'close-pane-button-closed' : ''}`}>
         {isPaneOpen ? <i className="fa-solid fa-angle-left"></i> : <i className="fa-solid fa-angle-right"></i>}
       </button>
 
-        <div onClick={onNewSession} className="header-container">
+        <div onClick={handleNewSessionCreation} className="header-container">
 
           <button className="new-session-button">
             ChatGPT
@@ -89,7 +102,7 @@ function HistoryPane({
 
         <div className="history-content">  
           {[...sessions].reverse().map((session, index) => (
-            <div key={session._id} className="history-entry" onClick={() => onSelectSession(sessions.length - index - 1)}>
+            <div key={session._id} className="history-entry" onClick={() => handleSessionSelect(sessions.length - index - 1)}>
                 <div>
                     {session.sessionName} {/* Display the actual session name */}
                 </div>
@@ -116,6 +129,6 @@ function HistoryPane({
       </div>
     </div>
   );
-}
+});
 
 export default HistoryPane;
