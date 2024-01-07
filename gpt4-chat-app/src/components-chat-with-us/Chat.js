@@ -7,23 +7,27 @@ import '../App.css';
 import socket from './socket';
 import Header from './Header';
 
-
 function Chat() {
   const [sessions, setSessions] = useState([]);
   const [isPaneOpen, setIsPaneOpen] = useState(window.innerWidth >= 760 ? true : false);
   const [currentSessionIndex, setCurrentSessionIndex] = useState(-1);
   const [isLoading, setIsLoading] = useState(false);
   const [userData, setUserData] = useState(null);
-  const [isStreaming, setIsStreaming] = useState(false);
   const historyPaneRef = useRef(null);
 
   const chatAreaRef = useRef(null);
   const [shouldAutoScroll, setShouldAutoScroll] = useState(false);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
 
-  const togglePane = () => {
-    setIsPaneOpen(!isPaneOpen);
-  };
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    setIsAdmin(userData?.role === 'assistant');
+  }, [userData]);
+  
+  const togglePane = useCallback(() => {
+    setIsPaneOpen(prevIsPaneOpen => !prevIsPaneOpen);
+  }, []);  
 
   useEffect(() => {
     const handleResize = () => {
@@ -48,19 +52,20 @@ function Chat() {
     return scrollTop + clientHeight >= scrollHeight - 5;
   };
 
-  const scrollToBottom = () => {
+  const scrollToBottom = useCallback(() => {
     setTimeout(() => {
       if (chatAreaRef.current) {
         chatAreaRef.current.scrollTop = chatAreaRef.current.scrollHeight;
       }
-    }, 0.001); // Adjust the timeout duration if needed
-  };
+    }, 1); // Adjust the timeout duration if needed
+  }, [chatAreaRef]); // Dependency on chatAreaRef
+  
   
   useEffect(() => {
     if (isInitialLoad || currentSessionIndex !== -1) {
       scrollToBottom();
     }
-  }, [currentSessionIndex, isInitialLoad]);
+  }, [currentSessionIndex, isInitialLoad, scrollToBottom]);
   
   
   useEffect(() => {
@@ -76,38 +81,41 @@ function Chat() {
     };
   }, []);
 
+  // Extract the complex expression to a variable
+  const currentSessionMessages = currentSessionIndex >= 0 ? sessions[currentSessionIndex]?.messages : null;
+
   useEffect(() => {
-    const messages = sessions[currentSessionIndex]?.messages;
-  
     // Ensure there are messages before accessing the last message
-    if (messages && messages.length > 0) {
-      const lastMessage = messages[messages.length - 1];
-  
-      if (shouldAutoScroll && lastMessage && lastMessage.contentType === 'streamed') {
+    if (currentSessionMessages && currentSessionMessages.length > 0) {
+      const lastMessage = currentSessionMessages[currentSessionMessages.length - 1];
+
+      if (shouldAutoScroll && lastMessage && lastMessage.contentType === 'simple') {
         chatAreaRef.current.scrollTop = chatAreaRef.current.scrollHeight;
       }
     }
-  }, [sessions[currentSessionIndex]?.messages, shouldAutoScroll]);
+  }, [currentSessionMessages, shouldAutoScroll]); // Use the extracted variable as a dependency
+
   
   
   const loadSessions = useCallback(async (currentUserData) => {
-    // Check if currentUserData.id is used instead of currentUserData.id
-    if (!currentUserData || !currentUserData.id) { // Changed from !_id to .id
+    if (!currentUserData || !currentUserData.id) { 
       console.log('User data or ID not available.');
       return;
     }
     
     try {
-      // Adjust the params to use currentUserData.id as well
-      const res = await axios.get('http://localhost:3000/api/sessions', { params: { userId: currentUserData.id } }); // Changed from _id to .id
+      const res = await axios.get('http://localhost:3000/api/chat-with-us-sessions', { 
+        params: { 
+          userId: currentUserData.id, 
+          role: isAdmin ? 'assistant' : 'user' 
+        } 
+      });
       setSessions(res.data);
       setIsInitialLoad(false);
     } catch (error) {
       console.error('Error loading sessions:', error);
     }
-  }, []);
-
-  
+  }, [isAdmin]);
   
   useEffect(() => {
     // Save the current session index to localStorage whenever it changes
@@ -115,6 +123,20 @@ function Chat() {
       localStorage.setItem('currentSessionIndex', currentSessionIndex);
     }
   }, [currentSessionIndex]);
+
+  useEffect(() => {
+    if (!isInitialLoad && sessions.length > 0 && currentSessionIndex >= 0 && currentSessionIndex < sessions.length) {
+      const currentSession = sessions[currentSessionIndex];
+      if (currentSession && currentSession._id) {
+        // Valid session found
+        const sessionId = currentSession._id;
+        socket.emit('join-chat-session', sessionId);
+      } else {
+        console.error('Current session is undefined or lacks _id');
+      }
+    } 
+  }, [currentSessionIndex, sessions, isInitialLoad]);
+  
   
   useEffect(() => {
     // Retrieve the current session index from localStorage when the component mounts
@@ -137,6 +159,7 @@ function Chat() {
         if (userInfoResponse.status === 200 && userInfoResponse.data.isAuthenticated) {
           const currentUserData = userInfoResponse.data.user;
           setUserData(currentUserData);
+          
           loadSessions(currentUserData);
         }
       } else {
@@ -169,119 +192,133 @@ function Chat() {
   }, [updateSessionName]);
   
   
-  const updateSessionMessages = useCallback((messageContent, contentType = 'simple', isUserMessage = true) => {
+  const updateSessionMessages = useCallback((messageContent, contentType = 'simple', isUserMessage = true, base64Attachments = [], timestamp) => {
     setSessions(prevSessions => {
       // Clone the previous sessions array
       const updatedSessions = [...prevSessions];
       // Clone the current session
       const currentSession = { ...updatedSessions[currentSessionIndex] };
-
-      // Handle the case for streamed content for the assistant's messages
-      if (contentType === 'streamed' && !isUserMessage) {
-        // Clone the messages array from the current session
-        let updatedMessages = [...currentSession.messages];
-        const lastMessageIndex = updatedMessages.length - 1;
   
-        if (lastMessageIndex >= 0 && updatedMessages[lastMessageIndex].role === 'assistant') {
-          // Create a new message object with the concatenated content
-          updatedMessages[lastMessageIndex] = {
-            ...updatedMessages[lastMessageIndex],
-            content: updatedMessages[lastMessageIndex].content + messageContent,
-          };
-        } else {
-          // Append a new message object to the cloned messages array
-          updatedMessages.push({ role: 'assistant', contentType, content: messageContent });
-        }
+      const newMessage = {
+        role: isUserMessage ? (isAdmin ? 'assistant' : 'user') : 'assistant',
+        contentType,
+        content: messageContent,
+        attachments: base64Attachments, // Include attachments
+        timestamp: timestamp // Include timestamp
+      };
+      // Append the new message to the cloned messages array
+      currentSession.messages = [...currentSession.messages, newMessage];
   
-        // Set the updated messages array back to the current session
-        currentSession.messages = updatedMessages;
-      } else {
-        // Handle the user's message or a non-streamed assistant's message
-        const newMessage = {
-          role: isUserMessage ? 'user' : 'assistant',
-          contentType,
-          content: messageContent,
-        };
-        // Append the new message to the cloned messages array
-        currentSession.messages = [...currentSession.messages, newMessage];
-      }
-      
       // Update the current session in the sessions array
       updatedSessions[currentSessionIndex] = currentSession;
+  
+      // Scroll to bottom after message update
+      scrollToBottom();
+  
       // Return the new sessions array to update the state
       return updatedSessions;
     });
-  }, [currentSessionIndex]); // Add dependencies if there are any
-
-  const handleStopStreaming = useCallback(async () => {
-    try {
-      const response = await axios.post('http://localhost:3000/api/stop-stream');
-      console.log(response.data.message); // Log the response message
-      setIsStreaming(false);
-    } catch (error) {
-      console.error('Error stopping the stream:', error);
-    }
-  }, []);
+  }, [currentSessionIndex, scrollToBottom, isAdmin]);
 
   useEffect(() => {
-    // Listen for the 'streamEnd' event from the socket
-    const handleStreamEnd = ({ message, sessionId }) => {
-      if (sessions[currentSessionIndex]._id === sessionId) {
-        setIsStreaming(false);
+    const handleChatWithUsUpdate = (data) => {
+      console.log('Received chat-with-us update:', data);
+      if (data.sessionId === sessions[currentSessionIndex]?._id) {
+        // Update the session with the new message and attachments
+        setSessions(sessions => sessions.map(session => {
+          if (session._id === data.sessionId) {
+            return {
+              ...session,
+              messages: [...session.messages, {
+                ...data.message,
+                attachments: data.message.attachments,
+                timestamp: data.message.timestamp
+              }]
+            };
+          }
+          return session;
+        }));
+        if (shouldAutoScroll) {
+          scrollToBottom();
+        }
       }
     };
   
-    socket.on('streamEnd', handleStreamEnd);
+    socket.on('chat-with-us-update', handleChatWithUsUpdate);
   
     return () => {
-      // Cleanup: remove the listener when the component unmounts
-      socket.off('streamEnd', handleStreamEnd);
+      socket.off('chat-with-us-update', handleChatWithUsUpdate);
     };
-  }, [handleStopStreaming, currentSessionIndex, sessions]);
-
+  }, [currentSessionIndex, sessions, shouldAutoScroll, scrollToBottom]);
+  
   useEffect(() => {
-  
-    let streamTimeout;
-  
-    const handleStreamChunk = ({ content, sessionId }) => {
-      if (sessions[currentSessionIndex]._id === sessionId) {
-        updateSessionMessages(content, 'streamed', false);
-        setIsStreaming(true); // Set streaming to true on receiving a chunk
-    
-        // Clear any existing timeout
-        clearTimeout(streamTimeout);
-    
-        // Set a new timeout to invoke handleStopStreaming after a period of inactivity
-        streamTimeout = setTimeout(() => {
-          handleStopStreaming();
-        }, 7000); // 7 seconds
+    const handleChatWithUsResponse = (data) => {
+      console.log('Received chat-with-us response:', data);
+      if (data.sessionId === sessions[currentSessionIndex]?._id) {
+        // Update the session with the new message and attachments
+        setSessions(sessions => sessions.map(session => {
+          if (session._id === data.sessionId) {
+            return {
+              ...session,
+              messages: [...session.messages, {
+                ...data.message,
+                attachments: data.message.attachments,
+                timestamp: data.message.timestamp
+              }]
+            };
+          }
+          return session;
+        }));
+        if (shouldAutoScroll) {
+          scrollToBottom();
+        }
       }
     };
   
-    socket.on('chunk', handleStreamChunk);
+    socket.on('chat-with-us-response', handleChatWithUsResponse);
   
     return () => {
-      socket.off('chunk', handleStreamChunk);
-      clearTimeout(streamTimeout); // Clear the timeout when the component is unmounted
+      socket.off('chat-with-us-response', handleChatWithUsResponse);
     };
-  }, [updateSessionMessages, handleStopStreaming, currentSessionIndex, sessions]); // Depend on the memoized version of handleStopStreaming
-  
+  }, [currentSessionIndex, sessions, shouldAutoScroll, scrollToBottom]);
 
-  const handleQuerySubmit = async (query) => {
+
+  const handleQuerySubmit = async (formData) => {
     setIsLoading(true);
-    const isFirstQuery = sessions[currentSessionIndex]?.messages?.length === 0;
-    updateSessionMessages(query, 'simple', true); // true for user message
+
+    if (!(formData instanceof FormData)) {
+      formData = new FormData();
+      formData.append('text', formData);
+    }
+
+    const textQuery = formData.get('text');
+    const attachments = formData.getAll('attachments');
+    const base64Attachments = await Promise.all(attachments.map(file => convertToBase64(file)));
+    const timestamp = new Date().toISOString();
+
+    updateSessionMessages(textQuery, 'simple', true, base64Attachments, timestamp);
   
-    // Emit the query to the server
-    socket.emit('query', {
+    const eventType = isAdmin ? 'chat-with-us-response' : 'chat-with-us-query';
+    socket.emit(eventType, {
       sessionId: sessions[currentSessionIndex]._id,
       message: {
-        role: 'user',
-        content: query,
-        isFirstQuery 
-      }
+        role: isAdmin ? 'assistant' : 'user',
+        content: textQuery,
+        timestamp: timestamp,
+        isFirstQuery: sessions[currentSessionIndex]?.messages?.length === 0
+      },
+      attachments: base64Attachments
     });
-  };  
+  };
+
+  const convertToBase64 = (file) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = error => reject(error);
+    });
+  };
 
   const isSessionEmpty = (session) => {
     return session.messages.length === 0;
@@ -293,7 +330,7 @@ function Chat() {
     } else {
       try {
         if (!userData) return;
-        const res = await axios.post('http://localhost:3000/api/session', { userId: userData.id });
+        const res = await axios.post('http://localhost:3000/api/chat-with-us-session', { userId: userData.id });
         setSessions(prevSessions => [...prevSessions, res.data]);
         setCurrentSessionIndex(sessions.length);
       } catch (error) {
@@ -304,7 +341,7 @@ function Chat() {
 
   const handleDeleteSession = async (sessionId) => {
     try {
-      await axios.delete(`http://localhost:3000/api/session/${sessionId}`);
+      await axios.delete(`http://localhost:3000/api/chat-with-us-session/${sessionId}`);
       setSessions(prevSessions => prevSessions.filter(session => session._id !== sessionId));
       setCurrentSessionIndex(prevIndex => (prevIndex === 0 ? -1 : prevIndex - 1));
     } catch (error) {
@@ -313,25 +350,8 @@ function Chat() {
   };
 
   const setCurrentSessionIndexWithStreamCheck = newIndex => {
-    if (currentSessionIndex !== newIndex && isStreaming) {
-      handleStopStreaming(); // Stop streaming if it's active and session changes
-    }
     setCurrentSessionIndex(newIndex);
   };
-
-  useEffect(() => {
-    const handleBeforeUnload = (event) => {
-      if (isStreaming) {
-        handleStopStreaming();
-      }
-    };
-  
-    window.addEventListener('beforeunload', handleBeforeUnload);
-  
-    return () => {
-      window.removeEventListener('beforeunload', handleBeforeUnload);
-    };
-  }, [isStreaming, handleStopStreaming]);
 
   const handleMoreDetailsRequest = (userQuery) => {
     handleQuerySubmit(userQuery);
@@ -369,16 +389,23 @@ function Chat() {
         userImage={userData?.image}
         isPaneOpen={isPaneOpen}
         togglePane={togglePane}
+        isAdmin={isAdmin}
       />
-      <Header isPaneOpen={isPaneOpen} onNewSession={handleNewSession} togglePane={togglePane} />
+      <Header 
+        isPaneOpen={isPaneOpen} 
+        onNewSession={handleNewSession} 
+        togglePane={togglePane}
+        isAdmin={isAdmin} // Pass isAdmin to the Header component
+      />
       <div className="chat-area" ref={chatAreaRef}>
         
         {sessions[currentSessionIndex] && sessions[currentSessionIndex].messages.length === 0 && (
           <div className="chat-heading">
-            Discover Your Next Great Read!
+            How can I help you today?
           </div>
         )}
         {sessions[currentSessionIndex]?.messages.map((msg, index) => {
+          const showRoleLabel = index === 0 || sessions[currentSessionIndex].messages[index - 1].role !== msg.role;
           const messageKey = msg._id ? msg._id.$oid : `temp-${index}`;
           return (
             <AnswerDisplay
@@ -386,13 +413,15 @@ function Chat() {
               role={msg.role}
               content={msg.content}
               userImage={userData?.image}
-              isStreaming={isStreaming}
               onMoreDetailsClick={handleMoreDetailsRequest}
+              attachments={msg.attachments}
+              showRoleLabel={showRoleLabel}
+              timestamp={msg.timestamp}
             />
           );
         })}
       </div>
-      <InputBox onSubmit={handleQuerySubmit} isLoading={isLoading} isStreaming={isStreaming} onStopStreaming={handleStopStreaming} />
+      <InputBox onSubmit={handleQuerySubmit} isLoading={isLoading} />
     </div>
   );
 }

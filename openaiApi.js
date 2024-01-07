@@ -3,7 +3,7 @@ const { OpenAI } = require('openai');
 require('dotenv').config();
 
 const axios = require('axios');
-const Book = require('./Book');
+const Book = require('./models/Book');
 
 const parseBookTitle = (bookTitleWithAuthor) => {
   // Remove any occurrences of opening or closing quotes
@@ -190,6 +190,27 @@ openaiApi.getSummary = async (text) => {
 
     const response = await openai.chat.completions.create({
       model: "gpt-4-1106-preview",
+      messages: [{ role: 'system', content: prompt }],
+      max_tokens: 10, // Adjust as needed to ensure brevity
+    });
+
+    let summary = response.choices[0]?.message?.content.trim() || "New Chat";
+    // Remove any full stops from the summary
+    summary = summary.replace(/\./g, '');
+    
+    return summary;
+  } catch (error) {
+    console.error('Error getting summary:', error);
+    return "Brief Summary";
+  }
+};
+
+openaiApi.getSummaryWithGPT3_5Turbo = async (text) => {
+  try {
+    const prompt = `Summarize the following text in 4 words:\n\n"${text}"\n\nSummary:`;
+
+    const response = await openai.chat.completions.create({
+      model: "gpt-3.5-turbo-1106",
       messages: [{ role: 'system', content: prompt }],
       max_tokens: 10, // Adjust as needed to ensure brevity
     });

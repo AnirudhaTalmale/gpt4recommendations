@@ -1,6 +1,6 @@
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
-const User = require('./User'); // Import your User model
+const User = require('./models/User'); // Import your User model
 
 // Passport setup for Google OAuth
 passport.use(new GoogleStrategy({
@@ -11,14 +11,20 @@ passport.use(new GoogleStrategy({
   async (accessToken, refreshToken, profile, done) => {
     try {
       let user = await User.findOne({ googleId: profile.id });
+      const userEmail = profile.emails[0].value; // Get user's email from profile
+
       if (!user) {
+        // Assign 'admin' role if the user's email matches a specific address, otherwise assign 'user' role
+        const userRole = userEmail === "anirudhatalmale4@gmail.com" ? 'assistant' : 'user';
+
         user = await User.create({
           googleId: profile.id,
           displayName: profile.displayName,
           firstName: profile.name.givenName,
           lastName: profile.name.familyName,
           image: profile.photos[0].value,
-          email: profile.emails[0].value
+          email: userEmail,
+          role: userRole, // Set the role based on the email
         });
       }
       // Save the accessToken in the user object
@@ -42,9 +48,11 @@ passport.deserializeUser(async (id, done) => {
     const user = await User.findById(id);
     done(null, user);
   } catch (err) {
+    console.error("Error in deserializeUser:", err);
     done(err, null);
   }
 });
+
 
 // Export a function to attach to the Express app
 module.exports = (app) => {

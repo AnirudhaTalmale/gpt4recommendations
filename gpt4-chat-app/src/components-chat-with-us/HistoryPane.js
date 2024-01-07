@@ -10,7 +10,8 @@ const HistoryPane = forwardRef(({
   userName, 
   userImage, 
   isPaneOpen, 
-  togglePane 
+  togglePane,
+  isAdmin
 }, ref) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isEntryActive, setIsEntryActive] = useState(false);
@@ -25,7 +26,7 @@ const HistoryPane = forwardRef(({
 
   const handleChatWithUs = () => {
     // Redirect to the Chat with Us page or handle the action
-    window.location.href = '/chat-with-us';
+    window.location.href = '/';
   };
 
   useEffect(() => {
@@ -94,29 +95,31 @@ const HistoryPane = forwardRef(({
         {isPaneOpen ? <i className="fa-solid fa-angle-left"></i> : <i className="fa-solid fa-angle-right"></i>}
       </button>
 
-        <div onClick={handleNewSessionCreation} className="header-container">
-
-          <button className="new-session-button">
-            ChatGPT
-          </button>
-          
-          <button  className="new-session-button">
+      <div className="header-container">
+        <button className="new-session-button">ChatGPT</button>
+        {/* Conditionally render only the new session button */}
+        {!isAdmin && (
+          <button className="new-session-button" onClick={handleNewSessionCreation}>
             <i className="fa-regular fa-pen-to-square"></i>
           </button>
-        </div>
+        )}
+      </div>
 
-        <div className="history-content">  
-          {[...sessions].reverse().map((session, index) => (
-            <div key={session._id} className="history-entry" onClick={() => handleSessionSelect(sessions.length - index - 1)}>
-                <div>
-                    {session.sessionName} {/* Display the actual session name */}
-                </div>
-                <button onClick={(e) => { e.stopPropagation(); onDeleteSession(session._id); }} className="delete-session-button">
-                    <i className="fa-solid fa-trash"></i>
-                </button>
+
+      <div className="history-content">  
+        {[...sessions].reverse().map((session, index) => (
+          <div key={session._id} className="history-entry" onClick={() => handleSessionSelect(sessions.length - index - 1)}>
+            <div>
+                {session.sessionName} {/* Display the actual session name */}
             </div>
-          ))}
-        </div>
+            {isAdmin && (
+              <button onClick={(e) => { e.stopPropagation(); onDeleteSession(session._id); }} className="delete-session-button">
+                  <i className="fa-solid fa-trash"></i>
+              </button>
+            )}
+          </div>
+        ))}
+      </div>
 
         <div className="user-info-container">
           <div className={`user-entry ${isEntryActive ? 'active' : ''}`} onClick={toggleDropdown} ref={userEntryRef}>
@@ -126,7 +129,7 @@ const HistoryPane = forwardRef(({
           {isDropdownOpen && (
             <ul className="dropdown-menu" ref={dropdownRef}>
               <li onClick={handleChatWithUs}>
-                <i class="fa-solid fa-comments"></i> Chat with Us
+                <i class="fa-solid fa-comments"></i> ChatGPT
               </li>
               <li onClick={handleLogout}>
                 <i class="fa-solid fa-arrow-right-from-bracket"></i> Log out

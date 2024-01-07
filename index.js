@@ -1,7 +1,8 @@
 const mongoose = require('mongoose');
 const openaiApi = require('./openaiApi');
-const Session = require('./Session');
-const BlogPost = require('./BlogPost'); // Adjust the path as necessary
+const Session = require('./models/Session');
+const ChatWithUsSession = require('./models-chat-with-us/ChatWithUsSession');
+const BlogPost = require('./models/BlogPost'); // Adjust the path as necessary
 const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
@@ -9,6 +10,7 @@ const bookRecommendationPrompt = require('./promptTemplate');
 const passportSetup = require('./passport-setup'); // Import the setup function
 const axios = require('axios');
 const multer = require('multer');
+const path = require('path');
 
 require('dotenv').config();
 
@@ -29,8 +31,10 @@ const corsOptions = {
 app.use(cors(corsOptions)); // Apply updated CORS options
 
 const io = new Server(server, {
-  cors: corsOptions // Use the same CORS options for Socket.io
+  cors: corsOptions, // Use the same CORS options for Socket.io
+  maxHttpBufferSize: 1e8 // sets the limit to 100 MB
 });
+
 
 // For JSON payloads
 app.use(express.json({ limit: '50mb' }));
@@ -77,13 +81,15 @@ app.get('/api/user-info', (req, res) => {
         id: req.user._id, // Include the user's ID
         name: req.user.displayName,
         email: req.user.email,
-        image: req.user.image // URL of the Google account image
+        image: req.user.image, // URL of the Google account image
+        role: req.user.role // Include the user's role
       }
     });
   } else {
     res.status(401).json({ isAuthenticated: false });
   }
 });
+
 
 
 app.post('/api/stop-stream', (req, res) => {
@@ -224,6 +230,75 @@ io.on('connection', (socket) => {
     }
   });  
 
+  socket.on('join-chat-session', (sessionId) => {
+    socket.join(sessionId);
+  });
+
+  const processAttachments = (attachments) => {
+    return attachments.map((base64String, index) => {
+      if (!base64String) return null; // If there's no attachment, return null
+      const mimeType = base64String.match(/^data:(.*);base64,/)[1];
+      const filename = `attachment_${Date.now()}_${index}`;
+      const size = Buffer.from(base64String.split(',')[1], 'base64').length;
+  
+      console.log(`Attachment ${index + 1}: Size = ${size} bytes`); // Log the size of the attachment
+  
+      return { data: base64String, filename, mimetype: mimeType, size };
+    }).filter(attachment => attachment != null); // Filter out any null values
+  };
+  
+  const processSocketMessage = async (data, role) => {
+    const { sessionId, message, attachments } = data;
+  
+    const chatWithUsSession = await ChatWithUsSession.findById(sessionId);
+    if (!chatWithUsSession) {
+      socket.emit('error', { message: 'Chat with Us session not found' });
+      return;
+    }
+  
+    const processedAttachments = processAttachments(attachments || []);
+    const timestamp = message.timestamp; // Use the timestamp from the frontend
+  
+    // Add the new message to the session
+    chatWithUsSession.messages.push({
+      role: role,
+      contentType: 'simple',
+      content: message.content,
+      attachments: processedAttachments,
+      timestamp: timestamp // Use the frontend timestamp here
+    });
+
+    if (message.isFirstQuery && estimateTokenCount(message.content) < 200) {
+      const summary = await openaiApi.getSummaryWithGPT3_5Turbo(message.content);
+      chatWithUsSession.sessionName = summary; // Update the session name with the summary
+      await chatWithUsSession.save(); // Save the updated session
+    
+      // Emit an event to update the session name in the frontend
+      socket.emit('updateSessionName', { sessionId: sessionId, sessionName: summary });
+    } else {
+      await chatWithUsSession.save();
+    }
+  
+    // Emit the updated message to all clients in the session
+    socket.to(sessionId).emit('chat-with-us-update', {
+      sessionId: sessionId,
+      message: {
+        ...message,
+        attachments: processedAttachments,
+        timestamp: timestamp // Include the frontend timestamp in the socket emission
+      }
+    });
+  };  
+  
+  socket.on('chat-with-us-query', async (data) => {
+    await processSocketMessage(data, 'user');
+  });
+  
+  socket.on('chat-with-us-response', async (data) => {
+    await processSocketMessage(data, 'assistant');
+  });
+  
+
   socket.on('disconnect', () => {
     console.log('A user disconnected');
   });
@@ -246,7 +321,6 @@ app.post('/api/session', async (req, res) => {
     res.status(500).json({ message: 'Error creating a new session', error: error.toString() });
   }
 });
-
 
 // GET endpoint for retrieving all sessions with their messages
 app.get('/api/sessions', async (req, res) => {
@@ -280,8 +354,79 @@ app.delete('/api/session/:sessionId', async (req, res) => {
   }
 });
 
-// End points for Blog posts
+// chat-with-us endpoints
 
+app.get('/api/chat-with-us-sessions', async (req, res) => {
+  try {
+    const { userId, role } = req.query; // Extract userId and role from query parameters
+    let sessions;
+    if (role === 'assistant') {
+      // If role is 'assistant', fetch all sessions
+      sessions = await ChatWithUsSession.find();
+    } else {
+      // If role is 'user', fetch sessions specific to the user
+      sessions = await ChatWithUsSession.find({ user: userId });
+    }
+
+    res.json(sessions);
+  } catch (error) {
+    console.error('GET /api/chat-with-us-sessions - Error:', error);
+    res.status(500).json({ message: 'Error retrieving Chat with Us sessions', error: error.toString() });
+  }
+});
+
+const User = require('./models/User'); // Import the User model
+
+app.post('/api/chat-with-us-session', async (req, res) => {
+  try {
+    const userId = req.body.userId;
+    if (!userId) {
+      return res.status(400).json({ message: 'User ID is required' });
+    }
+
+    // Fetch the user by userId
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Get the current date and time
+    const now = new Date();
+    const currentDate = now.toISOString().split('T')[0]; // Date in YYYY-MM-DD
+    const currentTime = now.toTimeString().split(' ')[0].substring(0, 5); // Time in HH:MM
+
+    // Create a new session with a dynamic name based on the user's first name, current date and time
+    const newSession = new ChatWithUsSession({
+      user: userId,
+      messages: [],
+      sessionName: `${user.firstName}'s Ticket created on ${currentDate} at ${currentTime}`
+    });
+
+    await newSession.save();
+
+    res.json(newSession);
+  } catch (error) {
+    console.error('POST /api/chat-with-us-session - Error:', error);
+    res.status(500).json({ message: 'Error creating a new Chat with Us session', error: error.toString() });
+  }
+});
+
+
+
+
+app.delete('/api/chat-with-us-session/:sessionId', async (req, res) => {
+  try {
+    const sessionId = req.params.sessionId;
+    await ChatWithUsSession.findByIdAndDelete(sessionId);
+    res.json({ message: 'Session deleted successfully' });
+  } catch (error) {
+    console.error('DELETE /api/chat-with-us-session/:sessionId - Error:', error);
+    res.status(500).json({ message: 'Error deleting session', error: error.toString() });
+  }
+});
+
+
+// End points for Blog posts
 app.post('/api/blogposts', upload.single('image'), async (req, res) => {
   try {
     // Extract text fields from req.body and file from req.file

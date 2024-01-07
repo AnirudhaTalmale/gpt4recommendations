@@ -5,9 +5,14 @@
   display: flex;
   flex-direction: column; /* Keep the main direction as column for stacking */
   height: 100vh;
+  
 }
 
 /* chat area */
+
+body:not(.history-pane-open) .chat-area {
+  margin-left: 0;
+}
 
 .header {
   width: 100%;
@@ -43,10 +48,12 @@
 .chat-area-wrapper {
   display: flex;
   justify-content: center; /* Center the child horizontally */
+  
 }
 
 
 .chat-area {
+  
   display: flex;
   flex-direction: column;
   padding: 20px;
@@ -102,15 +109,9 @@
 
 /* input area */
 
-body:not(.history-pane-open) .chat-area {
-  margin-left: 0;
-}
 body:not(.history-pane-open) .input-area {
-  
   left: 0;
 }
-
-
 
 .input-area {
   position: fixed;
@@ -133,9 +134,7 @@ body:not(.history-pane-open) .input-area {
   border: 1.5px solid #D3D3D3;
   overflow: hidden;
   position: relative;
-  
 }
-
 
 .textarea-wrapper {
   width: 100%;
@@ -154,6 +153,24 @@ body:not(.history-pane-open) .input-area {
   resize: none;
   line-height: 1.5rem;
   /* background-color: black; */
+}
+
+.input-box-chat-with-us {
+  width: 80%;
+  border: none;
+  /* padding: top right bottom left */
+  padding: 0.5rem 1.2rem 0.5rem 3rem;
+  outline: none;
+  font-family: Söhne, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, sans-serif, Helvetica Neue, Arial, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
+  font-size: 1rem;
+  resize: none;
+  line-height: 1.5rem;
+  /* background-color: black; */
+  background-color: transparent;
+}
+
+.input-box-chat-with-us::-webkit-scrollbar {
+  display: none; /* for Chrome, Safari, and Opera */
 }
 
 .stop-button {
@@ -179,10 +196,77 @@ body:not(.history-pane-open) .input-area {
   width: 1.85rem;
   height: 1.85rem;
   color: white;
+  cursor: pointer;
 }
 
 .send-button.active {
   background-color: black;
+}
+
+.attachment-button {
+  position: absolute;
+  left: 0.6rem; /* Position it to the left */
+  bottom: 0.35rem; /* Align with the send button */
+  background: none; /* Background color similar to send button */
+  border: none;
+  width: 1.85rem; /* Width similar to send button */
+  height: 1.85rem; /* Height similar to send button */
+  font-size: 1rem; /* Icon size */
+  cursor: pointer; /* Cursor as pointer to indicate clickable */
+}
+
+.attachment-button i {
+  line-height: 1.85rem; /* Center the icon vertically */
+  text-align: center; /* Center the icon horizontally */
+  display: block;
+}
+
+.attachment-preview {
+  position: relative;
+  /* ...existing styles... */
+}
+
+.remove-attachment-button {
+  position: absolute;
+  top: -0.07rem;
+  right: 0.35rem;
+  background: grey; /* Ensure this is the color you want for the background */
+  border: none;
+  cursor: pointer;
+  color: white; /* Or any color that makes the icon visible */
+  font-size: 1.3rem; /* Adjust size as needed */
+  border-radius: 50%; /* This will make the button round */
+  width: 1.3rem; /* Adjust the width as needed */
+  height: 1.3rem; /* Adjust the height to match the width */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden; /* This ensures that nothing extends outside the circular boundary */
+}
+
+
+.attachment-preview:hover {
+  display: block; /* Show the button on hover */
+}
+
+.attachment-preview img {
+  width: 3.3rem; /* Or any size you see fit */
+  height: 3.3rem; /* Or any size you see fit */
+  object-fit: cover;
+  margin-right: 1.2rem; /* Spacing between multiple attachments */
+  vertical-align: middle; /* Align inline with text */
+  border-radius: 0.3rem; /* Optional: if you want rounded corners */
+}
+
+.attachment-previews-header {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  padding-left: 0.5rem;
+  /* ...other styles... */
 }
 
 /* History pane css */
@@ -194,7 +278,7 @@ body:not(.history-pane-open) .input-area {
   left: 107%; /* Center horizontally */
   transform: translate(-50%, -50%);
   cursor: pointer; 
-  color: grey;
+  color: rgb(159, 158, 158);
   font-size: 1.3rem;
   background: none;
   border: none;
@@ -284,7 +368,18 @@ body:not(.history-pane-open) .input-area {
   font-size: 0.9rem;
 }
 
+.history-pane-image {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  margin-left: 0.8rem;
+  margin-right: 0.8rem;
+  margin-bottom: 0.6rem;
+  user-select: none;
+}
+
 .user-info-container {
+  /* border: 1px solid pink; */
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
@@ -292,7 +387,7 @@ body:not(.history-pane-open) .input-area {
   position: relative;
   /* background-color: orange; */
   height: 3rem;
-  width: 100%;
+  width: 98%;
   position: absolute;
   bottom: 0;
   left: 0;
@@ -310,46 +405,42 @@ body:not(.history-pane-open) .input-area {
       border-radius: 0.5rem;
   }
   user-select: none;
-  
-}
-
-.history-pane-image {
-  width: 2rem;
-  height: 2rem;
-  border-radius: 50%;
-  margin-left: 0.8rem;
-  margin-right: 0.8rem;
-  margin-bottom: 0.6rem;
-  user-select: none;
+  /* border: 1px solid green; */
 }
 
 .dropdown-menu {
+  /* border: 1px solid yellow; */
   position: absolute;
-  bottom: 100%; /* Align the top of the dropdown with the bottom of the user-entry */
-  left: 0; /* Align to the left of the user-entry */
-  width: 92%;
+  bottom: 100%;
+  left: 0;
+  width: 84%;
   margin-bottom: 0.8rem;
-  height: 3rem;
   z-index: 3;
+  background-color: hsla(0, 0%, 19%, 1);
+  border-radius: 0.5rem;
+  overflow: hidden; /* Optional: In case of very long item names */
 }
 
 .dropdown-menu li {
+  /* border: 1px solid red; */
   list-style-type: none;
-  width: 96%;
-  margin-left: -2.35rem;
-  padding: 0.6rem;
+  margin-left: -2.45rem;
+  padding: 0.6rem 1rem;
   user-select: none;
   display: flex;
   align-items: center;
-  height: 2rem;
-  border-radius: 0.5rem;
-  background-color: hsla(0, 0%, 19%, 1);
-  padding-left: 1rem;
   cursor: pointer;
-  z-index: 10;
+  &:hover {
+    background-color: hsla(0, 0%, 25%, 1);
+  }
+  height: 1.7rem;
 }
 
 .fa-arrow-right-from-bracket {
+  margin-right: 0.9rem;
+}
+
+.fa-comments {
   margin-right: 0.9rem;
 }
 
@@ -396,6 +487,8 @@ body:not(.history-pane-open) .input-area {
   border: none;
 }
 
+/* AnswerDisplay component */
+
 .message {
   display: flex;
   align-items: flex-start; /* Aligns items at the start of the container */
@@ -438,6 +531,16 @@ body:not(.history-pane-open) .input-area {
   color: rgb(14, 156, 52);
   user-select: none;
   display: block;
+}
+
+.message-sender-chat-with-us {
+  font-weight: bold; /* Make the icon text bold */
+  font-family: SÃ¶hne, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, sans-serif, Helvetica Neue, Arial, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
+  margin-bottom: 2rem !important;
+  color: rgb(14, 156, 52);
+  user-select: none;
+  display: block;
+  margin-bottom: 1rem;
 }
 
 .buy-now-button {
@@ -519,9 +622,6 @@ body:not(.history-pane-open) .input-area {
   pointer-events: none; /* Prevents clicking */
 }
 
-/* ... rest of your button styles ... */
-
-
 h3 {
   line-height: 1.7rem;
 }
@@ -535,6 +635,94 @@ div img {
   margin-top: 0.6rem;
   margin-bottom: -0.4rem;
   /* border: 1px solid black;  */
+}
+
+.message-attachments {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); /* Creates a responsive grid */
+  grid-gap: 25px; /* Adjusts space between grid items */
+}
+
+.attachment img {
+  width: 100%; /* Makes image fill the grid cell */
+  height: auto; /* Maintains aspect ratio */
+  cursor: pointer;
+  display: block; /* Fixes issue with extra space under images */
+  margin-bottom: 0.5rem;
+}
+
+
+.modal {
+  /* ... other styles ... */
+  position: fixed; /* Fixed position */
+  top: 0;
+  left: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  background-color: rgba(0, 0, 0, 0.9); /* Semi-transparent background */
+  display: flex; /* Use flexbox for centering */
+  align-items: center; /* Vertical centering */
+  justify-content: center; /* Horizontal centering */
+  z-index: 1000; /* Ensure it's above other content */
+}
+
+.modal-content {
+  position: relative;
+  max-width: 90vw; 
+  max-height: 90vh; 
+  overflow: hidden;
+  background: white;
+  border-radius: 8px; /* Optional: for rounded corners */
+}
+
+.modal img {
+  width: 100%; /* Make image responsive within the modal-content */
+  height: auto; /* Maintain aspect ratio */
+  display: block; /* Remove extra space below the image */
+  max-height: 100%; 
+  object-fit: contain;
+  margin: 0;
+  padding: 0;
+}
+
+.close-button {
+  position: fixed;
+  top: 8px;
+  right: 8px;
+  background: transparent; /* Optional: make the background transparent */
+  color: white; /* Set icon color to white */
+  border: none;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  text-align: center;
+  line-height: 30px; /* Center the icon vertically */
+  cursor: pointer;
+}
+
+.close-button i {
+  font-size: 0.8rem; /* Adjust the size of the icon as needed */
+}
+
+.message-timestamp {
+  color: grey;
+  font-size: 0.6rem;
+  margin-top: -0.1rem;
+  margin-left: 0.25rem;
+}
+
+.message-question-chat-with-us {
+  display: inline-block; /* or block */
+  background-color: rgb(244, 243, 243);
+  border-radius: 0.5rem;
+  /* border: 1px solid black; */
+  padding: 2px 8px; /* Adjust padding as needed */
+  white-space: pre-line; /* This will respect new lines */
+  font-size: 0.95rem;
+}
+
+.combined-message-block {
+  margin-top: -1.5rem;
 }
 
 /* NewBlogPost page CSS */
@@ -575,7 +763,6 @@ div img {
 .new-blog-post-button:hover {
   background-color: #0056b3;
 }
-
 
 /* BlogPostPage.css */
 
