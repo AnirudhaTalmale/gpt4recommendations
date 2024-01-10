@@ -429,6 +429,7 @@ app.post('/api/chat-with-us-session', async (req, res) => {
     });
 
     await newSession.save();
+    io.emit('new-session', newSession, receiverId);
 
     // Create a UserSession for the initiator
     const newUserSession = new UserSession({
@@ -459,8 +460,23 @@ app.post('/api/chat-with-us-session', async (req, res) => {
 app.delete('/api/chat-with-us-session/:sessionId', async (req, res) => {
   try {
     const sessionId = req.params.sessionId;
+    const userId = req.body.userId; // Assuming you have the user ID of the one making the request
+
+    // Find related UserSessions
+    const relatedUserSessions = await UserSession.find({ session: sessionId });
+
+    if (relatedUserSessions.length !== 2) {
+      return res.status(400).json({ message: 'Invalid session state' });
+    }
+
+    // Identify the receiverId as the other user in the UserSessions
+    const receiverId = relatedUserSessions.find(session => session.user.toString() !== userId).user;
+
     await ChatWithUsSession.findByIdAndDelete(sessionId);
     await UserSession.deleteMany({ session: sessionId });
+
+    // Emit delete event to the receiver
+    io.emit('delete-session', sessionId, receiverId);
 
     res.json({ message: 'Session and associated user sessions deleted successfully' });
   } catch (error) {
@@ -468,6 +484,7 @@ app.delete('/api/chat-with-us-session/:sessionId', async (req, res) => {
     res.status(500).json({ message: 'Error deleting session', error: error.toString() });
   }
 });
+
 
 
 app.get('/api/get-user-by-email', async (req, res) => {

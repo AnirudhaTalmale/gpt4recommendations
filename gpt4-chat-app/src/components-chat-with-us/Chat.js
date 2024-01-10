@@ -399,15 +399,56 @@ function Chat() {
     }
   };  
 
+  useEffect(() => {
+    const handleNewSession = (newSession, receiverId) => {
+      // Check if the current user's ID matches the receiver ID
+      if (userData.id === receiverId) {
+        setSessions(prevSessions => [...prevSessions, newSession]);
+      }
+    };
+  
+    socket.on('new-session', handleNewSession);
+  
+    return () => {
+      socket.off('new-session', handleNewSession);
+    };
+  }, [userData]);  
+
+  useEffect(() => {
+    const handleDeleteSession = (deletedSessionId, receiverId) => {
+      if (userData.id === receiverId) {
+        console.log("i am here");
+        setSessions(prevSessions => prevSessions.filter(session => session._id !== deletedSessionId));
+
+      }
+    };
+  
+    socket.on('delete-session', handleDeleteSession);
+  
+    return () => {
+      socket.off('delete-session', handleDeleteSession);
+    };
+  }, [userData]);
+  
+
+  
   const handleDeleteSession = async (sessionId) => {
     try {
-      await axios.delete(`http://localhost:3000/api/chat-with-us-session/${sessionId}`);
+      if (!userData || !userData.id) {
+        console.error('User data or ID not available.');
+        return;
+      }
+  
+      await axios.delete(`http://localhost:3000/api/chat-with-us-session/${sessionId}`, {
+        data: { userId: userData.id } // Passing userId in the body of DELETE request
+      });
+  
       setSessions(prevSessions => prevSessions.filter(session => session._id !== sessionId));
       setCurrentSessionIndex(prevIndex => (prevIndex === 0 ? -1 : prevIndex - 1));
     } catch (error) {
       console.error('Error deleting session:', error);
     }
-  };
+  };  
 
   const setCurrentSessionIndexWithStreamCheck = newIndex => {
     setCurrentSessionIndex(newIndex);
@@ -477,8 +518,6 @@ function Chat() {
       socket.off('session-state');
     };
   }, [scrollToBottom]);
-  
-  
 
   return (
     <div className="App">
