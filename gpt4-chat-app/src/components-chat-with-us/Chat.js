@@ -14,6 +14,8 @@ function Chat() {
   const [isLoading, setIsLoading] = useState(false);
   const [userData, setUserData] = useState(null);
   const historyPaneRef = useRef(null);
+  const [unseenMessageCounts, setUnseenMessageCounts] = useState({});
+
 
   const chatAreaRef = useRef(null);
   const [shouldAutoScroll, setShouldAutoScroll] = useState(false);
@@ -70,16 +72,40 @@ function Chat() {
   
   useEffect(() => {
     const handleScroll = () => {
-      setShouldAutoScroll(isUserAtBottom());
+      const atBottom = isUserAtBottom();
+      setShouldAutoScroll(atBottom);
+  
+      if (atBottom && userData) {
+        const currentSession = sessions[currentSessionIndex];
+        if (currentSession && unseenMessageCounts[currentSession._id] > 0) {
+          // Emit the socket event with sessionId and userId
+          socket.emit('reset-unseen-count', {
+            sessionId: currentSession._id, 
+            userId: userData.id // Use userData.id only if userData is not null
+          });
+  
+          // Optionally, update the local state to reset the count
+          setUnseenMessageCounts(prevCounts => ({
+            ...prevCounts,
+            [currentSession._id]: 0
+          }));
+        }
+      }
     };
-
+  
     const chatArea = chatAreaRef.current;
-    chatArea.addEventListener('scroll', handleScroll);
-
+    if (chatArea) {
+      chatArea.addEventListener('scroll', handleScroll);
+    }
+  
     return () => {
-      chatArea.removeEventListener('scroll', handleScroll);
+      if (chatArea) {
+        chatArea.removeEventListener('scroll', handleScroll);
+      }
     };
-  }, []);
+  }, [sessions, currentSessionIndex, unseenMessageCounts, userData]); // Update the dependency array
+  
+
 
   // Extract the complex expression to a variable
   const currentSessionMessages = currentSessionIndex >= 0 ? sessions[currentSessionIndex]?.messages : null;
@@ -95,7 +121,17 @@ function Chat() {
     }
   }, [currentSessionMessages, shouldAutoScroll]); // Use the extracted variable as a dependency
 
-  
+  const fetchReceiverIdByEmail = async (email) => {
+    try {
+      const response = await axios.get('http://localhost:3000/api/get-user-by-email', {
+        params: { email: email }
+      });
+      return response.data._id; // Assuming the user object is returned directly
+    } catch (error) {
+      console.error('Error fetching receiver ID:', error);
+      return null; // Handle error appropriately
+    }
+  };  
   
   const loadSessions = useCallback(async (currentUserData) => {
     if (!currentUserData || !currentUserData.id) { 
@@ -104,14 +140,29 @@ function Chat() {
     }
     
     try {
-      const res = await axios.get('http://localhost:3000/api/chat-with-us-sessions', { 
-        params: { 
-          userId: currentUserData.id, 
-          role: isAdmin ? 'assistant' : 'user' 
-        } 
+      const res = await axios.get('http://localhost:3000/api/chat-with-us-sessions', {
+        params: {
+          userId: currentUserData.id,
+          role: isAdmin ? 'assistant' : 'user'
+        }
       });
-      setSessions(res.data);
+  
+      const sessionsWithCounts = res.data.map(session => {
+        return {
+          ...session,
+          unseenCount: session.unseenCount || 0 // Assuming API returns unseenCount
+        };
+      });
+  
+      setSessions(sessionsWithCounts);
       setIsInitialLoad(false);
+  
+      // Update unseen message counts
+      const newUnseenMessageCounts = {};
+      sessionsWithCounts.forEach(session => {
+        newUnseenMessageCounts[session._id] = session.unseenCount;
+      });
+      setUnseenMessageCounts(newUnseenMessageCounts);
     } catch (error) {
       console.error('Error loading sessions:', error);
     }
@@ -301,6 +352,7 @@ function Chat() {
     const eventType = isAdmin ? 'chat-with-us-response' : 'chat-with-us-query';
     socket.emit(eventType, {
       sessionId: sessions[currentSessionIndex]._id,
+      userId: userData.id,  // Include the userId here
       message: {
         role: isAdmin ? 'assistant' : 'user',
         content: textQuery,
@@ -308,7 +360,7 @@ function Chat() {
         isFirstQuery: sessions[currentSessionIndex]?.messages?.length === 0
       },
       attachments: base64Attachments
-    });
+    });    
   };
 
   const convertToBase64 = (file) => {
@@ -330,14 +382,22 @@ function Chat() {
     } else {
       try {
         if (!userData) return;
-        const res = await axios.post('http://localhost:3000/api/chat-with-us-session', { userId: userData.id });
+        const receiverId = await fetchReceiverIdByEmail('anirudhatalmale4@gmail.com');
+        if (!receiverId) {
+          console.error('Receiver ID not found');
+          return;
+        }
+        const res = await axios.post('http://localhost:3000/api/chat-with-us-session', {
+          userId: userData.id,
+          receiverId: receiverId
+        });
         setSessions(prevSessions => [...prevSessions, res.data]);
         setCurrentSessionIndex(sessions.length);
       } catch (error) {
         console.error('Error creating new session:', error);
       }
     }
-  };
+  };  
 
   const handleDeleteSession = async (sessionId) => {
     try {
@@ -351,7 +411,13 @@ function Chat() {
 
   const setCurrentSessionIndexWithStreamCheck = newIndex => {
     setCurrentSessionIndex(newIndex);
-  };
+  };  
+
+  const handleSessionSelectAndUpdate = async (sessionId) => {
+    socket.emit('request-session-state', sessionId); // Emit event to request session state
+    setCurrentSessionIndexWithStreamCheck(sessions.findIndex(session => session._id === sessionId));
+} ;
+
 
   const handleMoreDetailsRequest = (userQuery) => {
     handleQuerySubmit(userQuery);
@@ -373,6 +439,44 @@ function Chat() {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [isPaneOpen, togglePane]);
+
+  useEffect(() => {
+    const handleUnseenMessageCount = (data) => {
+      if (data.userId === userData.id) { // Check if the update is for the current user
+        setUnseenMessageCounts(prevCounts => ({
+          ...prevCounts,
+          [data.sessionId]: data.count
+        }));
+      }
+    };
+  
+    socket.on('unseen-message-count', handleUnseenMessageCount);
+  
+    return () => {
+      socket.off('unseen-message-count', handleUnseenMessageCount);
+    };
+  }, [userData]); 
+  
+
+  const resetUnseenCount = (sessionId) => {
+    setUnseenMessageCounts(prevCounts => ({
+      ...prevCounts,
+      [sessionId]: 0
+    }));
+  };
+
+  useEffect(() => {
+    socket.on('session-state', (updatedSession) => {
+      setSessions(prevSessions => {
+        return prevSessions.map(session => session._id === updatedSession._id ? updatedSession : session);
+      });
+      scrollToBottom(); // Optional: Scroll to the bottom of the chat area
+    });
+  
+    return () => {
+      socket.off('session-state');
+    };
+  }, [scrollToBottom]);
   
   
 
@@ -383,13 +487,16 @@ function Chat() {
         ref={historyPaneRef}
         sessions={sessions}
         onNewSession={handleNewSession}
-        onSelectSession={setCurrentSessionIndexWithStreamCheck}
+        onSelectSession={handleSessionSelectAndUpdate}
         onDeleteSession={handleDeleteSession}
         userName={userData?.name}
         userImage={userData?.image}
         isPaneOpen={isPaneOpen}
         togglePane={togglePane}
         isAdmin={isAdmin}
+        unseenMessageCounts={unseenMessageCounts}
+        userId={userData?.id}
+        resetUnseenCount={resetUnseenCount}
       />
       <Header 
         isPaneOpen={isPaneOpen} 

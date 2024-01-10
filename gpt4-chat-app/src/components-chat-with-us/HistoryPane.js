@@ -11,7 +11,9 @@ const HistoryPane = forwardRef(({
   userImage, 
   isPaneOpen, 
   togglePane,
-  isAdmin
+  isAdmin,
+  unseenMessageCounts,
+  userId
 }, ref) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isEntryActive, setIsEntryActive] = useState(false);
@@ -81,12 +83,15 @@ const HistoryPane = forwardRef(({
     }
   };
   
-  const handleSessionSelect = (index) => {
-    onSelectSession(index);
-    if (window.innerWidth < 760) { // Check if screen size is less than 760px
+
+  const handleSessionSelect = async (index) => {
+    const sessionId = sessions[index]._id;
+    onSelectSession(sessionId); // Use the callback passed from Chat component
+    if (window.innerWidth < 760) {
       togglePane(); // Collapse the pane
     }
   };
+
 
   return (
     <div ref={ref}>
@@ -111,6 +116,9 @@ const HistoryPane = forwardRef(({
           <div key={session._id} className="history-entry" onClick={() => handleSessionSelect(sessions.length - index - 1)}>
             <div>
                 {session.sessionName} {/* Display the actual session name */}
+                {unseenMessageCounts[session._id] > 0 && (
+                  <span className="unseen-messages-count">{unseenMessageCounts[session._id]}</span>
+                )}
             </div>
             {isAdmin && (
               <button onClick={(e) => { e.stopPropagation(); onDeleteSession(session._id); }} className="delete-session-button">

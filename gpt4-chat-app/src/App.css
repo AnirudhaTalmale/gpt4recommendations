@@ -444,6 +444,13 @@ body:not(.history-pane-open) .input-area {
   margin-right: 0.9rem;
 }
 
+.unseen-messages-count {
+  margin-left: 8px;
+  color: red; /* Choose a color that stands out */
+  font-weight: bold;
+}
+
+
 /* login page components */
 
 .login-container {

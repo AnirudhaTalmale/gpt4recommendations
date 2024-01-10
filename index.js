@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const openaiApi = require('./openaiApi');
 const Session = require('./models/Session');
 const ChatWithUsSession = require('./models-chat-with-us/ChatWithUsSession');
+const UserSession = require('./models-chat-with-us/UserSession');
 const BlogPost = require('./models/BlogPost'); // Adjust the path as necessary
 const express = require('express');
 const http = require('http');
@@ -247,8 +248,28 @@ io.on('connection', (socket) => {
     }).filter(attachment => attachment != null); // Filter out any null values
   };
   
+  const calculateUnseenMessages = async (userId, sessionId) => {
+    // Find the user session
+    const userSession = await UserSession.findOne({ user: userId, session: sessionId });
+    if (!userSession || !userSession.lastSeenMessage) {
+        return 0; // If no user session or last seen message, return 0
+    }
+
+    const session = await ChatWithUsSession.findById(sessionId);
+    if (!session) return 0;
+  
+    // Find the index of the last seen message
+    const lastSeenIndex = session.messages.findIndex(message => message._id.equals(userSession.lastSeenMessage));
+    console.log("lastSeenIndex is ", lastSeenIndex);
+    if (lastSeenIndex === -1) {
+        return session.messages.length; // If last seen message not found, all messages are unseen
+    }
+
+    return session.messages.length - lastSeenIndex - 1;
+  };
+
   const processSocketMessage = async (data, role) => {
-    const { sessionId, message, attachments } = data;
+    const { sessionId, message, attachments, userId } = data;
   
     const chatWithUsSession = await ChatWithUsSession.findById(sessionId);
     if (!chatWithUsSession) {
@@ -278,6 +299,13 @@ io.on('connection', (socket) => {
     } else {
       await chatWithUsSession.save();
     }
+
+    const senderSession = await UserSession.findOne({ user: userId, session: sessionId });
+    if (senderSession) {
+      senderSession.lastSeenMessage = chatWithUsSession.messages[chatWithUsSession.messages.length - 1]._id;
+      senderSession.lastSeenAt = new Date();
+      await senderSession.save();
+    }
   
     // Emit the updated message to all clients in the session
     socket.to(sessionId).emit('chat-with-us-update', {
@@ -288,7 +316,18 @@ io.on('connection', (socket) => {
         timestamp: timestamp // Include the frontend timestamp in the socket emission
       }
     });
-  };  
+
+    const userSessions = await UserSession.find({ session: sessionId, user: { $ne: userId } });
+    userSessions.forEach(async (userSession) => {
+      const unseenCount = await calculateUnseenMessages(userSession.user, sessionId);
+      // Change this to broadcast to the session
+      socket.to(sessionId).emit('unseen-message-count', {
+        userId: userSession.user,  // Include the user ID in the payload
+        sessionId: sessionId,
+        count: unseenCount
+      });
+    });
+  };    
   
   socket.on('chat-with-us-query', async (data) => {
     await processSocketMessage(data, 'user');
@@ -298,11 +337,157 @@ io.on('connection', (socket) => {
     await processSocketMessage(data, 'assistant');
   });
   
+  socket.on('reset-unseen-count', async (data) => {
+    const { sessionId, userId } = data;
+  
+    // Find the last message in the session
+    const session = await ChatWithUsSession.findById(sessionId);
+    const lastMessage = session.messages[session.messages.length - 1];
+  
+    // Update the UserSession
+    await UserSession.findOneAndUpdate(
+      { user: userId, session: sessionId },
+      { lastSeenMessage: lastMessage ? lastMessage._id : null }
+    );
+  });
 
+  // In your socket event handlers
+  socket.on('request-session-state', async (sessionId) => {
+    const session = await ChatWithUsSession.findById(sessionId)
+                    .populate('messages') // Assuming messages are a separate collection
+                    .exec();
+    if (session) {
+      socket.emit('session-state', session);
+    } else {
+      socket.emit('error', { message: 'Session not found' });
+    }
+  });
+
+  
   socket.on('disconnect', () => {
     console.log('A user disconnected');
   });
 });
+
+
+// ----------------  chat-with-us endpoints ------------------------
+
+app.get('/api/chat-with-us-sessions', async (req, res) => {
+  try {
+    const { userId, role } = req.query;
+    let sessions;
+    if (role === 'assistant') {
+      sessions = await ChatWithUsSession.find();
+    } else {
+      sessions = await ChatWithUsSession.find({ user: userId });
+    }
+
+    const updatedSessions = await Promise.all(sessions.map(async (session) => {
+      const userSession = await UserSession.findOne({ user: userId, session: session._id });
+      const lastSeenIndex = session.messages.findIndex(message => message._id.equals(userSession?.lastSeenMessage));
+      const unseenCount = session.messages.length - lastSeenIndex - 1;
+
+      return {
+        ...session.toObject(),
+        unseenCount: unseenCount < 0 ? 0 : unseenCount
+      };
+    }));
+
+    res.json(updatedSessions);
+  } catch (error) {
+    console.error('GET /api/chat-with-us-sessions - Error:', error);
+    res.status(500).json({ message: 'Error retrieving Chat with Us sessions', error: error.toString() });
+  }
+});
+
+const User = require('./models/User'); // Import the User model
+
+app.post('/api/chat-with-us-session', async (req, res) => {
+  try {
+    const { userId, receiverId } = req.body; // Assume you pass receiverId when creating a session
+    if (!userId || !receiverId) {
+      return res.status(400).json({ message: 'User ID and Receiver ID are required' });
+    }
+
+    // Fetch the users by userId and receiverId
+    const user = await User.findById(userId);
+    const receiver = await User.findById(receiverId); // Make sure you have a receiver user
+    if (!user || !receiver) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Get the current date and time
+    const now = new Date();
+    const currentDate = now.toISOString().split('T')[0]; // Date in YYYY-MM-DD
+    const currentTime = now.toTimeString().split(' ')[0].substring(0, 5); // Time in HH:MM
+
+    // Create a new session with a dynamic name based on the user's first name, current date and time
+    const newSession = new ChatWithUsSession({
+      user: userId,
+      messages: [],
+      sessionName: `${user.firstName}'s Ticket created on ${currentDate} at ${currentTime}`
+    });
+
+    await newSession.save();
+
+    // Create a UserSession for the initiator
+    const newUserSession = new UserSession({
+      user: userId,
+      session: newSession._id,
+      lastSeenMessage: null, // No messages yet
+      lastSeenAt: new Date()
+    });
+    await newUserSession.save();
+
+    // Create a UserSession for the receiver
+    const newReceiverSession = new UserSession({
+      user: receiverId,
+      session: newSession._id,
+      lastSeenMessage: null, // No messages yet
+      lastSeenAt: new Date()
+    });
+    await newReceiverSession.save();
+
+    res.json(newSession);
+  } catch (error) {
+    console.error('POST /api/chat-with-us-session - Error:', error);
+    res.status(500).json({ message: 'Error creating a new Chat with Us session', error: error.toString() });
+  }
+});
+
+
+app.delete('/api/chat-with-us-session/:sessionId', async (req, res) => {
+  try {
+    const sessionId = req.params.sessionId;
+    await ChatWithUsSession.findByIdAndDelete(sessionId);
+    await UserSession.deleteMany({ session: sessionId });
+
+    res.json({ message: 'Session and associated user sessions deleted successfully' });
+  } catch (error) {
+    console.error('DELETE /api/chat-with-us-session/:sessionId - Error:', error);
+    res.status(500).json({ message: 'Error deleting session', error: error.toString() });
+  }
+});
+
+
+app.get('/api/get-user-by-email', async (req, res) => {
+  try {
+    const { email } = req.query;
+    if (!email) {
+      return res.status(400).json({ message: 'Email is required' });
+    }
+    const user = await User.findOne({ email: email }).exec();
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    res.json(user);
+  } catch (error) {
+    console.error('GET /api/get-user-by-email - Error:', error);
+    res.status(500).json({ message: 'Error retrieving user by email', error: error.toString() });
+  }
+});
+
+// ------------------- chat endpoints-------------------
 
 // POST endpoint for creating a new session
 app.post('/api/session', async (req, res) => {
@@ -354,79 +539,8 @@ app.delete('/api/session/:sessionId', async (req, res) => {
   }
 });
 
-// chat-with-us endpoints
+// ---------------------- End points for Blog posts ----------------------------
 
-app.get('/api/chat-with-us-sessions', async (req, res) => {
-  try {
-    const { userId, role } = req.query; // Extract userId and role from query parameters
-    let sessions;
-    if (role === 'assistant') {
-      // If role is 'assistant', fetch all sessions
-      sessions = await ChatWithUsSession.find();
-    } else {
-      // If role is 'user', fetch sessions specific to the user
-      sessions = await ChatWithUsSession.find({ user: userId });
-    }
-
-    res.json(sessions);
-  } catch (error) {
-    console.error('GET /api/chat-with-us-sessions - Error:', error);
-    res.status(500).json({ message: 'Error retrieving Chat with Us sessions', error: error.toString() });
-  }
-});
-
-const User = require('./models/User'); // Import the User model
-
-app.post('/api/chat-with-us-session', async (req, res) => {
-  try {
-    const userId = req.body.userId;
-    if (!userId) {
-      return res.status(400).json({ message: 'User ID is required' });
-    }
-
-    // Fetch the user by userId
-    const user = await User.findById(userId);
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' });
-    }
-
-    // Get the current date and time
-    const now = new Date();
-    const currentDate = now.toISOString().split('T')[0]; // Date in YYYY-MM-DD
-    const currentTime = now.toTimeString().split(' ')[0].substring(0, 5); // Time in HH:MM
-
-    // Create a new session with a dynamic name based on the user's first name, current date and time
-    const newSession = new ChatWithUsSession({
-      user: userId,
-      messages: [],
-      sessionName: `${user.firstName}'s Ticket created on ${currentDate} at ${currentTime}`
-    });
-
-    await newSession.save();
-
-    res.json(newSession);
-  } catch (error) {
-    console.error('POST /api/chat-with-us-session - Error:', error);
-    res.status(500).json({ message: 'Error creating a new Chat with Us session', error: error.toString() });
-  }
-});
-
-
-
-
-app.delete('/api/chat-with-us-session/:sessionId', async (req, res) => {
-  try {
-    const sessionId = req.params.sessionId;
-    await ChatWithUsSession.findByIdAndDelete(sessionId);
-    res.json({ message: 'Session deleted successfully' });
-  } catch (error) {
-    console.error('DELETE /api/chat-with-us-session/:sessionId - Error:', error);
-    res.status(500).json({ message: 'Error deleting session', error: error.toString() });
-  }
-});
-
-
-// End points for Blog posts
 app.post('/api/blogposts', upload.single('image'), async (req, res) => {
   try {
     // Extract text fields from req.body and file from req.file
