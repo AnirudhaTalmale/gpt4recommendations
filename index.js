@@ -295,7 +295,7 @@ io.on('connection', (socket) => {
       await chatWithUsSession.save(); // Save the updated session
     
       // Emit an event to update the session name in the frontend
-      socket.emit('updateSessionName', { sessionId: sessionId, sessionName: summary });
+      io.emit('updateSessionName', { sessionId: sessionId, sessionName: summary });
     } else {
       await chatWithUsSession.save();
     }

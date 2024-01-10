@@ -417,9 +417,7 @@ function Chat() {
   useEffect(() => {
     const handleDeleteSession = (deletedSessionId, receiverId) => {
       if (userData.id === receiverId) {
-        console.log("i am here");
         setSessions(prevSessions => prevSessions.filter(session => session._id !== deletedSessionId));
-
       }
     };
   
