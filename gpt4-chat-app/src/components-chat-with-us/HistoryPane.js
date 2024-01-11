@@ -17,6 +17,8 @@ const HistoryPane = forwardRef(({
 }, ref) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isEntryActive, setIsEntryActive] = useState(false);
+  const [activeSessionId, setActiveSessionId] = useState(null);
+
 
   const dropdownRef = useRef(null);
   const userEntryRef = useRef(null);
@@ -86,9 +88,10 @@ const HistoryPane = forwardRef(({
 
   const handleSessionSelect = async (index) => {
     const sessionId = sessions[index]._id;
-    onSelectSession(sessionId); // Use the callback passed from Chat component
+    setActiveSessionId(sessionId); // Set the active session ID
+    onSelectSession(sessionId);
     if (window.innerWidth < 760) {
-      togglePane(); // Collapse the pane
+      togglePane();
     }
   };
 
@@ -113,8 +116,12 @@ const HistoryPane = forwardRef(({
 
       <div className="history-content">  
         {[...sessions].reverse().map((session, index) => (
-          <div key={session._id} className="history-entry" onClick={() => handleSessionSelect(sessions.length - index - 1)}>
-            <div>
+          <div 
+            key={session._id} 
+            className={`history-entry ${activeSessionId === session._id ? 'active' : ''}`} 
+            onClick={() => handleSessionSelect(sessions.length - index - 1)}
+          >
+            <div className={unseenMessageCounts[session._id] > 0 ? 'session-name bold-text' : 'session-name'}>
                 {session.sessionName} {/* Display the actual session name */}
                 {unseenMessageCounts[session._id] > 0 && (
                   <span className="unseen-messages-count">{unseenMessageCounts[session._id]}</span>

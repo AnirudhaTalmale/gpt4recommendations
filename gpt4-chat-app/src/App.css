@@ -444,12 +444,6 @@ body:not(.history-pane-open) .input-area {
   margin-right: 0.9rem;
 }
 
-.unseen-messages-count {
-  margin-left: 8px;
-  color: red; /* Choose a color that stands out */
-  font-weight: bold;
-}
-
 
 /* login page components */
 
@@ -493,6 +487,30 @@ body:not(.history-pane-open) .input-area {
   margin: auto;
   border: none;
 }
+
+.bold-text {
+  font-weight: bold;
+}
+
+/* Update styles for the unseen message count indicator */
+.unseen-messages-count {
+  margin-left: 8px;
+  background-color: green; /* Background color for the count indicator */
+  color: white; /* Text color for the count indicator */
+  border-radius: 50%; /* Make it a circle */
+  padding: 2.5px 7px; /* Adjust padding to fit your design */
+  font-size: 0.65rem; /* Smaller font size for the count */
+  vertical-align: middle; /* Align it with the session name text */
+  font-weight: bold;
+}
+
+.history-entry.active {
+  background-color: hsla(240, 15%, 87%, .1); /* Converted color from #d9d9e3 */
+  border-radius: 0.5rem;
+}
+
+
+
 
 /* AnswerDisplay component */
 

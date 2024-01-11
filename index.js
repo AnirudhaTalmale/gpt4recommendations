@@ -260,7 +260,6 @@ io.on('connection', (socket) => {
   
     // Find the index of the last seen message
     const lastSeenIndex = session.messages.findIndex(message => message._id.equals(userSession.lastSeenMessage));
-    console.log("lastSeenIndex is ", lastSeenIndex);
     if (lastSeenIndex === -1) {
         return session.messages.length; // If last seen message not found, all messages are unseen
     }
@@ -484,8 +483,6 @@ app.delete('/api/chat-with-us-session/:sessionId', async (req, res) => {
     res.status(500).json({ message: 'Error deleting session', error: error.toString() });
   }
 });
-
-
 
 app.get('/api/get-user-by-email', async (req, res) => {
   try {

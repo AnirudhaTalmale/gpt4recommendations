@@ -163,6 +163,10 @@ function Chat() {
         newUnseenMessageCounts[session._id] = session.unseenCount;
       });
       setUnseenMessageCounts(newUnseenMessageCounts);
+
+      sessionsWithCounts.forEach(session => {
+        socket.emit('join-chat-session', session._id);
+      });
     } catch (error) {
       console.error('Error loading sessions:', error);
     }
@@ -174,20 +178,6 @@ function Chat() {
       localStorage.setItem('currentSessionIndex', currentSessionIndex);
     }
   }, [currentSessionIndex]);
-
-  useEffect(() => {
-    if (!isInitialLoad && sessions.length > 0 && currentSessionIndex >= 0 && currentSessionIndex < sessions.length) {
-      const currentSession = sessions[currentSessionIndex];
-      if (currentSession && currentSession._id) {
-        // Valid session found
-        const sessionId = currentSession._id;
-        socket.emit('join-chat-session', sessionId);
-      } else {
-        console.error('Current session is undefined or lacks _id');
-      }
-    } 
-  }, [currentSessionIndex, sessions, isInitialLoad]);
-  
   
   useEffect(() => {
     // Retrieve the current session index from localStorage when the component mounts
@@ -455,7 +445,7 @@ function Chat() {
   const handleSessionSelectAndUpdate = async (sessionId) => {
     socket.emit('request-session-state', sessionId); // Emit event to request session state
     setCurrentSessionIndexWithStreamCheck(sessions.findIndex(session => session._id === sessionId));
-} ;
+  } ;
 
 
   const handleMoreDetailsRequest = (userQuery) => {
@@ -516,6 +506,38 @@ function Chat() {
       socket.off('session-state');
     };
   }, [scrollToBottom]);
+
+  useEffect(() => {
+    const checkScrollbarAndResetUnseenCount = () => {
+      const chatArea = chatAreaRef.current;
+      if (chatArea && currentSessionIndex >= 0 && sessions[currentSessionIndex]) {
+        const hasScrollbar = chatArea.scrollHeight > chatArea.clientHeight;
+        const currentSession = sessions[currentSessionIndex];
+  
+        // Check if the current session does not have a scrollbar and unseen message count is greater than 0
+        if (!hasScrollbar && unseenMessageCounts[currentSession._id] > 0) {
+          // Reset unseen message count for the current session
+          setUnseenMessageCounts(prevCounts => ({
+            ...prevCounts,
+            [currentSession._id]: 0
+          }));
+  
+          // Emit the socket event with sessionId and userId to reset count in backend
+          socket.emit('reset-unseen-count', {
+            sessionId: currentSession._id, 
+            userId: userData.id // Use userData.id only if userData is not null
+          });
+  
+          console.log(`No scrollbar present in session ${currentSessionIndex}. Unseen count reset.`);
+        }
+      }
+    };
+  
+    checkScrollbarAndResetUnseenCount();
+  
+  }, [sessions, currentSessionIndex, unseenMessageCounts, userData, setUnseenMessageCounts]);
+  
+  
 
   return (
     <div className="App">
