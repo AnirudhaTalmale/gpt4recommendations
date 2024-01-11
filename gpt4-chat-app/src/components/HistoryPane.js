@@ -14,6 +14,7 @@ const HistoryPane = forwardRef(({
 }, ref) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isEntryActive, setIsEntryActive] = useState(false);
+  const [selectedSessionId, setSelectedSessionId] = useState(null);
 
   const dropdownRef = useRef(null);
   const userEntryRef = useRef(null);
@@ -80,10 +81,11 @@ const HistoryPane = forwardRef(({
     }
   };
   
-  const handleSessionSelect = (index) => {
+  const handleSessionSelect = (session, index) => {
     onSelectSession(index);
-    if (window.innerWidth < 760) { // Check if screen size is less than 760px
-      togglePane(); // Collapse the pane
+    setSelectedSessionId(session._id); // Update the selected session ID
+    if (window.innerWidth < 760) {
+      togglePane();
     }
   };
 
@@ -107,9 +109,13 @@ const HistoryPane = forwardRef(({
 
         <div className="history-content">  
           {[...sessions].reverse().map((session, index) => (
-            <div key={session._id} className="history-entry" onClick={() => handleSessionSelect(sessions.length - index - 1)}>
+            <div 
+              key={session._id} 
+              className={`history-entry ${selectedSessionId === session._id ? 'active' : ''}`} 
+              onClick={() => handleSessionSelect(session, sessions.length - index - 1)}
+            >
                 <div>
-                    {session.sessionName} {/* Display the actual session name */}
+                    {session.sessionName}
                 </div>
                 <button onClick={(e) => { e.stopPropagation(); onDeleteSession(session._id); }} className="delete-session-button">
                     <i className="fa-solid fa-trash"></i>

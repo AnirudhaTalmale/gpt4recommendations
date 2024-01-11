@@ -23,16 +23,9 @@ const getBookCover = async (bookTitleWithAuthor) => {
   try {
     const { bookTitle, author } = parseBookTitle(bookTitleWithAuthor);
 
-    // Log the book title and author (if available)
-    console.log("book title:", bookTitle);
-    if (author) {
-      console.log("author:", author);
-    }
-
     // Check if the book cover is already in the database using bookTitle
     const existingBook = await Book.findOne({ title: bookTitle });
     if (existingBook) {
-      console.log("retrieved image from database");
       existingBook.coverImageUrl = existingBook.coverImageUrl.replace("&edge=curl", "");
       return existingBook.coverImageUrl; // Return the cover image URL from the database
     }
@@ -65,7 +58,6 @@ const getBookCover = async (bookTitleWithAuthor) => {
     }
 
     // Return default cover image if no suitable image is found
-    console.log("No cover image found for the book");
     return 'default-cover.jpg';
   } catch (error) {
     console.error(`Error fetching book cover for ${bookTitleWithAuthor}:`, error);

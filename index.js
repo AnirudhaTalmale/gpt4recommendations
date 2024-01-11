@@ -135,17 +135,28 @@ function estimateTokenCount(text) {
   return text.trim().split(/\s+/).length;
 }
 
-// Function to extract text between <h3> and <div> tags, excluding the <div> tag and its contents
 function extractTags(content) {
-  // Use a regex to match text between <h3> tags and the start of <div> tags
+  // Use the original regex to match text between <h3> tags and the first <div> tag
   const h3Matches = content.match(/<h3>(.*?)<div>/g) || [];
-  const extractedText = h3Matches.map(match => 
+  const h3ExtractedText = h3Matches.map(match => 
     match.replace(/<h3>/g, '').replace(/<div>.*/g, '').trim()
   );
 
-  return extractedText.join('\n'); // Joining with newline character
-}
+  // Initialize the array to store extracted text from <ol><li><b> tags
+  const olExtractedText = [];
 
+  // Use a regex to match text within <b> tags for each <li> in an <ol>
+  const olMatches = content.match(/<ol>[\s\S]*?<\/ol>/g) || [];
+  olMatches.forEach(olMatch => {
+      const liMatches = olMatch.match(/<li><b>.*?<div>/g) || [];
+      liMatches.forEach(liMatch => {
+          olExtractedText.push(liMatch.replace(/.*<b>/g, '').replace(/<div>.*/g, '').trim());
+      });
+  });
+
+  // Combine and return the extracted text
+  return h3ExtractedText.concat(olExtractedText).join('\n'); // Joining with newline character
+}
 
 io.on('connection', (socket) => {
   console.log('A user connected');
@@ -201,14 +212,17 @@ io.on('connection', (socket) => {
       }
     
       const messagesForGPT4 = [{ role: 'user', content: completePrompt }];
+
+      // Calculate the starting index for the last 5 messages (or fewer if not enough messages)
+      const startIdx = Math.max(session.messages.length - 6, 0);
     
       // Iterate through past messages in reverse order and add them until the token limit for past messages is near
       for (let i = session.messages.length - 2; i >= 0 && pastMessageTokenCount < pastMessageTokenThreshold; i--) {
         const msg = session.messages[i];
         let contentToInclude = msg.content;
 
-        // Check if the message is from the assistant and has more than three bold tags
-        if (msg.role === 'assistant' && (msg.content.match(/<b>(.*?)<\/b>/g) || []).length > 3) {
+        // Check if the message is from the assistant and has more than 1 bold tags
+        if (msg.role === 'assistant') {
           contentToInclude = extractTags(msg.content);
         }
 

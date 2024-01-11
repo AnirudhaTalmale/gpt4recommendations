@@ -510,8 +510,6 @@ body:not(.history-pane-open) .input-area {
 }
 
 
-
-
 /* AnswerDisplay component */
 
 .message {
@@ -653,13 +651,14 @@ h3 {
 
 h3 div img {
   margin-top: 0.8rem;
+  margin-bottom: -0.1rem;
   /* border: 1px solid black;  */
 }
 
-div img {
-  margin-top: 0.6rem;
-  margin-bottom: -0.4rem;
-  /* border: 1px solid black;  */
+b div img {
+  margin-top: 0.8rem;
+  margin-bottom: -0.1rem;
+  /* border: 3px solid black;  */
 }
 
 .message-attachments {
