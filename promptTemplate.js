@@ -8,7 +8,7 @@ const bookRecommendationPrompt = (userQuery) => {
 <b>Key Insights</b><p></p>
 <b>Case studies and Anecdotes</b><p></p>
 <b>Endorsements and Praise</b><p></p>
-<b>Similar Books for given user query</b><ol><li><b>Two "Book title by author" enclosed within asterisk</b><p>Detailed reason for each</p></li></ol>`;
+<b>More Books for given user query</b><ol><li><b>Two "Book title by author" enclosed within asterisk</b><p>Book relation with query</p></li></ol>`;
 };
 
 module.exports = bookRecommendationPrompt;
