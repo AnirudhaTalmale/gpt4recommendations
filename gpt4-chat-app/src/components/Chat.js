@@ -290,17 +290,21 @@ function Chat() {
   const handleNewSession = async () => {
     if (sessions.length > 0 && isSessionEmpty(sessions[sessions.length - 1])) {
       setCurrentSessionIndex(sessions.length - 1);
+      return sessions[sessions.length - 1]; // Return the last session if it's empty
     } else {
       try {
         if (!userData) return;
         const res = await axios.post('http://localhost:3000/api/session', { userId: userData.id });
-        setSessions(prevSessions => [...prevSessions, res.data]);
+        const newSession = res.data;
+        setSessions(prevSessions => [...prevSessions, newSession]);
         setCurrentSessionIndex(sessions.length);
+        return newSession; // Return the new session data
       } catch (error) {
         console.error('Error creating new session:', error);
       }
     }
   };
+  
 
   const handleDeleteSession = async (sessionId) => {
     try {
@@ -353,8 +357,6 @@ function Chat() {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [isPaneOpen, togglePane]);
-  
-  
 
   return (
     <div className="App">

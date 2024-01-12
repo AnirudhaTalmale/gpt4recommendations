@@ -18,6 +18,8 @@ const userSchema = new Schema({
   createdAt: { type: Date, default: Date.now },
   accessToken: { type: String },
   role: { type: String, enum: Object.values(roles), default: roles.USER }, // User role
+  firstMessageTimestamp: { type: Date }, // Timestamp of the first message in the window
+  messageCount: { type: Number, default: 0 }, // Count of messages in the current window
 });
 
 module.exports = mongoose.model('User', userSchema);

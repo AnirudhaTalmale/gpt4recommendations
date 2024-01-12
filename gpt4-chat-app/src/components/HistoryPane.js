@@ -75,9 +75,10 @@ const HistoryPane = forwardRef(({
   };
 
   const handleNewSessionCreation = async () => {
-    await onNewSession();
-    if (window.innerWidth < 760) { // Check if screen size is less than 760px
-      togglePane(); // Collapse the pane
+    const newSession = await onNewSession(); // Assume onNewSession returns the newly created session object
+    setSelectedSessionId(newSession._id); // Set the selectedSessionId to the new session's ID
+    if (window.innerWidth < 760) {
+      togglePane();
     }
   };
   

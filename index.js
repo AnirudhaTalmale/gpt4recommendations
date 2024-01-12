@@ -158,6 +158,9 @@ function extractTags(content) {
   return h3ExtractedText.concat(olExtractedText).join('\n'); // Joining with newline character
 }
 
+const MESSAGE_LIMIT = 0; // Set your desired message limit
+const WINDOW_DURATION = 3 * 60 * 60 * 1000; // 3 hours in milliseconds
+
 io.on('connection', (socket) => {
   console.log('A user connected');
   let currentSessionId;
@@ -167,7 +170,7 @@ io.on('connection', (socket) => {
     currentSessionId = sessionId; 
   
     // Find the session and update it with the new message and response
-    const session = await Session.findById(sessionId);
+    const session = await Session.findById(sessionId).populate('user');
     if (!session) {
       return res.status(404).json({ message: 'Session not found' });
     }
@@ -181,6 +184,50 @@ io.on('connection', (socket) => {
   
     await session.save();
 
+    // Check message limit
+    const now = new Date();
+
+    if (session.user.firstMessageTimestamp === undefined || session.user.messageCount === undefined) {
+      session.user.firstMessageTimestamp = now;
+      session.user.messageCount = 0;
+    }
+
+    if (!session.user.firstMessageTimestamp || now - session.user.firstMessageTimestamp.getTime() > WINDOW_DURATION) {
+      // Reset if more than 3 hours have passed
+      session.user.firstMessageTimestamp = now;
+      session.user.messageCount = 1;
+    } else {
+      // Increment message count
+      session.user.messageCount += 1;
+    }
+
+    if (session.user.messageCount > MESSAGE_LIMIT) {
+      const timePassed = now - session.user.firstMessageTimestamp.getTime();
+      const timeRemaining = WINDOW_DURATION - timePassed;
+      const resetTime = new Date(now.getTime() + timeRemaining);
+    
+      // Formatting the reset time in HH:MM format
+      const resetTimeString = resetTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      const limitMessage = `You have reached the message limit. Try again after ${resetTimeString}.`;
+    
+      // Emit a warning message to the client and set the limitMessage as the session name
+      socket.emit('chunk', { content: limitMessage, sessionId: currentSessionId });
+    
+      // Update the session name with the limitMessage and save the session
+      const newSessionName = 'Message limit reached';
+      session.sessionName = newSessionName;
+      socket.emit('updateSessionName', { sessionId: session._id, sessionName: newSessionName });
+    
+      // Append a message indicating the limit has been reached and save the session
+      session.messages.push({
+        role: 'assistant',
+        contentType: 'simple',
+        content: limitMessage
+      });
+      await session.save();
+      return;
+    }    
+
     const completePrompt = bookRecommendationPrompt(message.content);
     const currentMessageTokenCount = estimateTokenCount(completePrompt);
     let pastMessageTokenCount = 0;
@@ -188,17 +235,24 @@ io.on('connection', (socket) => {
     const currentMessageTokenThreshold = 150; 
 
     if (currentMessageTokenCount > currentMessageTokenThreshold) {
-      // Emit a warning message to the client
-      socket.emit('chunk', 'Input message too large');
+      const errorMessage = 'Input message too large';
     
-      // Add a response message to the session indicating the issue and save it
+      // Emit a warning message to the client and update session name if it's the first query
+      socket.emit('chunk', { content: errorMessage, sessionId: currentSessionId });
+    
+      if (message.isFirstQuery) {
+        session.sessionName = errorMessage;
+        socket.emit('updateSessionName', { sessionId: session._id, sessionName: errorMessage });
+      }
+    
+      // Add a response message to the session and save
       session.messages.push({
         role: 'assistant',
         contentType: 'simple',
-        content: 'Input message too large'
+        content: errorMessage
       });
       await session.save();
-    } 
+    }    
     else {
 
       if (message.isFirstQuery) {
@@ -238,6 +292,7 @@ io.on('connection', (socket) => {
       try {
         console.log("messagesForGPT4", messagesForGPT4);
         await openaiApi(messagesForGPT4, socket, session, currentSessionId);
+        await session.user.save();
       } catch (error) {
         console.error('Error processing query:', error);
         socket.emit('error', 'Error processing your request');
