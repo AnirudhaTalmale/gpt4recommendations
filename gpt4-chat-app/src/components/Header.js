@@ -18,7 +18,7 @@ function Header({ isPaneOpen, onNewSession, togglePane }) {
       {isScreenSmall && (
         <>
           <button className="menu-button-small-screen" onClick={togglePane}>
-            <i class="fa-solid fa-bars"></i>
+            <i className="fa-solid fa-bars"></i>
           </button>
           <button className="new-session-button-small-screen" onClick={onNewSession}>
             <i className="fa-regular fa-pen-to-square"></i>

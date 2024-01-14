@@ -69,7 +69,7 @@ const openai = new OpenAI(process.env.OPENAI_API_KEY);
 
 let isStreamingActive = false;
 
-const openaiApi = async (messages, socket, session, sessionId) => {
+const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, bookTitle, author) => {
 
   isStreamingActive = true;
   let buttonCounter = 1; 
@@ -82,13 +82,16 @@ const openaiApi = async (messages, socket, session, sessionId) => {
       stream: true,
     });
 
-    // Create a new message entry for this stream.
-    const messageIndex = session.messages.push({
-      role: 'assistant',
-      contentType: 'simple',
-      content: ''
-    }) - 1;
-    await session.save();
+    let messageIndex;
+    if(!isMoreDetails){
+      // Create a new message entry for this stream.
+      messageIndex = session.messages.push({
+        role: 'assistant',
+        contentType: 'simple',
+        content: ''
+      }) - 1;
+      await session.save();
+    }
 
     let completeResponse = "";
     let pausedEmit = ""; // Variable to hold paused chunks
@@ -112,7 +115,8 @@ const openaiApi = async (messages, socket, session, sessionId) => {
           const coverImageUrl = await getBookCover(bookTitleWithAuthor);
           
           // Extract book title and author
-          const { bookTitle, author } = parseBookTitle(bookTitleWithAuthor);
+          let { bookTitle, author } = parseBookTitle(bookTitleWithAuthor);
+
           const encodedTitle = encodeForUrl(bookTitle);
           let amazonUrl = `https://www.amazon.in/s?k=${encodedTitle}`;
 
@@ -122,7 +126,7 @@ const openaiApi = async (messages, socket, session, sessionId) => {
           }
 
           // Replace buttonDiv1 with updated Buy Now button HTML
-          if (buttonCounter % 3 === 1) {
+          if (isMoreDetails) {
             const buyNowButtonHtml = `<div><a href="${amazonUrl}" target="_blank"><button class="buy-now-button">Buy now</button></a></div>`;
             pausedEmit = pausedEmit.replace(bookTitleMatch[0], bookTitleMatch[0] + buyNowButtonHtml);
           } else {
@@ -138,14 +142,22 @@ const openaiApi = async (messages, socket, session, sessionId) => {
             pausedEmit = pausedEmit.replace(bookTitleMatch[0], bookTitleMatch[0] + imageDiv);
           }
 
-          pausedEmit = pausedEmit.replace(/\*/g, "");
-          
+          let replaceCount = 0; // To keep track of the number of replacements
+
+          pausedEmit = pausedEmit.replace(/\*/g, () => {
+              replaceCount++;
+              return replaceCount === 1 ? "<h3>" : "</h3>";
+          });
+                    
           // Emit pausedEmit and reset
           completeResponse += pausedEmit;
-          // Update the current message with the new chunk.
-          session.messages[messageIndex].content += pausedEmit;
-          await session.save();
-          socket.emit('chunk', { content: pausedEmit, sessionId });
+          if(!isMoreDetails) {
+            // Update the current message with the new chunk.
+            session.messages[messageIndex].content += pausedEmit;
+            await session.save();
+          }
+          
+          socket.emit('chunk', { content: pausedEmit, sessionId, isMoreDetails });
           pausedEmit = "";
         } else {
           // If pausing, start adding to pausedEmit including current chunk
@@ -158,13 +170,24 @@ const openaiApi = async (messages, socket, session, sessionId) => {
       } else {
         // Normal emit when not paused
         completeResponse += chunkContent;
-        // Update the current message with the new chunk.
-        session.messages[messageIndex].content += chunkContent;
-        await session.save();
-        socket.emit('chunk', { content: chunkContent, sessionId });
+        
+        if(!isMoreDetails) {
+          // Update the current message with the new chunk.
+          session.messages[messageIndex].content += chunkContent;
+          await session.save();
+        }
+        socket.emit('chunk', { content: chunkContent, sessionId, isMoreDetails });
       }
       const finishReason = chunk.choices[0]?.finish_reason;
       if (finishReason === 'stop') {
+        const MoreDetails = require('./models/MoreDetails');
+        const newDetail = new MoreDetails({
+            bookTitle,
+            author,
+            detailedDescription: completeResponse // Save complete response here
+        });
+        await newDetail.save();
+
         socket.emit('streamEnd', { message: 'Stream completed', sessionId }); // Emit a message indicating stream end
         break; // Optionally break out of the loop if the stream is finished
       }

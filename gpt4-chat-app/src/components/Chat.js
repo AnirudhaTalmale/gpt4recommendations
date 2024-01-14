@@ -3,10 +3,10 @@ import axios from 'axios';
 import InputBox from './InputBox';
 import AnswerDisplay from './AnswerDisplay';
 import HistoryPane from './HistoryPane';
+import Lightbox from './Lightbox';
 import '../App.css';
 import socket from './socket';
 import Header from './Header';
-
 
 function Chat() {
   const [sessions, setSessions] = useState([]);
@@ -17,13 +17,16 @@ function Chat() {
   const [isStreaming, setIsStreaming] = useState(false);
   const historyPaneRef = useRef(null);
 
+  const [lightboxContent, setLightboxContent] = useState('');
+  const [isLightboxOpen, setIsLightboxOpen] = useState(false);
+
   const chatAreaRef = useRef(null);
   const [shouldAutoScroll, setShouldAutoScroll] = useState(false);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
 
-  const togglePane = () => {
+  const togglePane = useCallback(() => {
     setIsPaneOpen(!isPaneOpen);
-  };
+  }, [isPaneOpen]); 
 
   useEffect(() => {
     const handleResize = () => {
@@ -77,17 +80,18 @@ function Chat() {
   }, []);
 
   useEffect(() => {
-    const messages = sessions[currentSessionIndex]?.messages;
-  
+    // Extract the complex expression to a variable
+    const currentMessages = sessions[currentSessionIndex]?.messages;
+    
     // Ensure there are messages before accessing the last message
-    if (messages && messages.length > 0) {
-      const lastMessage = messages[messages.length - 1];
-  
+    if (currentMessages && currentMessages.length > 0) {
+      const lastMessage = currentMessages[currentMessages.length - 1];
+    
       if (shouldAutoScroll && lastMessage && lastMessage.contentType === 'streamed') {
         chatAreaRef.current.scrollTop = chatAreaRef.current.scrollHeight;
       }
     }
-  }, [sessions[currentSessionIndex]?.messages, shouldAutoScroll]);
+  }, [currentSessionIndex, shouldAutoScroll, sessions]); 
   
   
   const loadSessions = useCallback(async (currentUserData) => {
@@ -106,8 +110,6 @@ function Chat() {
       console.error('Error loading sessions:', error);
     }
   }, []);
-
-  
   
   useEffect(() => {
     // Save the current session index to localStorage whenever it changes
@@ -147,8 +149,6 @@ function Chat() {
       window.location.href = 'http://localhost:3001/auth/login';
     }
   }, [loadSessions]);
-  
-
     
   useEffect(() => {
     checkAuthStatus();
@@ -243,10 +243,18 @@ function Chat() {
   
     let streamTimeout;
   
-    const handleStreamChunk = ({ content, sessionId }) => {
+    const handleStreamChunk = ({ content, sessionId, isMoreDetails }) => {
       if (sessions[currentSessionIndex]._id === sessionId) {
-        updateSessionMessages(content, 'streamed', false);
-        setIsStreaming(true); // Set streaming to true on receiving a chunk
+        if (isMoreDetails) {
+          // If it's a more details response, display in Lightbox
+          setLightboxContent(prevContent => prevContent + content);
+          setIsStreaming(true);
+          setIsLightboxOpen(true);
+        } else {
+          // Regular message handling
+          updateSessionMessages(content, 'streamed', false);
+          setIsStreaming(true);
+        }
     
         // Clear any existing timeout
         clearTimeout(streamTimeout);
@@ -267,10 +275,12 @@ function Chat() {
   }, [updateSessionMessages, handleStopStreaming, currentSessionIndex, sessions]); // Depend on the memoized version of handleStopStreaming
   
 
-  const handleQuerySubmit = async (query) => {
+  const handleQuerySubmit = async (query, isMoreDetails = false, bookTitle = null, author = null) => {
     setIsLoading(true);
     const isFirstQuery = sessions[currentSessionIndex]?.messages?.length === 0;
-    updateSessionMessages(query, 'simple', true); // true for user message
+    if (!isMoreDetails) {
+      updateSessionMessages(query, 'simple', true); // true for user message
+    }
   
     // Emit the query to the server
     socket.emit('query', {
@@ -278,8 +288,11 @@ function Chat() {
       message: {
         role: 'user',
         content: query,
-        isFirstQuery 
-      }
+        isFirstQuery
+      },
+      isMoreDetails,
+      bookTitle,
+      author
     });
   };  
 
@@ -337,10 +350,6 @@ function Chat() {
     };
   }, [isStreaming, handleStopStreaming]);
 
-  const handleMoreDetailsRequest = (userQuery) => {
-    handleQuerySubmit(userQuery);
-  };
-
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (historyPaneRef.current && !historyPaneRef.current.contains(event.target)) {
@@ -358,9 +367,56 @@ function Chat() {
     };
   }, [isPaneOpen, togglePane]);
 
+  const handleMoreDetailsRequest = async (bookTitle, author) => {
+    console.log("bookTitle:", bookTitle);
+    console.log("author:", author);
+    try {
+      const response = await fetchMoreDetails(bookTitle, author);
+      // Check if the database query was successful and had results
+      if (!response || !response.data || !response.data.detailedDescription) {
+        // Fallback to the original query submit if no data is found
+        const userQuery = `Explain this book - ${bookTitle} by ${author} - `;
+        handleQuerySubmit(userQuery, true, bookTitle, author);
+        console.log("i am in if block");
+      } else {
+        // Handle the successful response
+        const detailedDescription = response.data.detailedDescription;
+        // You can now use this detailed description to display in a Lightbox
+        // Before setting new content
+        setLightboxContent(''); // Reset the content
+        setLightboxContent(detailedDescription);
+        setIsLightboxOpen(true);
+      }
+    } catch (error) {
+      // In case of an error, also fallback to the original query submit
+      const userQuery = `Explain this book - ${bookTitle} by ${author} - `;
+      handleQuerySubmit(userQuery, true, bookTitle, author);
+      console.log("i am in catch block");
+    }
+  };
+  
+  const fetchMoreDetails = async (bookTitle, author) => {
+    try {
+      const response = await axios.get(`http://localhost:3000/api/more-details`, {
+        params: { bookTitle, author }
+      });
+      return response; // Return the response for further handling
+    } catch (error) {
+      console.error('Error fetching more details:', error);
+      throw error; // Throw the error to be caught in the calling function
+    }
+  };  
+
   return (
     <div className="App">
-
+      <Lightbox
+        isOpen={isLightboxOpen}
+        content={lightboxContent}
+        onClose={() => {
+          setIsLightboxOpen(false);
+          setLightboxContent(''); // Clear the content when Lightbox is closed
+        }}
+      />
       <HistoryPane
         ref={historyPaneRef}
         sessions={sessions}
@@ -380,21 +436,20 @@ function Chat() {
             Discover Your Next Great Read!
           </div>
         )}
-        {sessions[currentSessionIndex]?.messages.map((msg, index) => {
-          const messageKey = msg._id ? msg._id.$oid : `temp-${index}`;
-          return (
-            <AnswerDisplay
-              key={messageKey}
-              role={msg.role}
-              content={msg.content}
-              userImage={userData?.image}
-              isStreaming={isStreaming}
-              onMoreDetailsClick={handleMoreDetailsRequest}
-            />
-          );
-        })}
+        {sessions[currentSessionIndex]?.messages.map((msg) => (
+          <AnswerDisplay
+            key={msg._id} // Assuming msg._id is a unique identifier
+            role={msg.role}
+            content={msg.content}
+            userImage={userData?.image}
+            isStreaming={isStreaming}
+            onMoreDetailsClick={handleMoreDetailsRequest}
+          />
+        ))}
       </div>
+      
       <InputBox onSubmit={handleQuerySubmit} isLoading={isLoading} isStreaming={isStreaming} onStopStreaming={handleStopStreaming} />
+      
     </div>
   );
 }

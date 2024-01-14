@@ -4,13 +4,16 @@ import '../App.css';
 
 function AnswerDisplay({ role, content, userImage, isStreaming, onMoreDetailsClick }) {
   const createMarkup = () => {
-    const safeHTML = DOMPurify.sanitize(content);
+    // Configure DOMPurify to allow the 'target' attribute on 'a' tags
+    const safeHTML = DOMPurify.sanitize(content, {
+      ADD_ATTR: ['target'], // Allow 'target' attribute for anchor tags
+    });
     return { __html: safeHTML };
   };
 
   const handleMoreDetailsClick = (bookTitle, author) => {
     if (onMoreDetailsClick) {
-      onMoreDetailsClick(`Explain this one book - ${bookTitle} by ${author}`);
+      onMoreDetailsClick(bookTitle, author);
     }
   };
 
@@ -25,10 +28,16 @@ function AnswerDisplay({ role, content, userImage, isStreaming, onMoreDetailsCli
               <span>U</span> // Fallback if no image is available
             )
           ) : (
-            <div><img src="/favicon.ico" className="display-image" /></div> // Icon for the assistant
+            <div><img src="/favicon.ico" className="display-image" alt="" /></div> // Icon for the assistant
           )}
         </div>
-        <div className="message-content">
+        <div className="message-content" onClick={(e) => {
+          if (e.target.classList.contains('more-details-btn')) {
+            const bookTitle = e.target.getAttribute('data-book-title');
+            const author = e.target.getAttribute('data-author');
+            handleMoreDetailsClick(bookTitle, author);
+          }
+        }}>
           {role === 'user' && (
             <>
               <div className="message-sender">You</div>
@@ -40,13 +49,7 @@ function AnswerDisplay({ role, content, userImage, isStreaming, onMoreDetailsCli
             <>
               <div className="message-sender">ChatGPT</div>
               <br></br>
-              <div className="message-answer" dangerouslySetInnerHTML={createMarkup()} onClick={(e) => {
-                if (e.target.classList.contains('more-details-btn')) {
-                  const bookTitle = e.target.getAttribute('data-book-title');
-                  const author = e.target.getAttribute('data-author');
-                  handleMoreDetailsClick(bookTitle, author);
-                }
-              }} />
+              <div className="message-answer" dangerouslySetInnerHTML={createMarkup()} />
             </>
           )}
         </div>

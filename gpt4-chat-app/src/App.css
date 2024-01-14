@@ -5,15 +5,48 @@
   display: flex;
   flex-direction: column; /* Keep the main direction as column for stacking */
   height: 100vh;
-  
 }
+
+.lightbox-overlay {
+  position: fixed; /* Fixed position to cover the whole screen */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.85); /* Semi-transparent black background */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; /* High z-index to make sure it's above other elements */
+}
+
+.lightbox-content {
+  background-color: white;
+  padding:  1% 5% 3% 5%;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  max-width: 550px; /* Adjust as per your content's requirements */
+  max-height: 88%; /* Adjust based on content height */
+  overflow-y: auto; /* Adds a scrollbar if the content is too long */
+  position: relative; 
+}
+
+.lightbox-close {
+  position: fixed; /* Changed from absolute to fixed */
+  top: 6px;
+  right: 15px;
+  font-size: 28px;
+  cursor: pointer;
+  z-index: 1001; /* Higher than the lightbox-overlay to ensure it's on top */
+  color: white;
+}
+
 
 /* chat area */
 
 ol li::marker {
   color: #999; /* Darker grey color for the numbers */
 }
-
 
 body:not(.history-pane-open) .chat-area {
   margin-left: 0;
@@ -109,6 +142,10 @@ body:not(.history-pane-open) .chat-area {
 
   .input-area {
     left: 2rem !important; /* Align input area with the full width of the window */
+  }
+
+  .lightbox-content {
+    max-width: 75%;
   }
 }
 
@@ -347,7 +384,6 @@ body:not(.history-pane-open) .input-area {
 
 .history-entry {
   /* Add styles for individual history entries here */
-  font-family: Söhne, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, sans-serif, Helvetica Neue, Arial, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
   padding: 0.7rem;
   cursor: pointer; 
   &:hover {
@@ -357,8 +393,7 @@ body:not(.history-pane-open) .input-area {
   display: flex; /* Use Flexbox */
   justify-content: space-between; /* Space between items */
   align-items: center; /* Align items vertically */
-  font-size: 0.9rem;
-  color: #d9d9e3;
+  font-size: 14px;
   z-index: 1;
   /* background-color: yellow;
   border: 1px solid blue; */
@@ -614,7 +649,7 @@ body:not(.history-pane-open) .input-area {
   text-decoration: none;
   display: inline-block;
   transition: background-color 0.3s ease, border-color 0.3s ease;
-  margin-bottom: 0.7rem;
+  margin-bottom: 1.2rem;
   width: 8.3rem;
 }
 

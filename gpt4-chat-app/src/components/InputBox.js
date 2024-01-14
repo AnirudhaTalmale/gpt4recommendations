@@ -74,7 +74,7 @@ function InputBox({ onSubmit, isStreaming, onStopStreaming }) {
         </div>
         {isStreaming ? (
           <button type="button" className="stop-button" onClick={onStopStreaming}>
-            <i class="fa-regular fa-circle-stop"></i>
+            <i className="fa-regular fa-circle-stop"></i>
           </button>
         ) : (
           <button type="submit" className={`send-button ${isInputNotEmpty ? 'active' : ''}`}>

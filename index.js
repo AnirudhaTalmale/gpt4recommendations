@@ -1,13 +1,15 @@
 const mongoose = require('mongoose');
 const openaiApi = require('./openaiApi');
 const Session = require('./models/Session');
+const MoreDetails = require('./models/MoreDetails');
 const ChatWithUsSession = require('./models-chat-with-us/ChatWithUsSession');
 const UserSession = require('./models-chat-with-us/UserSession');
 const BlogPost = require('./models/BlogPost'); // Adjust the path as necessary
 const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
-const bookRecommendationPrompt = require('./promptTemplate');
+const bookRecommendationPrompt = require('./promptBook');
+const moreDetailsPrompt = require('./promptMoreDetails');
 const passportSetup = require('./passport-setup'); // Import the setup function
 const axios = require('axios');
 const multer = require('multer');
@@ -158,15 +160,15 @@ function extractTags(content) {
   return h3ExtractedText.concat(olExtractedText).join('\n'); // Joining with newline character
 }
 
-const MESSAGE_LIMIT = 20; // Set your desired message limit
+const MESSAGE_LIMIT = 40; // Set your desired message limit
 const WINDOW_DURATION = 3 * 60 * 60 * 1000; // 3 hours in milliseconds
 
 io.on('connection', (socket) => {
   console.log('A user connected');
   let currentSessionId;
-
+  
   socket.on('query', async (data) => {
-    const { sessionId, message } = data;
+    const { sessionId, message, isMoreDetails, bookTitle, author } = data;
     currentSessionId = sessionId; 
   
     // Find the session and update it with the new message and response
@@ -175,14 +177,16 @@ io.on('connection', (socket) => {
       return res.status(404).json({ message: 'Session not found' });
     }
 
-    // Add the user message to the session and save
-    session.messages.push({
-      role: 'user',
-      contentType: 'simple',
-      content: message.content
-    });
-  
-    await session.save();
+    if(!isMoreDetails) {
+       // Add the user message to the session and save
+       session.messages.push({
+        role: 'user',
+        contentType: 'simple',
+        content: message.content
+      });
+    
+      await session.save();
+    }
 
     // Check message limit
     const now = new Date();
@@ -211,34 +215,43 @@ io.on('connection', (socket) => {
       const limitMessage = `You have reached the message limit. Try again after ${resetTimeString}.`;
     
       // Emit a warning message to the client and set the limitMessage as the session name
-      socket.emit('chunk', { content: limitMessage, sessionId: currentSessionId });
+      socket.emit('chunk', { content: limitMessage, sessionId: currentSessionId, isMoreDetails });
     
-      // Update the session name with the limitMessage and save the session
-      const newSessionName = 'Message limit reached';
-      session.sessionName = newSessionName;
-      socket.emit('updateSessionName', { sessionId: session._id, sessionName: newSessionName });
+      if(!isMoreDetails) {
+        // Update the session name with the limitMessage and save the session
+        const newSessionName = 'Message limit reached';
+        session.sessionName = newSessionName;
+        socket.emit('updateSessionName', { sessionId: session._id, sessionName: newSessionName });
     
-      // Append a message indicating the limit has been reached and save the session
-      session.messages.push({
-        role: 'assistant',
-        contentType: 'simple',
-        content: limitMessage
-      });
-      await session.save();
+        // Append a message indicating the limit has been reached and save the session
+        session.messages.push({
+          role: 'assistant',
+          contentType: 'simple',
+          content: limitMessage
+        });
+        await session.save();
+      }
       return;
     }    
 
-    const completePrompt = bookRecommendationPrompt(message.content);
+    let completePrompt;
+    if (isMoreDetails) {
+      completePrompt = moreDetailsPrompt(message.content);
+    } else {
+      completePrompt = bookRecommendationPrompt(message.content);
+    }
+    console.log("completePrompt: ", completePrompt);
+
     const currentMessageTokenCount = estimateTokenCount(completePrompt);
     let pastMessageTokenCount = 0;
     const pastMessageTokenThreshold = 120; 
     const currentMessageTokenThreshold = 150; 
 
-    if (currentMessageTokenCount > currentMessageTokenThreshold) {
+    if (currentMessageTokenCount > currentMessageTokenThreshold && !isMoreDetails) {
       const errorMessage = 'Input message too large';
     
       // Emit a warning message to the client and update session name if it's the first query
-      socket.emit('chunk', { content: errorMessage, sessionId: currentSessionId });
+      socket.emit('chunk', { content: errorMessage, sessionId: currentSessionId, isMoreDetails });
     
       if (message.isFirstQuery) {
         session.sessionName = errorMessage;
@@ -255,7 +268,7 @@ io.on('connection', (socket) => {
     }    
     else {
 
-      if (message.isFirstQuery) {
+      if (message.isFirstQuery && !isMoreDetails) {
         // Get the 4-word summary
         const summary = await openaiApi.getSummary(message.content);
         session.sessionName = summary; // Update the session name with the summary
@@ -266,12 +279,9 @@ io.on('connection', (socket) => {
       }
     
       const messagesForGPT4 = [{ role: 'user', content: completePrompt }];
-
-      // Calculate the starting index for the last 5 messages (or fewer if not enough messages)
-      const startIdx = Math.max(session.messages.length - 6, 0);
     
       // Iterate through past messages in reverse order and add them until the token limit for past messages is near
-      for (let i = session.messages.length - 2; i >= 0 && pastMessageTokenCount < pastMessageTokenThreshold; i--) {
+      for (let i = session.messages.length - 2; i >= 0 && pastMessageTokenCount < pastMessageTokenThreshold && !isMoreDetails; i--) {
         const msg = session.messages[i];
         let contentToInclude = msg.content;
 
@@ -291,7 +301,7 @@ io.on('connection', (socket) => {
 
       try {
         console.log("messagesForGPT4", messagesForGPT4);
-        await openaiApi(messagesForGPT4, socket, session, currentSessionId);
+        await openaiApi(messagesForGPT4, socket, session, currentSessionId, isMoreDetails, bookTitle, author);
         await session.user.save();
       } catch (error) {
         console.error('Error processing query:', error);
@@ -572,7 +582,28 @@ app.get('/api/get-user-by-email', async (req, res) => {
 
 // ------------------- chat endpoints-------------------
 
-// POST endpoint for creating a new session
+app.get('/api/more-details', async (req, res) => {
+  try {
+    // Retrieve bookTitle and author from query parameters
+    const { bookTitle, author } = req.query;
+
+    // Perform a case-insensitive search
+    const bookDetails = await MoreDetails.findOne({
+      bookTitle: new RegExp(bookTitle, 'i'),
+      author: new RegExp(author, 'i')
+    });
+
+    if (!bookDetails) {
+      return res.status(404).json({ message: 'Details not found for this book' });
+    }
+
+    res.json(bookDetails);
+  } catch (error) {
+    console.error('Server error:', error); // Log the error for debugging
+    res.status(500).json({ message: 'Server error occurred while fetching book details' });
+  }
+});
+
 app.post('/api/session', async (req, res) => {
   try {
     const userId = req.body.userId; // Get user ID from the request body

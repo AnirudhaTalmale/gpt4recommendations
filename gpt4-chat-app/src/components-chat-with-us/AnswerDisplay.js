@@ -34,7 +34,6 @@ function AnswerDisplay({ role, content, userImage, onMoreDetailsClick, attachmen
   const renderImageAttachments = (attachments) => {
     return attachments.map((attachment, index) => {
       let imageData;
-      let isBase64 = false;
   
       if (attachment.mimetype && attachment.mimetype.startsWith('image/')) {
         // Backend processed attachment
@@ -42,7 +41,6 @@ function AnswerDisplay({ role, content, userImage, onMoreDetailsClick, attachmen
       } else if (typeof attachment === 'string' && attachment.startsWith('data:image/')) {
         // Frontend Base64 encoded image
         imageData = attachment;
-        isBase64 = true;
       }
   
       if (imageData) {
