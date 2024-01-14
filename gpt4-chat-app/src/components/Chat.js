@@ -415,6 +415,9 @@ function Chat() {
         onClose={() => {
           setIsLightboxOpen(false);
           setLightboxContent(''); // Clear the content when Lightbox is closed
+          if (isStreaming) {
+            handleStopStreaming(); // Stop streaming if it's active
+          }
         }}
       />
       <HistoryPane
