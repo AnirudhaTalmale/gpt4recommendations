@@ -241,6 +241,60 @@ openaiApi.getSummaryWithGPT3_5Turbo = async (text) => {
   }
 };
 
+openaiApi.getNewsletter = async (prompt) => {
+  try {
+    const response = await openai.chat.completions.create({
+      model: "gpt-4-1106-preview",
+      messages: [{ role: 'system', content: prompt }],
+    });
+
+    let newsletterContent = response.choices[0]?.message?.content.trim();
+    console.log("newsletterContent: ", newsletterContent);
+
+    const bookListMatches = [...newsletterContent.matchAll(/\*([\s\S]*?)\*/g)];
+
+    for (const match of bookListMatches) {
+      const bookTitleWithAuthor = match[1];
+      console.log("bookTitleWithAuthor: ", bookTitleWithAuthor);
+      
+      // Enclose book title and author in <b> tags
+      const bookTitleWithAuthorBold = `<b>${bookTitleWithAuthor}</b>`;
+
+      // Fetch book cover image
+      const coverImageUrl = await getBookCover(bookTitleWithAuthor);
+      
+      // Extract book title and author
+      let { bookTitle, author } = parseBookTitle(bookTitleWithAuthor);
+
+      const encodedTitle = encodeForUrl(bookTitle);
+      let amazonUrl = `https://www.amazon.in/s?k=${encodedTitle}`;
+
+      if (author) {
+        const encodedAuthor = `+by+${encodeForUrl(author)}`;
+        amazonUrl += encodedAuthor;
+      }
+
+      const buyNowButtonHtml = `<div><a href="${amazonUrl}" style="cursor: pointer; text-decoration: none;" target="_blank"><button style="background: none; border: 1px solid black; font-family: Arial, sans-serif; font-size: 1rem; padding: 0.25rem 0.6rem; border-radius: 0.7rem; cursor: pointer; text-align: center; display: inline-block; margin-bottom: 0.7rem; margin-top: 0.7rem; width: 8.3rem;">Buy now</button></a></div>`;
+      const moreDetailsButtonHtml = `<div><button type="button" style="background: none; border: 1px solid black; font-family: Arial, sans-serif; font-size: 1rem; padding: 0.25rem 0.6rem; border-radius: 0.7rem; cursor: pointer; text-align: center; text-decoration: none; display: inline-block; margin-bottom: 0.2rem; width: 8.3rem;" data-book-title="${bookTitle}" data-author="${author}">More Details</button></div>`;
+
+      newsletterContent = newsletterContent.replace(match[0], bookTitleWithAuthorBold + buyNowButtonHtml + moreDetailsButtonHtml);
+
+      // If the cover image URL is not the default, concatenate div tag with the image tag
+      if (coverImageUrl !== 'default-cover.jpg') {
+        const imageDiv = `<div style="margin-top: 0.8rem; margin-bottom: -0.1rem;"><img src="${coverImageUrl}" alt=""></div>`;
+        newsletterContent = newsletterContent.replace(bookTitleWithAuthorBold, bookTitleWithAuthorBold + imageDiv);
+      }
+    }
+
+    newsletterContent = newsletterContent.replace(/\*/g, '');
+    return newsletterContent;
+  } catch (error) {
+    console.log('Error getting newsletter content', error);
+    return "Error getting newsletter content";
+  }
+};
+
+
 openaiApi.stopStream = () => {
   isStreamingActive = false; // Set the flag to false to stop the stream
 };

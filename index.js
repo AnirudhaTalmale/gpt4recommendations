@@ -132,6 +132,25 @@ server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
 
+const cron = require('node-cron');
+const sendWeeklyNewsletter = require('./sendWeeklyNewsletter');
+
+// Schedule a task to run every week
+cron.schedule('0 0 * * 0', () => {
+  console.log('Running a task every week');
+  sendWeeklyNewsletter();
+});
+
+app.get('/trigger-newsletter', async (req, res) => {
+  try {
+    await sendWeeklyNewsletter();
+    res.send('Newsletter has been triggered manually');
+  } catch (error) {
+    console.error('Error triggering newsletter:', error);
+    res.status(500).send('Error triggering newsletter');
+  }
+});
+
 function estimateTokenCount(text) {
   // Rough estimate of token count for a given text
   return text.trim().split(/\s+/).length;

@@ -1,4 +1,3 @@
-// promptTemplate.js
 const moreDetailsPrompt = (userQuery) => {
     return `${userQuery} using training data in folloiwng format.
     *Book Title by Author*
