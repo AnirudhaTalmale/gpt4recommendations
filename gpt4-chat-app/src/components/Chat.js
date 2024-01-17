@@ -157,15 +157,39 @@ function Chat() {
           const currentUserData = userInfoResponse.data.user;
           setUserData(currentUserData);
           loadSessions(currentUserData);
+          // Check if there are saved query params in local storage and handle them
+          handleSavedQueryParams();
         }
       } else {
+        // Save the current query params to local storage before redirecting
+        localStorage.setItem('queryParams', window.location.search);
         window.location.href = 'http://localhost:3001/auth/login';
       }
     } catch (error) {
       console.error('Error checking authentication status:', error);
+      localStorage.setItem('queryParams', window.location.search);
       window.location.href = 'http://localhost:3001/auth/login';
     }
   }, [loadSessions]);
+
+  const handleSavedQueryParams = () => {
+    const savedQueryParams = localStorage.getItem('queryParams');
+    if (savedQueryParams) {
+      const queryParams = new URLSearchParams(savedQueryParams);
+      const bookTitle = queryParams.get('bookTitle');
+      const author = queryParams.get('author');
+  
+      if (bookTitle) {
+        let query = `Explain this book - ${bookTitle}`;
+        if (author) {
+          query += ` by ${author}`;
+        }
+        setInitialQuery(query); 
+      }
+      // After handling, remove them from local storage
+      localStorage.removeItem('queryParams');
+    }
+  };
     
   useEffect(() => {
     checkAuthStatus();
