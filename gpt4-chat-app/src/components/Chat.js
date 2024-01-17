@@ -282,7 +282,7 @@ function Chat() {
       updateSessionMessages(query, 'simple', true); // true for user message
     }
   
-    // Emit the query to the server
+    // Emit the query to the server 
     socket.emit('query', {
       sessionId: sessions[currentSessionIndex]._id,
       message: {
