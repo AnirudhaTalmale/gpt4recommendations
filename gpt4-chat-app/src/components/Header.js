@@ -20,15 +20,24 @@ function Header({ isPaneOpen, onNewSession, togglePane }) {
           <button className="menu-button-small-screen" onClick={togglePane}>
             <i className="fa-solid fa-bars"></i>
           </button>
+          <div className="header-title">Powered by GPT-4</div>
           <button className="new-session-button-small-screen" onClick={onNewSession}>
             <i className="fa-regular fa-pen-to-square"></i>
           </button>
         </>
       )}
       {!isScreenSmall && !isPaneOpen && (
-        <button className="header-new-session-button" onClick={onNewSession}>
-          <i className="fa-regular fa-pen-to-square"></i>
-        </button>
+        <div className="header-content">
+          <button className="header-new-session-button" onClick={onNewSession}>
+            <i className="fa-regular fa-pen-to-square"></i>
+          </button>
+          <div className="header-title-large">Powered by GPT-4</div>
+        </div>
+      )}
+      {!isScreenSmall && isPaneOpen && (
+        <div className="header-content">
+          <div className="header-title-pane-open">Powered by GPT-4</div>
+        </div>
       )}
     </div>
   );

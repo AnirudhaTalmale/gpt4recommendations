@@ -7,7 +7,7 @@
   height: 100vh;
 }
 
-/* chat area */
+/* chat-area header */
 
 ol li::marker {
   color: #999; /* Darker grey color for the numbers */
@@ -19,17 +19,18 @@ body:not(.history-pane-open) .chat-area {
 
 .header {
   width: 100%;
-  height: 2.65rem; 
+  height: 38%; 
   background-color: #fff;
+  /* border: 1px solid red; */
 }
 
 .header-new-session-button {
   border: 1px solid rgb(209, 208, 208);
   cursor: pointer;
   background: none;
-  font-size: 1rem;
+  font-size: 0.95rem;
   padding: 0.5rem 0.6rem;
-  margin-left: 0.9rem;
+  margin-left: 1rem;
   margin-top: 0.6rem;
   border-radius: 0.5rem;
 }
@@ -48,15 +49,42 @@ body:not(.history-pane-open) .chat-area {
   cursor: pointer;
 }
 
+.header-title {
+  display: inline-block;
+  font-size: 1.15rem; /* Adjust size as needed */
+  margin-top: 1.1rem; /* Adjust margin to center vertically */
+  text-align: center;
+  font-weight: bold;
+}
+
+.header-content {
+  display: flex; /* Use flexbox to align items side by side */
+  align-items: center; /* Center items vertically */
+  justify-content: flex-start; /* Align items to the left */
+}
+
+.header-title-large {
+  font-size: 1.15rem; /* Adjust size as needed */
+  font-weight: bold;
+  margin-left: 1.2rem;
+  margin-top: 0.6rem;
+}
+
+.header-title-pane-open {
+  font-size: 1.15rem; /* Adjust size as needed */
+  font-weight: bold;
+  margin-left: 280px;
+  margin-top: 1.1rem;
+}
+
+/* chat area */
+
 .chat-area-wrapper {
   display: flex;
   justify-content: center; /* Center the child horizontally */
-  
 }
 
-
 .chat-area {
-  
   display: flex;
   flex-direction: column;
   padding: 20px;
@@ -76,8 +104,6 @@ body:not(.history-pane-open) .chat-area {
   font-family: Söhne, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, sans-serif, Helvetica Neue, Arial, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
   margin-top: 2rem;
 }
-
-
 
 /* Optional: add media query for responsive design */
 @media (max-width: 760px) {
@@ -318,7 +344,7 @@ body:not(.history-pane-open) .input-area {
   justify-content: space-between;
   padding-left: 0.5rem;
   padding-right: 0.5rem;
-  padding-top: 0.8rem;
+  padding-top: 0.6rem;
   padding-bottom: 0.8rem;
   align-items: center; /* Align buttons vertically */
   position: relative; 
