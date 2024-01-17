@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import '../App.css';
 
-function InputBox({ onSubmit, isStreaming, onStopStreaming }) {
-  const [input, setInput] = useState('');
+function InputBox({ onSubmit, isStreaming, onStopStreaming, initialQuery }) {
+  const [input, setInput] = useState(initialQuery || '');
   const [isInputNotEmpty, setIsInputNotEmpty] = useState(false);
   const [rows, setRows] = useState(1);
   const textareaRef = useRef(null);
@@ -49,6 +49,16 @@ function InputBox({ onSubmit, isStreaming, onStopStreaming }) {
       }, 0);
     }
   };
+
+  useEffect(() => {
+    setInput(initialQuery);
+  
+    // Update the isInputNotEmpty and rows state based on the initialQuery
+    setIsInputNotEmpty(initialQuery.length > 0);
+    const lineCount = initialQuery.split('\n').length;
+    setRows(lineCount >= 1 ? lineCount : 1);
+  }, [initialQuery]);
+  
 
   const handleInputChange = (e) => {
     setInput(e.target.value);

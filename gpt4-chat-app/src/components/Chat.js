@@ -17,6 +17,23 @@ function Chat() {
   const [isStreaming, setIsStreaming] = useState(false);
   const historyPaneRef = useRef(null);
 
+  const [initialQuery, setInitialQuery] = useState('');
+
+  useEffect(() => {
+    const queryParams = new URLSearchParams(window.location.search);
+    const bookTitle = queryParams.get('bookTitle');
+    const author = queryParams.get('author');
+
+    if (bookTitle) {
+      let query = `Explain this book - ${bookTitle}`;
+      if (author) {
+        query += ` by ${author}`;
+      }
+      setInitialQuery(query);
+    }
+  }, []);
+
+
   const [lightboxContent, setLightboxContent] = useState('');
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
 
@@ -451,7 +468,7 @@ function Chat() {
         ))}
       </div>
       
-      <InputBox onSubmit={handleQuerySubmit} isLoading={isLoading} isStreaming={isStreaming} onStopStreaming={handleStopStreaming} />
+      <InputBox onSubmit={handleQuerySubmit} isLoading={isLoading} isStreaming={isStreaming} onStopStreaming={handleStopStreaming} initialQuery={initialQuery} />
       
     </div>
   );
