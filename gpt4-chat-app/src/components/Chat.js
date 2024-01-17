@@ -298,6 +298,18 @@ function Chat() {
     if (!isMoreDetails) {
       updateSessionMessages(query, 'simple', true); // true for user message
     }
+
+    if (!isMoreDetails && query.startsWith("Explain this book - ")) {
+      const queryWithoutPrefix = query.slice("Explain this book - ".length);
+      const parts = queryWithoutPrefix.split(" by ");
+
+      if (parts.length > 0) {
+        bookTitle = parts[0].trim();
+        author = parts.length > 1 ? parts[1].trim() : null;
+      }
+
+      
+    }
   
     // Emit the query to the server 
     socket.emit('query', {
@@ -334,7 +346,6 @@ function Chat() {
       }
     }
   };
-  
 
   const handleDeleteSession = async (sessionId) => {
     try {
@@ -384,34 +395,6 @@ function Chat() {
     };
   }, [isPaneOpen, togglePane]);
 
-  const handleMoreDetailsRequest = async (bookTitle, author) => {
-    console.log("bookTitle:", bookTitle);
-    console.log("author:", author);
-    try {
-      const response = await fetchMoreDetails(bookTitle, author);
-      // Check if the database query was successful and had results
-      if (!response || !response.data || !response.data.detailedDescription) {
-        // Fallback to the original query submit if no data is found
-        const userQuery = `Explain this book - ${bookTitle} by ${author} - `;
-        handleQuerySubmit(userQuery, true, bookTitle, author);
-        console.log("i am in if block");
-      } else {
-        // Handle the successful response
-        const detailedDescription = response.data.detailedDescription;
-        // You can now use this detailed description to display in a Lightbox
-        // Before setting new content
-        setLightboxContent(''); // Reset the content
-        setLightboxContent(detailedDescription);
-        setIsLightboxOpen(true);
-      }
-    } catch (error) {
-      // In case of an error, also fallback to the original query submit
-      const userQuery = `Explain this book - ${bookTitle} by ${author} - `;
-      handleQuerySubmit(userQuery, true, bookTitle, author);
-      console.log("i am in catch block");
-    }
-  };
-  
   const fetchMoreDetails = async (bookTitle, author) => {
     try {
       const response = await axios.get(`http://localhost:3000/api/more-details`, {
@@ -419,10 +402,30 @@ function Chat() {
       });
       return response; // Return the response for further handling
     } catch (error) {
-      console.error('Error fetching more details:', error);
       throw error; // Throw the error to be caught in the calling function
     }
   };  
+
+  const handleMoreDetailsRequest = async (bookTitle, author) => {
+    try {
+      const response = await fetchMoreDetails(bookTitle, author);
+
+      if (!response || !response.data || !response.data.detailedDescription) {
+        const userQuery = `Explain this book - ${bookTitle} by ${author} - `;
+        handleQuerySubmit(userQuery, true, bookTitle, author);
+        console.log("i am in if block");
+      } else {
+        const detailedDescription = response.data.detailedDescription;
+        setLightboxContent(''); // Reset the content
+        setLightboxContent(detailedDescription);
+        setIsLightboxOpen(true);
+      }
+    } catch (error) {
+      const userQuery = `Explain this book - ${bookTitle} by ${author} - `;
+      handleQuerySubmit(userQuery, true, bookTitle, author);
+      console.log("i am in catch block");
+    }
+  };
 
   return (
     <div className="App">

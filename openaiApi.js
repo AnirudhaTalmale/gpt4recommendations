@@ -69,10 +69,42 @@ const openai = new OpenAI(process.env.OPENAI_API_KEY);
 
 let isStreamingActive = false;
 
+const fetchMoreDetails = async (bookTitle, author) => {
+  try {
+    const response = await axios.get(`http://localhost:3000/api/more-details`, {
+      params: { bookTitle, author }
+    });
+    return response; // Return the response for further handling
+  } catch (error) {
+    throw error; // Throw the error to be caught in the calling function
+  }
+};  
+
 const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, bookTitle, author) => {
 
+  if (!isMoreDetails && messages[messages.length - 1].content.startsWith("Explain this book - ")) {
+    try {
+      const response = await fetchMoreDetails(bookTitle, author);
+      if (response && response.data && response.data.detailedDescription) {
+        const detailedDescription = response.data.detailedDescription;
+
+        messageIndex = session.messages.push({
+          role: 'assistant',
+          contentType: 'simple',
+          content: detailedDescription
+        }) - 1;
+        await session.save();
+
+        socket.emit('chunk', { content: detailedDescription, sessionId, isMoreDetails });
+        socket.emit('streamEnd', { message: 'Stream completed', sessionId });
+        return; // End the function here if details are successfully fetched
+      }
+    } catch (error) {
+      console.log("Error fetching book details inside openaiApi code");
+    }
+  }
+
   isStreamingActive = true;
-  let buttonCounter = 1; 
 
   const filteredMessages = messages.map(({ role, content }) => ({ role, content }));
   try {
@@ -126,7 +158,7 @@ const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, bo
           }
 
           // Replace buttonDiv1 with updated Buy Now button HTML
-          if (isMoreDetails) {
+          if (isMoreDetails || messages[messages.length - 1].content.startsWith("Explain this book - ")) {
             const buyNowButtonHtml = `<div><a href="${amazonUrl}" target="_blank"><button class="buy-now-button">Buy now</button></a></div>`;
             pausedEmit = pausedEmit.replace(bookTitleMatch[0], bookTitleMatch[0] + buyNowButtonHtml);
           } else {
@@ -134,7 +166,6 @@ const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, bo
             const moreDetailsButtonHtml = `<div><button type="button" class="more-details-btn" data-book-title="${bookTitle}" data-author="${author}">More Details</button></div>`;
             pausedEmit = pausedEmit.replace(bookTitleMatch[0], bookTitleMatch[0] + buyNowButtonHtml + moreDetailsButtonHtml);
           }
-          buttonCounter++;
 
           // If the cover image URL is not the default, concatenate div tag with the image tag
           if (coverImageUrl !== 'default-cover.jpg') {
@@ -180,14 +211,15 @@ const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, bo
       }
       const finishReason = chunk.choices[0]?.finish_reason;
       if (finishReason === 'stop') {
-        const MoreDetails = require('./models/MoreDetails');
-        const newDetail = new MoreDetails({
-            bookTitle,
-            author,
-            detailedDescription: completeResponse // Save complete response here
-        });
-        await newDetail.save();
-
+        if (isMoreDetails || messages[messages.length - 1].content.startsWith("Explain this book - ")) {
+          const MoreDetails = require('./models/MoreDetails');
+          const newDetail = new MoreDetails({
+              bookTitle,
+              author,
+              detailedDescription: completeResponse // Save complete response here
+          });
+          await newDetail.save();
+        }
         socket.emit('streamEnd', { message: 'Stream completed', sessionId }); // Emit a message indicating stream end
         break; // Optionally break out of the loop if the stream is finished
       }

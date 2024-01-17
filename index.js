@@ -203,7 +203,6 @@ io.on('connection', (socket) => {
         contentType: 'simple',
         content: message.content
       });
-    
       await session.save();
     }
 
@@ -254,19 +253,18 @@ io.on('connection', (socket) => {
     }    
 
     let completePrompt;
-    if (isMoreDetails) {
+    if (isMoreDetails || message.content.startsWith("Explain this book - ")) {
       completePrompt = moreDetailsPrompt(message.content);
     } else {
       completePrompt = bookRecommendationPrompt(message.content);
     }
-    console.log("completePrompt: ", completePrompt);
 
     const currentMessageTokenCount = estimateTokenCount(completePrompt);
     let pastMessageTokenCount = 0;
     const pastMessageTokenThreshold = 120; 
     const currentMessageTokenThreshold = 150; 
 
-    if (currentMessageTokenCount > currentMessageTokenThreshold && !isMoreDetails) {
+    if (currentMessageTokenCount > currentMessageTokenThreshold) {
       const errorMessage = 'Input message too large';
     
       // Emit a warning message to the client and update session name if it's the first query
@@ -276,14 +274,16 @@ io.on('connection', (socket) => {
         session.sessionName = errorMessage;
         socket.emit('updateSessionName', { sessionId: session._id, sessionName: errorMessage });
       }
-    
-      // Add a response message to the session and save
-      session.messages.push({
-        role: 'assistant',
-        contentType: 'simple',
-        content: errorMessage
-      });
-      await session.save();
+      
+      if (!isMoreDetails) {
+        // Add a response message to the session and save
+        session.messages.push({
+          role: 'assistant',
+          contentType: 'simple',
+          content: errorMessage
+        });
+        await session.save();
+      }
     }    
     else {
 
@@ -300,7 +300,7 @@ io.on('connection', (socket) => {
       const messagesForGPT4 = [{ role: 'user', content: completePrompt }];
     
       // Iterate through past messages in reverse order and add them until the token limit for past messages is near
-      for (let i = session.messages.length - 2; i >= 0 && pastMessageTokenCount < pastMessageTokenThreshold && !isMoreDetails; i--) {
+      for (let i = session.messages.length - 2; i >= 0 && pastMessageTokenCount < pastMessageTokenThreshold && !isMoreDetails && !message.content.startsWith("Explain this book - "); i--) {
         const msg = session.messages[i];
         let contentToInclude = msg.content;
 
@@ -601,16 +601,23 @@ app.get('/api/get-user-by-email', async (req, res) => {
 
 // ------------------- chat endpoints-------------------
 
-app.get('/api/more-details', async (req, res) => {
+app.get('/api/more-details', async (req, res) => { 
   try {
     // Retrieve bookTitle and author from query parameters
     const { bookTitle, author } = req.query;
 
+    // Initialize query object
+    let query = {
+      bookTitle: new RegExp(bookTitle, 'i') // Always search by title
+    };
+
+    // Add author to the query if it's provided
+    if (author) {
+      query.author = new RegExp(author, 'i');
+    }
+
     // Perform a case-insensitive search
-    const bookDetails = await MoreDetails.findOne({
-      bookTitle: new RegExp(bookTitle, 'i'),
-      author: new RegExp(author, 'i')
-    });
+    const bookDetails = await MoreDetails.findOne(query);
 
     if (!bookDetails) {
       return res.status(404).json({ message: 'Details not found for this book' });
@@ -622,6 +629,7 @@ app.get('/api/more-details', async (req, res) => {
     res.status(500).json({ message: 'Server error occurred while fetching book details' });
   }
 });
+
 
 app.post('/api/session', async (req, res) => {
   try {
