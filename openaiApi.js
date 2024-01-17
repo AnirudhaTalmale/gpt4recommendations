@@ -268,14 +268,18 @@ openaiApi.getNewsletter = async (prompt) => {
 
       const encodedTitle = encodeForUrl(bookTitle);
       let amazonUrl = `https://www.amazon.in/s?k=${encodedTitle}`;
+      let detailsUrl = `http://localhost:3001/?bookTitle=${encodedTitle}`;
 
       if (author) {
         const encodedAuthor = `+by+${encodeForUrl(author)}`;
         amazonUrl += encodedAuthor;
+
+        const encodedAuthorMoreDetials = `&author=${encodeForUrl(author)}`;
+        detailsUrl += encodedAuthorMoreDetials;
       }
 
       const buyNowButtonHtml = `<div><a href="${amazonUrl}" style="cursor: pointer; text-decoration: none;" target="_blank"><button style="background: none; border: 1px solid black; font-family: Arial, sans-serif; font-size: 1rem; padding: 0.25rem 0.6rem; border-radius: 0.7rem; cursor: pointer; text-align: center; display: inline-block; margin-bottom: 0.7rem; margin-top: 0.7rem; width: 8.3rem;">Buy now</button></a></div>`;
-      const moreDetailsButtonHtml = `<div><button type="button" style="background: none; border: 1px solid black; font-family: Arial, sans-serif; font-size: 1rem; padding: 0.25rem 0.6rem; border-radius: 0.7rem; cursor: pointer; text-align: center; text-decoration: none; display: inline-block; margin-bottom: 0.2rem; width: 8.3rem;" data-book-title="${bookTitle}" data-author="${author}">More Details</button></div>`;
+      const moreDetailsButtonHtml = `<div><a href="${detailsUrl}" style="text-decoration: none;" target="_blank"><button type="button" style="background: none; border: 1px solid black; font-family: Arial, sans-serif; font-size: 1rem; padding: 0.25rem 0.6rem; border-radius: 0.7rem; cursor: pointer; text-align: center; display: inline-block; margin-bottom: 0.2rem; width: 8.3rem;">More Details</button></a></div>`;
 
       newsletterContent = newsletterContent.replace(match[0], bookTitleWithAuthorBold + buyNowButtonHtml + moreDetailsButtonHtml);
 
