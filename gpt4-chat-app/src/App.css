@@ -5,6 +5,7 @@
   display: flex;
   flex-direction: column; /* Keep the main direction as column for stacking */
   height: 100vh;
+  background-color: rgb(253, 253, 253);
 }
 
 /* chat-area header */
@@ -20,7 +21,6 @@ body:not(.history-pane-open) .chat-area {
 .header {
   width: 100%;
   height: 38%; 
-  background-color: #fff;
   /* border: 1px solid red; */
 }
 
@@ -85,6 +85,7 @@ body:not(.history-pane-open) .chat-area {
 }
 
 .chat-area {
+  /* background-color: black; */
   display: flex;
   flex-direction: column;
   padding: 20px;
@@ -95,6 +96,10 @@ body:not(.history-pane-open) .chat-area {
   overflow-y: auto; 
   flex-grow: 1;
   padding-right: 3rem;
+}
+
+.chat-area b {
+  color: black;
 }
 
 .chat-heading {
@@ -584,19 +589,24 @@ body:not(.history-pane-open) .input-area {
 .message {
   display: flex;
   align-items: flex-start; /* Aligns items at the start of the container */
-  margin-bottom: 1.7rem;
+  margin-bottom: 1.5rem;
   max-width: 600px;
   font-family: SÃ¶hne, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, sans-serif, Helvetica Neue, Arial, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
-  font-size: 1rem;
-  line-height: 1.5rem;
+  font-size: 0.97rem;
+  line-height: 1.6rem;
   width: 100%;
   margin-left: 1rem;
 }
 
 .message-question {
   white-space: pre-wrap; /* This will preserve line breaks and spaces as in the input */
+  color: black !important;
 }
 
+
+.message-answer {
+  margin-top: -0.75rem;
+}
 
 .message-icon {
   margin-right: 0.8rem; /* Adjust as needed */
@@ -618,7 +628,7 @@ body:not(.history-pane-open) .input-area {
 .message-sender {
   font-weight: bold; /* Make the icon text bold */
   font-family: SÃ¶hne, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, sans-serif, Helvetica Neue, Arial, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
-  margin-bottom: -0.7rem;
+  margin-bottom: -1.4rem;
   color: rgb(14, 156, 52);
   user-select: none;
   display: block;
@@ -636,7 +646,7 @@ body:not(.history-pane-open) .input-area {
 
 .buy-now-button {
   background: none;
-  border: 1px solid black;
+  border: 1px solid rgb(46, 46, 46);;
   font-family: Söhne, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, sans-serif, Helvetica Neue, Arial, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
   font-size: 1rem;
   padding: 0.25rem 0.6rem;
@@ -649,6 +659,7 @@ body:not(.history-pane-open) .input-area {
   margin-bottom: 0.7rem;
   margin-top: 0.7rem;
   width: 8.3rem;
+  color: rgb(46, 46, 46);
 }
 
 .buy-now-button:hover {
@@ -668,7 +679,7 @@ body:not(.history-pane-open) .input-area {
 
 .more-details-btn {
   background: none;
-  border: 1px solid black;
+  border: 1px solid rgb(46, 46, 46);
   font-family: Söhne, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, sans-serif, Helvetica Neue, Arial, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
   font-size: 1rem;
   padding: 0.25rem 0.6rem;
@@ -680,6 +691,7 @@ body:not(.history-pane-open) .input-area {
   transition: background-color 0.3s ease, border-color 0.3s ease;
   margin-bottom: 1.2rem;
   width: 8.3rem;
+  color: rgb(46, 46, 46);
 }
 
 .more-details-btn:hover {
