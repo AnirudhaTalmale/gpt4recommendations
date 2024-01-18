@@ -173,12 +173,21 @@ const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, bo
             pausedEmit = pausedEmit.replace(bookTitleMatch[0], bookTitleMatch[0] + imageDiv);
           }
 
-          let replaceCount = 0; // To keep track of the number of replacements
+          // Create the HTML for the book title
+          let bookInfoHtml = `<div class="book-info">
+          <h3 class="book-title">${bookTitle}</h3>`;
 
-          pausedEmit = pausedEmit.replace(/\*/g, () => {
-              replaceCount++;
-              return replaceCount === 1 ? "<h3>" : "</h3>";
-          });
+          // If author exists, add author information
+          if (author) {
+          bookInfoHtml += `<span class="book-author">by ${author}</span>`;
+          }
+
+          // Close the book-info div
+          bookInfoHtml += `</div>`;
+
+          // Replace the original text with the new HTML structure
+          pausedEmit = pausedEmit.replace(bookTitleMatch[0], bookInfoHtml);
+          pausedEmit = pausedEmit.replace(/\*/g, '');
                     
           // Emit pausedEmit and reset
           completeResponse += pausedEmit;

@@ -20,8 +20,9 @@ body:not(.history-pane-open) .chat-area {
 
 .header {
   width: 100%;
-  height: 38%; 
+  height: 50px;
   /* border: 1px solid red; */
+  padding-top: 1rem;
 }
 
 .header-new-session-button {
@@ -31,8 +32,8 @@ body:not(.history-pane-open) .chat-area {
   font-size: 0.95rem;
   padding: 0.5rem 0.6rem;
   margin-left: 1rem;
-  margin-top: 0.6rem;
   border-radius: 0.5rem;
+  margin-top: -0.5rem;
 }
 
 .new-session-button-small-screen {
@@ -52,7 +53,7 @@ body:not(.history-pane-open) .chat-area {
 .header-title {
   display: inline-block;
   font-size: 1.15rem; /* Adjust size as needed */
-  margin-top: 1.1rem; /* Adjust margin to center vertically */
+  margin-top: 0.66rem; /* Adjust margin to center vertically */
   text-align: center;
   font-weight: bold;
 }
@@ -67,17 +68,27 @@ body:not(.history-pane-open) .chat-area {
   font-size: 1.15rem; /* Adjust size as needed */
   font-weight: bold;
   margin-left: 1.2rem;
-  margin-top: 0.6rem;
+  margin-top: -0.5rem;
 }
 
 .header-title-pane-open {
   font-size: 1.15rem; /* Adjust size as needed */
   font-weight: bold;
   margin-left: 280px;
-  margin-top: 1.1rem;
+  /* margin-top: 0.8rem; */
 }
 
 /* chat area */
+
+.book-title {
+  margin-bottom: 5px; /* Spacing between title and author */
+}
+
+.book-author {
+  font-size: 0.8rem; /* Smaller font size for the author's name */
+  color: grey; /* Different color for the author's name */
+}
+
 
 .chat-area-wrapper {
   display: flex;
@@ -96,10 +107,6 @@ body:not(.history-pane-open) .chat-area {
   overflow-y: auto; 
   flex-grow: 1;
   padding-right: 3rem;
-}
-
-.chat-area b {
-  color: black;
 }
 
 .chat-heading {
@@ -598,6 +605,16 @@ body:not(.history-pane-open) .input-area {
   margin-left: 1rem;
 }
 
+.message-content img {
+  margin-top: 0.8rem;
+}
+
+.message-content h3 {
+  margin-bottom: -0.001rem;
+}
+
+
+
 .message-question {
   white-space: pre-wrap; /* This will preserve line breaks and spaces as in the input */
   color: black !important;
@@ -723,14 +740,11 @@ body:not(.history-pane-open) .input-area {
   pointer-events: none; /* Prevents clicking */
 }
 
-h3 {
-  line-height: 1.7rem;
-}
 
 h3 div img {
   margin-top: 0.8rem;
   margin-bottom: -0.1rem;
-  /* border: 1px solid black;  */
+  /* border: 3px solid black;  */
 }
 
 b div img {
@@ -777,14 +791,16 @@ b div img {
   border-radius: 8px; /* Optional: for rounded corners */
 }
 
-.modal img {
-  width: 100%; /* Make image responsive within the modal-content */
-  height: auto; /* Maintain aspect ratio */
-  display: block; /* Remove extra space below the image */
-  max-height: 100%; 
-  object-fit: contain;
-  margin: 0;
-  padding: 0;
+.lightbox-content img {
+  margin-top: 0.7rem;
+}
+
+.lightbox-content  h3 {
+  margin-bottom: -0.001rem;
+}
+
+.lightbox-content  button {
+  margin-bottom: 1.2rem;
 }
 
 .close-button {
