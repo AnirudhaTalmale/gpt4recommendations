@@ -1,5 +1,5 @@
 const newsletterPrompt = (userQuery) => {
-    return `Divide following user queries in categories. A single category can correspond to multiple queries. Provide two books using training data for each category in given format.
+    return `Divide following user queries in categories. A single category can correspond to multiple queries. Provide two books for each category in given format.
 ${userQuery}
 
 <h3>Category name</h3>
