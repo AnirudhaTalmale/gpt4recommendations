@@ -134,13 +134,13 @@ const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, bo
       let chunkContent = chunk.choices[0]?.delta?.content || "";
       // console.log(chunkContent);
 
-      if (chunkContent.includes('*')) {
+      if (chunkContent.includes('#')) {
         if (isPaused) {
           // If resuming, add current chunk to pausedEmit
           pausedEmit += chunkContent;
 
-          // Extract book title enclosed in '*'
-          const bookTitleMatch = pausedEmit.match(/\*(.*?)\*/);
+          // Extract book title enclosed in '#'
+          const bookTitleMatch = pausedEmit.match(/#(.*?)#/);
           const bookTitleWithAuthor = bookTitleMatch ? bookTitleMatch[1] : "";
 
           // Fetch book cover image
@@ -187,7 +187,7 @@ const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, bo
 
           // Replace the original text with the new HTML structure
           pausedEmit = pausedEmit.replace(bookTitleMatch[0], bookInfoHtml);
-          pausedEmit = pausedEmit.replace(/\*/g, '');
+          pausedEmit = pausedEmit.replace(/\#/g, '');
                     
           // Emit pausedEmit and reset
           completeResponse += pausedEmit;
@@ -292,7 +292,7 @@ openaiApi.getNewsletter = async (prompt) => {
     let newsletterContent = response.choices[0]?.message?.content.trim();
     console.log("newsletterContent: ", newsletterContent);
 
-    const bookListMatches = [...newsletterContent.matchAll(/\*([\s\S]*?)\*/g)];
+    const bookListMatches = [...newsletterContent.matchAll(/#([\s\S]*?)#/g)];
 
     for (const match of bookListMatches) {
       const bookTitleWithAuthor = match[1];
@@ -331,7 +331,7 @@ openaiApi.getNewsletter = async (prompt) => {
       }
     }
 
-    newsletterContent = newsletterContent.replace(/\*/g, '');
+    newsletterContent = newsletterContent.replace(/\#/g, '');
     return newsletterContent;
   } catch (error) {
     console.log('Error getting newsletter content', error);
