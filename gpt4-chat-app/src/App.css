@@ -87,7 +87,7 @@ body:not(.history-pane-open) .chat-area {
 }
 
 .book-author {
-  font-size: 0.8rem; /* Smaller font size for the author's name */
+  font-size: 0.84rem; /* Smaller font size for the author's name */
   color: grey; /* Different color for the author's name */
 }
 

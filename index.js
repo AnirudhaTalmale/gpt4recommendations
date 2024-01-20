@@ -157,27 +157,30 @@ function estimateTokenCount(text) {
 }
 
 function extractTags(content) {
-  // Use the original regex to match text between <h3> tags and the first <div> tag
-  const h3Matches = content.match(/<h3>(.*?)<div>/g) || [];
-  const h3ExtractedText = h3Matches.map(match => 
-    match.replace(/<h3>/g, '').replace(/<div>.*/g, '').trim()
-  );
+  // Initialize the array to store extracted book titles and authors
+  const bookDetails = [];
 
-  // Initialize the array to store extracted text from <ol><li><b> tags
-  const olExtractedText = [];
+  // Regex to match each book section in the content
+  const bookInfoMatches = content.match(/<div class="book-info">[\s\S]*?<\/div><div><img/g) || [];
+  bookInfoMatches.forEach(bookInfo => {
+    // Extract the book title
+    const titleMatch = bookInfo.match(/<h3 class="book-title">(.*?)<\/h3>/);
+    const title = titleMatch ? titleMatch[1].trim() : '';
 
-  // Use a regex to match text within <b> tags for each <li> in an <ol>
-  const olMatches = content.match(/<ol>[\s\S]*?<\/ol>/g) || [];
-  olMatches.forEach(olMatch => {
-      const liMatches = olMatch.match(/<li><b>.*?<div>/g) || [];
-      liMatches.forEach(liMatch => {
-          olExtractedText.push(liMatch.replace(/.*<b>/g, '').replace(/<div>.*/g, '').trim());
-      });
+    // Extract the book author
+    const authorMatch = bookInfo.match(/<span class="book-author">(.*?)<\/span>/);
+    const author = authorMatch ? authorMatch[1].trim() : '';
+
+    // Combine title and author
+    if (title && author) {
+      bookDetails.push(`${title} ${author}`);
+    }
   });
 
-  // Combine and return the extracted text
-  return h3ExtractedText.concat(olExtractedText).join('\n'); // Joining with newline character
+  // Return the extracted book titles and authors
+  return bookDetails.join('\n'); // Joining with newline character
 }
+
 
 const MESSAGE_LIMIT = 40; // Set your desired message limit
 const WINDOW_DURATION = 3 * 60 * 60 * 1000; // 3 hours in milliseconds
@@ -261,7 +264,7 @@ io.on('connection', (socket) => {
 
     const currentMessageTokenCount = estimateTokenCount(completePrompt);
     let pastMessageTokenCount = 0;
-    const pastMessageTokenThreshold = 120; 
+    const pastMessageTokenThreshold = 180; 
     const currentMessageTokenThreshold = 150; 
 
     if (currentMessageTokenCount > currentMessageTokenThreshold) {
