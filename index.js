@@ -286,8 +286,12 @@ io.on('connection', (socket) => {
       }
     }    
     else {
+      console.log("i am in else block");
+      console.log("isMoreDetails: ", isMoreDetails);
+      console.log("message.isFirstQuery: ", message.isFirstQuery);
 
       if (message.isFirstQuery && !isMoreDetails) {
+        console.log("message.isFirstQuery && !isMoreDetails");
         // Get the 4-word summary
         const summary = await openaiApi.getSummary(message.content);
         session.sessionName = summary; // Update the session name with the summary

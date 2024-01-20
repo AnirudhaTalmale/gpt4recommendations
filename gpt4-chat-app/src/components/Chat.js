@@ -11,11 +11,32 @@ import Header from './Header';
 function Chat() {
   const [sessions, setSessions] = useState([]);
   const [isPaneOpen, setIsPaneOpen] = useState(window.innerWidth >= 760 ? true : false);
-  const [currentSessionIndex, setCurrentSessionIndex] = useState(-1);
+  const [currentSessionIndex, setCurrentSessionIndex] = useState(() => {
+    const savedSessionIndex = localStorage.getItem('currentSessionIndex');
+    if (savedSessionIndex !== null) {
+      const parsedIndex = parseInt(savedSessionIndex, 10);
+      // Ensure the index is not less than -1
+      return parsedIndex >= -1 ? parsedIndex : -1;
+    }
+    return -1; // Default value if nothing is in localStorage
+  });
+  
   const [isLoading, setIsLoading] = useState(false);
   const [userData, setUserData] = useState(null);
   const [isStreaming, setIsStreaming] = useState(false);
   const historyPaneRef = useRef(null);
+  const [selectedSessionId, setSelectedSessionId] = useState(null);
+  const [lastUserMessage, setLastUserMessage] = useState(null);
+  const [isMoreDetailsState, setIsMoreDetailsState] = useState(false);
+  const [bookTitleState, setBookTitleState] = useState(null);
+  const [authorState, setAuthorState] = useState(null);
+
+  const currentSessionIndexRef = useRef(currentSessionIndex);
+
+  // Update the ref whenever currentSessionIndex changes
+  useEffect(() => {
+    currentSessionIndexRef.current = currentSessionIndex;
+  }, [currentSessionIndex]);
 
   const [initialQuery, setInitialQuery] = useState('');
 
@@ -32,7 +53,6 @@ function Chat() {
       setInitialQuery(query);
     }
   }, []);
-
 
   const [lightboxContent, setLightboxContent] = useState('');
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
@@ -110,33 +130,19 @@ function Chat() {
     }
   }, [currentSessionIndex, shouldAutoScroll, sessions]); 
   
-  
-  const loadSessions = useCallback(async (currentUserData) => {
-    // Check if currentUserData.id is used instead of currentUserData.id
-    if (!currentUserData || !currentUserData.id) { // Changed from !_id to .id
-      console.log('User data or ID not available.');
-      return;
-    }
+  useEffect(() => {
+    // Save currentSessionIndex to localStorage
+    console.log("setting currentSessionIndex as: ", currentSessionIndex);
+    localStorage.setItem('currentSessionIndex', currentSessionIndex);
     
-    try {
-      // Adjust the params to use currentUserData.id as well
-      const res = await axios.get('http://localhost:3000/api/sessions', { params: { userId: currentUserData.id } }); // Changed from _id to .id
-      setSessions(res.data);
-      setIsInitialLoad(false);
-    } catch (error) {
-      console.error('Error loading sessions:', error);
-    }
-  }, []);
+    if (currentSessionIndex >= 0 && currentSessionIndex < sessions.length) {
+      setSelectedSessionId(sessions[currentSessionIndex]._id);
+  } 
+  }, [currentSessionIndex, sessions]);
+  
+  
   
   useEffect(() => {
-    // Save the current session index to localStorage whenever it changes
-    if (currentSessionIndex !== -1) {
-      localStorage.setItem('currentSessionIndex', currentSessionIndex);
-    }
-  }, [currentSessionIndex]);
-  
-  useEffect(() => {
-    // Retrieve the current session index from localStorage when the component mounts
     const savedSessionIndex = localStorage.getItem('currentSessionIndex');
     if (savedSessionIndex) {
       setCurrentSessionIndex(parseInt(savedSessionIndex, 10));
@@ -144,34 +150,8 @@ function Chat() {
       // If there is no saved index, load the latest session
       setCurrentSessionIndex(sessions.length - 1);
     }
-  }, [sessions.length]);
+  }, [sessions.length, currentSessionIndex]);
   
-  const checkAuthStatus = useCallback(async () => {
-    try {
-      const authResponse = await axios.get('http://localhost:3000/api/check-auth', { withCredentials: true });
-  
-      if (authResponse.status === 200 && authResponse.data.isAuthenticated) {
-        const userInfoResponse = await axios.get('http://localhost:3000/api/user-info', { withCredentials: true });
-  
-        if (userInfoResponse.status === 200 && userInfoResponse.data.isAuthenticated) {
-          const currentUserData = userInfoResponse.data.user;
-          setUserData(currentUserData);
-          loadSessions(currentUserData);
-          // Check if there are saved query params in local storage and handle them
-          handleSavedQueryParams();
-        }
-      } else {
-        // Save the current query params to local storage before redirecting
-        localStorage.setItem('queryParams', window.location.search);
-        window.location.href = 'http://localhost:3001/auth/login';
-      }
-    } catch (error) {
-      console.error('Error checking authentication status:', error);
-      localStorage.setItem('queryParams', window.location.search);
-      window.location.href = 'http://localhost:3001/auth/login';
-    }
-  }, [loadSessions]);
-
   const handleSavedQueryParams = () => {
     const savedQueryParams = localStorage.getItem('queryParams');
     if (savedQueryParams) {
@@ -190,10 +170,6 @@ function Chat() {
       localStorage.removeItem('queryParams');
     }
   };
-    
-  useEffect(() => {
-    checkAuthStatus();
-  }, [checkAuthStatus]);
 
   const updateSessionName = useCallback(({ sessionId, sessionName }) => {
     setSessions(prevSessions => prevSessions.map(session => 
@@ -212,11 +188,13 @@ function Chat() {
   
   const updateSessionMessages = useCallback((messageContent, contentType = 'simple', isUserMessage = true) => {
     setSessions(prevSessions => {
-      // Clone the previous sessions array
-      const updatedSessions = [...prevSessions];
-      // Clone the current session
-      const currentSession = { ...updatedSessions[currentSessionIndex] };
 
+      console.log("updateSessionMessages has currentSessionIndex as: ", currentSessionIndexRef.current);
+
+      const currentIdx = currentSessionIndexRef.current; // Use ref to get the current index
+      const updatedSessions = [...prevSessions];
+      const currentSession = { ...updatedSessions[currentIdx] };
+      
       // Handle the case for streamed content for the assistant's messages
       if (contentType === 'streamed' && !isUserMessage) {
         // Clone the messages array from the current session
@@ -238,6 +216,7 @@ function Chat() {
         currentSession.messages = updatedMessages;
       } else {
         // Handle the user's message or a non-streamed assistant's message
+        console.log("currentSession before update is: ", JSON.parse(JSON.stringify(currentSession)));
         const newMessage = {
           role: isUserMessage ? 'user' : 'assistant',
           contentType,
@@ -245,19 +224,46 @@ function Chat() {
         };
         // Append the new message to the cloned messages array
         currentSession.messages = [...currentSession.messages, newMessage];
+        console.log("currentSession after update is: ", JSON.parse(JSON.stringify(currentSession)));
       }
       
       // Update the current session in the sessions array
-      updatedSessions[currentSessionIndex] = currentSession;
-      // Return the new sessions array to update the state
+      updatedSessions[currentIdx] = currentSession;
+
+      if (isUserMessage) {
+        setLastUserMessage({ content: messageContent, sessionId: currentSession._id });
+      }
+
+      console.log("updatedSessions is: ", updatedSessions);
+      console.log("updatedSessions length is: ", updatedSessions.length);
       return updatedSessions;
     });
-  }, [currentSessionIndex]); // Add dependencies if there are any
+  }, []);
+
+  useEffect(() => {
+    if (lastUserMessage && sessions[currentSessionIndexRef.current]?._id === lastUserMessage.sessionId) {
+      const isFirstQuery = sessions[currentSessionIndexRef.current]?.messages?.length === 1;
+  
+      socket.emit('query', {
+        sessionId: lastUserMessage.sessionId,
+        message: {
+          role: 'user',
+          content: lastUserMessage.content,
+          isFirstQuery
+        },
+        isMoreDetails: isMoreDetailsState,
+        bookTitle: bookTitleState,
+        author: authorState
+      });
+  
+      // Reset lastUserMessage to avoid duplicate emissions
+      setLastUserMessage(null);
+    }
+  }, [lastUserMessage, sessions, isMoreDetailsState, bookTitleState, authorState]);
 
   const handleStopStreaming = useCallback(async () => {
     try {
-      const response = await axios.post('http://localhost:3000/api/stop-stream');
-      console.log(response.data.message); // Log the response message
+      await axios.post('http://localhost:3000/api/stop-stream');
       setIsStreaming(false);
     } catch (error) {
       console.error('Error stopping the stream:', error);
@@ -318,11 +324,15 @@ function Chat() {
 
   const handleQuerySubmit = async (query, isMoreDetails = false, bookTitle = null, author = null) => {
     setIsLoading(true);
-    const isFirstQuery = sessions[currentSessionIndex]?.messages?.length === 0;
-    if (!isMoreDetails) {
-      updateSessionMessages(query, 'simple', true); // true for user message
+  
+    console.log("current session index is: ", currentSessionIndexRef.current);
+  
+    if (currentSessionIndexRef.current === -1) {
+      console.log("new query submitted when current session index is ", currentSessionIndexRef.current);
+      await handleNewSession();
     }
-
+  
+    const isFirstQuery = sessions[currentSessionIndexRef.current]?.messages?.length === 0;
     if (!isMoreDetails && query.startsWith("Explain this book - ")) {
       const queryWithoutPrefix = query.slice("Explain this book - ".length);
       const parts = queryWithoutPrefix.split(" by ");
@@ -331,48 +341,114 @@ function Chat() {
         bookTitle = parts[0].trim();
         author = parts.length > 1 ? parts[1].trim() : null;
       }
-
-      
     }
-  
-    // Emit the query to the server 
-    socket.emit('query', {
-      sessionId: sessions[currentSessionIndex]._id,
-      message: {
-        role: 'user',
-        content: query,
-        isFirstQuery
-      },
-      isMoreDetails,
-      bookTitle,
-      author
-    });
+
+    setIsMoreDetailsState(isMoreDetails);
+    setBookTitleState(bookTitle);
+    setAuthorState(author);
+
+    if (!isMoreDetails) {
+      console.log("sending to updateSessionMessages, the currentSessionIndex as: ", currentSessionIndexRef.current);
+      updateSessionMessages(query, 'simple', true); // Removed the currentSessionIndex parameter, as it's now accessed within updateSessionMessages
+    }
+    else {
+      socket.emit('query', {
+        sessionId: sessions[currentSessionIndexRef.current]._id,
+        message: {
+          role: 'user',
+          content: query,
+          isFirstQuery
+        },
+        isMoreDetails,
+        bookTitle,
+        author
+      });
+    }
   };  
 
   const isSessionEmpty = (session) => {
     return session.messages.length === 0;
   };
 
-  const handleNewSession = async () => {
+  const handleNewSession = useCallback(async () => {
+    
     if (sessions.length > 0 && isSessionEmpty(sessions[sessions.length - 1])) {
+      console.log("last session is empty");
       setCurrentSessionIndex(sessions.length - 1);
       return sessions[sessions.length - 1]; // Return the last session if it's empty
     } else {
       try {
+        console.log("initiating new session creation");
         if (!userData) return;
         const res = await axios.post('http://localhost:3000/api/session', { userId: userData.id });
         const newSession = res.data;
-        setSessions(prevSessions => [...prevSessions, newSession]);
-        setCurrentSessionIndex(sessions.length);
+        setSessions(prevSessions => {
+          const updatedSessions = [...prevSessions, newSession];
+          const newIdx = updatedSessions.length - 1;
+          setCurrentSessionIndex(newIdx);
+          currentSessionIndexRef.current = newIdx;
+          console.log("new session created with currentSessionIndex as: ", currentSessionIndexRef.current);
+          return updatedSessions;
+        });
+        setSelectedSessionId(newSession._id);
         return newSession; // Return the new session data
       } catch (error) {
         console.error('Error creating new session:', error);
       }
     }
-  };
+  }, [userData, sessions]); // Add dependencies here
+  
+
+  const loadSessions = useCallback(async (currentUserData) => {
+    // Check if currentUserData.id is used instead of currentUserData.id
+    if (!currentUserData || !currentUserData.id) { // Changed from !_id to .id
+      console.log('User data or ID not available.');
+      return;
+    }
+    
+    try {
+      // Adjust the params to use currentUserData.id as well
+      const res = await axios.get('http://localhost:3000/api/sessions', { params: { userId: currentUserData.id } }); // Changed from _id to .id
+      setSessions(res.data);
+      setIsInitialLoad(false);
+    } catch (error) {
+      console.error('Error loading sessions:', error);
+    }
+  }, []);
+
+  const checkAuthStatus = useCallback(async () => {
+    try {
+      const authResponse = await axios.get('http://localhost:3000/api/check-auth', { withCredentials: true });
+  
+      if (authResponse.status === 200 && authResponse.data.isAuthenticated) {
+        const userInfoResponse = await axios.get('http://localhost:3000/api/user-info', { withCredentials: true });
+  
+        if (userInfoResponse.status === 200 && userInfoResponse.data.isAuthenticated) {
+          const currentUserData = userInfoResponse.data.user;
+          setUserData(currentUserData);
+          loadSessions(currentUserData);
+          // Check if there are saved query params in local storage and handle them
+          handleSavedQueryParams();
+        }
+      } else {
+        // Save the current query params to local storage before redirecting
+        localStorage.setItem('queryParams', window.location.search);
+        window.location.href = 'http://localhost:3001/auth/login';
+      }
+    } catch (error) {
+      console.error('Error checking authentication status:', error);
+      localStorage.setItem('queryParams', window.location.search);
+      window.location.href = 'http://localhost:3001/auth/login';
+    }
+  }, [loadSessions]);
+
+  useEffect(() => {
+    checkAuthStatus();
+  }, [checkAuthStatus]);
 
   const handleDeleteSession = async (sessionId) => {
     try {
+  
       await axios.delete(`http://localhost:3000/api/session/${sessionId}`);
       setSessions(prevSessions => prevSessions.filter(session => session._id !== sessionId));
       setCurrentSessionIndex(prevIndex => (prevIndex === 0 ? -1 : prevIndex - 1));
@@ -380,6 +456,7 @@ function Chat() {
       console.error('Error deleting session:', error);
     }
   };
+  
 
   const setCurrentSessionIndexWithStreamCheck = newIndex => {
     if (currentSessionIndex !== newIndex && isStreaming) {
@@ -474,6 +551,8 @@ function Chat() {
         userImage={userData?.image}
         isPaneOpen={isPaneOpen}
         togglePane={togglePane}
+        selectedSessionId={selectedSessionId}
+        setSelectedSessionId={setSelectedSessionId}
       />
       <Header isPaneOpen={isPaneOpen} onNewSession={handleNewSession} togglePane={togglePane} />
       <div className="chat-area" ref={chatAreaRef}>

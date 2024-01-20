@@ -10,11 +10,12 @@ const HistoryPane = forwardRef(({
   userName, 
   userImage, 
   isPaneOpen, 
-  togglePane 
+  togglePane,
+  selectedSessionId,
+  setSelectedSessionId
 }, ref) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isEntryActive, setIsEntryActive] = useState(false);
-  const [selectedSessionId, setSelectedSessionId] = useState(null);
 
   const dropdownRef = useRef(null);
   const userEntryRef = useRef(null);
