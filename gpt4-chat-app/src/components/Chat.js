@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import axios from 'axios';
 import InputBox from './InputBox';
+import SampleQueries from './SampleQueries';
 import AnswerDisplay from './AnswerDisplay';
 import HistoryPane from './HistoryPane';
 import Lightbox from './Lightbox';
@@ -9,6 +10,13 @@ import socket from './socket';
 import Header from './Header';
 
 function Chat() {
+  const sampleQueries = [
+    "To understand the making of FAANG companies",
+    "To understand the mindset of world's top entrepreneurs",
+    "To start a tech startup and scale it globally",
+    "I aspire to live a content, happy, and satisfied life"
+  ];
+
   const [sessions, setSessions] = useState([]);
   const [isPaneOpen, setIsPaneOpen] = useState(window.innerWidth >= 760 ? true : false);
   const [currentSessionIndex, setCurrentSessionIndex] = useState(() => {
@@ -573,7 +581,9 @@ function Chat() {
           />
         ))}
       </div>
-      
+      {sessions[currentSessionIndex] && sessions[currentSessionIndex].messages.length === 0 && (
+        <SampleQueries queries={sampleQueries} onSubmit={handleQuerySubmit} />
+      )}
       <InputBox onSubmit={handleQuerySubmit} isLoading={isLoading} isStreaming={isStreaming} onStopStreaming={handleStopStreaming} initialQuery={initialQuery} />
       
     </div>

@@ -146,13 +146,66 @@ body:not(.history-pane-open) .chat-area {
   }
 
   .input-area {
-    left: 2rem !important; /* Align input area with the full width of the window */
+    left: 0.2rem !important; /* Align input area with the full width of the window */
+  }
+
+  .sample-queries-container {
+    /* border: 1px solid red; */
+    width: 95% !important;
   }
 
   .lightbox-content {
     max-width: 75%;
   }
 }
+
+/* Sample Queries */
+
+body:not(.history-pane-open) .sample-queries-container {
+  left: 0;
+}
+
+.sample-queries-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  padding: 1rem;
+  position: fixed;
+  bottom: 3.5rem;
+  left: 260px;
+  right: 0px;
+  max-width: 43.5rem; /* Same as input-area */
+  margin-left: auto; /* Centering with auto margins */
+  margin-right: auto; /* Centering with auto margins */
+  border-radius: 8px;
+}
+
+
+.sample-queries-row {
+  display: flex;
+  justify-content: space-evenly; /* Evenly space the buttons */
+  margin-bottom: 0.5rem; /* Space between the rows */
+  
+}
+
+.sample-query {
+  /* Existing styles */
+  flex: 1;
+  margin: 0.1rem 0.4rem;
+  border-radius: 0.6rem;
+  height: 3.7rem; /* Adjusted to a single height value */
+  background: none;
+  border: 0.7px solid rgb(183, 181, 181);
+  font-size: 0.9rem;
+  text-align: start;
+  padding: 0.9rem;
+  cursor: pointer;
+}
+
+.sample-query:hover {
+  background-color: rgba(0, 0, 0, 0.05); /* Light grey color on hover */
+}
+
 
 /* input area */
 
@@ -701,7 +754,6 @@ body:not(.history-pane-open) .input-area {
   text-decoration: none;
   display: inline-block;
   transition: background-color 0.3s ease, border-color 0.3s ease;
-  margin-bottom: 1.2rem;
   width: 8.3rem;
   color: rgb(46, 46, 46);
 }

@@ -286,9 +286,6 @@ io.on('connection', (socket) => {
       }
     }    
     else {
-      console.log("i am in else block");
-      console.log("isMoreDetails: ", isMoreDetails);
-      console.log("message.isFirstQuery: ", message.isFirstQuery);
 
       if (message.isFirstQuery && !isMoreDetails) {
         console.log("message.isFirstQuery && !isMoreDetails");
