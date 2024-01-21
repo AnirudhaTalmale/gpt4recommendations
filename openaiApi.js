@@ -111,8 +111,9 @@ const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, bo
     const stream = await openai.chat.completions.create({
       model: "gpt-4-1106-preview",
       messages: filteredMessages,
+      max_tokens: 4096,
       stream: true,
-    });
+    });    
 
     let messageIndex;
     if(!isMoreDetails){

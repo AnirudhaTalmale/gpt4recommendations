@@ -1,6 +1,6 @@
 const moreDetailsPrompt = (userQuery) => {
     return `${userQuery} in folloiwng format.
-    *Book Title by Author*
+    #Book Title by Author#
     <b>Book summary</b><p>Details</p>
     <b>Author's Credibility</b><p>Details</p>
     <b>Key Insights</b><p>Details</p>

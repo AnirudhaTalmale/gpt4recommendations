@@ -264,7 +264,7 @@ io.on('connection', (socket) => {
 
     const currentMessageTokenCount = estimateTokenCount(completePrompt);
     let pastMessageTokenCount = 0;
-    const pastMessageTokenThreshold = 180; 
+    const pastMessageTokenThreshold = 200; 
     const currentMessageTokenThreshold = 150; 
 
     if (currentMessageTokenCount > currentMessageTokenThreshold) {
