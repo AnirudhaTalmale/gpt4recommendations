@@ -1,8 +1,25 @@
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
+const LocalStrategy = require('passport-local').Strategy;
 const User = require('./models/User'); // Import your User model
+const bcrypt = require('bcrypt'); 
 
-// Passport setup for Google OAuth
+passport.use(new LocalStrategy({ usernameField: 'email' }, async (email, password, done) => {
+  try {
+    const user = await User.findOne({ 'local.email': email.toLowerCase() });
+    if (!user) {
+      return done(null, false, { message: 'Incorrect email.' });
+    }
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return done(null, false, { message: 'Incorrect password.' });
+    }
+    return done(null, user);
+  } catch (error) {
+    return done(error);
+  }
+}));
+
 passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
@@ -10,26 +27,53 @@ passport.use(new GoogleStrategy({
   },
   async (accessToken, refreshToken, profile, done) => {
     try {
-      let user = await User.findOne({ googleId: profile.id });
       const userEmail = profile.emails[0].value; // Get user's email from profile
 
-      if (!user) {
-        // Assign 'admin' role if the user's email matches a specific address, otherwise assign 'user' role
+      // Try to find a user either by Google ID or by local email
+      let user = await User.findOne({ 
+        $or: [{ 'google.id': profile.id }, { 'local.email': userEmail }]
+      });
+
+      if (user) {
+        // If user exists but doesn't have a Google ID, link it
+        if (!user.google || !user.google.id) {
+          user.google = {
+            id: profile.id,
+            // Add any additional Google specific info here
+          };
+
+          // Optionally update other fields if needed
+          user.displayName = profile.displayName;
+          user.firstName = profile.name.givenName;
+          user.lastName = profile.name.familyName;
+          user.image = profile.photos[0].value;
+
+          await user.save();
+        }
+      } else {
+        // If user doesn't exist, create a new one
         const userRole = userEmail === "anirudhatalmale4@gmail.com" ? 'assistant' : 'user';
 
-        user = await User.create({
-          googleId: profile.id,
+        user = new User({
+          google: {
+            id: profile.id,
+          },
+          local: {
+            email: userEmail, // Use local sub-document to store email
+          },
           displayName: profile.displayName,
           firstName: profile.name.givenName,
           lastName: profile.name.familyName,
           image: profile.photos[0].value,
-          email: userEmail,
-          role: userRole, // Set the role based on the email
+          role: userRole,
+          // Add any other fields you need
         });
+
+        await user.save();
       }
+
       // Save the accessToken in the user object
       user.accessToken = accessToken;
-      await user.save();
       return done(null, user);
     } catch (error) {
       return done(error, null);
@@ -52,7 +96,6 @@ passport.deserializeUser(async (id, done) => {
     done(err, null);
   }
 });
-
 
 // Export a function to attach to the Express app
 module.exports = (app) => {
@@ -80,7 +123,7 @@ module.exports = (app) => {
     passport.authenticate('google', { failureRedirect: '/auth/login' }),
     (req, res) => {
       // Successful authentication, redirect home.
-      res.redirect('http://localhost:3001/');
+      res.redirect('http://localhost:3001/chat');
     }
   );
 };

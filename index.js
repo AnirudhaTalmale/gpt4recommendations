@@ -14,6 +14,12 @@ const passportSetup = require('./passport-setup'); // Import the setup function
 const axios = require('axios');
 const multer = require('multer');
 const path = require('path');
+const nodemailer = require('nodemailer');
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+const moment = require('moment');
+
+
 
 require('dotenv').config();
 
@@ -68,31 +74,175 @@ app.get('/', (req, res) => {
   res.send('Hello World!');
 });
 
+let transporter = nodemailer.createTransport({
+  host: 'smtp.gmail.com',
+  port: 587,
+  secure: false,
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS
+  }
+});
+
+// Signup endpoint
+app.post('/signup', async (req, res) => {
+  const { email, password } = req.body;
+
+  // Check if user already exists
+  const existingUser = await User.findOne({ 'local.email': email });
+  if (existingUser) {
+    return res.status(400).send('User already exists');
+  }
+
+  // Hash the password
+  const hashedPassword = await bcrypt.hash(password, 10);
+
+  // Create a verification token (could be a random string or JWT)
+  const verificationToken = jwt.sign(
+    { email: email },
+    process.env.JWT_SECRET,
+    { expiresIn: '1h' } // Token expires in 1 hour
+  );
+
+  // Send verification email
+  const verificationUrl = `http://localhost:3001/onboarding?token=${verificationToken}`;
+  transporter.sendMail({
+    to: email,
+    subject: 'Verify your email',
+    html: `Please click <a href="${verificationUrl}">here</a> to verify your email.`
+  });
+
+  // Save user with hashed password and token in the database (but not yet verified)
+  await User.create({
+    'local.email': email,
+    'local.password': hashedPassword,
+    verificationToken: verificationToken,
+    isEmailVerified: false
+  });
+
+  res.send('Signup successful! Please check your email to verify your account.');
+});
+
+
+const getDefaultImage = (displayName) => {
+  if (!displayName || displayName.length === 0) return '';
+
+  const firstLetter = displayName.charAt(0).toUpperCase();
+  // Updated color array with shades of grey
+  const colors = ['#A0A0A0', '#808080', '#606060', '#404040']; // Example of grey color array
+  const bgColor = colors[Math.floor(Math.random() * colors.length)]; // Randomly select a background color
+
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100">
+                <circle cx="50" cy="50" r="50" fill="${bgColor}" />
+                <text x="50%" y="50%" dy=".35em" text-anchor="middle" fill="white" font-family="Arial" font-size="50">${firstLetter}</text>
+               </svg>`;
+
+  return `data:image/svg+xml;base64,${Buffer.from(svg).toString('base64')}`;
+};
+ 
+
+app.post('/api/onboarding', async (req, res) => {
+  const { token, displayName, birthday } = req.body;
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const user = await User.findOne({ 'local.email': decoded.email });
+
+      if (!user) {
+          return res.status(400).send('Invalid token');
+      }
+
+      // Validate and format the birthday before saving
+      const formattedBirthday = moment(birthday, 'DD/MM/YYYY', true);
+      if (!formattedBirthday.isValid()) {
+          return res.status(400).send('Invalid birthday format');
+      }
+
+      user.displayName = displayName;
+      user.birthday = formattedBirthday.toDate();
+
+      // Set the default image based on the displayName
+      if (!user.image) { // Only set the default image if it's not already set
+          user.image = getDefaultImage(displayName);
+      }
+
+      user.isEmailVerified = true;
+      user.verificationToken = null;
+      await user.save();
+
+      req.login(user, (err) => {
+          if (err) { 
+              return res.status(500).send('Error logging in'); 
+          }
+          res.json({ success: true, redirectTo: '/chat' });
+      });
+  } catch (err) {
+      console.error('Error in onboarding:', err);
+      res.status(400).send('Invalid or expired token');
+  }
+});
+
+app.post('/login', async (req, res) => {
+  const { email, password } = req.body;
+
+  // Find the user by local email
+  const user = await User.findOne({ 'local.email': email });
+  if (!user) {
+    return res.status(401).send('Wrong email or password');
+  }
+
+  // Check if the password is correct
+  const isMatch = await bcrypt.compare(password, user.local.password);
+  if (!isMatch) {
+    return res.status(401).send('Wrong email or password');
+  }
+
+  // Check if the user's email has been verified
+  if (!user.isEmailVerified) {
+    return res.status(403).send('Your email address has not been verified.');
+  }
+
+  // If credentials are correct and email is verified, send a success response
+  res.status(200).send('Login successful');
+});
+
+
 app.get('/api/check-auth', (req, res) => {
   if (req.isAuthenticated()) {
-    res.json({ isAuthenticated: true });
+    // Check if onboarding is complete based on the displayName being set
+    if (req.user.displayName) {
+      res.json({ isAuthenticated: true, onboardingComplete: true, user: req.user });
+    } else {
+      res.json({ isAuthenticated: true, onboardingComplete: false, user: req.user });
+    }
   } else {
     res.json({ isAuthenticated: false });
   }
-}); 
+});
 
 app.get('/api/user-info', (req, res) => {
   if (req.isAuthenticated()) {
+    let email = '';
+    if (req.user.local && req.user.local.email) {
+      email = req.user.local.email; // Local strategy email
+    } else if (req.user.google && req.user.google.email) {
+      email = req.user.google.email; // Google strategy email
+    }
+
     res.json({
       isAuthenticated: true,
       user: {
-        id: req.user._id, // Include the user's ID
+        id: req.user._id,
         name: req.user.displayName,
-        email: req.user.email,
-        image: req.user.image, // URL of the Google account image
-        role: req.user.role // Include the user's role
+        email: email,
+        image: req.user.image,
+        role: req.user.role
       }
     });
   } else {
     res.status(401).json({ isAuthenticated: false });
   }
 });
-
 
 
 app.post('/api/stop-stream', (req, res) => {
@@ -683,6 +833,7 @@ app.delete('/api/session/:sessionId', async (req, res) => {
     res.status(500).json({ message: 'Error deleting the session', error: error.toString() });
   }
 });
+
 
 // ---------------------- End points for Blog posts ----------------------------
 

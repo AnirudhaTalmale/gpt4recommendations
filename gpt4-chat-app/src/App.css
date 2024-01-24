@@ -543,54 +543,6 @@ body:not(.history-pane-open) .input-area {
   margin-right: 0.9rem;
 }
 
-
-/* login page components */
-
-.login-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh; /* Use full viewport height */
-}
-
-.login-button {
-  background-color: #ffffff; /* white background */
-  color: #757575; /* Google's text color */
-  padding: 0.5rem 0.5rem;
-  font-size: 1rem;
-  border-radius: 2px;
-  border: 1px solid #f5f5f5;
-  box-shadow: 1px 1px 5px rgba(0,0,0,0.1);
-  cursor: pointer;
-  font-family: 'Arial', sans-serif;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px; /* space between text and logo */
-  transition: background-color 0.3s, color 0.3s;
-}
-
-.login-button:hover {
-  box-shadow: 1px 1px 5px rgba(0,0,0,0.2);
-}
-
-.login-button:focus {
-  outline: none;
-  border-color: #4285f4;
-}
-
-/* Google logo class */
-.google-logo {
-  height: 2rem;
-  width: 2rem;
-  margin: auto;
-  border: none;
-}
-
-.bold-text {
-  font-weight: bold;
-}
-
 /* Update styles for the unseen message count indicator */
 .unseen-messages-count {
   margin-left: 8px;
@@ -606,6 +558,285 @@ body:not(.history-pane-open) .input-area {
 .history-entry.active {
   background-color: hsla(240, 15%, 87%, .1); /* Converted color from #d9d9e3 */
   border-radius: 0.5rem;
+}
+
+/* Home page components */
+
+.home-page-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  background-color: #FAFAFA; /* Light background color */
+}
+
+h1 {
+  font-size: 48px; /* Large font size for the heading */
+  color: #FF4B4B; /* Red color for the ChatGPT logo */
+  margin-bottom: 32px; /* Spacing between the logo and the buttons */
+}
+
+.login-signup-container {
+  display: flex;
+  gap: 16px; /* Space between buttons */
+}
+
+.login-signup-button {
+  padding: 16px 32px; /* Padding inside the buttons */
+  font-size: 16px; /* Text size inside the buttons */
+  font-weight: bold; /* Make the text bold */
+  color: white; /* Text color */
+  background-color: #4B6A9B; /* Background color for the buttons */
+  border: none; /* No border */
+  border-radius: 8px; /* Rounded corners for the buttons */
+  cursor: pointer; /* Pointer cursor on hover */
+  transition: background-color 0.3s; /* Smooth transition for hover effect */
+}
+
+.login-signup-button:hover {
+  background-color: #3A5683; /* Darker shade on hover */
+}
+
+/* login page components */
+
+.login-container h2 {
+  font-size: 1.6rem; /* Adjust the size as needed */
+  margin-bottom: 15px; /* Space between the header and form */
+}
+
+.email-input, .continue-button {
+  background-color: #ffffff; /* For the input, set a white background */
+  padding: 10px 15px; /* Match padding */
+  font-size: 1rem; /* Match font size */
+  border-radius: 0.5rem; /* Match border radius */
+  border: 0.5px solid grey; /* Match border style */
+  width: 239px; /* Match width */
+  height: 1.8rem; /* Match height */
+  margin-bottom: 15px; /* Space between input and button */
+  display: block; /* Ensure it takes the full width */
+}
+
+.continue-button {
+  background-color: #4CAF50; /* Green background */
+  color: white; /* White text */
+  display: flex; /* Flex display to center content */
+  align-items: center; /* Center items vertically */
+  justify-content: center; /* Center items horizontally */
+  cursor: pointer; /* Pointer cursor on hover */
+  transition: background-color 0.3s, color 0.3s; /* Smooth transition for hover effect */
+  width: 305px !important;
+  height: 3.2rem !important;
+  margin-bottom: 0px !important;
+}
+
+/* Adjust the hover effect for the continue button */
+.continue-button:hover {
+  background-color: #367c39; /* Darker green on hover */
+}
+
+.login-link {
+  text-decoration: none; /* No underline by default */
+  color: #4CAF50; /* Color to match the expected design */
+}
+
+.login-container {
+  display: flex;
+  flex-direction: column; /* Stack children vertically */
+  justify-content: center;
+  align-items: center;
+  height: 100vh; /* Use full viewport height */
+  gap: 10px; /* Space between stacked buttons */
+}
+
+.login-button {
+  background-color: #ffffff; /* white background */
+  padding: 10px 15px; /* Adjust padding */
+  font-size: 1rem;
+  border-radius: 0.5rem; /* Border radius to match the image */
+  border: 1px solid #f5f5f5;
+  cursor: pointer;
+  font-family: 'Arial', sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start; /* Align items to the left */
+  width: 300px; /* Fixed width for buttons */
+  transition: background-color 0.3s, color 0.3s;
+  border: 0.5px solid grey;
+  height: 3.2rem;
+}
+
+.login-button:hover {
+  background-color: rgb(238, 237, 237);
+}
+
+.login-button:focus {
+  outline: none;
+  border-color: #4285f4; /* Border color on focus */
+}
+
+.google-logo, .microsoft-logo, .apple-logo {
+  height: 1.6rem;
+  width: 1.6rem;
+  margin-right: 1.2rem; /* Set margin to the right of the logo */
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  margin-bottom: 0.5rem;
+  font-size: 0.75rem;
+}
+
+.divider .line {
+  flex-grow: 1;
+  height: 1px;
+  background-color: #a9a9a9;
+  margin: 0 8px;
+  min-width: 132px;
+}
+
+.login-prompt {
+  font-size: 0.85rem;
+  margin-top: 10px;
+}
+
+.password-criteria {
+  border: 0.5px solid grey;
+  margin-bottom: 20px;
+  padding-left: 10px;
+  padding-top: 12px;
+  font-size: 0.8rem;
+  border-radius: 4px;
+}
+
+.invalid-password {
+  border: 1px solid red; /* Red border for invalid password */
+}
+
+.centered-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh; /* Use 100vh to take the full viewport height */
+  text-align: center;
+}
+
+.verification-message {
+  max-width: 250px; /* Adjust as needed */
+}
+
+.verification-message h2 {
+  font-size: 2rem;
+}
+
+.verification-message p {
+  font-size: 1rem;
+  line-height: 1.5rem;
+}
+
+.login-container .error-message {
+  margin-bottom: 0.5rem;
+  margin-top: -0.83rem;
+  color: red; 
+  font-size: 0.8rem;
+  margin-left: 0.45rem;
+}
+
+.email-input-group {
+  position: relative;
+  display: flex;
+}
+
+.edit-email-button {
+  position: absolute;
+  right: 6.5px; /* Adjust as needed */
+  top: 39%;
+  transform: translateY(-50%);
+  background: none; /* Remove any background */
+  border: none; /* Remove the border */
+  color: green; /* Use the green color as in the design */
+  cursor: pointer; /* Cursor to indicate clickable button */
+  font-size: 0.78rem;
+}
+
+.password-input-group {
+  position: relative;
+  display: flex;
+}
+
+.toggle-password {
+  position: absolute;
+  right: 6.5px; /* Adjust as needed */
+  top: 39%;
+  transform: translateY(-50%);
+  background: none; /* Remove any background */
+  border: none; /* Remove the border */
+  color: green; /* Use the green color as in the design */
+  cursor: pointer; /* Cursor to indicate clickable button */
+  font-size: 0.78rem;
+}
+
+/* Ensure the password input does not overlap the toggle button */
+.email-input {
+  flex-grow: 1;
+  padding-right: 50px; /* Adjust padding to not overlap the toggle button */
+}
+
+/* Onboarding Page */
+
+.onboarding-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  background-color: #FAFAFA; /* Assuming you want the same background color */
+}
+
+.onboarding-container form {
+  max-width: 280px; /* Adjust the width as necessary */
+  margin: 0 auto;
+  /* border: 1px solid red; */
+}
+
+.onboarding-container h1 {
+  font-size: 2rem; /* Adjust the font size as necessary */
+  margin-bottom: 20px; /* Adjust the spacing as necessary */
+  color: #333; /* Assuming a darker color for the heading */
+  text-align: center;
+}
+
+.onboarding-container input[type="text"] {
+  width: 89%;
+  padding: 15px;
+  margin-bottom: 10px; /* Space between the input fields */
+  border-radius: 8px;
+  border: 1px solid #ccc; /* Light grey border */
+  font-size: 1rem;
+}
+
+.onboarding-container button {
+  width: 100%;
+  padding: 15px;
+  font-size: 1rem;
+  color: white;
+  background-color: #4CAF50; /* Green background */
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.onboarding-container button:hover {
+  background-color: #45a049; /* Slightly darker green on hover */
+}
+
+
+.bold-text {
+  font-weight: bold;
 }
 
 /* lightbox component */

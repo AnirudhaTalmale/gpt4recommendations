@@ -160,7 +160,7 @@ function Chat() {
     }
   }, [sessions.length, currentSessionIndex]);
   
-  const handleSavedQueryParams = () => {
+  const handleSavedQueryParams = useCallback(() => {
     const savedQueryParams = localStorage.getItem('queryParams');
     if (savedQueryParams) {
       const queryParams = new URLSearchParams(savedQueryParams);
@@ -177,7 +177,8 @@ function Chat() {
       // After handling, remove them from local storage
       localStorage.removeItem('queryParams');
     }
-  };
+  }, []); // Add dependencies here if any
+  
 
   const updateSessionName = useCallback(({ sessionId, sessionName }) => {
     setSessions(prevSessions => prevSessions.map(session => 
@@ -429,6 +430,14 @@ function Chat() {
       const authResponse = await axios.get('http://localhost:3000/api/check-auth', { withCredentials: true });
   
       if (authResponse.status === 200 && authResponse.data.isAuthenticated) {
+        // Check if onboarding is complete, if not, redirect to onboarding page
+        if (!authResponse.data.onboardingComplete) {
+          // User is authenticated but hasn't completed onboarding
+          window.location.href = 'http://localhost:3001/onboarding';
+          return; // Exit the function early as we're redirecting
+        }
+  
+        // If onboarding is complete, proceed to fetch user info
         const userInfoResponse = await axios.get('http://localhost:3000/api/user-info', { withCredentials: true });
   
         if (userInfoResponse.status === 200 && userInfoResponse.data.isAuthenticated) {
@@ -448,11 +457,12 @@ function Chat() {
       localStorage.setItem('queryParams', window.location.search);
       window.location.href = 'http://localhost:3001/auth/login';
     }
-  }, [loadSessions]);
-
+  }, [loadSessions, setUserData, handleSavedQueryParams]);
+  
   useEffect(() => {
     checkAuthStatus();
   }, [checkAuthStatus]);
+  
 
   const handleDeleteSession = async (sessionId) => {
     try {
