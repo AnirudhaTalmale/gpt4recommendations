@@ -564,22 +564,21 @@ body:not(.history-pane-open) .input-area {
 
 .home-page-wrapper {
   display: flex;
+  flex-direction: column; /* Stack the children vertically on small screens */
   height: 100vh;
 }
 
 .sample-prompts-container {
-  flex: 1;
+  display: none; /* Hide the prompts container on small screens */
   background-color: #f7f2cb; /* Yellow background color */
-  padding: 20px; /* Adjust padding as needed */
-  display: flex;
+  padding: 2.5%; /* Adjust padding as needed */
   align-items: center; /* Aligns the prompt vertically */
-  justify-content: flex-start; /* Aligns the prompt to the left */
-  max-width: 100%; /* Ensures the container doesn't exceed the parent width */
+  justify-content: center; /* Center the prompt horizontally */
+  text-align: center; /* Align text to the center */
 }
 
-/* Get started side */
 .home-page-container {
-  flex: 1;
+  flex-grow: 1; /* Allows the container to fill the space on small screens */
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -587,27 +586,114 @@ body:not(.history-pane-open) .input-area {
   background-color: #FFFFFF; /* White background color */
 }
 
+/* Adjustments for medium screens */
+@media (min-width: 650px) {
+  .home-page-wrapper {
+    flex-direction: column; /* Keep it stacked vertically for medium screens */
+  }
+
+  .sample-prompts-container {
+    display: none; /* Keep the prompts container hidden */
+  }
+
+  .home-page-container {
+    flex-grow: 1; /* Fill the entire area */
+    background-color: #FFFFFF; /* Ensure white background */
+  }
+
+  .login-signup-container {
+    flex-direction: row !important; /* Display buttons side by side */
+    justify-content: center; /* Center the buttons horizontally */
+    gap: 10px; /* Optional: add some space between buttons */
+    width: 70% !important;
+  }
+
+  .login-signup-button {
+    width: auto; /* Allow buttons to adjust their width automatically */
+  }
+}
+
+/* Large screens */
+@media (min-width: 770px) {
+  .home-page-wrapper {
+    flex-direction: row; /* Side by side for medium screens and up */
+  }
+
+  .sample-prompts-container {
+    display: flex; /* Show the prompts container */
+    flex: 1; /* Take up half the space */
+  }
+
+  .home-page-container {
+    flex: 1; /* Take up the other half */
+  }
+
+  .login-signup-container {
+    flex-direction: row !important; /* Side by side for medium screens and up */
+    justify-content: center; /* Center buttons horizontally */
+  }
+
+  .login-signup-button {
+    min-width: 60% !important;
+  }
+
+  .home-page-container  h1 {
+    font-size: 32.5px !important; /* Large font size for the heading */
+  }
+}
+
+/* Extra large screens */
+@media (min-width: 1023px) {
+  .sample-prompts-container {
+    flex: 0 0 60%; /* Take up 60% of the space */
+  }
+
+  .home-page-container {
+    flex: 0 0 40%; /* Take up the remaining 40% */
+  }
+
+  .login-signup-button {
+    min-width: 50% !important;
+    max-width: 5px !important;
+  }
+
+  .home-page-container  h1 {
+    font-size: 32.5px !important; /* Large font size for the heading */
+    margin-right: 10% !important;
+  }
+
+  .login-signup-container {
+    margin-right: 10% !important;
+  }
+}
+
+
 .home-page-container  h1 {
-  font-size: 31px; /* Large font size for the heading */
+  font-size: 20px; /* Large font size for the heading */
   margin-bottom: 14px; /* Spacing between the logo and the buttons */
 }
 
+/* Base styles for small screens */
 .login-signup-container {
   display: flex;
-  gap: 16px; /* Space between buttons */
+  flex-direction: column; /* Stack buttons vertically */
+  align-items: center; /* Center buttons horizontally */
+  gap: 14px; /* Space between buttons */
+  width: 550px; /* Take full width of its parent */
 }
 
 .login-signup-button {
-  padding: 14px 0; /* Padding inside the buttons */
+  padding: 15px 0; /* Padding inside the buttons */
   font-size: 16px; /* Text size inside the buttons */
   font-weight: bold; /* Make the text bold */
   color: white; /* Text color */
   background-color: rgb(62, 62, 255); /* Background color for the buttons */
   border: none; /* No border */
-  border-radius: 6px; /* Rounded corners for the buttons */
+  border-radius: 7px; /* Rounded corners for the buttons */
   cursor: pointer; /* Pointer cursor on hover */
   transition: background-color 0.3s; /* Smooth transition for hover effect */
-  width: 200px;
+  width: 80%; /* Percentage width for smaller screens */
+  margin-bottom: -7.5px;
 }
 
 .login-signup-button:hover {
@@ -615,9 +701,8 @@ body:not(.history-pane-open) .input-area {
 }
 
 .animated-prompt {
-  font-size: 30px; /* Adjust size as needed */
+  font-size: 40px; /* Adjust size as needed */
   color: rgb(255, 115, 0); /* The text color of the prompts */
-  font-weight: bold;
   opacity: 1; /* Make fully visible */
   text-align: left; /* Left-aligns the text */
   width: 100%; /* Ensures the prompt takes up the full width of its container */

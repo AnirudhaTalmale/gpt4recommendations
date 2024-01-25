@@ -5,11 +5,11 @@ import '../App.css';
 function HomePage() {
   let navigate = useNavigate();
   const prompts = [
-    'Recommend a dish to impress a date',
-    'Suggest a workout for beginners',
-    'Plan a weekend getaway'
+    "To understand the making of FAANG companies",
+    "To understand the mindset of world's top entrepreneurs",
+    "To start a tech startup and scale it globally",
+    "I aspire to live a content, happy, and satisfied life"
   ];
-
   const [activePrompt, setActivePrompt] = useState(0);
 
   useEffect(() => {
@@ -19,7 +19,7 @@ function HomePage() {
     };
   
     // Start the interval
-    const intervalId = setInterval(updatePrompt, 6000); // Change the interval as needed
+    const intervalId = setInterval(updatePrompt, 4000); // Change the interval as needed
   
     // Cleanup function
     return () => {
