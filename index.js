@@ -9,6 +9,7 @@ const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
 const bookRecommendationPrompt = require('./promptBook');
+const moreBooksRecommendationPrompt = require('./promptMoreBooks');
 const moreDetailsPrompt = require('./promptMoreDetails');
 const passportSetup = require('./passport-setup'); // Import the setup function
 const axios = require('axios');
@@ -306,32 +307,6 @@ function estimateTokenCount(text) {
   return text.trim().split(/\s+/).length;
 }
 
-function extractTags(content) {
-  // Initialize the array to store extracted book titles and authors
-  const bookDetails = [];
-
-  // Regex to match each book section in the content
-  const bookInfoMatches = content.match(/<div class="book-info">[\s\S]*?<\/div><div><img/g) || [];
-  bookInfoMatches.forEach(bookInfo => {
-    // Extract the book title
-    const titleMatch = bookInfo.match(/<h3 class="book-title">(.*?)<\/h3>/);
-    const title = titleMatch ? titleMatch[1].trim() : '';
-
-    // Extract the book author
-    const authorMatch = bookInfo.match(/<span class="book-author">(.*?)<\/span>/);
-    const author = authorMatch ? authorMatch[1].trim() : '';
-
-    // Combine title and author
-    if (title && author) {
-      bookDetails.push(`${title} ${author}`);
-    }
-  });
-
-  // Return the extracted book titles and authors
-  return bookDetails.join('\n'); // Joining with newline character
-}
-
-
 const MESSAGE_LIMIT = 40; // Set your desired message limit
 const WINDOW_DURATION = 3 * 60 * 60 * 1000; // 3 hours in milliseconds
 
@@ -340,7 +315,7 @@ io.on('connection', (socket) => {
   let currentSessionId;
   
   socket.on('query', async (data) => {
-    const { sessionId, message, isMoreDetails, bookTitle, author } = data;
+    const { sessionId, message, isMoreDetails, bookTitle, author, moreBooks } = data;
     currentSessionId = sessionId; 
   
     // Find the session and update it with the new message and response
@@ -349,7 +324,7 @@ io.on('connection', (socket) => {
       return res.status(404).json({ message: 'Session not found' });
     }
 
-    if(!isMoreDetails) {
+    if (!isMoreDetails && !moreBooks) {
        // Add the user message to the session and save
        session.messages.push({
         role: 'user',
@@ -393,14 +368,6 @@ io.on('connection', (socket) => {
         const newSessionName = 'Message limit reached';
         session.sessionName = newSessionName;
         socket.emit('updateSessionName', { sessionId: session._id, sessionName: newSessionName });
-    
-        // Append a message indicating the limit has been reached and save the session
-        session.messages.push({
-          role: 'assistant',
-          contentType: 'simple',
-          content: limitMessage
-        });
-        await session.save();
       }
       return;
     }    
@@ -408,14 +375,14 @@ io.on('connection', (socket) => {
     let completePrompt;
     if (isMoreDetails || message.content.startsWith("Explain this book - ")) {
       completePrompt = moreDetailsPrompt(message.content);
+    } else if (moreBooks) {
+      completePrompt = moreBooksRecommendationPrompt(message.content);
     } else {
       completePrompt = bookRecommendationPrompt(message.content);
     }
 
     const currentMessageTokenCount = estimateTokenCount(completePrompt);
-    let pastMessageTokenCount = 0;
-    const pastMessageTokenThreshold = 200; 
-    const currentMessageTokenThreshold = 150; 
+    const currentMessageTokenThreshold = 2000; 
 
     if (currentMessageTokenCount > currentMessageTokenThreshold) {
       const errorMessage = 'Input message too large';
@@ -427,21 +394,10 @@ io.on('connection', (socket) => {
         session.sessionName = errorMessage;
         socket.emit('updateSessionName', { sessionId: session._id, sessionName: errorMessage });
       }
-      
-      if (!isMoreDetails) {
-        // Add a response message to the session and save
-        session.messages.push({
-          role: 'assistant',
-          contentType: 'simple',
-          content: errorMessage
-        });
-        await session.save();
-      }
     }    
     else {
 
-      if (message.isFirstQuery && !isMoreDetails) {
-        console.log("message.isFirstQuery && !isMoreDetails");
+      if (message.isFirstQuery && !isMoreDetails && !moreBooks) {
         // Get the 4-word summary
         const summary = await openaiApi.getSummary(message.content);
         session.sessionName = summary; // Update the session name with the summary
@@ -452,29 +408,10 @@ io.on('connection', (socket) => {
       }
     
       const messagesForGPT4 = [{ role: 'user', content: completePrompt }];
-    
-      // Iterate through past messages in reverse order and add them until the token limit for past messages is near
-      for (let i = session.messages.length - 2; i >= 0 && pastMessageTokenCount < pastMessageTokenThreshold && !isMoreDetails && !message.content.startsWith("Explain this book - "); i--) {
-        const msg = session.messages[i];
-        let contentToInclude = msg.content;
-
-        // Check if the message is from the assistant and has more than 1 bold tags
-        if (msg.role === 'assistant') {
-          contentToInclude = extractTags(msg.content);
-        }
-
-        const intermediateTokenCount = estimateTokenCount(contentToInclude);
-        if (pastMessageTokenCount + intermediateTokenCount < pastMessageTokenThreshold) {
-          messagesForGPT4.unshift({ role: msg.role, content: contentToInclude }); // Add to the beginning of the array
-          pastMessageTokenCount += intermediateTokenCount;
-        } else {
-          break; // Stop if adding the next message would exceed the token threshold for past messages
-        }
-      }
 
       try {
         console.log("messagesForGPT4", messagesForGPT4);
-        await openaiApi(messagesForGPT4, socket, session, currentSessionId, isMoreDetails, bookTitle, author);
+        await openaiApi(messagesForGPT4, socket, session, currentSessionId, isMoreDetails, bookTitle, author, moreBooks);
         await session.user.save();
       } catch (error) {
         console.error('Error processing query:', error);

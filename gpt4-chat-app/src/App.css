@@ -691,13 +691,13 @@ body:not(.history-pane-open) .input-area {
   border: none; /* No border */
   border-radius: 7px; /* Rounded corners for the buttons */
   cursor: pointer; /* Pointer cursor on hover */
-  transition: background-color 0.3s; /* Smooth transition for hover effect */
+  transition: background-color 0.1s; /* Smooth transition for hover effect */
   width: 80%; /* Percentage width for smaller screens */
   margin-bottom: -7.5px;
 }
 
 .login-signup-button:hover {
-  background-color: darkgreen; /* Slightly darker green on hover */
+  background-color: rgb(42, 42, 205);
 }
 
 .animated-prompt {
@@ -1117,6 +1117,38 @@ body:not(.history-pane-open) .input-area {
   outline: none; /* Remove outline on focus */
   box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1); /* Focus ring with a subtle black shade */
 }
+
+.continue-generating-btn {
+  background: none;
+  border: 1px solid rgb(46, 46, 46); /* Same border color as other buttons */
+  font-family: Söhne, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, sans-serif, Helvetica Neue, Arial, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
+  font-size: 1rem; /* Same font size as other buttons */
+  padding: 0.25rem 0.6rem; /* Same padding as other buttons */
+  border-radius: 0.7rem; /* Same border radius as other buttons */
+  cursor: pointer; /* Cursor pointer for button */
+  text-align: center; /* Center the text inside the button */
+  text-decoration: none; /* No text decoration */
+  display: inline-block; /* Inline block display */
+  transition: background-color 0.3s ease, border-color 0.3s ease; /* Smooth transition for hover and active states */
+  width: 8.3rem; /* Same width as other buttons */
+  color: rgb(46, 46, 46); /* Same text color as other buttons */
+}
+
+.continue-generating-btn:hover {
+  background-color: rgba(0, 0, 0, 0.1); /* Subtle shade change on hover, same as other buttons */
+  border-color: #333; /* Slightly darker border on hover, same as other buttons */
+}
+
+.continue-generating-btn:active {
+  background-color: rgba(0, 0, 0, 0.2); /* Slightly darker on active state, same as other buttons */
+  border-color: #333; /* Darker border on active state, same as other buttons */
+}
+
+.continue-generating-btn:focus {
+  outline: none; /* Remove outline on focus, same as other buttons */
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1); /* Focus ring with a subtle black shade, same as other buttons */
+}
+
 
 /* Styles when streaming is active */
  

@@ -2,9 +2,11 @@ import React from 'react';
 import DOMPurify from 'dompurify';
 import '../App.css';
 
-function AnswerDisplay({ role, content, userImage, isStreaming, onMoreDetailsClick }) {
+function AnswerDisplay({ 
+  role, content, userImage, isStreaming, 
+  onMoreDetailsClick, showContinueButton, onContinueGenerating 
+}) {
   const createMarkup = () => {
-    // Configure DOMPurify to allow the 'target' attribute on 'a' tags
     const safeHTML = DOMPurify.sanitize(content, {
       ADD_ATTR: ['target'], // Allow 'target' attribute for anchor tags
     });
@@ -14,6 +16,13 @@ function AnswerDisplay({ role, content, userImage, isStreaming, onMoreDetailsCli
   const handleMoreDetailsClick = (bookTitle, author) => {
     if (onMoreDetailsClick) {
       onMoreDetailsClick(bookTitle, author);
+    }
+  };
+
+  // In AnswerDisplay component
+  const handleContinueGenerating = () => {
+    if (onContinueGenerating) {
+      onContinueGenerating();
     }
   };
 
@@ -50,6 +59,11 @@ function AnswerDisplay({ role, content, userImage, isStreaming, onMoreDetailsCli
               <div className="message-sender">ChatGPT</div>
               <br></br>
               <div className="message-answer" dangerouslySetInnerHTML={createMarkup()} />
+              {showContinueButton && !isStreaming && ( 
+                <button className="continue-generating-btn" onClick={handleContinueGenerating}>
+                  Continue Generating
+                </button>
+              )}
             </>
           )}
         </div>

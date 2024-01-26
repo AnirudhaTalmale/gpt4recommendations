@@ -80,7 +80,7 @@ const fetchMoreDetails = async (bookTitle, author) => {
   }
 };  
 
-const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, bookTitle, author) => {
+const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, bookTitle, author, moreBooks) => {
 
   if (!isMoreDetails && messages[messages.length - 1].content.startsWith("Explain this book - ")) {
     try {
@@ -95,7 +95,7 @@ const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, bo
         }) - 1;
         await session.save();
 
-        socket.emit('chunk', { content: detailedDescription, sessionId, isMoreDetails });
+        socket.emit('chunk', { content: detailedDescription, sessionId, isMoreDetails, moreBooks });
         socket.emit('streamEnd', { message: 'Stream completed', sessionId });
         return; // End the function here if details are successfully fetched
       }
@@ -116,13 +116,18 @@ const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, bo
     });    
 
     let messageIndex;
-    if(!isMoreDetails){
-      // Create a new message entry for this stream.
-      messageIndex = session.messages.push({
-        role: 'assistant',
-        contentType: 'simple',
-        content: ''
-      }) - 1;
+    if (!isMoreDetails) {
+      if (moreBooks) {
+        // Update the last message in the session instead of creating a new one
+        messageIndex = session.messages.length - 1;
+      } else {
+        // Create a new message entry for this stream.
+        messageIndex = session.messages.push({
+          role: 'assistant',
+          contentType: 'simple',
+          content: ''
+        }) - 1;
+      }
       await session.save();
     }
 
@@ -192,13 +197,13 @@ const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, bo
                     
           // Emit pausedEmit and reset
           completeResponse += pausedEmit;
-          if(!isMoreDetails) {
+          if (moreBooks || !isMoreDetails) {
             // Update the current message with the new chunk.
             session.messages[messageIndex].content += pausedEmit;
             await session.save();
           }
           
-          socket.emit('chunk', { content: pausedEmit, sessionId, isMoreDetails });
+          socket.emit('chunk', { content: pausedEmit, sessionId, isMoreDetails, moreBooks });
           pausedEmit = "";
         } else {
           // If pausing, start adding to pausedEmit including current chunk
@@ -212,12 +217,12 @@ const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, bo
         // Normal emit when not paused
         completeResponse += chunkContent;
         
-        if(!isMoreDetails) {
+        if (moreBooks || !isMoreDetails) {
           // Update the current message with the new chunk.
           session.messages[messageIndex].content += chunkContent;
           await session.save();
         }
-        socket.emit('chunk', { content: chunkContent, sessionId, isMoreDetails });
+        socket.emit('chunk', { content: chunkContent, sessionId, isMoreDetails, moreBooks });
       }
       const finishReason = chunk.choices[0]?.finish_reason;
       if (finishReason === 'stop') {
