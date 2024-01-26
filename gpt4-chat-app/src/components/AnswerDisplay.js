@@ -59,10 +59,12 @@ function AnswerDisplay({
               <div className="message-sender">ChatGPT</div>
               <br></br>
               <div className="message-answer" dangerouslySetInnerHTML={createMarkup()} />
-              {showContinueButton && !isStreaming && ( 
-                <button className="continue-generating-btn" onClick={handleContinueGenerating}>
-                  Continue Generating
-                </button>
+              {showContinueButton && !isStreaming && (
+                <div className="button-container">
+                  <button className="continue-generating-btn" onClick={handleContinueGenerating}>
+                    <i className="fa-solid fa-forward"></i> More Books
+                  </button>
+                </div>
               )}
             </>
           )}

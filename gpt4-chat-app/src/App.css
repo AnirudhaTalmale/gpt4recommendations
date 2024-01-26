@@ -1060,7 +1060,7 @@ body:not(.history-pane-open) .input-area {
   font-family: Söhne, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, sans-serif, Helvetica Neue, Arial, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
   font-size: 1rem;
   padding: 0.25rem 0.6rem;
-  border-radius: 0.7rem;
+  border-radius: 0.35rem;
   cursor: pointer;
   text-align: center;
   text-decoration: none;
@@ -1093,7 +1093,7 @@ body:not(.history-pane-open) .input-area {
   font-family: Söhne, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, sans-serif, Helvetica Neue, Arial, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
   font-size: 1rem;
   padding: 0.25rem 0.6rem;
-  border-radius: 0.7rem;
+  border-radius: 0.35rem;
   cursor: pointer;
   text-align: center;
   text-decoration: none;
@@ -1118,13 +1118,22 @@ body:not(.history-pane-open) .input-area {
   box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1); /* Focus ring with a subtle black shade */
 }
 
+.button-container {
+  display: flex;
+  justify-content: flex-end; /* Aligns the button to the right horizontally */
+  align-items: center; /* Keeps the button centered vertically if needed */
+  width: 100%; /* Take the full width of the parent to allow right alignment */
+  margin-top: 1rem; /* Adjust the margin as needed */
+}
+
+
 .continue-generating-btn {
   background: none;
   border: 1px solid rgb(46, 46, 46); /* Same border color as other buttons */
   font-family: Söhne, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, sans-serif, Helvetica Neue, Arial, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
   font-size: 1rem; /* Same font size as other buttons */
   padding: 0.25rem 0.6rem; /* Same padding as other buttons */
-  border-radius: 0.7rem; /* Same border radius as other buttons */
+  border-radius: 0.35rem; /* Same border radius as other buttons */
   cursor: pointer; /* Cursor pointer for button */
   text-align: center; /* Center the text inside the button */
   text-decoration: none; /* No text decoration */
@@ -1132,6 +1141,9 @@ body:not(.history-pane-open) .input-area {
   transition: background-color 0.3s ease, border-color 0.3s ease; /* Smooth transition for hover and active states */
   width: 8.3rem; /* Same width as other buttons */
   color: rgb(46, 46, 46); /* Same text color as other buttons */
+  margin-top: 0.1rem;
+  margin-bottom: 1.5rem;
+  margin-right: 0.2rem;
 }
 
 .continue-generating-btn:hover {
