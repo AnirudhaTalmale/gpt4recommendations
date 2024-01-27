@@ -307,7 +307,7 @@ function estimateTokenCount(text) {
   return text.trim().split(/\s+/).length;
 }
 
-const MESSAGE_LIMIT = 20; // Set your desired message limit
+const MESSAGE_LIMIT = 40; // Set your desired message limit
 const WINDOW_DURATION = 3 * 60 * 60 * 1000; // 3 hours in milliseconds
 
 io.on('connection', (socket) => {
