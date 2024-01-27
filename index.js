@@ -382,7 +382,7 @@ io.on('connection', (socket) => {
     }
 
     const currentMessageTokenCount = estimateTokenCount(completePrompt);
-    const currentMessageTokenThreshold = 2000; 
+    const currentMessageTokenThreshold = 400; 
 
     if (currentMessageTokenCount > currentMessageTokenThreshold) {
       const errorMessage = 'Input message too large';

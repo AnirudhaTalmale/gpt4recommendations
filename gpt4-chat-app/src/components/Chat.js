@@ -549,12 +549,14 @@ function Chat() {
     }
   };
 
+  const [showContinueButton, setShowContinueButton] = useState(false);
+
   function extractTags(content) {
     // Initialize the array to store extracted book titles and authors
     const bookDetails = [];
   
     // Regex to match each book section in the content
-    const bookInfoMatches = content.match(/<div class="book-info">[\s\S]*?<\/div><div><img/g) || [];
+    const bookInfoMatches = content.match(/<div class="book-info">[\s\S]*?<\/div>(?=<div)/g) || [];
     bookInfoMatches.forEach(bookInfo => {
       // Extract the book title
       const titleMatch = bookInfo.match(/<h3 class="book-title">(.*?)<\/h3>/);
@@ -586,6 +588,23 @@ function Chat() {
       handleQuerySubmit(concatenatedContent, false, null, null, true);
     }
   };
+
+  useEffect(() => {
+    const currentSession = sessions[currentSessionIndex];
+    if (currentSession && currentSession.messages.length > 0) {
+      const lastMessage = currentSession.messages[currentSession.messages.length - 1];
+      console.log("lastMessage.content is: ", (lastMessage.content));
+      console.log("lastMessage.content is: ", extractTags(lastMessage.content));
+      if (lastMessage.role === 'assistant') {
+        const bookCount = extractTags(lastMessage.content).split('\n').length;
+        console.log("bookCount is: ", bookCount);
+        setShowContinueButton(bookCount <= 20);
+      } else {
+        setShowContinueButton(false);
+      }
+    }
+  }, [sessions, currentSessionIndex]);
+  
 
 
   return (
@@ -633,7 +652,7 @@ function Chat() {
               userImage={userData?.image}
               isStreaming={isStreaming}
               onMoreDetailsClick={handleMoreDetailsRequest}
-              showContinueButton={isLastMessageFromAssistant}
+              showContinueButton={showContinueButton && isLastMessageFromAssistant}
               onContinueGenerating={onContinueGenerating}
             />
           );
