@@ -16,14 +16,20 @@ const HistoryPane = forwardRef(({
 }, ref) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isEntryActive, setIsEntryActive] = useState(false);
+  const [wasClosedManually, setWasClosedManually] = useState(false);
+
+  useEffect(() => {
+    document.body.classList.toggle('history-pane-open', isPaneOpen);
+    
+    // Reset wasClosedManually to false when the pane is opened
+    if (isPaneOpen) {
+      setWasClosedManually(false);
+    }
+  }, [isPaneOpen]);
+  
 
   const dropdownRef = useRef(null);
   const userEntryRef = useRef(null);
-
-  useEffect(() => {
-    // Apply the class based on the initial state of the pane
-    document.body.classList.toggle('history-pane-open', isPaneOpen);
-  }, [isPaneOpen]);
 
   const handleChatWithUs = () => {
     // Redirect to the Chat with Us page or handle the action
@@ -71,7 +77,8 @@ const HistoryPane = forwardRef(({
   };
 
   const handleClosePane = () => {
-    togglePane(); // Use togglePane prop to change pane state
+    setWasClosedManually(true); // Set to true when pane is closed manually
+    togglePane();
     document.body.classList.toggle('history-pane-open', !isPaneOpen);
   };
 
@@ -82,6 +89,18 @@ const HistoryPane = forwardRef(({
       togglePane();
     }
   };
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (!wasClosedManually && window.innerWidth >= 760 && !isPaneOpen) {
+        togglePane(); // Automatically open the pane if enough space is available
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+
+    return () => window.removeEventListener('resize', handleResize);
+  }, [wasClosedManually, isPaneOpen, togglePane]);
   
   const handleSessionSelect = (session, index) => {
     onSelectSession(index);

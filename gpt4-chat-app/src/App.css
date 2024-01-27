@@ -386,7 +386,6 @@ body:not(.history-pane-open) .input-area {
 
 /* Styles for the history pane */
 .history-pane {
-  transition: transform 0.2s ease-in-out;
   background-color: rgba(0, 0, 0, 0.923);
   color: #fff;
   width: 244px; /* Adjust width as needed */
