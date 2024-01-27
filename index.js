@@ -307,7 +307,7 @@ function estimateTokenCount(text) {
   return text.trim().split(/\s+/).length;
 }
 
-const MESSAGE_LIMIT = 40; // Set your desired message limit
+const MESSAGE_LIMIT = 20; // Set your desired message limit
 const WINDOW_DURATION = 3 * 60 * 60 * 1000; // 3 hours in milliseconds
 
 io.on('connection', (socket) => {
@@ -361,12 +361,13 @@ io.on('connection', (socket) => {
       const limitMessage = `You have reached the message limit. Try again after ${resetTimeString}.`;
     
       // Emit a warning message to the client and set the limitMessage as the session name
-      socket.emit('chunk', { content: limitMessage, sessionId: currentSessionId, isMoreDetails });
+      socket.emit('messageLimitReached', { content: limitMessage, sessionId: currentSessionId, isMoreDetails });
     
-      if(!isMoreDetails) {
+      if(!isMoreDetails && message.isFirstQuery) {
         // Update the session name with the limitMessage and save the session
         const newSessionName = 'Message limit reached';
         session.sessionName = newSessionName;
+        await session.save();
         socket.emit('updateSessionName', { sessionId: session._id, sessionName: newSessionName });
       }
       return;
@@ -392,6 +393,7 @@ io.on('connection', (socket) => {
     
       if (message.isFirstQuery) {
         session.sessionName = errorMessage;
+        await session.save();
         socket.emit('updateSessionName', { sessionId: session._id, sessionName: errorMessage });
       }
     }    
@@ -402,8 +404,6 @@ io.on('connection', (socket) => {
         const summary = await openaiApi.getSummary(message.content);
         session.sessionName = summary; // Update the session name with the summary
         await session.save(); // Don't forget to save the updated session
-
-        // Emit an event to update the session name in the frontend
         socket.emit('updateSessionName', { sessionId: session._id, sessionName: summary });
       }
     

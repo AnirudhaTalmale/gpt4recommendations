@@ -141,7 +141,6 @@ function Chat() {
   
   useEffect(() => {
     // Save currentSessionIndex to localStorage
-    console.log("setting currentSessionIndex as: ", currentSessionIndex);
     localStorage.setItem('currentSessionIndex', currentSessionIndex);
     
     if (currentSessionIndex >= 0 && currentSessionIndex < sessions.length) {
@@ -199,8 +198,6 @@ function Chat() {
   const updateSessionMessages = useCallback((messageContent, contentType = 'simple', isUserMessage = true, moreBooks = false) => {
     setSessions(prevSessions => {
 
-      console.log("updateSessionMessages has currentSessionIndex as: ", currentSessionIndexRef.current);
-
       const currentIdx = currentSessionIndexRef.current; // Use ref to get the current index
       const updatedSessions = [...prevSessions];
       const currentSession = { ...updatedSessions[currentIdx] };
@@ -226,7 +223,6 @@ function Chat() {
         currentSession.messages = updatedMessages;
       } else {
         // Handle the user's message or a non-streamed assistant's message
-        console.log("currentSession before update is: ", JSON.parse(JSON.stringify(currentSession)));
         const newMessage = {
           role: isUserMessage ? 'user' : 'assistant',
           contentType,
@@ -234,7 +230,6 @@ function Chat() {
         };
         // Append the new message to the cloned messages array
         currentSession.messages = [...currentSession.messages, newMessage];
-        console.log("currentSession after update is: ", JSON.parse(JSON.stringify(currentSession)));
       }
       
       // Update the current session in the sessions array
@@ -275,6 +270,7 @@ function Chat() {
     try {
       await axios.post('http://localhost:3000/api/stop-stream');
       setIsStreaming(false);
+      
     } catch (error) {
       console.error('Error stopping the stream:', error);
     }
@@ -331,14 +327,26 @@ function Chat() {
     };
   }, [updateSessionMessages, handleStopStreaming, currentSessionIndex, sessions]); // Depend on the memoized version of handleStopStreaming
   
+  useEffect(() => {
+    
+    const handleMessageLimitReached = ({ content, sessionId }) => {
+      if (sessions[currentSessionIndex]._id === sessionId) {
+        updateSessionMessages(content, 'streamed', false, null); 
+      }
+    };
+
+    socket.on('messageLimitReached', handleMessageLimitReached);
+
+    return () => {
+      socket.off('messageLimitReached', handleMessageLimitReached);
+    };
+  }, [updateSessionMessages, currentSessionIndex, sessions]);
+  
 
   const handleQuerySubmit = async (query, isMoreDetails = false, bookTitle = null, author = null, moreBooks = false) => {
     setIsLoading(true);
   
-    console.log("current session index is: ", currentSessionIndexRef.current);
-  
     if (currentSessionIndexRef.current === -1) {
-      console.log("new query submitted when current session index is ", currentSessionIndexRef.current);
       await handleNewSession();
     }
   
@@ -359,7 +367,6 @@ function Chat() {
     setMoreBooks(moreBooks);
 
     if (!isMoreDetails && !moreBooks) {
-      console.log("sending to updateSessionMessages, the currentSessionIndex as: ", currentSessionIndexRef.current);
       updateSessionMessages(query, 'simple', true); // Removed the currentSessionIndex parameter, as it's now accessed within updateSessionMessages
     }
     else {
@@ -593,12 +600,9 @@ function Chat() {
     const currentSession = sessions[currentSessionIndex];
     if (currentSession && currentSession.messages.length > 0) {
       const lastMessage = currentSession.messages[currentSession.messages.length - 1];
-      console.log("lastMessage.content is: ", (lastMessage.content));
-      console.log("lastMessage.content is: ", extractTags(lastMessage.content));
       if (lastMessage.role === 'assistant') {
         const bookCount = extractTags(lastMessage.content).split('\n').length;
-        console.log("bookCount is: ", bookCount);
-        setShowContinueButton(bookCount <= 20);
+        setShowContinueButton(bookCount >= 5 && bookCount <= 20);
       } else {
         setShowContinueButton(false);
       }
