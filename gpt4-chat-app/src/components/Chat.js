@@ -39,6 +39,45 @@ function Chat() {
   const [bookTitleState, setBookTitleState] = useState(null);
   const [authorState, setAuthorState] = useState(null);
   const [moreBooks, setMoreBooks] = useState(false);
+  const lightboxContentRef = useRef(null);
+  const [lightboxContent, setLightboxContent] = useState('');
+  const [isLightboxOpen, setIsLightboxOpen] = useState(false);
+  const [isAtBottomLightbox, setIsAtBottomLightbox] = useState(false);
+
+  const isUserAtBottomLightbox = useCallback(() => {
+    if (!lightboxContentRef.current) return false;
+    const { scrollTop, scrollHeight, clientHeight } = lightboxContentRef.current;
+    const isAtBottom = scrollTop + clientHeight >= scrollHeight - 30;
+    return isAtBottom;
+  }, []);
+  
+  const scrollToBottomLightbox = () => {
+    if (lightboxContentRef.current) {
+      lightboxContentRef.current.scrollTop = lightboxContentRef.current.scrollHeight;
+    }
+  };
+
+  useEffect(() => {
+    if (isAtBottomLightbox) {
+      scrollToBottomLightbox();
+    }
+  }, [lightboxContent, isAtBottomLightbox]);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsAtBottomLightbox(isUserAtBottomLightbox());
+    };
+  
+    const lightboxContentElement = lightboxContentRef.current;
+  
+    if (isLightboxOpen && lightboxContentElement) {
+      lightboxContentElement.addEventListener('scroll', handleScroll);
+  
+      return () => {
+        lightboxContentElement.removeEventListener('scroll', handleScroll);
+      };
+    }
+  }, [isLightboxOpen, isUserAtBottomLightbox]);
 
   const currentSessionIndexRef = useRef(currentSessionIndex);
 
@@ -62,9 +101,6 @@ function Chat() {
       setInitialQuery(query);
     }
   }, []);
-
-  const [lightboxContent, setLightboxContent] = useState('');
-  const [isLightboxOpen, setIsLightboxOpen] = useState(false);
 
   const chatAreaRef = useRef(null);
   const [shouldAutoScroll, setShouldAutoScroll] = useState(false);
@@ -328,7 +364,7 @@ function Chat() {
   }, [updateSessionMessages, handleStopStreaming, currentSessionIndex, sessions]); // Depend on the memoized version of handleStopStreaming
   
   useEffect(() => {
-    
+
     const handleMessageLimitReached = ({ content, sessionId }) => {
       if (sessions[currentSessionIndex]._id === sessionId) {
         updateSessionMessages(content, 'streamed', false, null); 
@@ -623,6 +659,7 @@ function Chat() {
             handleStopStreaming(); // Stop streaming if it's active
           }
         }}
+        contentRef={lightboxContentRef}
       />
       <HistoryPane
         ref={historyPaneRef}
