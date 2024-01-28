@@ -12,6 +12,19 @@ function SignupPage() {
     const [emailInputError, setEmailInputError] = useState(false);
     const [emailError, setEmailError] = useState('');
     const [showPassword, setShowPassword] = useState(false); 
+    const [emailSent, setEmailSent] = useState(false);
+
+    const resendVerificationEmail = async () => {
+        try {
+            console.log("email is: ", email);
+            await axios.post('http://localhost:3000/resend-email', { email });
+            setEmailSent(true);
+            setTimeout(() => setEmailSent(false), 30000); // Hide the message and show the button after 30 seconds
+        } catch (error) {
+            console.error('Error resending email:', error);
+            // Optionally handle error state here
+        }
+    };
 
     const togglePasswordVisibility = () => {
         setShowPassword(!showPassword);
@@ -95,6 +108,15 @@ function SignupPage() {
                     <div className="verification-message">
                         <h2>Verify your email</h2>
                         <p>We sent an email to <strong>{email}</strong>. Click the link inside to get started.</p>
+                        {!emailSent ? (
+                            <button onClick={resendVerificationEmail} className="resend-email-button">
+                                Resend email
+                            </button>
+                        ) : (
+                            <div className="email-sent-confirmation">
+                                Email sent.
+                            </div>
+                        )}
                     </div>
                 </div>
             ) : (
@@ -144,7 +166,6 @@ function SignupPage() {
                                         <li className={password.length >= 12 ? "valid" : ""}>
                                             At least 12 characters
                                         </li>
-                                        {/* You can add more criteria here */}
                                     </ul>
                                 </div>
                             </>

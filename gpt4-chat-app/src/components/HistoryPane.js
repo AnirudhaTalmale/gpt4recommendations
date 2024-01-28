@@ -2,6 +2,8 @@ import React, { useState, useRef, useEffect, forwardRef } from 'react';
 import axios from 'axios';
 import '../App.css';
 
+const straightLinePath = 'M15,25 L15,5';
+
 const HistoryPane = forwardRef(({
   sessions, 
   onNewSession,
@@ -17,7 +19,38 @@ const HistoryPane = forwardRef(({
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isEntryActive, setIsEntryActive] = useState(false);
   const [wasClosedManually, setWasClosedManually] = useState(false);
+  const lineRef = useRef(null);
+ 
 
+  const handleMouseEnter = () => {
+    if (lineRef.current) {
+      // If pane is open, bend towards the left from the center point (15, 15)
+      // If pane is closed, bend towards the right from the center point (15, 15)
+      const newPath = isPaneOpen ? 'M15,25 L10,15 L15,5' : 'M15,25 L20,15 L15,5';
+      lineRef.current.setAttribute('d', newPath);
+    }
+  };
+  
+  const handleMouseLeave = () => {
+    if (lineRef.current) {
+      // Always revert to the straight line when the mouse leaves
+      lineRef.current.setAttribute('d', straightLinePath);
+    }
+  };
+  
+  // Modify the handleClosePane function to toggle the arrow direction
+  const handleClosePane = () => {
+    setWasClosedManually(true); // Set to true when pane is closed manually
+    togglePane();
+    // Change the direction of the arrow based on the new pane state
+    if (lineRef.current) {
+      const newPath = isPaneOpen ? straightLinePath : 'M15,25 L20,15 L15,5';
+      lineRef.current.setAttribute('d', newPath);
+    }
+  };
+  
+  
+  
   useEffect(() => {
     document.body.classList.toggle('history-pane-open', isPaneOpen);
     
@@ -76,12 +109,6 @@ const HistoryPane = forwardRef(({
     }
   };
 
-  const handleClosePane = () => {
-    setWasClosedManually(true); // Set to true when pane is closed manually
-    togglePane();
-    document.body.classList.toggle('history-pane-open', !isPaneOpen);
-  };
-
   const handleNewSessionCreation = async () => {
     const newSession = await onNewSession(); // Assume onNewSession returns the newly created session object
     setSelectedSessionId(newSession._id); // Set the selectedSessionId to the new session's ID
@@ -113,9 +140,16 @@ const HistoryPane = forwardRef(({
   return (
     <div ref={ref}>
       <div className={`history-pane ${isPaneOpen ? '' : 'closed'}`}>
-      <button onClick={handleClosePane} className={`close-pane-button ${!isPaneOpen ? 'close-pane-button-closed' : ''}`}>
-        {isPaneOpen ? <i className="fa-solid fa-angle-left"></i> : <i className="fa-solid fa-angle-right"></i>}
-      </button>
+        <button 
+          onClick={handleClosePane} 
+          className={`close-pane-button ${!isPaneOpen ? 'close-pane-button-closed' : ''}`}
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
+        >
+          <svg width="30" height="25" viewBox="0 0 30 30" className="pane-line">
+            <path d="M15,25 L15,5" stroke="currentColor" strokeWidth="5" fill="none" strokeLinejoin="round" strokeLinecap="round" ref={lineRef}/>
+          </svg>
+        </button>
 
         <div onClick={handleNewSessionCreation} className="header-container">
 
@@ -147,7 +181,7 @@ const HistoryPane = forwardRef(({
 
         <div className="user-info-container">
           <div className={`user-entry ${isEntryActive ? 'active' : ''}`} onClick={toggleDropdown} ref={userEntryRef}>
-            <img src={userImage} alt="User" className="history-pane-image" />
+            <img src={userImage} alt="" className="history-pane-image" />
             <span>{userName}</span>
           </div>
           {isDropdownOpen && (

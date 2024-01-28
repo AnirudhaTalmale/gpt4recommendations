@@ -578,7 +578,6 @@ function Chat() {
       if (!response || !response.data || !response.data.detailedDescription) {
         const userQuery = `Explain this book - ${bookTitle} by ${author} - `;
         handleQuerySubmit(userQuery, true, bookTitle, author);
-        console.log("i am in if block");
       } else {
         const detailedDescription = response.data.detailedDescription;
         setLightboxContent(''); // Reset the content
@@ -588,7 +587,6 @@ function Chat() {
     } catch (error) {
       const userQuery = `Explain this book - ${bookTitle} by ${author} - `;
       handleQuerySubmit(userQuery, true, bookTitle, author);
-      console.log("i am in catch block");
     }
   };
 

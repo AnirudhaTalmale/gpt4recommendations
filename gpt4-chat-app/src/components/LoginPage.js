@@ -11,6 +11,23 @@ function LoginPage() {
     const [emailInputError, setEmailInputError] = useState(false);
     const [emailError, setEmailError] = useState('');
     const [showPassword, setShowPassword] = useState(false); 
+    const [isEmailVerified, setIsEmailVerified] = useState(true);
+    const [emailToBeVerified, setEmailToBeVerified] = useState('');
+    const [emailResent, setEmailResent] = useState(false);
+
+    const resendVerificationEmail = async () => {
+      try {
+          console.log("Resending verification email to: ", emailToBeVerified);
+          await axios.post('http://localhost:3000/resend-email', { email: emailToBeVerified });
+          setEmailResent(true);
+          setTimeout(() => setEmailResent(false), 30000); // Hide the message and show the button after 30 seconds
+      } catch (error) {
+          console.error('Error resending email:', error);
+          // Optionally handle error state here
+      }
+  };
+  
+
     const navigate = useNavigate();
 
     const togglePasswordVisibility = () => {
@@ -51,11 +68,19 @@ function LoginPage() {
             navigate('/chat');
           }
         } catch (error) {
-          if (error.response && (error.response.status === 400 || error.response.status === 401)) {
+          if (error.response && error.response.status === 403) {
+            // Handle email not verified error
+            setIsEmailVerified(false);
+            setEmailToBeVerified(email);
+            setPassword('');
+            setEmailInputError(true);
+
+          } else if (error.response && (error.response.status === 400 || error.response.status === 401)) {
             // Handle wrong email or password error
             setLoginError(true); // Use this state to show "Wrong email or password" message
             setPassword(''); // Reset the password input box
             setEmailInputError(true);
+            
           } else {
             console.error('Login error:', error.response?.data || error.message);
           }
@@ -85,76 +110,97 @@ function LoginPage() {
     };
 
     return (
-        <div className="login-container">
-            <h2>Welcome back</h2>
-            <form onSubmit={handleLoginWithEmail} noValidate>
-                <div className="email-input-group">
-                    <input
-                        type="email"
-                        id="email"
-                        placeholder="Email address"
-                        required
-                        className={`email-input ${emailInputError ? 'input-error' : ''}`}
-                        value={email}
-                        onChange={handleEmailChange}
-                        readOnly={isEmailEntered}
-                    />
-                    {isEmailEntered && (
-                        <button type="button" onClick={handleEditEmailClick} className="edit-email-button">Edit</button>
+      <div className="login-container">
+          {!isEmailVerified ? (
+              <div className="centered-container">
+                <div className="verification-message">
+                    <h2>Verify your email</h2>
+                    <p>We sent an email to <strong>{emailToBeVerified}</strong>. Click the link inside to get started.</p>
+                    {!emailResent ? (
+                        <button onClick={resendVerificationEmail} className="resend-email-button">
+                            Resend email
+                        </button>
+                    ) : (
+                        <div className="email-sent-confirmation">
+                            Email sent.
+                        </div>
                     )}
                 </div>
-                {emailError && (
-                    <div className="error-message">{emailError}</div>
-                )}
-                {isEmailEntered && (
-                    <>
-                        <div className="password-input-group">
-                            <input
-                                type={showPassword ? 'text' : 'password'}
-                                id="password"
-                                placeholder="Password"
-                                required
-                                className={`email-input ${loginError ? 'input-error' : ''}`}
-                                value={password}
-                                onChange={handlePasswordChange}
-                            />
-                            <button type="button" onClick={togglePasswordVisibility} className="toggle-password">
-                                {showPassword ? 'Hide' : 'Show'}
-                            </button>
-                        </div>
-                        {loginError && (
-                            <div className="error-message">Wrong email or password</div>
-                        )}
-                    </>
-                )}
-                <button type="submit" className="continue-button" >
-                  Continue
-                </button>
-            </form>
-            <p className="login-prompt">Don't have an account? <a href="/auth/signup" className="login-link">Sign up</a></p>
-            {!isEmailEntered && (
-                <>
-                    <div className="divider">
-                        <span className="line"></span>
-                        OR
-                        <span className="line"></span>
-                    </div>
-                    <button onClick={handleSignupGoogle} className="login-button">
-                        <img src="/icons8-google-logo.svg" alt="" className="google-logo" />
-                        Continue with Google
-                    </button>
-                    <button onClick={handleSignupMicrosoft} className="login-button">
-                        <img src="/microsoft-svgrepo-com.svg" alt="" className="microsoft-logo" />
-                        Continue with Microsoft
-                    </button>
-                    <button onClick={handleSignupApple} className="login-button">
-                        <img src="/apple-seeklogo.svg" alt="" className="apple-logo" />
-                        Continue with Apple
-                    </button>
-                </>
-            )}
-        </div>
-    );
+              </div>
+          ) : (
+              <>
+                  <h2>Welcome back</h2>
+                  <form onSubmit={handleLoginWithEmail} noValidate>
+                      <div className="email-input-group">
+                          <input
+                              type="email"
+                              id="email"
+                              placeholder="Email address"
+                              required
+                              className={`email-input ${emailInputError ? 'input-error' : ''}`}
+                              value={email}
+                              onChange={handleEmailChange}
+                              readOnly={isEmailEntered}
+                          />
+                          {isEmailEntered && (
+                              <button type="button" onClick={handleEditEmailClick} className="edit-email-button">Edit</button>
+                          )}
+                      </div>
+                      {emailError && (
+                          <div className="error-message">{emailError}</div>
+                      )}
+                      {isEmailEntered && (
+                          <>
+                              <div className="password-input-group">
+                                  <input
+                                      type={showPassword ? 'text' : 'password'}
+                                      id="password"
+                                      placeholder="Password"
+                                      required
+                                      className={`email-input ${loginError ? 'input-error' : ''}`}
+                                      value={password}
+                                      onChange={handlePasswordChange}
+                                  />
+                                  <button type="button" onClick={togglePasswordVisibility} className="toggle-password">
+                                      {showPassword ? 'Hide' : 'Show'}
+                                  </button>
+                              </div>
+                              {loginError && (
+                                  <div className="error-message">Wrong email or password</div>
+                              )}
+                          </>
+                      )}
+                      <button type="submit" className="continue-button">
+                          Continue
+                      </button>
+                  </form>
+                  <p className="login-prompt">Don't have an account? <a href="/auth/signup" className="login-link">Sign up</a></p>
+                  {!isEmailEntered && (
+                      <>
+                          <div className="divider">
+                              <span className="line"></span>
+                              OR
+                              <span className="line"></span>
+                          </div>
+                          <button onClick={handleSignupGoogle} className="login-button">
+                              <img src="/icons8-google-logo.svg" alt="" className="google-logo" />
+                              Continue with Google
+                          </button>
+                          <button onClick={handleSignupMicrosoft} className="login-button">
+                              <img src="/microsoft-svgrepo-com.svg" alt="" className="microsoft-logo" />
+                              Continue with Microsoft
+                          </button>
+                          <button onClick={handleSignupApple} className="login-button">
+                              <img src="/apple-seeklogo.svg" alt="" className="apple-logo" />
+                              Continue with Apple
+                          </button>
+                      </>
+                  )}
+              </>
+          )}
+      </div>
+  );
+  
 }
 
 export default LoginPage;

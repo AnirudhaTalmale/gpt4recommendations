@@ -85,6 +85,52 @@ let transporter = nodemailer.createTransport({
   }
 });
 
+app.post('/resend-email', async (req, res) => {
+  const { email } = req.body;
+
+  try {
+    // Check if the email exists in the database
+    const user = await User.findOne({ 'local.email': email });
+    if (!user) {
+      return res.status(404).send('Email not found');
+    }
+
+    // Generate a new verification token
+    const newVerificationToken = jwt.sign(
+      { email: email },
+      process.env.JWT_SECRET,
+      { expiresIn: '5d' }
+    );
+
+    // Define the verification URL
+    const verificationUrl = `http://localhost:3001/onboarding?token=${newVerificationToken}`;
+
+    // Send verification email
+    transporter.sendMail({
+      from: '"OpenAI" <' + process.env.EMAIL_USER + '>',
+      to: email,
+      subject: 'OpenAI - Verify your email',
+      html: `
+        <div style="font-family: 'Arial', sans-serif; text-align: left; padding: 20px; max-width: 600px; margin: auto;">
+          <h1 style="font-size: 26px;">Verify your email address</h1>
+          <p style="font-size: 16px;">To continue setting up your OpenAI account, please verify that this is your email address.</p>
+          <a href="${verificationUrl}" style="background-color: #4CAF50; color: white; padding: 8px 18px; text-decoration: none; border-radius: 5px; display: inline-block; font-size: 16px;">Verify email address</a>
+          <p style="color: #666666; margin-top: 28px; font-size: 12px;">This link will expire in 5 days. If you did not make this request, please disregard this email.</p>
+        </div>
+      `
+    });
+
+    // Update user in the database with the new token
+    user.verificationToken = newVerificationToken;
+    await user.save();
+
+    res.send('Verification email resent successfully.');
+  } catch (error) {
+    console.error('Error in resending email:', error);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
 // Signup endpoint
 app.post('/signup', async (req, res) => {
   const { email, password } = req.body;
@@ -102,15 +148,23 @@ app.post('/signup', async (req, res) => {
   const verificationToken = jwt.sign(
     { email: email },
     process.env.JWT_SECRET,
-    { expiresIn: '1h' } // Token expires in 1 hour
+    { expiresIn: '5d' } // Token now expires in 5 days
   );
 
   // Send verification email
   const verificationUrl = `http://localhost:3001/onboarding?token=${verificationToken}`;
   transporter.sendMail({
+    from: '"OpenAI" <' + process.env.EMAIL_USER + '>',
     to: email,
-    subject: 'Verify your email',
-    html: `Please click <a href="${verificationUrl}">here</a> to verify your email.`
+    subject: 'OpenAI - Verify your email',
+    html: `
+      <div style="font-family: 'Arial', sans-serif; text-align: left; padding: 20px; max-width: 600px; margin: auto;">
+        <h1 style="font-size: 26px;">Verify your email address</h1>
+        <p style="font-size: 16px;">To continue setting up your OpenAI account, please verify that this is your email address.</p>
+        <a href="${verificationUrl}" style="background-color: #4CAF50; color: white; padding: 8px 18px; text-decoration: none; border-radius: 5px; display: inline-block; font-size: 16px;">Verify email address</a>
+        <p style="color: #666666; margin-top: 28px; font-size: 12px;">This link will expire in 5 days. If you did not make this request, please disregard this email.</p>
+      </div>
+    `
   });
 
   // Save user with hashed password and token in the database (but not yet verified)
@@ -307,7 +361,7 @@ function estimateTokenCount(text) {
   return text.trim().split(/\s+/).length;
 }
 
-const MESSAGE_LIMIT = 40; // Set your desired message limit
+const MESSAGE_LIMIT = 0; // Set your desired message limit
 const WINDOW_DURATION = 3 * 60 * 60 * 1000; // 3 hours in milliseconds
 
 io.on('connection', (socket) => {
@@ -358,7 +412,10 @@ io.on('connection', (socket) => {
     
       // Formatting the reset time in HH:MM format
       const resetTimeString = resetTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-      const limitMessage = `You have reached the message limit. Try again after ${resetTimeString}.`;
+      const limitMessage = `
+        <div style="border:1.3px solid red; background-color:#fff0f0; padding:10px; margin:10px 0; border-radius:8px; color:#444444; font-size: 0.9rem">
+          You have reached the message limit. Try again after ${resetTimeString}.
+        </div>`;
     
       // Emit a warning message to the client and set the limitMessage as the session name
       socket.emit('messageLimitReached', { content: limitMessage, sessionId: currentSessionId, isMoreDetails });

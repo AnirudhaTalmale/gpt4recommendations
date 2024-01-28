@@ -109,7 +109,7 @@ const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, bo
   const filteredMessages = messages.map(({ role, content }) => ({ role, content }));
   try {
     const stream = await openai.chat.completions.create({
-      model: "gpt-4-0125-preview",
+      model: "gpt-4-1106-preview",
       messages: filteredMessages,
       max_tokens: 4096,
       stream: true,

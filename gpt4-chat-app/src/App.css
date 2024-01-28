@@ -102,7 +102,7 @@ body:not(.history-pane-open) .chat-area {
   display: flex;
   flex-direction: column;
   padding: 20px;
-  margin-left: 250px; /* Keep your existing left margin */
+  margin-left: 260px; /* Keep your existing left margin */
   margin-right: calc(250px - 15rem); /* Dynamically calculate right margin */
   padding-bottom: 60px; /* Added padding at the bottom */
   /* background-color: red; */
@@ -366,22 +366,29 @@ body:not(.history-pane-open) .input-area {
   display: flex;
   align-items: center;
   padding-left: 0.5rem;
-  /* ...other styles... */
 }
 
 /* History pane css */
 
-/* Style for the close pane button inside the history pane */
 .close-pane-button {
   position: absolute;
   top: 50%; /* Center vertically */
   left: 107%; /* Center horizontally */
   transform: translate(-50%, -50%);
   cursor: pointer; 
-  color: rgb(159, 158, 158);
+  color: rgb(200, 200, 200);
   font-size: 1.3rem;
   background: none;
   border: none;
+}
+
+.close-pane-button:hover {
+  color: black; /* Color changes to black on hover */
+}
+
+.pane-line path {
+  transition: d 1s ease, stroke-width 1s ease;
+  stroke-linecap: round; /* Ensure this is consistent with the JSX */
 }
 
 /* Styles for the history pane */
@@ -713,9 +720,34 @@ body:not(.history-pane-open) .input-area {
 
 /* login page components */
 
+/* Default state styling for the resend email button */
+.resend-email-button {
+  background-color: transparent; /* No background by default */
+  color: #4CAF50; /* Green text */
+  cursor: pointer; /* Pointer cursor on hover */
+  transition: background-color 0.2s, color 0.2s; /* Smooth transition for hover effect */
+  padding: 9px 11px; /* Padding around the text */
+  font-size: 0.85rem; /* Text size */
+  font-weight: bold;
+  margin-bottom: 0px !important;
+  border: none;
+  margin-top: 0.15rem;
+}
+
+/* Hover state styling for the resend email button */
+.resend-email-button:hover {
+  background-color: #e0f2f1; /* Light green background on hover */
+  border-radius: 0.5rem;
+}
+
+.email-sent-confirmation {
+  font-size: 0.85rem;
+  margin-top: 1.4rem;
+}
+
 .login-container h2 {
   font-size: 1.6rem; /* Adjust the size as needed */
-  margin-bottom: 15px; /* Space between the header and form */
+  margin-bottom: 1.4rem; /* Space between the header and form */
 }
 
 .email-input, .continue-button {
