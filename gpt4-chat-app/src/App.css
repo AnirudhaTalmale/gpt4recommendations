@@ -208,52 +208,68 @@ body:not(.history-pane-open) .sample-queries-container {
 
 
 /* input area */
-
 body:not(.history-pane-open) .input-area {
   left: 0;
 }
 
 .input-area {
   position: fixed;
-  bottom: 0;
-  left: 260px; /* Match the left margin of the chat-area */
-  right: 0px; /* Match the right margin calculation of the chat-area */
+  bottom: 0; /* You can adjust this value to set the distance from the bottom */
+  left: 260px;
+  right: 0px;
   display: flex;
   align-items: center;
   background: white;
-  max-width: 45rem; /* Adjust if needed */
-  margin-left: auto; /* Centering with auto margins */
-  margin-right: auto; /* Centering with auto margins */
-  margin-bottom: 0.2rem;
+  max-width: 45rem;
+  margin-left: auto;
+  margin-right: auto;
+  /* background-color: pink; */
 }
 
-.input-box-container {
-  flex-grow: 1;
-  margin: 0rem 1rem 1rem 1rem;
-  border-radius: 0.7rem;
-  border: 1.5px solid #D3D3D3;
-  overflow: hidden;
-  position: relative;
-}
-
-.textarea-wrapper {
-  width: 100%;
-  max-height: 12rem; /* Set the maximum height for the textarea */
-  overflow-y: auto; /* Allows scrolling for overflow text */
-  /* background-color: black; */
-}
 
 .input-box {
-  width: 90%;
-  border: none;
-  padding: 0.5rem 0.5rem 0.5rem 1rem;
-  outline: none;
-  font-family: Söhne, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, sans-serif, Helvetica Neue, Arial, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
-  font-size: 1rem;
-  resize: none;
-  line-height: 1.5rem;
-  /* background-color: black; */
+  width: 82%; /* Full width of the parent container */
+  margin: auto;
+  margin-bottom: 1.3rem;
+  border-radius: 1rem;
+  height: auto; /* Adjust height automatically based on content */
+  border: 0.093rem solid #D3D3D3; /* Border color and width */
+  outline: none; /* Removes the default focus outline */
+  resize: none; /* Disables the resize handle */
+  font-family: 'Arial', sans-serif; /* Font style */
+  font-size: 1rem; /* Font size */
+  line-height: 1.5; /* Line height for text */
+  color: #333; /* Text color */
+  background-color: #fff; /* Background color */
+  padding-left: 1.3rem;
+  padding-right: 3rem;
+  padding-top: 0.8rem;
+  padding-bottom: 0.8rem;
+  max-height: 10rem;
+  overflow-y: auto;
+
+  /* Placeholder styling */
+  ::placeholder {
+      color: #888; /* Color of the placeholder text */
+  }
+
+  /* Scrollbar styling (for webkit browsers) */
+  ::-webkit-scrollbar {
+      width: 6px; /* Width of the scrollbar */
+  }
+
+  ::-webkit-scrollbar-thumb {
+      background-color: #e6e4e4; /* Color of the scrollbar thumb */
+      border-radius: 3px; /* Rounded corners for the scrollbar thumb */
+  }
+
+  /* Styling for when the textarea is focused by the user */
+  :focus {
+      border-color: #007BFF; /* Highlight color when focused */
+      box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25); /* A subtle shadow around the textarea */
+  }
 }
+
 
 .input-box-chat-with-us {
   width: 80%;
@@ -273,28 +289,26 @@ body:not(.history-pane-open) .input-area {
   display: none; /* for Chrome, Safari, and Opera */
 }
 
-.stop-button {
+
+.send-button, .stop-button {
   position: absolute;
-  right: 0.6rem;
-  bottom: 0.35rem; /* Adjust as needed */
+  right: 2.7rem; /* Adjust as needed */
+  bottom: 2.05rem; /* Adjust as needed */
   font-size: 1rem;
-  width: 1.85rem;
-  height: 1.85rem;
+  width: 1.9rem;
+  height: 1.9rem;
+}
+
+.stop-button {
   border: none;
   background: none;
   cursor: pointer;
 }
 
 .send-button {
-  position: absolute;
-  right: 0.6rem;
-  bottom: 0.35rem; /* Adjust as needed */
   background-color: #ddd;
   border: 1px solid #D3D3D3;
-  font-size: 1rem;
-  border-radius: 0.4rem;
-  width: 1.85rem;
-  height: 1.85rem;
+  border-radius: 0.5rem;
   color: white;
   cursor: pointer;
 }
@@ -367,6 +381,8 @@ body:not(.history-pane-open) .input-area {
   align-items: center;
   padding-left: 0.5rem;
 }
+
+
 
 /* History pane css */
 

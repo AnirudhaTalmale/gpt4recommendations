@@ -5,17 +5,11 @@ function InputBox({ onSubmit, isStreaming, onStopStreaming, initialQuery }) {
   const [input, setInput] = useState(initialQuery || '');
   const [isInputNotEmpty, setIsInputNotEmpty] = useState(false);
   const [rows, setRows] = useState(1);
+  
   const textareaRef = useRef(null);
 
-  const initialHeightRem = 2.5; // Initial height in rem
-  const maxHeightRem = 12; // Max height in rem
   const rowHeightRem = 1.75; // Estimated row height in rem
-
-  useEffect(() => {
-    // Adjust the row count when input changes
-    const lineCount = input.split('\n').length;
-    setRows(lineCount >= 1 ? lineCount : 1);
-  }, [input]);
+  const maxHeightRem = 12; // Max height in rem
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -40,59 +34,64 @@ function InputBox({ onSubmit, isStreaming, onStopStreaming, initialQuery }) {
       if (input.trim()) { // Only submit if there's input
         handleSubmit(e);
       }
-    } else if (e.key === 'Enter' && e.shiftKey) {
-      setTimeout(() => {
-        if (textareaRef.current) {
-          const currentScrollPosition = textareaRef.current.scrollTop;
-          textareaRef.current.scrollTop = currentScrollPosition;
-        }
-      }, 0);
-    }
+    } 
   };
 
   useEffect(() => {
     setInput(initialQuery);
-  
-    // Update the isInputNotEmpty and rows state based on the initialQuery
     setIsInputNotEmpty(initialQuery.length > 0);
-    const lineCount = initialQuery.split('\n').length;
-    setRows(lineCount >= 1 ? lineCount : 1);
-  }, [initialQuery]);
-  
+  }, [initialQuery]);  
 
   const handleInputChange = (e) => {
     setInput(e.target.value);
-    setIsInputNotEmpty(e.target.value.length > 0);
-    const lineCount = e.target.value.split('\n').length;
-    setRows(lineCount >= 1 ? lineCount : 1);
+  
+    // Existing line count based on new line characters
+    const lineCountNewLines = e.target.value.split('\n').length;
+  
+    // Calculate line count based on text wrapping
+    // Note: This is a simplified example and might need adjustments based on your CSS and font settings.
+    const textWidth = getTextWidth(e.target.value, getComputedStyle(textareaRef.current).font);
+    const textareaWidth = textareaRef.current.clientWidth;
+    const lineCountWrap = Math.ceil(textWidth / textareaWidth);
+  
+    // Combine the two methods for a more accurate count
+    const totalLineCount = Math.max(lineCountNewLines, lineCountWrap);
+  
+    console.log("lineCount is: ", totalLineCount);
+    setRows(Math.min(totalLineCount, maxHeightRem / rowHeightRem));
   };
-
-  const containerHeight = Math.max(Math.min(rows * rowHeightRem, maxHeightRem), initialHeightRem);
+  
+  // Utility function to measure text width
+  function getTextWidth(text, font) {
+    // Create a temporary canvas element to measure text width
+    const canvas = getTextWidth.canvas || (getTextWidth.canvas = document.createElement("canvas"));
+    const context = canvas.getContext("2d");
+    context.font = font;
+    return context.measureText(text).width;
+  }
+  
 
   return (
     <form onSubmit={handleSubmit} className="input-area">
-      <div className="input-box-container" style={{ height: `${containerHeight}rem` }}>
-        <div className="textarea-wrapper">
-          <textarea ref={textareaRef}
-            className="input-box"
-            value={input} 
-            onChange={handleInputChange}
-            onKeyDown={handleKeyDown}
-            placeholder="Ask me about books..."
-            rows={rows}
-          />
-        </div>
-        {isStreaming ? (
-          <button type="button" className="stop-button" onClick={onStopStreaming}>
-            <i className="fa-regular fa-circle-stop"></i>
-          </button>
-        ) : (
-          <button type="submit" className={`send-button ${isInputNotEmpty ? 'active' : ''}`}>
-            <i className="fa-solid fa-arrow-up"></i>
-          </button>
-        )}
-      </div>
+      <textarea ref={textareaRef}
+        className="input-box"
+        value={input}
+        onChange={handleInputChange}
+        onKeyDown={handleKeyDown}
+        placeholder="Ask me about books..."
+        rows={rows}
+      />
+      {isStreaming ? (
+        <button type="button" className="stop-button" onClick={onStopStreaming}>
+          <i className="fa-regular fa-circle-stop"></i>
+        </button>
+      ) : (
+        <button type="submit" className={`send-button ${isInputNotEmpty ? 'active' : ''}`}>
+          <i className="fa-solid fa-arrow-up"></i>
+        </button>
+      )}
     </form>
+
   );
 };
 
