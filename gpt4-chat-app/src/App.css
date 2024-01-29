@@ -95,6 +95,8 @@ body:not(.history-pane-open) .chat-area {
 .chat-area-wrapper {
   display: flex;
   justify-content: center; /* Center the child horizontally */
+  /* background-color: pink; */
+  
 }
 
 .chat-area {
@@ -104,11 +106,12 @@ body:not(.history-pane-open) .chat-area {
   padding: 20px;
   margin-left: 260px; /* Keep your existing left margin */
   margin-right: calc(250px - 15rem); /* Dynamically calculate right margin */
-  padding-bottom: 60px; /* Added padding at the bottom */
+  padding-bottom: 5rem; /* Added padding at the bottom */
   /* background-color: red; */
   overflow-y: auto; 
   flex-grow: 1;
   padding-right: 3rem;
+  /* background-color: red; */
 }
 
 .chat-heading {
@@ -223,7 +226,6 @@ body:not(.history-pane-open) .input-area {
   max-width: 45rem;
   margin-left: auto;
   margin-right: auto;
-  /* background-color: pink; */
 }
 
 
