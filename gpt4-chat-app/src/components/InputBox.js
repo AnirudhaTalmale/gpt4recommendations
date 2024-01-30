@@ -5,6 +5,24 @@ function InputBox({ onSubmit, isStreaming, onStopStreaming, initialQuery }) {
   const [input, setInput] = useState(initialQuery || '');
   const [isInputNotEmpty, setIsInputNotEmpty] = useState(false);
   const [rows, setRows] = useState(1);
+  const [sendButtonRight, setSendButtonRight] = useState('2.7rem'); // Default value
+
+  const updateSendButtonPosition = () => {
+    const parentWidth = document.querySelector('.input-area').clientWidth;
+    const inputBoxWidth = textareaRef.current.clientWidth;
+    const newRightPosition = (parentWidth - inputBoxWidth) / 2 + 12 + 'px'; // Example calculation, adjust as needed
+    setSendButtonRight(newRightPosition);
+  };
+  
+  useEffect(() => {
+    updateSendButtonPosition();
+    // Add a resize event listener if necessary
+    window.addEventListener('resize', updateSendButtonPosition);
+    return () => {
+      window.removeEventListener('resize', updateSendButtonPosition);
+    };
+  }, []);
+  
   
   const textareaRef = useRef(null);
   const rowHeightRem = 1.75; // Estimated row height in rem
@@ -85,7 +103,7 @@ function InputBox({ onSubmit, isStreaming, onStopStreaming, initialQuery }) {
           <i className="fa-regular fa-circle-stop"></i>
         </button>
       ) : (
-        <button type="submit" className={`send-button ${isInputNotEmpty ? 'active' : ''}`}>
+        <button type="submit" className={`send-button ${isInputNotEmpty ? 'active' : ''}`} style={{ right: sendButtonRight }}>
           <i className="fa-solid fa-arrow-up"></i>
         </button>
       )}
