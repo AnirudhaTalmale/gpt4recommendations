@@ -269,12 +269,12 @@ openaiApi.getSummary = async (text) => {
 
 openaiApi.getSummaryWithGPT3_5Turbo = async (text) => {
   try {
-    const prompt = `Summarize the following text in 4 words:\n\n"${text}"\n\nSummary:`;
+    const prompt = `Summarize following text:\n"${text}"`;
 
     const response = await openai.chat.completions.create({
       model: "gpt-3.5-turbo-1106",
       messages: [{ role: 'system', content: prompt }],
-      max_tokens: 10, // Adjust as needed to ensure brevity
+      max_tokens: 4, // Adjust as needed to ensure brevity
     });
 
     let summary = response.choices[0]?.message?.content.trim() || "New Chat";

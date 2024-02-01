@@ -49,8 +49,6 @@ const HistoryPane = forwardRef(({
     }
   };
   
-  
-  
   useEffect(() => {
     document.body.classList.toggle('history-pane-open', isPaneOpen);
     
@@ -132,10 +130,12 @@ const HistoryPane = forwardRef(({
   const handleSessionSelect = (session, index) => {
     onSelectSession(index);
     setSelectedSessionId(session._id); // Update the selected session ID
+    setIsEntryActive(session._id); // Set the active entry
     if (window.innerWidth < 760) {
       togglePane();
     }
   };
+  
 
   return (
     <div ref={ref}>
@@ -169,15 +169,16 @@ const HistoryPane = forwardRef(({
               className={`history-entry ${selectedSessionId === session._id ? 'active' : ''}`} 
               onClick={() => handleSessionSelect(session, sessions.length - index - 1)}
             >
-                <div>
-                    {session.sessionName}
-                </div>
-                <button onClick={(e) => { e.stopPropagation(); onDeleteSession(session._id); }} className="delete-session-button">
-                    <i className="fa-solid fa-trash"></i>
-                </button>
+              <div className="history-entry-text">
+                {session.sessionName}
+              </div>
+              <button onClick={(e) => { e.stopPropagation(); onDeleteSession(session._id); }} className="delete-session-button">
+                <i className="fa-solid fa-trash"></i>
+              </button>
             </div>
           ))}
         </div>
+
 
         <div className="user-info-container">
           <div className={`user-entry ${isEntryActive ? 'active' : ''}`} onClick={toggleDropdown} ref={userEntryRef}>
