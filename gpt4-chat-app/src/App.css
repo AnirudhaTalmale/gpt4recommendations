@@ -479,12 +479,15 @@ body:not(.history-pane-open) .input-area {
   overflow: hidden; /* Hide overflow */
   white-space: nowrap;
   padding: 0.6rem 0.4rem;
+  margin-left: 0.2rem;
+  margin-right: 0.1rem;
   cursor: pointer; 
   display: flex; /* Use Flexbox */
   justify-content: space-between; /* Space between items */
   align-items: center; /* Align items vertically */
-  font-size: 0.9rem;
+  font-size: 0.88rem;
   z-index: 1;
+
 }
 
 .history-entry:hover {
@@ -504,6 +507,7 @@ body:not(.history-pane-open) .input-area {
   margin-right: 0.1rem;
   /* border: 1px solid green; */
   margin-right: 1rem !important;
+  font-size: 0.84rem !important;
 }
 
 
@@ -519,7 +523,8 @@ body:not(.history-pane-open) .input-area {
   position: relative;
   z-index: 3;
   padding: 0rem;
-  margin-right: 0.35rem;
+  margin-right: 0.3rem;
+  margin-left: 0;
 }
 
 .history-entry:hover .delete-session-button,
@@ -627,6 +632,13 @@ body:not(.history-pane-open) .input-area {
   border-radius: 0.5rem;
   position: relative;
   z-index: 2;
+}
+
+.category-title {
+  margin: 0.52rem 0.67rem;
+  font-size: 0.73rem;
+  color: rgb(172, 171, 171);
+  font-family: Arial, Helvetica, sans-serif;
 }
 
 /* Home page components */

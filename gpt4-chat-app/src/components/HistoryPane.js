@@ -136,6 +136,47 @@ const HistoryPane = forwardRef(({
     }
   };
   
+  const categorizeSessions = (sessions) => {
+    const today = new Date();
+    const yesterday = new Date(today);
+    yesterday.setDate(yesterday.getDate() - 1);
+  
+    const categories = {
+      today: [],
+      yesterday: [],
+      last30Days: [],
+      older: []
+    };
+  
+    sessions.forEach(session => {
+      const createdAt = new Date(session.createdAt); // Assuming createdAt is available in session object
+      if (createdAt.toDateString() === today.toDateString()) {
+        categories.today.push(session);
+      } else if (createdAt.toDateString() === yesterday.toDateString()) {
+        categories.yesterday.push(session);
+      } else if (today - createdAt <= 30 * 24 * 60 * 60 * 1000) {
+        categories.last30Days.push(session);
+      } else {
+        categories.older.push(session);
+      }
+    });
+  
+    return categories;
+  };
+
+  // Inside the HistoryPane component
+  const [categorizedSessions, setCategorizedSessions] = useState({
+    today: [],
+    yesterday: [],
+    last30Days: [],
+    older: []
+  });
+
+  useEffect(() => {
+    setCategorizedSessions(categorizeSessions(sessions));
+  }, [sessions]);
+
+  
 
   return (
     <div ref={ref}>
@@ -162,22 +203,88 @@ const HistoryPane = forwardRef(({
           </button>
         </div>
 
-        <div className="history-content">  
-          {[...sessions].reverse().map((session, index) => (
-            <div 
-              key={session._id} 
-              className={`history-entry ${selectedSessionId === session._id ? 'active' : ''}`} 
-              onClick={() => handleSessionSelect(session, sessions.length - index - 1)}
-            >
-              <div className="history-entry-text">
-                {session.sessionName}
-              </div>
-              <button onClick={(e) => { e.stopPropagation(); onDeleteSession(session._id); }} className="delete-session-button">
-                <i className="fa-solid fa-trash"></i>
-              </button>
+        <div className="history-content">
+          {categorizedSessions.today.length > 0 && (
+            <div>
+              <div className="category-title">Today</div>
+              {[...categorizedSessions.today].reverse().map((session) => (
+                <div 
+                  key={session._id} 
+                  className={`history-entry ${selectedSessionId === session._id ? 'active' : ''}`} 
+                  onClick={() => handleSessionSelect(session)}
+                >
+                  <div className="history-entry-text">
+                    {session.sessionName}
+                  </div>
+                  <button onClick={(e) => { e.stopPropagation(); onDeleteSession(session._id); }} className="delete-session-button">
+                    <i className="fa-solid fa-trash"></i>
+                  </button>
+                </div>
+              ))}
             </div>
-          ))}
+          )}
+
+          {categorizedSessions.yesterday.length > 0 && (
+            <div>
+              <div className="category-title">Yesterday</div>
+              {[...categorizedSessions.yesterday].reverse().map((session) => (
+                <div 
+                  key={session._id} 
+                  className={`history-entry ${selectedSessionId === session._id ? 'active' : ''}`} 
+                  onClick={() => handleSessionSelect(session)}
+                >
+                  <div className="history-entry-text">
+                    {session.sessionName}
+                  </div>
+                  <button onClick={(e) => { e.stopPropagation(); onDeleteSession(session._id); }} className="delete-session-button">
+                    <i className="fa-solid fa-trash"></i>
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {categorizedSessions.last30Days.length > 0 && (
+            <div>
+              <div className="category-title">Previous 30 Days</div>
+              {[...categorizedSessions.last30Days].reverse().map((session) => (
+                <div 
+                  key={session._id} 
+                  className={`history-entry ${selectedSessionId === session._id ? 'active' : ''}`} 
+                  onClick={() => handleSessionSelect(session)}
+                >
+                  <div className="history-entry-text">
+                    {session.sessionName}
+                  </div>
+                  <button onClick={(e) => { e.stopPropagation(); onDeleteSession(session._id); }} className="delete-session-button">
+                    <i className="fa-solid fa-trash"></i>
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {categorizedSessions.older.length > 0 && (
+            <div>
+              <div className="category-title">Older</div>
+              {[...categorizedSessions.older].reverse().map((session) => (
+                <div 
+                  key={session._id} 
+                  className={`history-entry ${selectedSessionId === session._id ? 'active' : ''}`} 
+                  onClick={() => handleSessionSelect(session)}
+                >
+                  <div className="history-entry-text">
+                    {session.sessionName}
+                  </div>
+                  <button onClick={(e) => { e.stopPropagation(); onDeleteSession(session._id); }} className="delete-session-button">
+                    <i className="fa-solid fa-trash"></i>
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
+
 
 
         <div className="user-info-container">

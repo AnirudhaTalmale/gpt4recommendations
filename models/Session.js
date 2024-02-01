@@ -13,6 +13,6 @@ const sessionSchema = new Schema({
   user: { type: Schema.Types.ObjectId, ref: 'User' },
   sessionName: { type: String, default: 'New Chat' },
   messages: [messageSchema]
-});
+}, { timestamps: true });
 
 module.exports = mongoose.model('Session', sessionSchema);
