@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import DOMPurify from 'dompurify';
 import '../App.css';
 
@@ -25,6 +25,25 @@ function AnswerDisplay({
       onContinueGenerating();
     }
   };
+
+  const messageAnswerRef = useRef(null);
+
+  useEffect(() => {
+    // Check the number of buttons inside the message-answer after each render
+    const messageAnswer = messageAnswerRef.current;
+    if (messageAnswer) {
+      const buttons = messageAnswer.getElementsByTagName('button');
+      if (buttons.length === 1) {
+        // Add a specific class to the single button
+        buttons[0].classList.add('single-button');
+      } else {
+        Array.from(buttons).forEach(button => {
+          // Remove the class if more than one button is present
+          button.classList.remove('single-button');
+        });
+      }
+    }
+  });
 
   return (
     <div className={`chat-area-wrapper ${isStreaming ? 'streaming' : ''}`}>
@@ -58,7 +77,7 @@ function AnswerDisplay({
             <>
               <div className="message-sender">ChatGPT</div>
               <br></br>
-              <div className="message-answer" dangerouslySetInnerHTML={createMarkup()} />
+              <div className="message-answer" ref={messageAnswerRef} dangerouslySetInnerHTML={createMarkup()} />
               {showContinueButton && !isStreaming && (
                 <div className="button-container">
                   <button className="continue-generating-btn" onClick={handleContinueGenerating}>

@@ -65,6 +65,11 @@ const getBookCover = async (bookTitleWithAuthor) => {
   }
 };
 
+function checkFormat(content) {
+  const pattern = /<div class="book-info">\s*<h3 class="book-title">[^<]+<\/h3><span class="book-author">[^<]+<\/span><\/div>(?:<div><img src="[^"]*" alt=""><\/div>)?<div><a href="[^"]+" target="_blank"><button class="buy-now-button">[^<]+<\/button><\/a><\/div>(\s*<b>[^<]+<\/b>\s*<p>[^<]+<\/p>){5}/;
+  return pattern.test(content);
+}
+
 const openai = new OpenAI(process.env.OPENAI_API_KEY);
 
 let isStreamingActive = false;
@@ -228,12 +233,15 @@ const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, bo
       if (finishReason === 'stop') {
         if (isMoreDetails || messages[messages.length - 1].content.startsWith("Explain this book - ")) {
           const MoreDetails = require('./models/MoreDetails');
-          const newDetail = new MoreDetails({
-              bookTitle,
-              author,
-              detailedDescription: completeResponse // Save complete response here
-          });
-          await newDetail.save();
+          // Check if completeResponse follows the specified format
+          if (checkFormat(completeResponse)) {
+              const newDetail = new MoreDetails({
+                  bookTitle,
+                  author,
+                  detailedDescription: completeResponse // Save complete response here
+              });
+              await newDetail.save();
+          }
         }
         socket.emit('streamEnd', { message: 'Stream completed', sessionId }); // Emit a message indicating stream end
         break; // Optionally break out of the loop if the stream is finished
@@ -288,66 +296,65 @@ openaiApi.getSummaryWithGPT3_5Turbo = async (text) => {
   }
 };
 
-openaiApi.getNewsletter = async (prompt) => {
-  try {
-    const response = await openai.chat.completions.create({
-      model: "gpt-4-1106-preview",
-      messages: [{ role: 'system', content: prompt }],
-    });
-
-    let newsletterContent = response.choices[0]?.message?.content.trim();
-    console.log("newsletterContent: ", newsletterContent);
-
-    const bookListMatches = [...newsletterContent.matchAll(/#([\s\S]*?)#/g)];
-
-    for (const match of bookListMatches) {
-      const bookTitleWithAuthor = match[1];
-      console.log("bookTitleWithAuthor: ", bookTitleWithAuthor);
-      
-      // Enclose book title and author in <b> tags
-      const bookTitleWithAuthorBold = `<b>${bookTitleWithAuthor}</b>`;
-
-      // Fetch book cover image
-      const coverImageUrl = await getBookCover(bookTitleWithAuthor);
-      
-      // Extract book title and author
-      let { bookTitle, author } = parseBookTitle(bookTitleWithAuthor);
-
-      const encodedTitle = encodeForUrl(bookTitle);
-      let amazonUrl = `https://www.amazon.in/s?k=${encodedTitle}`;
-      let detailsUrl = `http://localhost:3001/?bookTitle=${encodedTitle}`;
-
-      if (author) {
-        const encodedAuthor = `+by+${encodeForUrl(author)}`;
-        amazonUrl += encodedAuthor;
-
-        const encodedAuthorMoreDetials = `&author=${encodeForUrl(author)}`;
-        detailsUrl += encodedAuthorMoreDetials;
-      }
-
-      const buyNowButtonHtml = `<div><a href="${amazonUrl}" style="cursor: pointer; text-decoration: none;" target="_blank"><button style="background: none; border: 1px solid black; font-family: Arial, sans-serif; font-size: 1rem; padding: 0.25rem 0.6rem; border-radius: 0.7rem; cursor: pointer; text-align: center; display: inline-block; margin-bottom: 0.7rem; margin-top: 0.7rem; width: 8.3rem;">Buy now</button></a></div>`;
-      const moreDetailsButtonHtml = `<div><a href="${detailsUrl}" style="text-decoration: none;" target="_blank"><button type="button" style="background: none; border: 1px solid black; font-family: Arial, sans-serif; font-size: 1rem; padding: 0.25rem 0.6rem; border-radius: 0.7rem; cursor: pointer; text-align: center; display: inline-block; margin-bottom: 0.2rem; width: 8.3rem;">More Details</button></a></div>`;
-
-      newsletterContent = newsletterContent.replace(match[0], bookTitleWithAuthorBold + buyNowButtonHtml + moreDetailsButtonHtml);
-
-      // If the cover image URL is not the default, concatenate div tag with the image tag
-      if (coverImageUrl !== 'default-cover.jpg') {
-        const imageDiv = `<div style="margin-top: 0.8rem; margin-bottom: -0.1rem;"><img src="${coverImageUrl}" alt=""></div>`;
-        newsletterContent = newsletterContent.replace(bookTitleWithAuthorBold, bookTitleWithAuthorBold + imageDiv);
-      }
-    }
-
-    newsletterContent = newsletterContent.replace(/\#/g, '');
-    return newsletterContent;
-  } catch (error) {
-    console.log('Error getting newsletter content', error);
-    return "Error getting newsletter content";
-  }
-};
-
-
 openaiApi.stopStream = () => {
   isStreamingActive = false; // Set the flag to false to stop the stream
 };
 
 module.exports = openaiApi;
+
+// openaiApi.getNewsletter = async (prompt) => {
+//   try {
+//     const response = await openai.chat.completions.create({
+//       model: "gpt-4-1106-preview",
+//       messages: [{ role: 'system', content: prompt }],
+//     });
+
+//     let newsletterContent = response.choices[0]?.message?.content.trim();
+//     console.log("newsletterContent: ", newsletterContent);
+
+//     const bookListMatches = [...newsletterContent.matchAll(/#([\s\S]*?)#/g)];
+
+//     for (const match of bookListMatches) {
+//       const bookTitleWithAuthor = match[1];
+//       console.log("bookTitleWithAuthor: ", bookTitleWithAuthor);
+      
+//       // Enclose book title and author in <b> tags
+//       const bookTitleWithAuthorBold = `<b>${bookTitleWithAuthor}</b>`;
+
+//       // Fetch book cover image
+//       const coverImageUrl = await getBookCover(bookTitleWithAuthor);
+      
+//       // Extract book title and author
+//       let { bookTitle, author } = parseBookTitle(bookTitleWithAuthor);
+
+//       const encodedTitle = encodeForUrl(bookTitle);
+//       let amazonUrl = `https://www.amazon.in/s?k=${encodedTitle}`;
+//       let detailsUrl = `http://localhost:3001/?bookTitle=${encodedTitle}`;
+
+//       if (author) {
+//         const encodedAuthor = `+by+${encodeForUrl(author)}`;
+//         amazonUrl += encodedAuthor;
+
+//         const encodedAuthorMoreDetials = `&author=${encodeForUrl(author)}`;
+//         detailsUrl += encodedAuthorMoreDetials;
+//       }
+
+//       const buyNowButtonHtml = `<div><a href="${amazonUrl}" style="cursor: pointer; text-decoration: none;" target="_blank"><button style="background: none; border: 1px solid black; font-family: Arial, sans-serif; font-size: 1rem; padding: 0.25rem 0.6rem; border-radius: 0.7rem; cursor: pointer; text-align: center; display: inline-block; margin-bottom: 0.7rem; margin-top: 0.7rem; width: 8.3rem;">Buy now</button></a></div>`;
+//       const moreDetailsButtonHtml = `<div><a href="${detailsUrl}" style="text-decoration: none;" target="_blank"><button type="button" style="background: none; border: 1px solid black; font-family: Arial, sans-serif; font-size: 1rem; padding: 0.25rem 0.6rem; border-radius: 0.7rem; cursor: pointer; text-align: center; display: inline-block; margin-bottom: 0.2rem; width: 8.3rem;">More Details</button></a></div>`;
+
+//       newsletterContent = newsletterContent.replace(match[0], bookTitleWithAuthorBold + buyNowButtonHtml + moreDetailsButtonHtml);
+
+//       // If the cover image URL is not the default, concatenate div tag with the image tag
+//       if (coverImageUrl !== 'default-cover.jpg') {
+//         const imageDiv = `<div style="margin-top: 0.8rem; margin-bottom: -0.1rem;"><img src="${coverImageUrl}" alt=""></div>`;
+//         newsletterContent = newsletterContent.replace(bookTitleWithAuthorBold, bookTitleWithAuthorBold + imageDiv);
+//       }
+//     }
+
+//     newsletterContent = newsletterContent.replace(/\#/g, '');
+//     return newsletterContent;
+//   } catch (error) {
+//     console.log('Error getting newsletter content', error);
+//     return "Error getting newsletter content";
+//   }
+// };

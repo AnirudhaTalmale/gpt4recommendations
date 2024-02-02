@@ -137,6 +137,7 @@ const HistoryPane = forwardRef(({
   };
   
   const categorizeSessions = (sessions) => {
+    console.log("sessions are: ", sessions);
     const today = new Date();
     const yesterday = new Date(today);
     yesterday.setDate(yesterday.getDate() - 1);
@@ -174,6 +175,7 @@ const HistoryPane = forwardRef(({
 
   useEffect(() => {
     setCategorizedSessions(categorizeSessions(sessions));
+    console.log("categorizedSessions are: ", categorizedSessions);
   }, [sessions]);
 
   
@@ -207,11 +209,11 @@ const HistoryPane = forwardRef(({
           {categorizedSessions.today.length > 0 && (
             <div>
               <div className="category-title">Today</div>
-              {[...categorizedSessions.today].reverse().map((session) => (
+              {[...categorizedSessions.today].reverse().map((session, index) => (
                 <div 
                   key={session._id} 
                   className={`history-entry ${selectedSessionId === session._id ? 'active' : ''}`} 
-                  onClick={() => handleSessionSelect(session)}
+                  onClick={() => handleSessionSelect(session, sessions.length - index - 1)}
                 >
                   <div className="history-entry-text">
                     {session.sessionName}
@@ -227,11 +229,11 @@ const HistoryPane = forwardRef(({
           {categorizedSessions.yesterday.length > 0 && (
             <div>
               <div className="category-title">Yesterday</div>
-              {[...categorizedSessions.yesterday].reverse().map((session) => (
+              {[...categorizedSessions.yesterday].reverse().map((session, index) => (
                 <div 
                   key={session._id} 
                   className={`history-entry ${selectedSessionId === session._id ? 'active' : ''}`} 
-                  onClick={() => handleSessionSelect(session)}
+                  onClick={() => handleSessionSelect(session, sessions.length - index - 1)}
                 >
                   <div className="history-entry-text">
                     {session.sessionName}
@@ -247,11 +249,11 @@ const HistoryPane = forwardRef(({
           {categorizedSessions.last30Days.length > 0 && (
             <div>
               <div className="category-title">Previous 30 Days</div>
-              {[...categorizedSessions.last30Days].reverse().map((session) => (
+              {[...categorizedSessions.last30Days].reverse().map((session, index) => (
                 <div 
                   key={session._id} 
                   className={`history-entry ${selectedSessionId === session._id ? 'active' : ''}`} 
-                  onClick={() => handleSessionSelect(session)}
+                  onClick={() => handleSessionSelect(session, sessions.length - index - 1)}
                 >
                   <div className="history-entry-text">
                     {session.sessionName}
@@ -267,11 +269,11 @@ const HistoryPane = forwardRef(({
           {categorizedSessions.older.length > 0 && (
             <div>
               <div className="category-title">Older</div>
-              {[...categorizedSessions.older].reverse().map((session) => (
+              {[...categorizedSessions.older].reverse().map((session, index) => (
                 <div 
                   key={session._id} 
                   className={`history-entry ${selectedSessionId === session._id ? 'active' : ''}`} 
-                  onClick={() => handleSessionSelect(session)}
+                  onClick={() => handleSessionSelect(session, sessions.length - index - 1)}
                 >
                   <div className="history-entry-text">
                     {session.sessionName}

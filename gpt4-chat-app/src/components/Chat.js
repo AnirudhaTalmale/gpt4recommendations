@@ -13,8 +13,8 @@ function Chat() {
   const sampleQueries = [
     "To understand the making of FAANG companies",
     "To understand the mindset of world's top entrepreneurs",
-    "To start a tech startup and scale it globally",
-    "I aspire to live a content, happy, and satisfied life"
+    "Explain this book - The Facebook Effect",
+    "Explain this book - Billion Dollar Loser"
   ];
 
   const [sessions, setSessions] = useState([]);

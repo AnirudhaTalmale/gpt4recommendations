@@ -1083,7 +1083,7 @@ body:not(.history-pane-open) .input-area {
   max-height: 88%; /* Adjust based on content height */
   overflow-y: auto; /* Adds a scrollbar if the content is too long */
   position: relative; 
-  font-size: 1rem;
+  font-size: 0.97rem;
   line-height: 1.5rem;
 }
 
@@ -1165,7 +1165,7 @@ body:not(.history-pane-open) .input-area {
   background: none;
   border: 1px solid rgb(46, 46, 46);;
   font-family: Söhne, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, sans-serif, Helvetica Neue, Arial, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
-  font-size: 1rem;
+  font-size: 0.97rem;
   padding: 0.25rem 0.6rem;
   border-radius: 0.35rem;
   cursor: pointer;
@@ -1177,6 +1177,10 @@ body:not(.history-pane-open) .input-area {
   margin-top: 0.7rem;
   width: 8.3rem;
   color: rgb(46, 46, 46);
+}
+
+.single-button {
+  margin-bottom: 1.5rem;
 }
 
 .buy-now-button:hover {
@@ -1198,7 +1202,7 @@ body:not(.history-pane-open) .input-area {
   background: none;
   border: 1px solid rgb(46, 46, 46);
   font-family: Söhne, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, sans-serif, Helvetica Neue, Arial, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
-  font-size: 1rem;
+  font-size: 0.97rem;
   padding: 0.25rem 0.6rem;
   border-radius: 0.35rem;
   cursor: pointer;
