@@ -176,7 +176,7 @@ const HistoryPane = forwardRef(({
   useEffect(() => {
     setCategorizedSessions(categorizeSessions(sessions));
     console.log("categorizedSessions are: ", categorizedSessions);
-  }, [sessions]);
+  }, [sessions, categorizedSessions]);
 
   
 

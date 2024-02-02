@@ -1,11 +1,10 @@
-// SampleQueries.js
 import React from 'react';
+import { sampleQueries } from './queries'; // Imported here
 
-const SampleQueries = ({ queries, onSubmit }) => {
-  // Assuming you always have an even number of queries, split them into two rows.
-  const half = Math.ceil(queries.length / 2);
-  const firstRowQueries = queries.slice(0, half);
-  const secondRowQueries = queries.slice(half);
+const SampleQueries = ({ onSubmit }) => {
+  const half = Math.ceil(sampleQueries.length / 2);
+  const firstRowQueries = sampleQueries.slice(0, half);
+  const secondRowQueries = sampleQueries.slice(half);
 
   const handleClick = (query) => {
     onSubmit(query); // Directly call the handleQuerySubmit function with the query

@@ -118,7 +118,6 @@ body:not(.history-pane-open) .chat-area {
   text-align: center; /* Center the text */
   font-size: 1.45rem; /* Set the desired font size */
   font-weight: bold; /* Make the text bold */
-  font-family: Söhne, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, sans-serif, Helvetica Neue, Arial, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
   margin-top: 2rem;
 }
 
@@ -301,7 +300,6 @@ body:not(.history-pane-open) .input-area {
   /* padding: top right bottom left */
   padding: 0.5rem 1.2rem 0.5rem 3rem;
   outline: none;
-  font-family: Söhne, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, sans-serif, Helvetica Neue, Arial, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
   font-size: 1rem;
   resize: none;
   line-height: 1.5rem;
@@ -485,7 +483,6 @@ body:not(.history-pane-open) .input-area {
   display: flex; /* Use Flexbox */
   justify-content: space-between; /* Space between items */
   align-items: center; /* Align items vertically */
-  font-size: 0.88rem;
   z-index: 1;
 
 }
@@ -507,7 +504,8 @@ body:not(.history-pane-open) .input-area {
   margin-right: 0.1rem;
   /* border: 1px solid green; */
   margin-right: 1rem !important;
-  font-size: 0.84rem !important;
+  font-size: 0.86rem !important;
+  font-family: Arial, Helvetica, sans-serif;
 }
 
 
@@ -570,7 +568,6 @@ body:not(.history-pane-open) .input-area {
   cursor: pointer;
   font-weight: bold;
   font-size: 0.9rem;
-  font-family: SÃ¶hne,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif,Helvetica Neue,Arial,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji;
   &:hover, &.active { /* Apply the same style for hover and active state */
       background-color: hsla(0,0%,100%,.1);
       border-radius: 0.5rem;
@@ -876,7 +873,7 @@ body:not(.history-pane-open) .input-area {
   border-radius: 0.5rem; /* Border radius to match the image */
   border: 1px solid #f5f5f5;
   cursor: pointer;
-  font-family: 'Arial', sans-serif;
+  font-family: Arial, Helvetica, sans-serif;
   display: flex;
   align-items: center;
   justify-content: flex-start; /* Align items to the left */
@@ -1105,7 +1102,6 @@ body:not(.history-pane-open) .input-area {
   align-items: flex-start; /* Aligns items at the start of the container */
   margin-bottom: 1.5rem;
   max-width: 600px;
-  font-family: SÃ¶hne, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, sans-serif, Helvetica Neue, Arial, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
   font-size: 0.97rem;
   line-height: 1.6rem;
   width: 100%;
@@ -1144,7 +1140,6 @@ body:not(.history-pane-open) .input-area {
 
 .message-sender {
   font-weight: bold; /* Make the icon text bold */
-  font-family: SÃ¶hne, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, sans-serif, Helvetica Neue, Arial, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
   margin-bottom: -1.4rem;
   color: rgb(14, 156, 52);
   user-select: none;
@@ -1153,7 +1148,6 @@ body:not(.history-pane-open) .input-area {
 
 .message-sender-chat-with-us {
   font-weight: bold; /* Make the icon text bold */
-  font-family: SÃ¶hne, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, sans-serif, Helvetica Neue, Arial, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
   margin-bottom: 2rem !important;
   color: rgb(14, 156, 52);
   user-select: none;
@@ -1164,7 +1158,6 @@ body:not(.history-pane-open) .input-area {
 .buy-now-button {
   background: none;
   border: 1px solid rgb(46, 46, 46);;
-  font-family: Söhne, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, sans-serif, Helvetica Neue, Arial, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
   font-size: 0.97rem;
   padding: 0.25rem 0.6rem;
   border-radius: 0.35rem;
@@ -1201,7 +1194,6 @@ body:not(.history-pane-open) .input-area {
 .more-details-btn {
   background: none;
   border: 1px solid rgb(46, 46, 46);
-  font-family: Söhne, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, sans-serif, Helvetica Neue, Arial, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
   font-size: 0.97rem;
   padding: 0.25rem 0.6rem;
   border-radius: 0.35rem;
@@ -1213,6 +1205,7 @@ body:not(.history-pane-open) .input-area {
   width: 8.3rem;
   color: rgb(46, 46, 46);
 }
+
 
 .more-details-btn:hover {
   background-color: rgba(0, 0, 0, 0.1); /* Subtle shade change on hover */
@@ -1241,8 +1234,7 @@ body:not(.history-pane-open) .input-area {
 .continue-generating-btn {
   background: none;
   border: 1px solid rgb(46, 46, 46); /* Same border color as other buttons */
-  font-family: Söhne, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, sans-serif, Helvetica Neue, Arial, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
-  font-size: 1rem; /* Same font size as other buttons */
+  font-size: 0.97rem; /* Same font size as other buttons */
   padding: 0.25rem 0.6rem; /* Same padding as other buttons */
   border-radius: 0.35rem; /* Same border radius as other buttons */
   cursor: pointer; /* Cursor pointer for button */
@@ -1435,7 +1427,6 @@ b div img {
   max-width: 35rem;
   margin: auto;
   padding: 5rem;
-  font-family: Söhne, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, sans-serif, Helvetica Neue, Arial, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
 }
 
 .blogPostContainer h1 {
@@ -1572,7 +1563,6 @@ b div img {
   width: 100%;
   font-size: 1rem;
   line-height: 1.5rem;
-  font-family: Söhne, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, sans-serif, Helvetica Neue, Arial, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
 }
 
 /* Media query for medium screens: 2 cards per row */
