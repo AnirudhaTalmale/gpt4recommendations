@@ -195,25 +195,33 @@ function Chat() {
       const authResponse = await axios.get('http://localhost:3000/api/check-auth', { withCredentials: true });
   
       if (authResponse.status === 200 && authResponse.data.isAuthenticated) {
+        // Check if onboarding is complete, if not, redirect to onboarding page
+        if (!authResponse.data.onboardingComplete) {
+          // User is authenticated but hasn't completed onboarding
+          window.location.href = 'http://localhost:3001/onboarding';
+          return; // Exit the function early as we're redirecting
+        }
+  
+        // If onboarding is complete, proceed to fetch user info
         const userInfoResponse = await axios.get('http://localhost:3000/api/user-info', { withCredentials: true });
   
         if (userInfoResponse.status === 200 && userInfoResponse.data.isAuthenticated) {
           const currentUserData = userInfoResponse.data.user;
           setUserData(currentUserData);
-          
           loadSessions(currentUserData);
         }
       } else {
+        // Save the current query params to local storage before redirecting
+        localStorage.setItem('queryParams', window.location.search);
         window.location.href = 'http://localhost:3001/auth/login';
       }
     } catch (error) {
       console.error('Error checking authentication status:', error);
+      localStorage.setItem('queryParams', window.location.search);
       window.location.href = 'http://localhost:3001/auth/login';
     }
-  }, [loadSessions]);
+  }, [loadSessions, setUserData]);
   
-
-    
   useEffect(() => {
     checkAuthStatus();
   }, [checkAuthStatus]);
@@ -541,7 +549,7 @@ function Chat() {
 
   return (
     <div className="App">
-
+  
       <HistoryPane
         ref={historyPaneRef}
         sessions={sessions}
@@ -563,33 +571,45 @@ function Chat() {
         togglePane={togglePane}
         isAdmin={isAdmin} // Pass isAdmin to the Header component
       />
-      <div className="chat-area" ref={chatAreaRef}>
+      <div className="chat-area-chat-with-us" ref={chatAreaRef}>
         
         {sessions[currentSessionIndex] && sessions[currentSessionIndex].messages.length === 0 && (
-          <div className="chat-heading">
+          <div className="chat-heading-chat-with-us">
             How can I help you today?
           </div>
         )}
         {sessions[currentSessionIndex]?.messages.map((msg, index) => {
           const showRoleLabel = index === 0 || sessions[currentSessionIndex].messages[index - 1].role !== msg.role;
           const messageKey = msg._id ? msg._id.$oid : `temp-${index}`;
-          return (
-            <AnswerDisplay
-              key={messageKey}
-              role={msg.role}
-              content={msg.content}
-              userImage={userData?.image}
-              onMoreDetailsClick={handleMoreDetailsRequest}
-              attachments={msg.attachments}
-              showRoleLabel={showRoleLabel}
-              timestamp={msg.timestamp}
-            />
+
+          const previousMsg = index > 0 ? sessions[currentSessionIndex]?.messages[index - 1] : null;
+  const isNewDay = !previousMsg || new Date(msg.timestamp).toDateString() !== new Date(previousMsg.timestamp).toDateString();
+
+  return (
+    <>
+      {isNewDay && (
+        <div className="date-label">
+          {new Date(msg.timestamp).toLocaleDateString()}
+        </div>
+      )}
+              <AnswerDisplay
+                key={messageKey}
+                role={msg.role}
+                content={msg.content}
+                userImage={userData?.image}
+                onMoreDetailsClick={handleMoreDetailsRequest}
+                attachments={msg.attachments}
+                showRoleLabel={showRoleLabel}
+                timestamp={msg.timestamp}
+              />
+            </>
           );
         })}
       </div>
       <InputBox onSubmit={handleQuerySubmit} isLoading={isLoading} />
     </div>
   );
+  
 }
 
 export default Chat;

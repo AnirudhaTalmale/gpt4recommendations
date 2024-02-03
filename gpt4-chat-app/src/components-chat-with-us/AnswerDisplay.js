@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import DOMPurify from 'dompurify';
 import '../App.css';
 
@@ -10,7 +10,6 @@ function AnswerDisplay({ role, content, userImage, onMoreDetailsClick, attachmen
     const minutes = date.getMinutes().toString().padStart(2, '0');
     return `${hours}:${minutes}`;
   };
-  
 
   const [showModal, setShowModal] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
@@ -22,30 +21,26 @@ function AnswerDisplay({ role, content, userImage, onMoreDetailsClick, attachmen
 
   const renderContent = (content) => {
     if (!content.trim()) {
-      // Content is empty or whitespace only
-      return null; // Don't render the span at all
+      return null;
     } else {
       const formattedContent = content.replace(/\n/g, '<br/>');
       return <span className="message-question-chat-with-us" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(formattedContent) }}></span>;
     }
   };
-  
 
   const renderImageAttachments = (attachments) => {
     return attachments.map((attachment, index) => {
       let imageData;
-  
+
       if (attachment.mimetype && attachment.mimetype.startsWith('image/')) {
-        // Backend processed attachment
         imageData = attachment.data;
       } else if (typeof attachment === 'string' && attachment.startsWith('data:image/')) {
-        // Frontend Base64 encoded image
         imageData = attachment;
       }
-  
+
       if (imageData) {
         return (
-          <div key={index} className="attachment" onClick={() => handleImageClick(imageData)}>
+          <div key={index} className="attachment-chat-with-us" onClick={() => handleImageClick(imageData)}>
             <img src={imageData} alt={`Attachment ${index}`} />
           </div>
         );
@@ -58,56 +53,50 @@ function AnswerDisplay({ role, content, userImage, onMoreDetailsClick, attachmen
     if (showRoleLabel) {
       return role === 'user' ? (
         userImage ? (
-          <div><img src={userImage} alt="User" className="display-image" /></div>
+          <div><img src={userImage} alt="User" className="display-image-chat-with-us" /></div>
         ) : (
-          <span>U</span> // Fallback if no user image is available
+          <span>U</span>
         )
       ) : (
-        <div><img src="/favicon.ico" alt="Assistant" className="display-image" /></div> // Icon for the assistant
+        <div><img src="/favicon.ico" alt="Assistant" className="display-image-chat-with-us" /></div>
       );
     } else {
-      // Return an invisible placeholder with the same dimensions as the display image
-      return <div className="display-image"></div>;
+      return <div className="display-image-chat-with-us"></div>;
     }
   };
 
   return (
     <div className={`chat-area-wrapper`}>
-      <div className={`message ${role}`}>
-        <div className="message-icon">
+      <div className={`message-chat-with-us ${role}`}>
+        <div className="message-icon-chat-with-us">
           {renderImageOrPlaceholder()}
         </div>
-        <div className="message-content">
-          {/* Role label for user or assistant */}
+        <div className="message-content-chat-with-us">
           {showRoleLabel && (
             <div className="message-sender-chat-with-us">{role === 'user' ? 'You' : 'OpenAI Team'}</div>
           )}
 
-          {/* Wrap common elements in a single block */}
-          <div className="combined-message-block">
-            {/* Common rendering for both user and assistant */}
+          <div className="combined-message-block-chat-with-us">
             {['user', 'assistant'].includes(role) && (
               <>
-                <div className="message-attachments">
+                <div className="message-attachments-chat-with-us">
                   {attachments && renderImageAttachments(attachments)}
                 </div>
                 {renderContent(content)}
               </>
             )}
 
-            {/* Footer */}
-            <div className="message-footer">
-              <div className="message-timestamp">{formatTimestamp(timestamp)}</div>
-              {/* Additional message details can go here */}
+            <div className="message-footer-chat-with-us">
+              <div className="message-timestamp-chat-with-us">{formatTimestamp(timestamp)}</div>
             </div>
           </div>
         </div>
       </div>
       {showModal && (
-        <div className="modal" onClick={() => setShowModal(false)}>
-          <div className="modal-content" onClick={e => e.stopPropagation()}> {/* Prevent modal close when clicking inside */}
+        <div className="modal-chat-with-us" onClick={() => setShowModal(false)}>
+          <div className="modal-content-chat-with-us" onClick={e => e.stopPropagation()}>
             <img src={selectedImage} alt="Enlarged Attachment" />
-            <button className="close-button" onClick={() => setShowModal(false)}>
+            <button className="close-button-chat-with-us" onClick={() => setShowModal(false)}>
               <i class="fa-solid fa-x"></i>
             </button>
           </div>

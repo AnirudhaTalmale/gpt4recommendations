@@ -176,25 +176,7 @@ app.post('/signup', async (req, res) => {
   });
 
   res.send('Signup successful! Please check your email to verify your account.');
-});
-
-
-const getDefaultImage = (displayName) => {
-  if (!displayName || displayName.length === 0) return '';
-
-  const firstLetter = displayName.charAt(0).toUpperCase();
-  // Updated color array with shades of grey
-  const colors = ['#A0A0A0', '#808080', '#606060', '#404040']; // Example of grey color array
-  const bgColor = colors[Math.floor(Math.random() * colors.length)]; // Randomly select a background color
-
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100">
-                <circle cx="50" cy="50" r="50" fill="${bgColor}" />
-                <text x="50%" y="50%" dy=".35em" text-anchor="middle" fill="white" font-family="Arial" font-size="50">${firstLetter}</text>
-               </svg>`;
-
-  return `data:image/svg+xml;base64,${Buffer.from(svg).toString('base64')}`;
-};
- 
+}); 
 
 app.post('/api/onboarding', async (req, res) => {
   const { token, displayName, birthday } = req.body;
@@ -331,6 +313,22 @@ app.get('/auth/logout', (req, res, next) => {
     });
   });
 });
+
+const getDefaultImage = (displayName) => {
+  if (!displayName || displayName.length === 0) return '';
+
+  const firstLetter = displayName.charAt(0).toUpperCase();
+  // Updated color array with shades of grey
+  const colors = ['#A0A0A0', '#808080', '#606060', '#404040']; // Example of grey color array
+  const bgColor = colors[Math.floor(Math.random() * colors.length)]; // Randomly select a background color
+
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100">
+                <circle cx="50" cy="50" r="50" fill="${bgColor}" />
+                <text x="50%" y="50%" dy=".35em" text-anchor="middle" fill="white" font-family="Arial" font-size="50">${firstLetter}</text>
+               </svg>`;
+
+  return `data:image/svg+xml;base64,${Buffer.from(svg).toString('base64')}`;
+};
 
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
@@ -736,7 +734,7 @@ app.get('/api/get-user-by-email', async (req, res) => {
     if (!email) {
       return res.status(400).json({ message: 'Email is required' });
     }
-    const user = await User.findOne({ email: email }).exec();
+    const user = await User.findOne({ 'local.email': email }).exec();
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }

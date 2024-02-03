@@ -184,25 +184,24 @@ function InputBox({ onSubmit, isStreaming, onStopStreaming }) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="input-area">
-      <div className="input-box-container" style={{ height: `${containerHeight}rem`, ...dragOverStyle }}
-      >
+    <form onSubmit={handleSubmit} className="input-area-chat-with-us">
+      <div className="input-box-container-chat-with-us" style={{ height: `${containerHeight}rem`, ...dragOverStyle }}>
         {attachmentPreviews.length > 0 && (
-          <div className="attachment-previews-header">
+          <div className="attachment-previews-header-chat-with-us">
             {attachmentPreviews.map((previewUrl, index) => (
-              <div key={index} className="attachment-preview">
+              <div key={index} className="attachment-preview-chat-with-us">
                 <img src={previewUrl} alt={`attachment-${index}`} />
-                <button className="remove-attachment-button" onClick={() => handleRemoveAttachment(index)}>
+                <button className="remove-attachment-button-chat-with-us" onClick={() => handleRemoveAttachment(index)}>
                   <i class="fa-regular fa-circle-xmark"></i>
                 </button>
               </div> 
             ))}
           </div>
         )}
-        <button type="button" className="attachment-button" onClick={handleAttachmentButtonClick}>
+        <button type="button" className="attachment-button-chat-with-us" onClick={handleAttachmentButtonClick}>
           <i className="fa-solid fa-paperclip"></i>
         </button>
-        <div className="textarea-wrapper" style={textareaStyle}
+        <div className="textarea-wrapper-chat-with-us" style={textareaStyle}
             onDragEnter={handleDragEnter}
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
@@ -219,17 +218,17 @@ function InputBox({ onSubmit, isStreaming, onStopStreaming }) {
         <input
           ref={fileInputRef}
           type="file"
-          className="attachment-input"
+          className="attachment-input-chat-with-us"
           onChange={handleAttachmentChange}
           multiple
-          style={{ display: 'none' }} // Hide the file input
+          style={{ display: 'none' }}
         />
         {isStreaming ? (
-          <button type="button" className="stop-button" onClick={onStopStreaming}>
+          <button type="button" className="stop-button-chat-with-us" onClick={onStopStreaming}>
             <i class="fa-regular fa-circle-stop"></i>
           </button>
         ) : (
-          <button type="submit" className={`send-button ${isInputNotEmpty ? 'active' : ''}`}>
+          <button type="submit" className={`send-button-chat-with-us ${isInputNotEmpty ? 'active' : ''}`}>
             <i className="fa-solid fa-arrow-up"></i>
           </button>
         )}

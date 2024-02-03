@@ -19,22 +19,18 @@ const HistoryPane = forwardRef(({
   const [isEntryActive, setIsEntryActive] = useState(false);
   const [activeSessionId, setActiveSessionId] = useState(null);
 
-
   const dropdownRef = useRef(null);
   const userEntryRef = useRef(null);
 
   useEffect(() => {
-    // Apply the class based on the initial state of the pane
-    document.body.classList.toggle('history-pane-open', isPaneOpen);
+    document.body.classList.toggle('history-pane-open-chat-with-us', isPaneOpen);
   }, [isPaneOpen]);
 
   const handleChatWithUs = () => {
-    // Redirect to the Chat with Us page or handle the action
     window.location.href = '/';
   };
 
   useEffect(() => {
-    // Function to check if the click is outside the dropdown
     function handleClickOutside(event) {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target) &&
           userEntryRef.current && !userEntryRef.current.contains(event.target)) {
@@ -42,30 +38,26 @@ const HistoryPane = forwardRef(({
       }
     }
 
-    // Add or remove event listener based on dropdown state
     if (isDropdownOpen) {
       document.addEventListener('mousedown', handleClickOutside);
     } else {
       document.removeEventListener('mousedown', handleClickOutside);
     }
 
-    // Cleanup the event listener
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [isDropdownOpen]);
 
-
   const toggleDropdown = () => {
-      setIsDropdownOpen(!isDropdownOpen);
-      setIsEntryActive(!isDropdownOpen); // Toggle the active state along with the dropdown
+    setIsDropdownOpen(!isDropdownOpen);
+    setIsEntryActive(!isDropdownOpen);
   };
 
   const handleLogout = async () => {
     try {
       const response = await axios.get('http://localhost:3000/auth/logout', { withCredentials: true });
       if (response.data.message === 'Logged out successfully') {
-        // Redirect to the home page or login page
         window.location.href = 'http://localhost:3001';
       }
     } catch (error) {
@@ -74,77 +66,73 @@ const HistoryPane = forwardRef(({
   };
 
   const handleClosePane = () => {
-    togglePane(); // Use togglePane prop to change pane state
-    document.body.classList.toggle('history-pane-open', !isPaneOpen);
+    togglePane();
+    document.body.classList.toggle('history-pane-open-chat-with-us', !isPaneOpen);
   };
 
   const handleNewSessionCreation = async () => {
     await onNewSession();
-    if (window.innerWidth < 760) { // Check if screen size is less than 760px
-      togglePane(); // Collapse the pane
+    if (window.innerWidth < 760) {
+      togglePane();
     }
   };
-  
 
   const handleSessionSelect = async (index) => {
     const sessionId = sessions[index]._id;
-    setActiveSessionId(sessionId); // Set the active session ID
+    setActiveSessionId(sessionId);
     onSelectSession(sessionId);
     if (window.innerWidth < 760) {
       togglePane();
     }
   };
 
-
   return (
     <div ref={ref}>
-      <div className={`history-pane ${isPaneOpen ? '' : 'closed'}`}>
-      <button onClick={handleClosePane} className={`close-pane-button ${!isPaneOpen ? 'close-pane-button-closed' : ''}`}>
-        {isPaneOpen ? <i className="fa-solid fa-angle-left"></i> : <i className="fa-solid fa-angle-right"></i>}
-      </button>
+      <div className={`history-pane-chat-with-us ${isPaneOpen ? '' : 'closed-chat-with-us'}`}>
+        <button onClick={handleClosePane} className={`close-pane-button-chat-with-us ${!isPaneOpen ? 'close-pane-button-closed-chat-with-us' : ''}`}>
+          {isPaneOpen ? <i className="fa-solid fa-angle-left"></i> : <i className="fa-solid fa-angle-right"></i>}
+        </button>
 
-      <div className="header-container">
-        <button className="new-session-button">ChatGPT</button>
-        {/* Conditionally render only the new session button */}
-        {!isAdmin && (
-          <button className="new-session-button" onClick={handleNewSessionCreation}>
-            <i className="fa-regular fa-pen-to-square"></i>
-          </button>
-        )}
-      </div>
+        <div className="header-container-chat-with-us">
+          <button className="new-session-button-chat-with-us">ChatGPT</button>
+          {!isAdmin && (
+            <button className="new-session-button-chat-with-us" onClick={handleNewSessionCreation}>
+              <i className="fa-regular fa-pen-to-square"></i>
+            </button>
+          )}
+        </div>
 
-
-      <div className="history-content">  
-        {[...sessions].reverse().map((session, index) => (
-          <div 
-            key={session._id} 
-            className={`history-entry ${activeSessionId === session._id ? 'active' : ''}`} 
-            onClick={() => handleSessionSelect(sessions.length - index - 1)}
-          >
-            <div className={unseenMessageCounts[session._id] > 0 ? 'session-name bold-text' : 'session-name'}>
-                {session.sessionName} {/* Display the actual session name */}
-                {unseenMessageCounts[session._id] > 0 && (
-                  <span className="unseen-messages-count">{unseenMessageCounts[session._id]}</span>
-                )}
+        <div className="history-content-chat-with-us">  
+          {[...sessions].reverse().map((session, index) => (
+            <div 
+              key={session._id} 
+              className={`history-entry-chat-with-us ${activeSessionId === session._id ? 'active' : ''}`} 
+              onClick={() => handleSessionSelect(sessions.length - index - 1)}
+            >
+              <div className={unseenMessageCounts[session._id] > 0 ? 'session-name bold-text' : 'session-name'}>
+                  {session.sessionName}
+                  {unseenMessageCounts[session._id] > 0 && (
+                    <span className="unseen-messages-count">{unseenMessageCounts[session._id]}</span>
+                  )}
+              </div>
+              {isAdmin && (
+                <button onClick={(e) => { e.stopPropagation(); onDeleteSession(session._id); }} className="delete-session-button-chat-with-us">
+                    <i className="fa-solid fa-trash"></i>
+                </button>
+              )}
             </div>
-            {isAdmin && (
-              <button onClick={(e) => { e.stopPropagation(); onDeleteSession(session._id); }} className="delete-session-button">
-                  <i className="fa-solid fa-trash"></i>
-              </button>
-            )}
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
 
-        <div className="user-info-container">
-          <div className={`user-entry ${isEntryActive ? 'active' : ''}`} onClick={toggleDropdown} ref={userEntryRef}>
-            <img src={userImage} alt="User" className="history-pane-image" />
+        <div className="user-info-container-chat-with-us">
+          <div className={`user-entry-chat-with-us ${isEntryActive ? 'active' : ''}`} onClick={toggleDropdown} ref={userEntryRef}>
+            <img src={userImage} alt="" className="history-pane-image-chat-with-us" />
             <span>{userName}</span>
           </div>
           {isDropdownOpen && (
-            <ul className="dropdown-menu" ref={dropdownRef}>
+            <ul className="dropdown-menu-chat-with-us" ref={dropdownRef}>
               <li onClick={handleChatWithUs}>
-                <i class="fa-solid fa-comments"></i> ChatGPT
+                <i class="fa-solid fa-comments"></i> Chat with Us
               </li>
               <li onClick={handleLogout}>
                 <i class="fa-solid fa-arrow-right-from-bracket"></i> Log out

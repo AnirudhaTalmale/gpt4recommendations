@@ -14,15 +14,15 @@ function Header({ isPaneOpen, onNewSession, togglePane, isAdmin }) {
   }, []);
 
   return (
-    <div className="header">
+    <div className="header-chat-with-us">
       {isScreenSmall && (
         <>
-          <button className="menu-button-small-screen" onClick={togglePane}>
+          <button className="menu-button-small-screen-chat-with-us" onClick={togglePane}>
             <i className="fa-solid fa-bars"></i>
           </button>
           {/* Conditionally render the new session button for small screens */}
           {!isAdmin && (
-            <button className="new-session-button-small-screen" onClick={onNewSession}>
+            <button className="new-session-button-small-screen-chat-with-us" onClick={onNewSession}>
               <i className="fa-regular fa-pen-to-square"></i>
             </button>
           )}
@@ -30,7 +30,7 @@ function Header({ isPaneOpen, onNewSession, togglePane, isAdmin }) {
       )}
       {/* Conditionally render the new session button for larger screens */}
       {!isScreenSmall && !isPaneOpen && !isAdmin && (
-        <button className="header-new-session-button" onClick={onNewSession}>
+        <button className="header-new-session-button-chat-with-us" onClick={onNewSession}>
           <i className="fa-regular fa-pen-to-square"></i>
         </button>
       )}
