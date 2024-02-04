@@ -81,7 +81,7 @@ function AnswerDisplay({
               {showContinueButton && !isStreaming && (
                 <div className="button-container">
                   <button className="continue-generating-btn" onClick={handleContinueGenerating}>
-                    <i className="fa-solid fa-forward"></i> More Books
+                    <i className="fa-solid fa-forward"></i> More books
                   </button>
                 </div>
               )}

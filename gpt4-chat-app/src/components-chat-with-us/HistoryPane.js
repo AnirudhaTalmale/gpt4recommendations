@@ -132,7 +132,7 @@ const HistoryPane = forwardRef(({
           {isDropdownOpen && (
             <ul className="dropdown-menu-chat-with-us" ref={dropdownRef}>
               <li onClick={handleChatWithUs}>
-                <i class="fa-solid fa-comments"></i> Chat with Us
+                <i class="fa-solid fa-comments"></i> ChatGPT
               </li>
               <li onClick={handleLogout}>
                 <i class="fa-solid fa-arrow-right-from-bracket"></i> Log out

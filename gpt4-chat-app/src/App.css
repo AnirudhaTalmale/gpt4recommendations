@@ -1157,7 +1157,7 @@ body:not(.history-pane-open) .input-area {
 
 .buy-now-button {
   background: none;
-  border: 1px solid rgb(46, 46, 46);;
+  border: 1px solid rgba(169, 169, 169, 0.566);
   font-size: 0.97rem;
   padding: 0.25rem 0.6rem;
   border-radius: 0.35rem;
@@ -1178,12 +1178,10 @@ body:not(.history-pane-open) .input-area {
 
 .buy-now-button:hover {
   background-color: rgba(0, 0, 0, 0.1); /* Subtle shade change on hover */
-  border-color: #333; /* Slightly darker border on hover */
 }
 
 .buy-now-button:active {
   background-color: rgba(0, 0, 0, 0.2); /* Slightly darker on active state */
-  border-color: #333;
 }
 
 .buy-now-button:focus {
@@ -1193,7 +1191,7 @@ body:not(.history-pane-open) .input-area {
 
 .more-details-btn {
   background: none;
-  border: 1px solid rgb(46, 46, 46);
+  border: 1px solid rgba(169, 169, 169, 0.566);
   font-size: 0.97rem;
   padding: 0.25rem 0.6rem;
   border-radius: 0.35rem;
@@ -1209,12 +1207,10 @@ body:not(.history-pane-open) .input-area {
 
 .more-details-btn:hover {
   background-color: rgba(0, 0, 0, 0.1); /* Subtle shade change on hover */
-  border-color: #333; /* Slightly darker border on hover */
 }
 
 .more-details-btn:active {
   background-color: rgba(0, 0, 0, 0.2); /* Slightly darker on active state */
-  border-color: #333;
 }
 
 .more-details-btn:focus {
@@ -1233,9 +1229,9 @@ body:not(.history-pane-open) .input-area {
 
 .continue-generating-btn {
   background: none;
-  border: 1px solid rgb(46, 46, 46); /* Same border color as other buttons */
+  border: 1px solid rgba(169, 169, 169, 0.566); /* Same border color as other buttons */
   font-size: 0.97rem; /* Same font size as other buttons */
-  padding: 0.25rem 0.6rem; /* Same padding as other buttons */
+  padding: 0.4rem 0rem; /* Same padding as other buttons */
   border-radius: 0.35rem; /* Same border radius as other buttons */
   cursor: pointer; /* Cursor pointer for button */
   text-align: center; /* Center the text inside the button */
@@ -1251,12 +1247,10 @@ body:not(.history-pane-open) .input-area {
 
 .continue-generating-btn:hover {
   background-color: rgba(0, 0, 0, 0.1); /* Subtle shade change on hover, same as other buttons */
-  border-color: #333; /* Slightly darker border on hover, same as other buttons */
 }
 
 .continue-generating-btn:active {
   background-color: rgba(0, 0, 0, 0.2); /* Slightly darker on active state, same as other buttons */
-  border-color: #333; /* Darker border on active state, same as other buttons */
 }
 
 .continue-generating-btn:focus {
@@ -1264,6 +1258,10 @@ body:not(.history-pane-open) .input-area {
   box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1); /* Focus ring with a subtle black shade, same as other buttons */
 }
 
+.fa-forward {
+  margin-right: 0.3rem;
+  font-size: 0.93rem !important;
+}
 
 /* Styles when streaming is active */
  
