@@ -1610,14 +1610,18 @@ b div img {
 
 .close-pane-button-chat-with-us {
   position: absolute;
-  top: 50%;
-  left: 107%;
+  top: 50%; /* Center vertically */
+  left: 107%; /* Center horizontally */
   transform: translate(-50%, -50%);
-  cursor: pointer;
-  color: rgb(159, 158, 158);
+  cursor: pointer; 
+  color: rgb(200, 200, 200);
   font-size: 1.3rem;
   background: none;
   border: none;
+}
+
+.close-pane-button-chat-with-us:hover {
+  color: black; /* Color changes to black on hover */
 }
 
 .history-pane-chat-with-us {
@@ -2024,7 +2028,7 @@ body:not(.history-pane-open-chat-with-us) .chat-area-chat-with-us {
   }
 
   .history-pane-chat-with-us {
-    display: none; /* Hide history pane on small screens */
+    /* display: none; Hide history pane on small screens */
   }
 
   .fa-angle-left {

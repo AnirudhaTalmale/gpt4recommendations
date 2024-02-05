@@ -27,9 +27,11 @@ function Chat() {
     setIsAdmin(userData?.role === 'assistant');
   }, [userData]);
   
+
   const togglePane = useCallback(() => {
-    setIsPaneOpen(prevIsPaneOpen => !prevIsPaneOpen);
-  }, []);  
+    setIsPaneOpen(!isPaneOpen);
+  }, [isPaneOpen]); 
+  
 
   useEffect(() => {
     const handleResize = () => {
@@ -577,7 +579,6 @@ function Chat() {
         togglePane={togglePane}
         isAdmin={isAdmin}
         unseenMessageCounts={unseenMessageCounts}
-        userId={userData?.id}
         resetUnseenCount={resetUnseenCount}
         currentSessionIndex={currentSessionIndex}
       />

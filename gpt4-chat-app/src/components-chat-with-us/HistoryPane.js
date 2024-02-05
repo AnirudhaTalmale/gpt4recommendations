@@ -13,12 +13,10 @@ const HistoryPane = forwardRef(({
   togglePane,
   isAdmin,
   unseenMessageCounts,
-  userId,
   currentSessionIndex
 }, ref) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isEntryActive, setIsEntryActive] = useState(false);
-  const [activeSessionId, setActiveSessionId] = useState(null);
 
   const dropdownRef = useRef(null);
   const userEntryRef = useRef(null);
@@ -80,15 +78,20 @@ const HistoryPane = forwardRef(({
 
   const handleSessionSelect = async (index) => {
     const sessionId = sessions[index]._id;
-    setActiveSessionId(sessionId);
     onSelectSession(sessionId);
     if (window.innerWidth < 760) {
       togglePane();
     }
   };
 
+  useEffect(() => {
+    console.log("Updated history pane isPaneOpen is: ", isPaneOpen);
+  }, [isPaneOpen]);
+  
+
   return (
     <div ref={ref}>
+      
       <div className={`history-pane-chat-with-us ${isPaneOpen ? '' : 'closed-chat-with-us'}`}>
         <button onClick={handleClosePane} className={`close-pane-button-chat-with-us ${!isPaneOpen ? 'close-pane-button-closed-chat-with-us' : ''}`}>
           {isPaneOpen ? <i className="fa-solid fa-angle-left"></i> : <i className="fa-solid fa-angle-right"></i>}
