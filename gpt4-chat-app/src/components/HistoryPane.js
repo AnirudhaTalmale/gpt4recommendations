@@ -137,7 +137,6 @@ const HistoryPane = forwardRef(({
   };
   
   const categorizeSessions = (sessions) => {
-    console.log("sessions are: ", sessions);
     const today = new Date();
     const yesterday = new Date(today);
     yesterday.setDate(yesterday.getDate() - 1);
@@ -175,10 +174,7 @@ const HistoryPane = forwardRef(({
 
   useEffect(() => {
     setCategorizedSessions(categorizeSessions(sessions));
-    console.log("categorizedSessions are: ", categorizedSessions);
-  }, [sessions, categorizedSessions]);
-
-  
+  }, [sessions]);
 
   return (
     <div ref={ref}>

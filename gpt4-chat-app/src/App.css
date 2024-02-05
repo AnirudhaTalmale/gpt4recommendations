@@ -197,7 +197,7 @@ body:not(.history-pane-open) .sample-queries-container {
   border-radius: 0.6rem;
   height: 3.7rem; /* Adjusted to a single height value */
   background: none;
-  border: 0.7px solid rgb(183, 181, 181);
+  border: 1.4px solid rgba(169, 169, 169, 0.416);
   font-size: 0.9rem;
   text-align: start;
   padding: 0.9rem;
@@ -1935,13 +1935,16 @@ body:not(.history-pane-open-chat-with-us) .input-area-chat-with-us {
 .date-label {
   color: #525252; /* Adjust the color as needed */
   font-size: 0.75em; /* Small font size for the date label */
-  padding: 0.6em 1em; /* Top and bottom padding */
-  margin: 0.5em auto; /* Top and bottom margin, auto horizontally centers the element */
+  padding: 0.4em 0.8em; /* Top and bottom padding */
+  margin-left: auto; /* Top and bottom margin, auto horizontally centers the element */
+  margin-right: auto;
+  margin-bottom: 1rem;
+  margin-top: -0.5rem;
   border-radius: 10px; /* Rounded corners */
   display: inline-block; /* Allows padding and margin to affect the shape */
   max-width: 80%; /* Prevents the label from being too wide */
   text-align: center; /* Centers the text inside the box */
-  border: 0.3px solid black;
+  border: 0.3px solid grey;
 }
 
 

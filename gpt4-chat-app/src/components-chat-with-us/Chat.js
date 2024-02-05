@@ -274,6 +274,7 @@ function Chat() {
       console.log('Received chat-with-us update:', data);
       if (data.sessionId === sessions[currentSessionIndex]?._id) {
         // Update the session with the new message and attachments
+        console.log("I am here in chat with us update");
         setSessions(sessions => sessions.map(session => {
           if (session._id === data.sessionId) {
             return {
@@ -389,28 +390,43 @@ function Chat() {
           userId: userData.id,
           receiverId: receiverId
         });
-        setSessions(prevSessions => [...prevSessions, res.data]);
-        setCurrentSessionIndex(sessions.length);
+  
+        // Check if the new session was successfully created
+        if (res.data && res.data._id) {
+          // Update the sessions state with the new session
+          setSessions(prevSessions => [...prevSessions, res.data]);
+  
+          // Set the current session index to the new session
+          setCurrentSessionIndex(sessions.length);
+  
+          // Join the new session's room for socket communication
+          socket.emit('join-chat-session', res.data._id);
+        }
+  
       } catch (error) {
         console.error('Error creating new session:', error);
       }
     }
-  };  
+  };
 
   useEffect(() => {
-    const handleNewSession = (newSession, receiverId) => {
-      // Check if the current user's ID matches the receiver ID
-      if (userData.id === receiverId) {
+    const handleNewSessionEvent = (newSession, receiverId) => {
+      // Check if the current user is the receiver (admin) of the new session
+      if (userData.id === receiverId && isAdmin) {
+        // Update the sessions state with the new session
         setSessions(prevSessions => [...prevSessions, newSession]);
+  
+        // Join the new session's socket room
+        socket.emit('join-chat-session', newSession._id);
       }
     };
   
-    socket.on('new-session', handleNewSession);
+    socket.on('new-session', handleNewSessionEvent);
   
     return () => {
-      socket.off('new-session', handleNewSession);
+      socket.off('new-session', handleNewSessionEvent);
     };
-  }, [userData]);  
+  }, [userData, isAdmin, sessions.length]);
 
   useEffect(() => {
     const handleDeleteSession = (deletedSessionId, receiverId) => {
@@ -536,7 +552,6 @@ function Chat() {
             userId: userData.id // Use userData.id only if userData is not null
           });
   
-          console.log(`No scrollbar present in session ${currentSessionIndex}. Unseen count reset.`);
         }
       }
     };
@@ -564,6 +579,7 @@ function Chat() {
         unseenMessageCounts={unseenMessageCounts}
         userId={userData?.id}
         resetUnseenCount={resetUnseenCount}
+        currentSessionIndex={currentSessionIndex}
       />
       <Header 
         isPaneOpen={isPaneOpen} 

@@ -495,7 +495,7 @@ io.on('connection', (socket) => {
   const calculateUnseenMessages = async (userId, sessionId) => {
     // Find the user session
     const userSession = await UserSession.findOne({ user: userId, session: sessionId });
-    if (!userSession || !userSession.lastSeenMessage) {
+    if (!userSession) {
         return 0; // If no user session or last seen message, return 0
     }
 
@@ -531,17 +531,7 @@ io.on('connection', (socket) => {
       attachments: processedAttachments,
       timestamp: timestamp // Use the frontend timestamp here
     });
-
-    if (message.isFirstQuery && estimateTokenCount(message.content) < 200) {
-      const summary = await openaiApi.getSummaryWithGPT3_5Turbo(message.content);
-      chatWithUsSession.sessionName = summary; // Update the session name with the summary
-      await chatWithUsSession.save(); // Save the updated session
-    
-      // Emit an event to update the session name in the frontend
-      io.emit('updateSessionName', { sessionId: sessionId, sessionName: summary });
-    } else {
-      await chatWithUsSession.save();
-    }
+    await chatWithUsSession.save();
 
     const senderSession = await UserSession.findOne({ user: userId, session: sessionId });
     if (senderSession) {
@@ -549,7 +539,9 @@ io.on('connection', (socket) => {
       senderSession.lastSeenAt = new Date();
       await senderSession.save();
     }
-  
+
+    
+    console.log("triggering chat-with-us-update", sessionId, message);
     // Emit the updated message to all clients in the session
     socket.to(sessionId).emit('chat-with-us-update', {
       sessionId: sessionId,
@@ -573,10 +565,12 @@ io.on('connection', (socket) => {
   };    
   
   socket.on('chat-with-us-query', async (data) => {
+    console.log("processSocketMessage user");
     await processSocketMessage(data, 'user');
   });
   
   socket.on('chat-with-us-response', async (data) => {
+    console.log("processSocketMessage assistant");
     await processSocketMessage(data, 'assistant');
   });
   
@@ -900,5 +894,4 @@ app.put('/api/blogposts/:postId', async (req, res) => {
     res.status(500).json({ message: 'Error updating the blog post', error: error.toString() });
   }
 });
-
 

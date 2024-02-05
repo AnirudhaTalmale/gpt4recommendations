@@ -13,7 +13,8 @@ const HistoryPane = forwardRef(({
   togglePane,
   isAdmin,
   unseenMessageCounts,
-  userId
+  userId,
+  currentSessionIndex
 }, ref) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isEntryActive, setIsEntryActive] = useState(false);
@@ -27,7 +28,7 @@ const HistoryPane = forwardRef(({
   }, [isPaneOpen]);
 
   const handleChatWithUs = () => {
-    window.location.href = '/';
+    window.location.href = '/chat';
   };
 
   useEffect(() => {
@@ -106,7 +107,7 @@ const HistoryPane = forwardRef(({
           {[...sessions].reverse().map((session, index) => (
             <div 
               key={session._id} 
-              className={`history-entry-chat-with-us ${activeSessionId === session._id ? 'active' : ''}`} 
+              className={`history-entry-chat-with-us ${sessions.length - index - 1 === currentSessionIndex ? 'active' : ''}`} 
               onClick={() => handleSessionSelect(sessions.length - index - 1)}
             >
               <div className={unseenMessageCounts[session._id] > 0 ? 'session-name bold-text' : 'session-name'}>
