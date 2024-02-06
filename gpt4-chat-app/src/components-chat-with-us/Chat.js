@@ -25,12 +25,12 @@ function Chat() {
 
   useEffect(() => {
     setIsAdmin(userData?.role === 'assistant');
-  }, [userData]);
+  }, [userData]); 
   
 
   const togglePane = useCallback(() => {
     setIsPaneOpen(!isPaneOpen);
-  }, [isPaneOpen]); 
+  }, [isPaneOpen]);  
   
 
   useEffect(() => {
@@ -243,13 +243,23 @@ function Chat() {
   }, [updateSessionName]);
   
   
-  const updateSessionMessages = useCallback((messageContent, contentType = 'simple', isUserMessage = true, base64Attachments = [], timestamp) => {
+  const updateSessionMessages = useCallback((messageContent, contentType = 'simple', isUserMessage = true, base64Attachments = [], timestamp, session = null) => {
     setSessions(prevSessions => {
+      // Determine the index of the active session
+      const activeSessionIndex = session ? prevSessions.findIndex(s => s._id === session._id) : currentSessionIndex;
+      
+      // Check if the session index is valid
+      if (activeSessionIndex === -1) {
+        console.error('Session not found');
+        return prevSessions; // Return the unchanged sessions if the session is not found
+      }
+
       // Clone the previous sessions array
       const updatedSessions = [...prevSessions];
-      // Clone the current session
-      const currentSession = { ...updatedSessions[currentSessionIndex] };
-  
+
+      // Clone the active session
+      const activeSession = { ...updatedSessions[activeSessionIndex] };
+
       const newMessage = {
         role: isUserMessage ? (isAdmin ? 'assistant' : 'user') : 'assistant',
         contentType,
@@ -257,19 +267,23 @@ function Chat() {
         attachments: base64Attachments, // Include attachments
         timestamp: timestamp // Include timestamp
       };
+
       // Append the new message to the cloned messages array
-      currentSession.messages = [...currentSession.messages, newMessage];
+      activeSession.messages = [...activeSession.messages, newMessage];
   
-      // Update the current session in the sessions array
-      updatedSessions[currentSessionIndex] = currentSession;
+      // Update the active session in the sessions array
+      updatedSessions[activeSessionIndex] = activeSession;
   
       // Scroll to bottom after message update
       scrollToBottom();
   
-      // Return the new sessions array to update the state
+      // Return the updated sessions array to update the state
       return updatedSessions;
     });
-  }, [currentSessionIndex, scrollToBottom, isAdmin]);
+}, [currentSessionIndex, scrollToBottom, isAdmin]);
+
+
+  
 
   useEffect(() => {
     const handleChatWithUsUpdate = (data) => {
@@ -338,6 +352,21 @@ function Chat() {
   const handleQuerySubmit = async (formData) => {
     setIsLoading(true);
 
+    let activeSession = sessions[currentSessionIndex];
+
+    // Check if a new session needs to be created
+    if (!activeSession) {
+      const newSession = await handleNewSession(); // Await the new session
+      if (newSession) {
+        activeSession = newSession;
+      } else {
+        // Handle the case where session creation fails
+        console.error('Failed to create a new session');
+        setIsLoading(false);
+        return;
+      }
+    }
+
     if (!(formData instanceof FormData)) {
       formData = new FormData();
       formData.append('text', formData);
@@ -348,11 +377,11 @@ function Chat() {
     const base64Attachments = await Promise.all(attachments.map(file => convertToBase64(file)));
     const timestamp = new Date().toISOString();
 
-    updateSessionMessages(textQuery, 'simple', true, base64Attachments, timestamp);
+    updateSessionMessages(textQuery, 'simple', true, base64Attachments, timestamp, activeSession);
   
     const eventType = isAdmin ? 'chat-with-us-response' : 'chat-with-us-query';
     socket.emit(eventType, {
-      sessionId: sessions[currentSessionIndex]._id,
+      sessionId: activeSession._id,
       userId: userData.id,  // Include the userId here
       message: {
         role: isAdmin ? 'assistant' : 'user',
@@ -395,16 +424,17 @@ function Chat() {
   
         // Check if the new session was successfully created
         if (res.data && res.data._id) {
-          // Update the sessions state with the new session
-          setSessions(prevSessions => [...prevSessions, res.data]);
+          const newSession = res.data;
+          setSessions(prevSessions => [...prevSessions, newSession]);
   
           // Set the current session index to the new session
           setCurrentSessionIndex(sessions.length);
   
           // Join the new session's room for socket communication
           socket.emit('join-chat-session', res.data._id);
+          return newSession;
         }
-  
+        return null;
       } catch (error) {
         console.error('Error creating new session:', error);
       }

@@ -691,8 +691,8 @@ function Chat() {
           );
         })}
       </div>
-      {sessions[currentSessionIndex] && sessions[currentSessionIndex].messages.length === 0 && (
-        <SampleQueries onSubmit={handleQuerySubmit} />
+      { (sessions.length === 0 || (sessions[currentSessionIndex] && sessions[currentSessionIndex].messages.length === 0)) && (
+          <SampleQueries onSubmit={handleQuerySubmit} />
       )}
       <InputBox onSubmit={handleQuerySubmit} isLoading={isLoading} isStreaming={isStreaming} onStopStreaming={handleStopStreaming} initialQuery={initialQuery} />
       

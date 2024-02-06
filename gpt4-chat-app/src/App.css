@@ -2016,8 +2016,6 @@ body:not(.history-pane-open-chat-with-us) .chat-area-chat-with-us {
   margin-top: 2rem;
 }
 
-
-
 /* Optional: add media query for responsive design */
 @media (max-width: 760px) {
   .header-chat-with-us {
@@ -2025,10 +2023,6 @@ body:not(.history-pane-open-chat-with-us) .chat-area-chat-with-us {
     justify-content: space-between; /* Aligns items on opposite ends */
     padding: 0 10px; /* Add some padding on the sides */
     border-bottom: 1px solid rgb(213, 211, 211);
-  }
-
-  .history-pane-chat-with-us {
-    /* display: none; Hide history pane on small screens */
   }
 
   .fa-angle-left {

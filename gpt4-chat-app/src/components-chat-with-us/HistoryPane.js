@@ -85,7 +85,6 @@ const HistoryPane = forwardRef(({
   };
 
   useEffect(() => {
-    console.log("Updated history pane isPaneOpen is: ", isPaneOpen);
   }, [isPaneOpen]);
   
 
