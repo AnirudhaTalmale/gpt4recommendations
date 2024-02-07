@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect, forwardRef } from 'react';
 import axios from 'axios';
+import ConfirmationDialog from './ConfirmationDialog'; 
 import '../App.css';
 
 const straightLinePath = 'M15,25 L15,5';
@@ -176,6 +177,25 @@ const HistoryPane = forwardRef(({
     setCategorizedSessions(categorizeSessions(sessions));
   }, [sessions]);
 
+  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
+
+  const handleDeleteAccount = () => {
+    setIsConfirmDialogOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    try {
+      const response = await axios.delete('http://localhost:3000/api/user/delete', { withCredentials: true });
+      if (response.data.message === 'Account deleted successfully') {
+        window.location.href = 'http://localhost:3001';
+      }
+    } catch (error) {
+      console.error('Error during account deletion:', error);
+    } finally {
+      setIsConfirmDialogOpen(false);
+    }
+  };
+
   return (
     <div ref={ref}>
       <div className={`history-pane ${isPaneOpen ? '' : 'closed'}`}>
@@ -283,8 +303,6 @@ const HistoryPane = forwardRef(({
           )}
         </div>
 
-
-
         <div className="user-info-container">
           <div className={`user-entry ${isEntryActive ? 'active' : ''}`} onClick={toggleDropdown} ref={userEntryRef}>
             <img src={userImage} alt="" className="history-pane-image" />
@@ -292,6 +310,9 @@ const HistoryPane = forwardRef(({
           </div>
           {isDropdownOpen && (
             <ul className="dropdown-menu" ref={dropdownRef}>
+              <li onClick={handleDeleteAccount}>
+                <i className="fa-solid fa-trash"></i> Delete account
+              </li>
               <li onClick={handleChatWithUs}>
                 <i class="fa-solid fa-comments"></i> Chat with Us
               </li>
@@ -302,6 +323,12 @@ const HistoryPane = forwardRef(({
           )}
         </div>
       </div>
+
+      <ConfirmationDialog 
+        isOpen={isConfirmDialogOpen}
+        onClose={() => setIsConfirmDialogOpen(false)}
+        onConfirm={handleConfirmDelete}
+      />
     </div>
   );
 });

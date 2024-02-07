@@ -1,7 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Chat from './components/Chat';
-import LoginPage from './components/LoginPage';
 import OnboardingPage from './components/OnboardingPage'; 
 import BlogPage from './components/BlogPage';
 import BlogPostPage from './components/BlogPostPage';
@@ -16,7 +15,7 @@ function App() {
     <Router>
       <div className="App">
         <Routes>
-          <Route path="/auth/login" element={<LoginPage />} />
+          <Route path="/auth/login" element={<HomePage />} />
           <Route path="/verify-email" element={<EmailVerificationPage />} />
           <Route path="/onboarding" element={<OnboardingPage />} /> 
           <Route path="/chat" element={<Chat />} />

@@ -344,7 +344,7 @@ io.on('connection', (socket) => {
     }    
 
     let completePrompt;
-    if (isMoreDetails || message.content.startsWith("Explain this book - ")) {
+    if (isMoreDetails || message.content.startsWith("Explain the book - ")) {
       completePrompt = moreDetailsPrompt(message.content);
     } else if (moreBooks) {
       completePrompt = moreBooksRecommendationPrompt(message.content);
@@ -742,6 +742,31 @@ app.delete('/api/session/:sessionId', async (req, res) => {
   } catch (error) {
     console.error('DELETE /api/session/:sessionId - Error:', error);
     res.status(500).json({ message: 'Error deleting the session', error: error.toString() });
+  }
+});
+
+app.delete('/api/user/delete', async (req, res) => {
+  try {
+    // Authentication check (this is just a placeholder, implement your actual authentication logic)
+    if (!req.isAuthenticated()) {
+      return res.status(401).json({ message: 'Unauthorized' });
+    }
+
+    const userId = req.user._id; // Assuming you have the user's ID stored in req.user
+
+    // Find and delete the user
+    const deletedUser = await User.findByIdAndDelete(userId);
+
+    if (!deletedUser) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Here, you can add additional cleanup logic if necessary
+
+    res.status(200).json({ message: 'Account deleted successfully' });
+  } catch (error) {
+    console.error('DELETE /api/user/delete - Error:', error);
+    res.status(500).json({ message: 'Error deleting the account', error: error.toString() });
   }
 });
 

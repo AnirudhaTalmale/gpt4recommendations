@@ -87,7 +87,7 @@ const fetchMoreDetails = async (bookTitle, author) => {
 
 const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, bookTitle, author, moreBooks) => {
 
-  if (!isMoreDetails && messages[messages.length - 1].content.startsWith("Explain this book - ")) {
+  if (!isMoreDetails && messages[messages.length - 1].content.startsWith("Explain the book - ")) {
     try {
       const response = await fetchMoreDetails(bookTitle, author);
       if (response && response.data && response.data.detailedDescription) {
@@ -169,7 +169,7 @@ const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, bo
           }
 
           // Replace buttonDiv1 with updated Buy Now button HTML
-          if (isMoreDetails || messages[messages.length - 1].content.startsWith("Explain this book - ")) {
+          if (isMoreDetails || messages[messages.length - 1].content.startsWith("Explain the book - ")) {
             const buyNowButtonHtml = `<div><a href="${amazonUrl}" target="_blank"><button class="buy-now-button">Buy now</button></a></div>`;
             pausedEmit = pausedEmit.replace(bookTitleMatch[0], bookTitleMatch[0] + buyNowButtonHtml);
           } else {
@@ -231,7 +231,7 @@ const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, bo
       }
       const finishReason = chunk.choices[0]?.finish_reason;
       if (finishReason === 'stop') {
-        if (isMoreDetails || messages[messages.length - 1].content.startsWith("Explain this book - ")) {
+        if (isMoreDetails || messages[messages.length - 1].content.startsWith("Explain the book - ")) {
           const MoreDetails = require('./models/MoreDetails');
           // Check if completeResponse follows the specified format
           if (checkFormat(completeResponse)) {

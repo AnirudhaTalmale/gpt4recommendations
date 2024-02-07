@@ -602,12 +602,18 @@ body:not(.history-pane-open) .input-area {
   height: 1.7rem;
 }
 
-.fa-arrow-right-from-bracket {
-  margin-right: 0.9rem;
+.dropdown-menu .fa-arrow-right-from-bracket {
+  margin-right: 1.2rem;
+  margin-left: 0.2rem;
 }
 
-.fa-comments {
-  margin-right: 0.9rem;
+.dropdown-menu .fa-comments {
+  margin-right: 1.1rem;
+}
+
+.dropdown-menu .fa-trash {
+  margin-right: 1.3rem;
+  margin-left: 0.2rem;
 }
 
 /* Update styles for the unseen message count indicator */
@@ -629,14 +635,63 @@ body:not(.history-pane-open) .input-area {
   z-index: 2;
 }
 
-
-
 .category-title {
   margin: 0.52rem 0.67rem;
   font-size: 0.73rem;
   color: rgb(172, 171, 171);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+.confirmation-dialog-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+  z-index: 1000; /* Ensure it's above other content */
+}
+
+.confirmation-dialog {
+  background-color: white;
+  padding: 20px;
+  border-radius: 5px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  text-align: center;
+  font-size: 0.9rem;
+}
+
+.confirmation-dialog p {
+  margin-bottom: 20px;
+}
+
+.confirmation-dialog button {
+  margin: 0 10px;
+  padding: 0.5rem 15px;
+  border: none;
+  border-radius: 0.5rem;
+  width: 6rem;
+  background-color: #007bff;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.confirmation-dialog button:hover {
+  background-color: #0056b3;
+}
+
+.confirmation-dialog button:nth-child(2) {
+  background-color: #dc3545;
+}
+
+.confirmation-dialog button:nth-child(2):hover {
+  background-color: #c82333;
+}
+
 
 /* Home page components */
 
@@ -742,6 +797,10 @@ body:not(.history-pane-open) .input-area {
 
   .login-signup-container {
     margin-right: 10% !important;
+  }
+
+  .login-container {
+    margin-right: 3.3rem;
   }
 }
 
@@ -1796,12 +1855,69 @@ b div img {
   height: 1.7rem;
 }
 
-.fa-arrow-right-from-bracket-chat-with-us {
-  margin-right: 0.9rem;
+.dropdown-menu-chat-with-us .fa-arrow-right-from-bracket {
+  margin-right: 1.2rem;
+  margin-left: 0.2rem;
 }
 
-.fa-comments-chat-with-us {
-  margin-right: 0.9rem;
+.dropdown-menu-chat-with-us .fa-comments {
+  margin-right: 1.1rem;
+}
+
+.dropdown-menu-chat-with-us .fa-trash {
+  margin-right: 1.3rem;
+  margin-left: 0.2rem;
+}
+
+
+.confirmation-dialog-overlay-chat-with-us {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+  z-index: 1000; /* Ensure it's above other content */
+}
+
+.confirmation-dialog-chat-with-us {
+  background-color: white;
+  padding: 20px;
+  border-radius: 5px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  text-align: center;
+  font-size: 0.9rem;
+}
+
+.confirmation-dialog-chat-with-us p {
+  margin-bottom: 20px;
+}
+
+.confirmation-dialog-chat-with-us button {
+  margin: 0 10px;
+  padding: 0.5rem 15px;
+  border: none;
+  border-radius: 0.5rem;
+  width: 6rem;
+  background-color: #007bff;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.confirmation-dialog-chat-with-us button:hover {
+  background-color: #0056b3;
+}
+
+.confirmation-dialog-chat-with-us button:nth-child(2) {
+  background-color: #dc3545;
+}
+
+.confirmation-dialog-chat-with-us button:nth-child(2):hover {
+  background-color: #c82333;
 }
 
 /* input area */

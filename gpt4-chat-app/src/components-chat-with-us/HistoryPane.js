@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect, forwardRef } from 'react';
 import axios from 'axios';
+import ConfirmationDialog from './ConfirmationDialog'; 
 import '../App.css';
 
 const HistoryPane = forwardRef(({
@@ -86,6 +87,25 @@ const HistoryPane = forwardRef(({
 
   useEffect(() => {
   }, [isPaneOpen]);
+
+  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
+
+  const handleDeleteAccount = () => {
+    setIsConfirmDialogOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    try {
+      const response = await axios.delete('http://localhost:3000/api/user/delete', { withCredentials: true });
+      if (response.data.message === 'Account deleted successfully') {
+        window.location.href = 'http://localhost:3001';
+      }
+    } catch (error) {
+      console.error('Error during account deletion:', error);
+    } finally {
+      setIsConfirmDialogOpen(false);
+    }
+  };
   
 
   return (
@@ -133,7 +153,10 @@ const HistoryPane = forwardRef(({
             <span>{userName}</span>
           </div>
           {isDropdownOpen && (
-            <ul className="dropdown-menu-chat-with-us" ref={dropdownRef}>
+            <ul className="dropdown-menu" ref={dropdownRef}>
+              <li onClick={handleDeleteAccount}>
+                <i className="fa-solid fa-trash"></i> Delete account
+              </li>
               <li onClick={handleChatWithUs}>
                 <i class="fa-solid fa-comments"></i> ChatGPT
               </li>
@@ -144,6 +167,13 @@ const HistoryPane = forwardRef(({
           )}
         </div>
       </div>
+
+
+      <ConfirmationDialog 
+        isOpen={isConfirmDialogOpen}
+        onClose={() => setIsConfirmDialogOpen(false)}
+        onConfirm={handleConfirmDelete}
+      />
     </div>
   );
 });

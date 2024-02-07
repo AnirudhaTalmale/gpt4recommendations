@@ -88,7 +88,7 @@ function Chat() {
     const author = queryParams.get('author');
 
     if (bookTitle) {
-      let query = `Explain this book - ${bookTitle}`;
+      let query = `Explain the book - ${bookTitle}`;
       if (author) {
         query += ` by ${author}`;
       }
@@ -198,7 +198,7 @@ function Chat() {
       const author = queryParams.get('author');
   
       if (bookTitle) {
-        let query = `Explain this book - ${bookTitle}`;
+        let query = `Explain the book - ${bookTitle}`;
         if (author) {
           query += ` by ${author}`;
         }
@@ -381,8 +381,8 @@ function Chat() {
     }
   
     const isFirstQuery = sessions[currentSessionIndexRef.current]?.messages?.length === 0;
-    if (!isMoreDetails && query.startsWith("Explain this book - ")) {
-      const queryWithoutPrefix = query.slice("Explain this book - ".length);
+    if (!isMoreDetails && query.startsWith("Explain the book - ")) {
+      const queryWithoutPrefix = query.slice("Explain the book - ".length);
       const parts = queryWithoutPrefix.split(" by ");
 
       if (parts.length > 0) {
@@ -567,7 +567,7 @@ function Chat() {
       const response = await fetchMoreDetails(bookTitle, author);
 
       if (!response || !response.data || !response.data.detailedDescription) {
-        const userQuery = `Explain this book - ${bookTitle} by ${author} - `;
+        const userQuery = `Explain the book - ${bookTitle} by ${author} - `;
         handleQuerySubmit(userQuery, true, bookTitle, author);
       } else {
         const detailedDescription = response.data.detailedDescription;
@@ -576,7 +576,7 @@ function Chat() {
         setIsLightboxOpen(true);
       }
     } catch (error) {
-      const userQuery = `Explain this book - ${bookTitle} by ${author} - `;
+      const userQuery = `Explain the book - ${bookTitle} by ${author} - `;
       handleQuerySubmit(userQuery, true, bookTitle, author);
     }
   };
