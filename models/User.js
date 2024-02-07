@@ -8,8 +8,7 @@ const roles = {
 
 const userSchema = new Schema({
   local: {
-    email: { type: String, unique: true, sparse: true },
-    password: { type: String }
+    email: { type: String, unique: true, sparse: true }
   },
   google: {
     id: { type: String, unique: true, sparse: true }
@@ -21,11 +20,9 @@ const userSchema = new Schema({
   role: { type: String, enum: Object.values(roles), default: roles.USER },
   createdAt: { type: Date, default: Date.now },
   accessToken: { type: String },
-  isEmailVerified: { type: Boolean, default: false },
   verificationToken: { type: String },
   firstMessageTimestamp: { type: Date },
-  messageCount: { type: Number, default: 0 },
-  birthday: { type: Date }
+  messageCount: { type: Number, default: 0 }
 });
 
 module.exports = mongoose.model('User', userSchema);

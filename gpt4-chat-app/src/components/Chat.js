@@ -468,13 +468,12 @@ function Chat() {
   const checkAuthStatus = useCallback(async () => {
     try {
       const authResponse = await axios.get('http://localhost:3000/api/check-auth', { withCredentials: true });
+      console.log("authResponse is: ", authResponse);
   
       if (authResponse.status === 200 && authResponse.data.isAuthenticated) {
-        // Check if onboarding is complete, if not, redirect to onboarding page
         if (!authResponse.data.onboardingComplete) {
-          // User is authenticated but hasn't completed onboarding
           window.location.href = 'http://localhost:3001/onboarding';
-          return; // Exit the function early as we're redirecting
+          return; 
         }
   
         // If onboarding is complete, proceed to fetch user info
@@ -484,11 +483,9 @@ function Chat() {
           const currentUserData = userInfoResponse.data.user;
           setUserData(currentUserData);
           loadSessions(currentUserData);
-          // Check if there are saved query params in local storage and handle them
           handleSavedQueryParams();
         }
       } else {
-        // Save the current query params to local storage before redirecting
         localStorage.setItem('queryParams', window.location.search);
         window.location.href = 'http://localhost:3001/auth/login';
       }

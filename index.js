@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const openaiApi = require('./openaiApi');
 const Session = require('./models/Session');
+const EmailRateLimit = require('./models/EmailRateLimit');
 const MoreDetails = require('./models/MoreDetails');
 const ChatWithUsSession = require('./models-chat-with-us/ChatWithUsSession');
 const UserSession = require('./models-chat-with-us/UserSession');
@@ -14,12 +15,8 @@ const moreDetailsPrompt = require('./promptMoreDetails');
 const passportSetup = require('./passport-setup'); // Import the setup function
 const axios = require('axios');
 const multer = require('multer');
-const path = require('path');
 const nodemailer = require('nodemailer');
-const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const moment = require('moment');
-
 
 
 require('dotenv').config();
@@ -85,164 +82,12 @@ let transporter = nodemailer.createTransport({
   }
 });
 
-app.post('/resend-email', async (req, res) => {
-  const { email } = req.body;
-
-  try {
-    // Check if the email exists in the database
-    const user = await User.findOne({ 'local.email': email });
-    if (!user) {
-      return res.status(404).send('Email not found');
-    }
-
-    // Generate a new verification token
-    const newVerificationToken = jwt.sign(
-      { email: email },
-      process.env.JWT_SECRET,
-      { expiresIn: '5d' }
-    );
-
-    // Define the verification URL
-    const verificationUrl = `http://localhost:3001/onboarding?token=${newVerificationToken}`;
-
-    // Send verification email
-    transporter.sendMail({
-      from: '"OpenAI" <' + process.env.EMAIL_USER + '>',
-      to: email,
-      subject: 'OpenAI - Verify your email',
-      html: `
-        <div style="font-family: 'Arial', sans-serif; text-align: left; padding: 20px; max-width: 600px; margin: auto;">
-          <h1 style="font-size: 26px;">Verify your email address</h1>
-          <p style="font-size: 16px;">To continue setting up your OpenAI account, please verify that this is your email address.</p>
-          <a href="${verificationUrl}" style="background-color: #4CAF50; color: white; padding: 8px 18px; text-decoration: none; border-radius: 5px; display: inline-block; font-size: 16px;">Verify email address</a>
-          <p style="color: #666666; margin-top: 28px; font-size: 12px;">This link will expire in 5 days. If you did not make this request, please disregard this email.</p>
-        </div>
-      `
-    });
-
-    // Update user in the database with the new token
-    user.verificationToken = newVerificationToken;
-    await user.save();
-
-    res.send('Verification email resent successfully.');
-  } catch (error) {
-    console.error('Error in resending email:', error);
-    res.status(500).send('Internal Server Error');
-  }
+const PORT = process.env.PORT || 3000;
+server.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });
 
-// Signup endpoint
-app.post('/signup', async (req, res) => {
-  const { email, password } = req.body;
-
-  // Check if user already exists
-  const existingUser = await User.findOne({ 'local.email': email });
-  if (existingUser) {
-    return res.status(400).send('User already exists');
-  }
-
-  // Hash the password
-  const hashedPassword = await bcrypt.hash(password, 10);
-
-  // Create a verification token (could be a random string or JWT)
-  const verificationToken = jwt.sign(
-    { email: email },
-    process.env.JWT_SECRET,
-    { expiresIn: '5d' } // Token now expires in 5 days
-  );
-
-  // Send verification email
-  const verificationUrl = `http://localhost:3001/onboarding?token=${verificationToken}`;
-  transporter.sendMail({
-    from: '"OpenAI" <' + process.env.EMAIL_USER + '>',
-    to: email,
-    subject: 'OpenAI - Verify your email',
-    html: `
-      <div style="font-family: 'Arial', sans-serif; text-align: left; padding: 20px; max-width: 600px; margin: auto;">
-        <h1 style="font-size: 26px;">Verify your email address</h1>
-        <p style="font-size: 16px;">To continue setting up your OpenAI account, please verify that this is your email address.</p>
-        <a href="${verificationUrl}" style="background-color: #4CAF50; color: white; padding: 8px 18px; text-decoration: none; border-radius: 5px; display: inline-block; font-size: 16px;">Verify email address</a>
-        <p style="color: #666666; margin-top: 28px; font-size: 12px;">This link will expire in 5 days. If you did not make this request, please disregard this email.</p>
-      </div>
-    `
-  });
-
-  // Save user with hashed password and token in the database (but not yet verified)
-  await User.create({
-    'local.email': email,
-    'local.password': hashedPassword,
-    verificationToken: verificationToken,
-    isEmailVerified: false
-  });
-
-  res.send('Signup successful! Please check your email to verify your account.');
-}); 
-
-app.post('/api/onboarding', async (req, res) => {
-  const { token, displayName, birthday } = req.body;
-
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const user = await User.findOne({ 'local.email': decoded.email });
-
-      if (!user) {
-          return res.status(400).send('Invalid token');
-      }
-
-      // Validate and format the birthday before saving
-      const formattedBirthday = moment(birthday, 'DD/MM/YYYY', true);
-      if (!formattedBirthday.isValid()) {
-          return res.status(400).send('Invalid birthday format');
-      }
-
-      user.displayName = displayName;
-      user.birthday = formattedBirthday.toDate();
-
-      // Set the default image based on the displayName
-      if (!user.image) { // Only set the default image if it's not already set
-          user.image = getDefaultImage(displayName);
-      }
-
-      user.isEmailVerified = true;
-      user.verificationToken = null;
-      await user.save();
-
-      req.login(user, (err) => {
-          if (err) { 
-              return res.status(500).send('Error logging in'); 
-          }
-          res.json({ success: true, redirectTo: '/chat' });
-      });
-  } catch (err) {
-      console.error('Error in onboarding:', err);
-      res.status(400).send('Invalid or expired token');
-  }
-});
-
-app.post('/login', async (req, res) => {
-  const { email, password } = req.body;
-
-  // Find the user by local email
-  const user = await User.findOne({ 'local.email': email });
-  if (!user) {
-    return res.status(401).send('Wrong email or password');
-  }
-
-  // Check if the password is correct
-  const isMatch = await bcrypt.compare(password, user.local.password);
-  if (!isMatch) {
-    return res.status(401).send('Wrong email or password');
-  }
-
-  // Check if the user's email has been verified
-  if (!user.isEmailVerified) {
-    return res.status(403).send('Your email address has not been verified.');
-  }
-
-  // If credentials are correct and email is verified, send a success response
-  res.status(200).send('Login successful');
-});
-
+// Authentication Code: 
 
 app.get('/api/check-auth', (req, res) => {
   if (req.isAuthenticated()) {
@@ -260,9 +105,7 @@ app.get('/api/check-auth', (req, res) => {
 app.get('/api/user-info', (req, res) => {
   if (req.isAuthenticated()) {
     let email = '';
-    if (req.user.local && req.user.local.email) {
-      email = req.user.local.email; // Local strategy email
-    } else if (req.user.google && req.user.google.email) {
+    if (req.user.google && req.user.google.email) {
       email = req.user.google.email; // Google strategy email
     }
 
@@ -278,17 +121,6 @@ app.get('/api/user-info', (req, res) => {
     });
   } else {
     res.status(401).json({ isAuthenticated: false });
-  }
-});
-
-
-app.post('/api/stop-stream', (req, res) => {
-  try {
-    openaiApi.stopStream();
-    res.json({ message: 'Stream stopped successfully' });
-  } catch (error) {
-    console.error('Error stopping the stream:', error);
-    res.status(500).json({ message: 'Error stopping the stream', error: error.toString() });
   }
 });
 
@@ -314,6 +146,113 @@ app.get('/auth/logout', (req, res, next) => {
   });
 });
 
+// Email Verification code and Onboarding code: 
+
+app.post('/send-verification-email', async (req, res) => {
+  const { email } = req.body;
+
+  try {
+    const rateLimit = await EmailRateLimit.findOne({ email });
+
+    if (rateLimit) {
+      const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000); // 1 hour ago
+      if (rateLimit.lastSent > oneHourAgo) {
+        if (rateLimit.count >= 8) {
+          const resetTime = new Date(rateLimit.lastSent.getTime() + 60 * 60 * 1000); // 1 hour after the last sent email
+          return res.status(429).json({ 
+            message: 'Rate limit exceeded.', 
+            resetTime: resetTime.toISOString() // Send the reset time in ISO format
+          });
+        }
+        rateLimit.count++;
+      } else {
+        rateLimit.count = 1; // Reset the count if it's been more than an hour
+      }
+      rateLimit.lastSent = new Date(); // Update lastSent time
+      await rateLimit.save();
+    } else {
+      // If no rate limit record exists, create one
+      await new EmailRateLimit({ email, count: 1, lastSent: new Date() }).save();
+    }
+
+    let user = await User.findOne({ 'local.email': email });
+
+    const newVerificationToken = jwt.sign(
+        { email: email },
+        process.env.JWT_SECRET,
+        { expiresIn: '15m' }
+    );
+
+    const hasDisplayName = user && user.displayName ? 'true' : 'false';
+    const verificationUrl = `http://localhost:3001/onboarding?token=${newVerificationToken}&hasDisplayName=${hasDisplayName}`;
+      
+    // Send verification email
+    transporter.sendMail({
+      from: '"OpenAI" <' + process.env.EMAIL_USER + '>',
+      to: email,
+      subject: 'OpenAI - Verify your email',
+      html: `
+        <div style="font-family: 'Arial', sans-serif; text-align: left; padding: 20px; max-width: 600px; margin: auto;">
+          <h1 style="font-size: 26px;">Verify your email address</h1>
+          <p style="font-size: 16px;">To continue setting up your OpenAI account, please verify that this is your email address.</p>
+          <a href="${verificationUrl}" style="background-color: #4CAF50; color: white; padding: 8px 18px; text-decoration: none; border-radius: 5px; display: inline-block; font-size: 16px;">Verify email address</a>
+          <p style="color: #666666; margin-top: 28px; font-size: 12px;">This link will expire in 15 minutes. If you did not make this request, please disregard this email.</p>
+        </div>
+      `
+    });
+
+    if (user) {
+      user.verificationToken = newVerificationToken;
+      await user.save();
+    } else {
+        user = new User({
+            local: { email: email },
+            verificationToken: newVerificationToken
+        });
+        await user.save();
+    }
+
+    // Respond that the email is sent
+    res.json({ message: 'Verification email sent' });
+  } catch (error) {
+    console.error('Error in sending email:', error);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
+app.post('/api/onboarding', async (req, res) => {
+  const { token, displayName } = req.body;
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const user = await User.findOne({ 'local.email': decoded.email });
+
+    if (!user) {
+      return res.status(400).send('Invalid token');
+    }
+
+    if (displayName) {
+      user.displayName = displayName;
+      if (!user.image) {
+          user.image = getDefaultImage(displayName);
+      }
+    }
+
+    user.verificationToken = null;
+    await user.save();
+
+    req.login(user, (err) => {
+      if (err) { 
+          return res.status(500).send('Error logging in'); 
+      }
+      res.json({ success: true, redirectTo: '/chat' });
+    });
+  } catch (err) {
+    console.error('Error in onboarding:', err);
+    res.status(400).send('Invalid or expired token');
+  }
+}); 
+
 const getDefaultImage = (displayName) => {
   if (!displayName || displayName.length === 0) return '';
 
@@ -329,30 +268,6 @@ const getDefaultImage = (displayName) => {
 
   return `data:image/svg+xml;base64,${Buffer.from(svg).toString('base64')}`;
 };
-
-const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
-
-// const cron = require('node-cron');
-// const sendWeeklyNewsletter = require('./sendWeeklyNewsletter');
-
-// // Schedule a task to run every week
-// cron.schedule('0 0 * * 0', () => {
-//   console.log('Running a task every week');
-//   sendWeeklyNewsletter();
-// });
-
-// app.get('/trigger-newsletter', async (req, res) => {
-//   try {
-//     await sendWeeklyNewsletter();
-//     res.send('Newsletter has been triggered manually');
-//   } catch (error) {
-//     console.error('Error triggering newsletter:', error);
-//     res.status(500).send('Error triggering newsletter');
-//   }
-// });
 
 function estimateTokenCount(text) {
   // Rough estimate of token count for a given text
@@ -741,6 +656,16 @@ app.get('/api/get-user-by-email', async (req, res) => {
 
 // ------------------- chat endpoints-------------------
 
+app.post('/api/stop-stream', (req, res) => {
+  try {
+    openaiApi.stopStream();
+    res.json({ message: 'Stream stopped successfully' });
+  } catch (error) {
+    console.error('Error stopping the stream:', error);
+    res.status(500).json({ message: 'Error stopping the stream', error: error.toString() });
+  }
+});
+
 app.get('/api/more-details', async (req, res) => { 
   try {
     // Retrieve bookTitle and author from query parameters
@@ -895,3 +820,95 @@ app.put('/api/blogposts/:postId', async (req, res) => {
   }
 });
 
+
+
+
+// const cron = require('node-cron');
+// const sendWeeklyNewsletter = require('./sendWeeklyNewsletter');
+
+// // Schedule a task to run every week
+// cron.schedule('0 0 * * 0', () => {
+//   console.log('Running a task every week');
+//   sendWeeklyNewsletter();
+// });
+
+// app.get('/trigger-newsletter', async (req, res) => {
+//   try {
+//     await sendWeeklyNewsletter();
+//     res.send('Newsletter has been triggered manually');
+//   } catch (error) {
+//     console.error('Error triggering newsletter:', error);
+//     res.status(500).send('Error triggering newsletter');
+//   }
+// });
+
+// app.post('/login', async (req, res) => {
+//   const { email, password } = req.body;
+
+//   // Find the user by local email
+//   const user = await User.findOne({ 'local.email': email });
+//   if (!user) {
+//     return res.status(401).send('Wrong email or password');
+//   }
+
+//   // Check if the password is correct
+//   const isMatch = await bcrypt.compare(password, user.local.password);
+//   if (!isMatch) {
+//     return res.status(401).send('Wrong email or password');
+//   }
+
+//   // Check if the user's email has been verified
+//   if (!user.isEmailVerified) {
+//     return res.status(403).send('Your email address has not been verified.');
+//   }
+
+//   // If credentials are correct and email is verified, send a success response
+//   res.status(200).send('Login successful');
+// });
+
+// Signup endpoint
+// app.post('/signup', async (req, res) => {
+//   const { email, password } = req.body;
+
+//   // Check if user already exists
+//   const existingUser = await User.findOne({ 'local.email': email });
+//   if (existingUser) {
+//     return res.status(400).send('User already exists');
+//   }
+
+//   // Hash the password
+//   const hashedPassword = await bcrypt.hash(password, 10);
+
+//   // Create a verification token (could be a random string or JWT)
+//   const verificationToken = jwt.sign(
+//     { email: email },
+//     process.env.JWT_SECRET,
+//     { expiresIn: '5d' } // Token now expires in 5 days
+//   );
+
+//   // Send verification email
+//   const verificationUrl = `http://localhost:3001/onboarding?token=${verificationToken}`;
+//   transporter.sendMail({
+//     from: '"OpenAI" <' + process.env.EMAIL_USER + '>',
+//     to: email,
+//     subject: 'OpenAI - Verify your email',
+//     html: `
+//       <div style="font-family: 'Arial', sans-serif; text-align: left; padding: 20px; max-width: 600px; margin: auto;">
+//         <h1 style="font-size: 26px;">Verify your email address</h1>
+//         <p style="font-size: 16px;">To continue setting up your OpenAI account, please verify that this is your email address.</p>
+//         <a href="${verificationUrl}" style="background-color: #4CAF50; color: white; padding: 8px 18px; text-decoration: none; border-radius: 5px; display: inline-block; font-size: 16px;">Verify email address</a>
+//         <p style="color: #666666; margin-top: 28px; font-size: 12px;">This link will expire in 5 days. If you did not make this request, please disregard this email.</p>
+//       </div>
+//     `
+//   });
+
+//   // Save user with hashed password and token in the database (but not yet verified)
+//   await User.create({
+//     'local.email': email,
+//     'local.password': hashedPassword,
+//     verificationToken: verificationToken,
+//     isEmailVerified: false
+//   });
+
+//   res.send('Signup successful! Please check your email to verify your account.');
+// }); 
