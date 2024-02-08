@@ -106,7 +106,12 @@ app.get('/api/user-info', (req, res) => {
   if (req.isAuthenticated()) {
     let email = '';
     if (req.user.google && req.user.google.email) {
-      email = req.user.google.email; // Google strategy email
+      email = req.user.google.email;
+    }
+
+    let image = req.user.image;
+    if (!image) {
+      image = getDefaultImage(req.user.displayName);
     }
 
     res.json({
@@ -431,7 +436,7 @@ io.on('connection', (socket) => {
   
     const chatWithUsSession = await ChatWithUsSession.findById(sessionId);
     if (!chatWithUsSession) {
-      socket.emit('error', { message: 'Chat with Us session not found' });
+      socket.emit('error', { message: 'Chat with us session not found' });
       return;
     }
   
@@ -501,7 +506,7 @@ io.on('connection', (socket) => {
       { user: userId, session: sessionId },
       { lastSeenMessage: lastMessage ? lastMessage._id : null }
     );
-  });
+  }); 
 
   // In your socket event handlers
   socket.on('request-session-state', async (sessionId) => {
@@ -604,7 +609,7 @@ app.post('/api/chat-with-us-session', async (req, res) => {
     res.json(newSession);
   } catch (error) {
     console.error('POST /api/chat-with-us-session - Error:', error);
-    res.status(500).json({ message: 'Error creating a new Chat with Us session', error: error.toString() });
+    res.status(500).json({ message: 'Error creating a new Chat with us session', error: error.toString() });
   }
 });
 

@@ -157,6 +157,11 @@ const HistoryPane = forwardRef(({
               <li onClick={handleDeleteAccount}>
                 <i className="fa-solid fa-trash"></i> Delete account
               </li>
+              <li>
+                <a href="mailto:anirudhatalmale4@gmail.com" className="dropdown-link" style={{ display: 'block', width: '100%', height: '100%' }}>
+                  <i className="fa-solid fa-envelope"></i> Mail us
+                </a>
+              </li>
               <li onClick={handleChatWithUs}>
                 <i class="fa-solid fa-comments"></i> ChatGPT
               </li>

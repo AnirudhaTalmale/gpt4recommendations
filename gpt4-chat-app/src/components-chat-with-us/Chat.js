@@ -287,10 +287,8 @@ function Chat() {
 
   useEffect(() => {
     const handleChatWithUsUpdate = (data) => {
-      console.log('Received chat-with-us update:', data);
       if (data.sessionId === sessions[currentSessionIndex]?._id) {
         // Update the session with the new message and attachments
-        console.log("I am here in chat with us update");
         setSessions(sessions => sessions.map(session => {
           if (session._id === data.sessionId) {
             return {

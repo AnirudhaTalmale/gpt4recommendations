@@ -543,7 +543,8 @@ body:not(.history-pane-open) .input-area {
   position: relative;
   /* background-color: orange; */
   height: 3rem;
-  width: 98%;
+  width: 91%;
+  margin-left: 4%;
   position: absolute;
   bottom: 0;
   left: 0;
@@ -575,16 +576,18 @@ body:not(.history-pane-open) .input-area {
 }
 
 .dropdown-menu {
-  /* border: 1px solid yellow; */
+  border: 0.1px solid grey;
   position: absolute;
   bottom: 100%;
   left: 0;
-  width: 84%;
+  width: 82%;
+  margin-left: 0.6%;
   margin-bottom: 0.3rem;
   z-index: 3;
   background-color: hsla(0, 0%, 19%, 1);
   border-radius: 0.5rem;
   overflow: hidden; /* Optional: In case of very long item names */
+  font-size: 0.97rem;
 }
 
 .dropdown-menu li {
@@ -597,23 +600,37 @@ body:not(.history-pane-open) .input-area {
   align-items: center;
   cursor: pointer;
   &:hover {
-    background-color: hsla(0, 0%, 25%, 1);
+    background-color: hsla(240, 51%, 79%, 0.213);
   }
   height: 1.7rem;
 }
 
 .dropdown-menu .fa-arrow-right-from-bracket {
-  margin-right: 1.2rem;
-  margin-left: 0.2rem;
+  margin-right: 1.15rem;
+  margin-left: 0.27rem;
 }
 
 .dropdown-menu .fa-comments {
-  margin-right: 1.1rem;
+  margin-right: 1.07rem;
+  margin-left: 0.08rem;
 }
 
 .dropdown-menu .fa-trash {
-  margin-right: 1.3rem;
-  margin-left: 0.2rem;
+  margin-right: 1.37rem;
+  margin-left: 0.26rem;
+}
+
+.dropdown-menu .fa-envelope {
+  margin-right: 1.03rem;
+  margin-left: 0.19rem;
+}
+
+.dropdown-link {
+  color: inherit; /* Or a specific color that matches your design */
+  text-decoration: none; /* Removes the underline from links */
+  display: flex;
+  align-items: center;
+  padding-top: 0.45rem;
 }
 
 /* Update styles for the unseen message count indicator */
@@ -691,6 +708,47 @@ body:not(.history-pane-open) .input-area {
 .confirmation-dialog button:nth-child(2):hover {
   background-color: #c82333;
 }
+
+/* Contact us page */
+
+.contact-us-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.buttons-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.contact-button {
+  border: 1px solid grey;
+  background-color: transparent;
+  padding: 10px 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px; /* if you are using icons, this will space them from the text */
+}
+
+/* Replace the following class with actual icons */
+.contact-button::before {
+  content: '';
+  display: inline-block;
+  height: 16px;
+  width: 16px;
+  background-color: grey; /* Placeholder for icon */
+}
+
+.response-time-info {
+  margin-top: 20px;
+  text-align: center;
+}
+
 
 
 /* Home page components */
