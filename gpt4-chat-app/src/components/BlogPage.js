@@ -1,18 +1,21 @@
 //BlogPage.js
 import React, { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import '../App.css'; // Import the CSS file
 
 const BlogPostPreview = ({ title, image, postId }) => (
   <div className="blog-post-preview">
-    <h2>{title}</h2>
     {image && <img src={`data:image/jpeg;base64,${image}`} alt={title} />}
+    <div class="blog-title">{title}</div>
   </div>
 );
+
 
 const BlogPage = () => {
   const [posts, setPosts] = useState([]);
   const navigate = useNavigate();
+  const location = useLocation();
+  const isAdmin = location.state?.isAdmin; 
 
   useEffect(() => {
     fetch('http://localhost:3000/api/blogposts')
@@ -33,7 +36,7 @@ const BlogPage = () => {
 
   return (
     <div className="blog-page">
-      <h1>Blog</h1>
+      <div className='blog-page-heading'>Blog</div>
       <hr /> 
       <div className="blog-posts-container">
         {posts.length > 0 ? (
@@ -46,7 +49,12 @@ const BlogPage = () => {
           <p>Loading Posts...</p>
         )}
       </div>
-      <button onClick={handleCreateNewPost} className="new-post-button">Create New Blog Post</button>
+      
+      {isAdmin && (
+        <button onClick={handleCreateNewPost} className="new-post-button">
+          Create New Blog Post
+        </button>
+      )}
     </div>
   );
 };

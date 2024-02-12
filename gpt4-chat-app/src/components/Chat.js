@@ -11,6 +11,7 @@ import Header from './Header';
 
 function Chat() {
 
+  const [isAdmin, setIsAdmin] = useState(false);
   const [sessions, setSessions] = useState([]);
   const [isPaneOpen, setIsPaneOpen] = useState(window.innerWidth >= 760 ? true : false);
   const [currentSessionIndex, setCurrentSessionIndex] = useState(() => {
@@ -468,7 +469,6 @@ function Chat() {
   const checkAuthStatus = useCallback(async () => {
     try {
       const authResponse = await axios.get('http://localhost:3000/api/check-auth', { withCredentials: true });
-      console.log("authResponse is: ", authResponse);
   
       if (authResponse.status === 200 && authResponse.data.isAuthenticated) {
         if (!authResponse.data.onboardingComplete) {
@@ -482,6 +482,10 @@ function Chat() {
         if (userInfoResponse.status === 200 && userInfoResponse.data.isAuthenticated) {
           const currentUserData = userInfoResponse.data.user;
           setUserData(currentUserData);
+
+          const isAdmin = currentUserData.email === 'anirudhatalmale4@gmail.com';
+          setIsAdmin(isAdmin); 
+
           loadSessions(currentUserData);
           handleSavedQueryParams();
         }
@@ -658,6 +662,7 @@ function Chat() {
         onDeleteSession={handleDeleteSession}
         userName={userData?.name}
         userImage={userData?.image}
+        isAdmin={isAdmin}
         isPaneOpen={isPaneOpen}
         togglePane={togglePane}
         selectedSessionId={selectedSessionId}

@@ -66,7 +66,7 @@ const getBookCover = async (bookTitleWithAuthor) => {
 };
 
 function checkFormat(content) {
-  const pattern = /<div class="book-info">\s*<h3 class="book-title">[^<]+<\/h3><span class="book-author">[^<]+<\/span><\/div>(?:<div><img src="[^"]*" alt=""><\/div>)?<div><a href="[^"]+" target="_blank"><button class="buy-now-button">[^<]+<\/button><\/a><\/div>(\s*<b>[^<]+<\/b>\s*<p>[^<]+<\/p>){5}/;
+  const pattern = /<div class="book-info">\s*<h3 class="book-title">\s*[^<]+\s*<\/h3>\s*<span class="book-author">\s*[^<]+\s*<\/span>\s*<\/div>\s*<div>\s*<img src="[^"]*" alt="">\s*<\/div>\s*<div>\s*<a href="[^"]+" target="_blank">\s*<button class="buy-now-button">\s*[^<]+\s*<\/button>\s*<\/a>\s*<\/div>\s*<h3>\s*[Bb]ook [Ss]ummary\s*<\/h3>\s*<p>\s*[^<]+\s*<\/p>\s*<h3>\s*[Aa]uthor's [Cc]redibility\s*<\/h3>\s*<p>\s*[^<]+\s*<\/p>\s*<h3>\s*[Kk]ey [Ii]nsights\s*<\/h3>\s*<ol>(?:\s*<li>\s*<strong>[^<]+<\/strong>:\s*[^<]+\s*<\/li>\s*)+<\/ol>\s*<h3>\s*[Cc]ase [Ss]tudies and [Aa]necdotes\s*<\/h3>\s*<p>\s*[^<]+\s*<\/p>\s*<h3>\s*[Ee]ndorsements and [Pp]raise\s*<\/h3>\s*<p>\s*[^<]+\s*<\/p>/;
   return pattern.test(content);
 }
 
@@ -174,7 +174,7 @@ const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, bo
             pausedEmit = pausedEmit.replace(bookTitleMatch[0], bookTitleMatch[0] + buyNowButtonHtml);
           } else {
             const buyNowButtonHtml = `<div><a href="${amazonUrl}" target="_blank"><button class="buy-now-button">Buy now</button></a></div>`;
-            const moreDetailsButtonHtml = `<div><button type="button" class="more-details-btn" data-book-title="${bookTitle}" data-author="${author}">More details</button></div>`;
+            const moreDetailsButtonHtml = `<div><button type="button" class="more-details-btn" data-book-title="${bookTitle}" data-author="${author}">Book overview</button></div>`;
             pausedEmit = pausedEmit.replace(bookTitleMatch[0], bookTitleMatch[0] + buyNowButtonHtml + moreDetailsButtonHtml);
           }
 
@@ -234,6 +234,7 @@ const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, bo
         if (isMoreDetails || messages[messages.length - 1].content.startsWith("Explain the book - ")) {
           const MoreDetails = require('./models/MoreDetails');
           // Check if completeResponse follows the specified format
+          console.log("completeResponse", completeResponse);
           if (checkFormat(completeResponse)) {
               const newDetail = new MoreDetails({
                   bookTitle,
@@ -358,3 +359,4 @@ module.exports = openaiApi;
 //     return "Error getting newsletter content";
 //   }
 // };
+

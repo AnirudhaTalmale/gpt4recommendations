@@ -46,7 +46,7 @@ const BlogPostPage = () => {
   };
 
   if (!post) {
-    return <div className="loading">Loading...</div>;
+    return <div className="loading"></div>;
   }
 
   const createMarkup = (htmlContent) => {
@@ -60,6 +60,10 @@ const BlogPostPage = () => {
           <label>
             Title:
             <input type="text" value={post.title} onChange={e => setPost({ ...post, title: e.target.value })} />
+          </label>
+          <label>
+            Image:
+            <input type="file" onChange={e => setPost({ ...post, image: e.target.files[0] })} />
           </label>
           <label>
             Content:

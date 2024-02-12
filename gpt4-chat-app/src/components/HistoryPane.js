@@ -1,6 +1,8 @@
 import React, { useState, useRef, useEffect, forwardRef } from 'react';
 import axios from 'axios';
 import ConfirmationDialog from './ConfirmationDialog'; 
+import { useNavigate } from 'react-router-dom';
+
 import '../App.css';
 
 const straightLinePath = 'M15,25 L15,5';
@@ -11,7 +13,8 @@ const HistoryPane = forwardRef(({
   onSelectSession, 
   onDeleteSession, 
   userName, 
-  userImage, 
+  userImage,
+  isAdmin, 
   isPaneOpen, 
   togglePane,
   selectedSessionId,
@@ -21,7 +24,7 @@ const HistoryPane = forwardRef(({
   const [isEntryActive, setIsEntryActive] = useState(false);
   const [wasClosedManually, setWasClosedManually] = useState(false);
   const lineRef = useRef(null);
- 
+  const navigate = useNavigate();
 
   const handleMouseEnter = () => {
     if (lineRef.current) {
@@ -312,6 +315,9 @@ const HistoryPane = forwardRef(({
             <ul className="dropdown-menu" ref={dropdownRef}>
               <li onClick={handleDeleteAccount}>
                 <i className="fa-solid fa-trash"></i> Delete account
+              </li>
+              <li onClick={() => navigate('/blog', { state: { isAdmin: isAdmin } })}>
+                <i className="fa-solid fa-blog"></i> Blog
               </li>
               <li>
                 <a href="mailto:anirudhatalmale4@gmail.com" className="dropdown-link" style={{ display: 'block', width: '100%', height: '100%' }}>

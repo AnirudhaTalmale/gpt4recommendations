@@ -24,7 +24,7 @@ function Chat() {
   const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
-    setIsAdmin(userData?.role === 'assistant');
+    setIsAdmin(userData?.email === 'anirudhatalmale4@gmail.com');
   }, [userData]); 
   
 

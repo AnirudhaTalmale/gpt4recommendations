@@ -1,6 +1,8 @@
 import React, { useState, useRef, useEffect, forwardRef } from 'react';
 import axios from 'axios';
 import ConfirmationDialog from './ConfirmationDialog'; 
+import { useNavigate } from 'react-router-dom';
+
 import '../App.css';
 
 const HistoryPane = forwardRef(({
@@ -18,6 +20,9 @@ const HistoryPane = forwardRef(({
 }, ref) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isEntryActive, setIsEntryActive] = useState(false);
+  console.log("isAdmin is: ", isAdmin);
+
+  const navigate = useNavigate();
 
   const dropdownRef = useRef(null);
   const userEntryRef = useRef(null);
@@ -156,6 +161,9 @@ const HistoryPane = forwardRef(({
             <ul className="dropdown-menu" ref={dropdownRef}>
               <li onClick={handleDeleteAccount}>
                 <i className="fa-solid fa-trash"></i> Delete account
+              </li>
+              <li onClick={() => navigate('/blog', { state: { isAdmin: isAdmin } })}>
+                <i className="fa-solid fa-blog"></i> Blog
               </li>
               <li>
                 <a href="mailto:anirudhatalmale4@gmail.com" className="dropdown-link" style={{ display: 'block', width: '100%', height: '100%' }}>

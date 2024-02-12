@@ -104,10 +104,7 @@ app.get('/api/check-auth', (req, res) => {
 
 app.get('/api/user-info', (req, res) => {
   if (req.isAuthenticated()) {
-    let email = '';
-    if (req.user.google && req.user.google.email) {
-      email = req.user.google.email;
-    }
+    let email = req.user.local && req.user.local.email ? req.user.local.email : '';
 
     let image = req.user.image;
     if (!image) {
