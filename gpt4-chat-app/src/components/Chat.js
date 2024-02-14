@@ -31,6 +31,8 @@ function Chat() {
   const [selectedSessionId, setSelectedSessionId] = useState(null);
   const [lastUserMessage, setLastUserMessage] = useState(null);
   const [isMoreDetailsState, setIsMoreDetailsState] = useState(false);
+  const [isKeyInsightsState, setIsKeyInsightsState] = useState(false);
+  const [isAnecdotesState, setIsAnecdotesState] = useState(false);
   const [bookTitleState, setBookTitleState] = useState(null);
   const [authorState, setAuthorState] = useState(null);
   const [moreBooks, setMoreBooks] = useState(false);
@@ -286,6 +288,8 @@ function Chat() {
           isFirstQuery
         },
         isMoreDetails: isMoreDetailsState,
+        isKeyInsights: isKeyInsightsState,
+        isAnecdotes: isAnecdotesState,
         bookTitle: bookTitleState,
         author: authorState,
         moreBooks: moreBooks // Use the moreBooks state here
@@ -294,7 +298,7 @@ function Chat() {
       // Reset lastUserMessage to avoid duplicate emissions
       setLastUserMessage(null);
     }
-  }, [lastUserMessage, sessions, isMoreDetailsState, bookTitleState, authorState, moreBooks]);
+  }, [lastUserMessage, sessions, isMoreDetailsState, isKeyInsightsState, isAnecdotesState, bookTitleState, authorState, moreBooks]);
   
 
   const handleStopStreaming = useCallback(async () => {
@@ -327,9 +331,9 @@ function Chat() {
   
     let streamTimeout;
   
-    const handleStreamChunk = ({ content, sessionId, isMoreDetails, moreBooks }) => {
+    const handleStreamChunk = ({ content, sessionId, isMoreDetails, isKeyInsights, isAnecdotes, moreBooks }) => {
       if (sessions[currentSessionIndex]._id === sessionId) {
-        if (isMoreDetails) {
+        if (isMoreDetails || isKeyInsights || isAnecdotes) {
           // If it's a more details response, display in Lightbox
           setLightboxContent(prevContent => prevContent + content);
           setIsStreaming(true);
@@ -374,7 +378,7 @@ function Chat() {
   }, [updateSessionMessages, currentSessionIndex, sessions]);
   
 
-  const handleQuerySubmit = async (query, isMoreDetails = false, bookTitle = null, author = null, moreBooks = false) => {
+  const handleQuerySubmit = async (query, isMoreDetails = false, bookTitle = null, author = null, moreBooks = false, isKeyInsights = false, isAnecdotes = false) => {
     setIsLoading(true);
   
     if (currentSessionIndexRef.current === -1) {
@@ -393,11 +397,13 @@ function Chat() {
     }
 
     setIsMoreDetailsState(isMoreDetails);
+    setIsKeyInsightsState(isKeyInsights);
+    setIsAnecdotesState(isAnecdotes);
     setBookTitleState(bookTitle);
     setAuthorState(author);
     setMoreBooks(moreBooks);
 
-    if (!isMoreDetails && !moreBooks) {
+    if (!isMoreDetails && !moreBooks && !isKeyInsights && !isAnecdotes) {
       updateSessionMessages(query, 'simple', true); // Removed the currentSessionIndex parameter, as it's now accessed within updateSessionMessages
     }
     else {
@@ -409,6 +415,8 @@ function Chat() {
           isFirstQuery
         },
         isMoreDetails,
+        isKeyInsights,
+        isAnecdotes,
         bookTitle,
         author,
         moreBooks
@@ -423,12 +431,10 @@ function Chat() {
   const handleNewSession = useCallback(async () => {
     
     if (sessions.length > 0 && isSessionEmpty(sessions[sessions.length - 1])) {
-      console.log("last session is empty");
       setCurrentSessionIndex(sessions.length - 1);
       return sessions[sessions.length - 1]; // Return the last session if it's empty
     } else {
       try {
-        console.log("initiating new session creation");
         if (!userData) return;
         const res = await axios.post('http://localhost:3000/api/session', { userId: userData.id });
         const newSession = res.data;
@@ -437,7 +443,6 @@ function Chat() {
           const newIdx = updatedSessions.length - 1;
           setCurrentSessionIndex(newIdx);
           currentSessionIndexRef.current = newIdx;
-          console.log("new session created with currentSessionIndex as: ", currentSessionIndexRef.current);
           return updatedSessions;
         });
         setSelectedSessionId(newSession._id);
@@ -554,6 +559,68 @@ function Chat() {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [isPaneOpen, togglePane]);
+
+  const fetchAnecdotes = async (bookTitle, author) => {
+    try {
+      const response = await axios.get(`http://localhost:3000/api/anecdotes`, {
+        params: { bookTitle, author }
+      });
+      return response; // Return the response for further handling
+    } catch (error) {
+      throw error; // Throw the error to be caught in the calling function
+    }
+  };  
+  
+
+  const handleAnecdotesRequest = async (bookTitle, author) => {
+    try {
+      const response = await fetchAnecdotes(bookTitle, author);
+
+      if (!response || !response.data || !response.data.anecdotes) {
+        const userQuery = `${bookTitle}`;
+        handleQuerySubmit(userQuery, false, bookTitle, author, false, false, true);
+      } else {
+        const anecdotes = response.data.anecdotes;
+        setLightboxContent(''); // Reset the content
+        setLightboxContent(anecdotes);
+        setIsLightboxOpen(true);
+      }
+    } catch (error) {
+      const userQuery = `${bookTitle}`;
+      handleQuerySubmit(userQuery, false, bookTitle, author, false, false, true);
+    }
+  };
+
+  const fetchKeyInsights = async (bookTitle, author) => {
+    try {
+      const response = await axios.get(`http://localhost:3000/api/key-insights`, {
+        params: { bookTitle, author }
+      });
+      return response; // Return the response for further handling
+    } catch (error) {
+      throw error; // Throw the error to be caught in the calling function
+    }
+  };  
+  
+
+  const handleKeyInsightsRequest = async (bookTitle, author) => {
+    try {
+      const response = await fetchKeyInsights(bookTitle, author);
+
+      if (!response || !response.data || !response.data.keyInsights) {
+        const userQuery = `${bookTitle}`;
+        handleQuerySubmit(userQuery, false, bookTitle, author, false, true);
+      } else {
+        const keyInsights = response.data.keyInsights;
+        setLightboxContent(''); // Reset the content
+        setLightboxContent(keyInsights);
+        setIsLightboxOpen(true);
+      }
+    } catch (error) {
+      const userQuery = `${bookTitle}`;
+      handleQuerySubmit(userQuery, false, bookTitle, author, false, true);
+    }
+  };
 
   const fetchMoreDetails = async (bookTitle, author) => {
     try {
@@ -687,6 +754,8 @@ function Chat() {
               userImage={userData?.image}
               isStreaming={isStreaming}
               onMoreDetailsClick={handleMoreDetailsRequest}
+              onKeyInsightsClick={handleKeyInsightsRequest}
+              onAnecdotesClick={handleAnecdotesRequest}
               showContinueButton={showContinueButton && isLastMessageFromAssistant}
               onContinueGenerating={onContinueGenerating}
             />

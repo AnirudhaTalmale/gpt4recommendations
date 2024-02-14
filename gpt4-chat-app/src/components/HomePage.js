@@ -77,6 +77,18 @@ function HomePage() {
       <div className="home-page-container">
         <div className="login-container">
             <h2>Welcome back</h2>
+
+            <button onClick={handleSignupGoogle} className="login-button">
+                <img src="/icons8-google-logo.svg" alt="" className="google-logo" />
+                Continue with Google
+            </button>
+            
+            <div className="divider">
+                <span className="line"></span>
+                OR
+                <span className="line"></span>
+            </div>
+
             <form onSubmit={handleLoginWithEmail} noValidate>
                 <div className="email-input-group">
                     <input
@@ -96,16 +108,6 @@ function HomePage() {
                     Continue with Email
                 </button>
             </form>
-
-            <div className="divider">
-                <span className="line"></span>
-                OR
-                <span className="line"></span>
-            </div>
-            <button onClick={handleSignupGoogle} className="login-button">
-                <img src="/icons8-google-logo.svg" alt="" className="google-logo" />
-                Continue with Google
-            </button>
         </div>
       </div>
     </div>

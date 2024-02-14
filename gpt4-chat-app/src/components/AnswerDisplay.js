@@ -1,11 +1,16 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import DOMPurify from 'dompurify';
+import axios from 'axios';
+
 import '../App.css';
 
 function AnswerDisplay({ 
   role, content, userImage, isStreaming, 
-  onMoreDetailsClick, showContinueButton, onContinueGenerating 
+  onMoreDetailsClick, onKeyInsightsClick, onAnecdotesClick, showContinueButton, onContinueGenerating 
 }) {
+  const [bookId, setBookId] = useState('');
+  const [showModal, setShowModal] = useState(false);
+
   const createMarkup = () => {
     const safeHTML = DOMPurify.sanitize(content, {
       ADD_ATTR: ['target'], // Allow 'target' attribute for anchor tags
@@ -18,6 +23,62 @@ function AnswerDisplay({
       onMoreDetailsClick(bookTitle, author);
     }
   };
+  
+  const handleKeyInsightsClick = (bookTitle, author) => {
+    if (onKeyInsightsClick) {
+      onKeyInsightsClick(bookTitle, author);
+    }
+  };
+
+  const handleAnecdotesClick = (bookTitle, author) => {
+    console.log("i am here");
+    if (onAnecdotesClick) {
+      onAnecdotesClick(bookTitle, author);
+    }
+  };
+
+  
+  const handlePreviewClick = async (bookTitle, author) => {
+    const query = `intitle:${encodeURIComponent(bookTitle)}${author ? `+inauthor:${encodeURIComponent(author)}` : ''}`;
+    const apiUrl = `https://www.googleapis.com/books/v1/volumes?q=${query}&key=AIzaSyBh8a2MssG5lBUgGmiX1ls7wIyjxyzUQ1k`;
+    try {
+      const response = await axios.get(apiUrl);
+      if (response.data.items && response.data.items.length > 0) {
+        const book = response.data.items[0];
+        setBookId(book.id); // Set the Google Books ID state
+      } else {
+        console.log("No preview available");
+        setBookId(''); // Reset the Google Books ID if no preview is available
+      }
+      setShowModal(true);
+    } catch (error) {
+      console.error("Error fetching book preview:", error);
+      setBookId(''); // Reset the Google Books ID in case of an error
+    }
+  };
+
+  const renderBookPreviewModal = () => {
+    if (!bookId) return null;
+
+    const embedUrl = `https://books.google.com/books?id=${bookId}&hl=en&output=embed`;
+    return (
+      <div className="modal" style={{ display: showModal ? 'block' : 'none' }}>
+        <div className="modal-content">
+          <span className="close" onClick={() => setShowModal(false)}>&times;</span>
+          <iframe
+            src={embedUrl}
+            width="600"
+            height="1000"
+            allowFullScreen
+            title="Book Preview"
+            style={{ border: 'none' }}
+          ></iframe>
+        </div>
+      </div>
+    );
+  };
+  
+  
 
   // In AnswerDisplay component
   const handleContinueGenerating = () => {
@@ -64,6 +125,18 @@ function AnswerDisplay({
             const bookTitle = e.target.getAttribute('data-book-title');
             const author = e.target.getAttribute('data-author');
             handleMoreDetailsClick(bookTitle, author);
+          } else if (e.target.classList.contains('key-insights-btn')) {
+            const bookTitle = e.target.getAttribute('data-book-title');
+            const author = e.target.getAttribute('data-author');
+            handleKeyInsightsClick(bookTitle, author);
+          } else if (e.target.classList.contains('anecdotes-btn')) {
+            const bookTitle = e.target.getAttribute('data-book-title');
+            const author = e.target.getAttribute('data-author');
+            handleAnecdotesClick(bookTitle, author);
+          } else if (e.target.classList.contains('preview-btn')) {
+            const bookTitle = e.target.getAttribute('data-book-title');
+            const author = e.target.getAttribute('data-author');
+            handlePreviewClick(bookTitle, author);
           }
         }}>
           {role === 'user' && (
@@ -89,6 +162,7 @@ function AnswerDisplay({
           )}
         </div>
       </div>
+      {renderBookPreviewModal()}
     </div>
   );
 }

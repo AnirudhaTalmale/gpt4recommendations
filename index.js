@@ -3,6 +3,8 @@ const openaiApi = require('./openaiApi');
 const Session = require('./models/Session');
 const EmailRateLimit = require('./models/EmailRateLimit');
 const MoreDetails = require('./models/MoreDetails');
+const KeyInsightsModel = require('./models/KeyInsights'); 
+const AnecdotesModel = require('./models/Anecdotes'); 
 const ChatWithUsSession = require('./models-chat-with-us/ChatWithUsSession');
 const UserSession = require('./models-chat-with-us/UserSession');
 const BlogPost = require('./models/BlogPost'); // Adjust the path as necessary
@@ -12,6 +14,8 @@ const { Server } = require('socket.io');
 const bookRecommendationPrompt = require('./promptBook');
 const moreBooksRecommendationPrompt = require('./promptMoreBooks');
 const moreDetailsPrompt = require('./promptMoreDetails');
+const keyInsightsPrompt = require('./promptKeyInsights');
+const anecdotesPrompt = require('./promptAnecdotes');
 const passportSetup = require('./passport-setup'); // Import the setup function
 const axios = require('axios');
 const multer = require('multer');
@@ -284,7 +288,7 @@ io.on('connection', (socket) => {
   let currentSessionId;
   
   socket.on('query', async (data) => {
-    const { sessionId, message, isMoreDetails, bookTitle, author, moreBooks } = data;
+    const { sessionId, message, isMoreDetails, isKeyInsights, isAnecdotes, bookTitle, author, moreBooks } = data;
     currentSessionId = sessionId; 
   
     // Find the session and update it with the new message and response
@@ -293,7 +297,7 @@ io.on('connection', (socket) => {
       return res.status(404).json({ message: 'Session not found' });
     }
 
-    if (!isMoreDetails && !moreBooks) {
+    if (!isMoreDetails && !moreBooks && !isKeyInsights && !isAnecdotes) {
        // Add the user message to the session and save
        session.messages.push({
         role: 'user',
@@ -333,9 +337,9 @@ io.on('connection', (socket) => {
         </div>`;
     
       // Emit a warning message to the client and set the limitMessage as the session name
-      socket.emit('messageLimitReached', { content: limitMessage, sessionId: currentSessionId, isMoreDetails });
+      socket.emit('messageLimitReached', { content: limitMessage, sessionId: currentSessionId, isMoreDetails, isKeyInsights, isAnecdotes });
     
-      if(!isMoreDetails && message.isFirstQuery) {
+      if(!isMoreDetails && message.isFirstQuery && !isKeyInsights && !isAnecdotes) {
         // Update the session name with the limitMessage and save the session
         const newSessionName = 'Message limit reached';
         session.sessionName = newSessionName;
@@ -348,6 +352,10 @@ io.on('connection', (socket) => {
     let completePrompt;
     if (isMoreDetails || message.content.startsWith("Explain the book - ")) {
       completePrompt = moreDetailsPrompt(message.content);
+    } else if (isKeyInsights) {
+      completePrompt = keyInsightsPrompt(message.content);
+    } else if (isAnecdotes) {
+      completePrompt = anecdotesPrompt(message.content);
     } else if (moreBooks) {
       completePrompt = moreBooksRecommendationPrompt(message.content);
     } else {
@@ -361,7 +369,7 @@ io.on('connection', (socket) => {
       const errorMessage = 'Input message too large';
     
       // Emit a warning message to the client and update session name if it's the first query
-      socket.emit('chunk', { content: errorMessage, sessionId: currentSessionId, isMoreDetails });
+      socket.emit('chunk', { content: errorMessage, sessionId: currentSessionId, isMoreDetails, isKeyInsights });
     
       if (message.isFirstQuery) {
         session.sessionName = errorMessage;
@@ -371,7 +379,7 @@ io.on('connection', (socket) => {
     }    
     else {
 
-      if (message.isFirstQuery && !isMoreDetails && !moreBooks) {
+      if (message.isFirstQuery && !isMoreDetails && !isKeyInsights && !isAnecdotes && !moreBooks) {
         // Get the 4-word summary
         const summary = await openaiApi.getSummary(message.content);
         session.sessionName = summary; // Update the session name with the summary
@@ -383,7 +391,7 @@ io.on('connection', (socket) => {
 
       try {
         console.log("messagesForGPT4", messagesForGPT4);
-        await openaiApi(messagesForGPT4, socket, session, currentSessionId, isMoreDetails, bookTitle, author, moreBooks);
+        await openaiApi(messagesForGPT4, socket, session, currentSessionId, isMoreDetails, isKeyInsights, isAnecdotes, bookTitle, author, moreBooks);
         await session.user.save();
       } catch (error) {
         console.error('Error processing query:', error);
@@ -396,7 +404,7 @@ io.on('connection', (socket) => {
     socket.join(sessionId);
   });
 
-  const processAttachments = (attachments) => {
+  const processAttachments = (attachments) => { 
     return attachments.map((base64String, index) => {
       if (!base64String) return null; // If there's no attachment, return null
       const mimeType = base64String.match(/^data:(.*);base64,/)[1];
@@ -691,6 +699,65 @@ app.get('/api/more-details', async (req, res) => {
     }
 
     res.json(bookDetails);
+  } catch (error) {
+    console.error('Server error:', error); // Log the error for debugging
+    res.status(500).json({ message: 'Server error occurred while fetching book details' });
+  }
+});
+
+
+app.get('/api/key-insights', async (req, res) => { 
+  try {
+    // Retrieve bookTitle and author from query parameters
+    const { bookTitle, author } = req.query;
+
+    // Initialize query object
+    let query = {
+      bookTitle: new RegExp(bookTitle, 'i') // Always search by title
+    };
+
+    // Add author to the query if it's provided
+    if (author) {
+      query.author = new RegExp(author, 'i');
+    }
+
+    // Perform a case-insensitive search
+    const keyInsightsResult = await KeyInsightsModel.findOne(query); // Use the correctly named model for the query
+
+    if (!keyInsightsResult) {
+      return res.status(404).json({ message: 'Key Insights not found for this book' });
+    }
+
+    res.json(keyInsightsResult);
+  } catch (error) {
+    console.error('Server error:', error); // Log the error for debugging
+    res.status(500).json({ message: 'Server error occurred while fetching book details' });
+  }
+});
+
+app.get('/api/anecdotes', async (req, res) => { 
+  try {
+    // Retrieve bookTitle and author from query parameters
+    const { bookTitle, author } = req.query;
+
+    // Initialize query object
+    let query = {
+      bookTitle: new RegExp(bookTitle, 'i') // Always search by title
+    };
+
+    // Add author to the query if it's provided
+    if (author) {
+      query.author = new RegExp(author, 'i');
+    }
+
+    // Perform a case-insensitive search
+    const AnecdotesResult = await AnecdotesModel.findOne(query); // Use the correctly named model for the query
+
+    if (!AnecdotesResult) {
+      return res.status(404).json({ message: 'Key Insights not found for this book' });
+    }
+
+    res.json(AnecdotesResult);
   } catch (error) {
     console.error('Server error:', error); // Log the error for debugging
     res.status(500).json({ message: 'Server error occurred while fetching book details' });

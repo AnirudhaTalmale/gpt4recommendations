@@ -19,6 +19,27 @@ const parseBookTitle = (bookTitleWithAuthor) => {
 
 const encodeForUrl = (text) => encodeURIComponent(text);
 
+// Function to generate a "Buy Now" button for a book
+function createBuyNowButton(bookTitle, author = '') {
+  let amazonUrl = `https://www.amazon.com/s?k=${encodeForUrl(bookTitle)}`;
+  if (author) {
+    amazonUrl += `+by+${encodeForUrl(author)}`;
+  }
+  return `<div><a href="${amazonUrl}" target="_blank"><button class="buy-now-button">Buy Now</button></a></div>`;
+}
+
+function createBookInfoHtml(bookTitle, author) {
+  let bookInfoHtml = `<div class="book-info">
+      <h3 class="book-title">${bookTitle}</h3>`;
+  // If author exists, add author information
+  if (author) {
+    bookInfoHtml += `<span class="book-author">by ${author}</span>`;
+  }
+  // Close the book-info div
+  bookInfoHtml += `</div>`;
+  return bookInfoHtml;
+}
+
 const getBookCover = async (bookTitleWithAuthor) => {
   try {
     const { bookTitle, author } = parseBookTitle(bookTitleWithAuthor);
@@ -37,7 +58,7 @@ const getBookCover = async (bookTitleWithAuthor) => {
     }
 
     // Update the API call to include the query
-    const response = await axios.get(`https://www.googleapis.com/books/v1/volumes?q=${query}&key=${process.env.GOOGLE_BOOKS_API_KEY}`);
+    const response = await axios.get(`https://www.googleapis.com/books/v1/volumes?q=${query}&key=${process.env.REACT_APP_GOOGLE_BOOKS_API_KEY}`);
 
     // Check if items exist and are not empty
     if (response.data.items && response.data.items.length > 0) {
@@ -65,11 +86,6 @@ const getBookCover = async (bookTitleWithAuthor) => {
   }
 };
 
-function checkFormat(content) {
-  const pattern = /<div class="book-info">\s*<h3 class="book-title">\s*[^<]+\s*<\/h3>\s*<span class="book-author">\s*[^<]+\s*<\/span>\s*<\/div>\s*<div>\s*<img src="[^"]*" alt="">\s*<\/div>\s*<div>\s*<a href="[^"]+" target="_blank">\s*<button class="buy-now-button">\s*[^<]+\s*<\/button>\s*<\/a>\s*<\/div>\s*<h3>\s*[Bb]ook [Ss]ummary\s*<\/h3>\s*<p>\s*[^<]+\s*<\/p>\s*<h3>\s*[Aa]uthor's [Cc]redibility\s*<\/h3>\s*<p>\s*[^<]+\s*<\/p>\s*<h3>\s*[Kk]ey [Ii]nsights\s*<\/h3>\s*<ol>(?:\s*<li>\s*<strong>[^<]+<\/strong>:\s*[^<]+\s*<\/li>\s*)+<\/ol>\s*<h3>\s*[Cc]ase [Ss]tudies and [Aa]necdotes\s*<\/h3>\s*<p>\s*[^<]+\s*<\/p>\s*<h3>\s*[Ee]ndorsements and [Pp]raise\s*<\/h3>\s*<p>\s*[^<]+\s*<\/p>/;
-  return pattern.test(content);
-}
-
 const openai = new OpenAI(process.env.OPENAI_API_KEY);
 
 let isStreamingActive = false;
@@ -85,7 +101,7 @@ const fetchMoreDetails = async (bookTitle, author) => {
   }
 };  
 
-const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, bookTitle, author, moreBooks) => {
+const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, isKeyInsights, isAnecdotes, bookTitle, author, moreBooks) => {
 
   if (!isMoreDetails && messages[messages.length - 1].content.startsWith("Explain the book - ")) {
     try {
@@ -121,7 +137,7 @@ const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, bo
     });    
 
     let messageIndex;
-    if (!isMoreDetails) {
+    if (!isMoreDetails && !isKeyInsights && !isAnecdotes) {
       if (moreBooks) {
         // Update the last message in the session instead of creating a new one
         messageIndex = session.messages.length - 1;
@@ -140,6 +156,23 @@ const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, bo
     let pausedEmit = ""; // Variable to hold paused chunks
     let isPaused = false; // Flag to check if emitting is paused
 
+    const originalBookTitle = bookTitle;
+    const originalAuthor = author;
+    let coverImageUrl = 'default-cover.jpg';
+    let bookTitleMatch;
+
+    if (isKeyInsights || isAnecdotes) {
+      const bookInfoHtml = createBookInfoHtml(bookTitle, author);
+      coverImageUrl = await getBookCover(originalBookTitle);
+      let imageDiv = ``;
+      if (coverImageUrl !== 'default-cover.jpg') {
+        imageDiv = `<div><img src="${coverImageUrl}" alt=""></div>`;
+      }
+      const buyNowButtonHtml = createBuyNowButton(bookTitle, author);
+      completeResponse = bookInfoHtml + imageDiv + buyNowButtonHtml;
+      socket.emit('chunk', { content: completeResponse, sessionId, isMoreDetails, isKeyInsights, isAnecdotes, moreBooks });
+    }
+
     for await (const chunk of stream) {
       if (!isStreamingActive) break; 
       let chunkContent = chunk.choices[0]?.delta?.content || "";
@@ -151,31 +184,26 @@ const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, bo
           pausedEmit += chunkContent;
 
           // Extract book title enclosed in '#'
-          const bookTitleMatch = pausedEmit.match(/#(.*?)#/);
+          bookTitleMatch = pausedEmit.match(/#(.*?)#/);
           const bookTitleWithAuthor = bookTitleMatch ? bookTitleMatch[1] : "";
 
-          // Fetch book cover image
-          const coverImageUrl = await getBookCover(bookTitleWithAuthor);
-          
-          // Extract book title and author
-          let { bookTitle, author } = parseBookTitle(bookTitleWithAuthor);
+          coverImageUrl = await getBookCover(bookTitleWithAuthor); // Example function call
 
-          const encodedTitle = encodeForUrl(bookTitle);
-          let amazonUrl = `https://www.amazon.in/s?k=${encodedTitle}`;
+          // Parse bookTitle and author from the content
+          let parsed = parseBookTitle(bookTitleWithAuthor); // Example function call
+          bookTitle = parsed.bookTitle;
+          author = parsed.author;
 
-          if (author) {
-            const encodedAuthor = `+by+${encodeForUrl(author)}`;
-            amazonUrl += encodedAuthor;
-          }
+          const buyNowButtonHtml = createBuyNowButton(bookTitle, author);
 
-          // Replace buttonDiv1 with updated Buy Now button HTML
           if (isMoreDetails || messages[messages.length - 1].content.startsWith("Explain the book - ")) {
-            const buyNowButtonHtml = `<div><a href="${amazonUrl}" target="_blank"><button class="buy-now-button">Buy now</button></a></div>`;
             pausedEmit = pausedEmit.replace(bookTitleMatch[0], bookTitleMatch[0] + buyNowButtonHtml);
           } else {
-            const buyNowButtonHtml = `<div><a href="${amazonUrl}" target="_blank"><button class="buy-now-button">Buy now</button></a></div>`;
-            const moreDetailsButtonHtml = `<div><button type="button" class="more-details-btn" data-book-title="${bookTitle}" data-author="${author}">Book overview</button></div>`;
-            pausedEmit = pausedEmit.replace(bookTitleMatch[0], bookTitleMatch[0] + buyNowButtonHtml + moreDetailsButtonHtml);
+            const moreDetailsButtonHtml = `<div><button type="button" class="more-details-btn" data-book-title="${bookTitle}" data-author="${author}">Book Info</button></div>`;
+            const keyInsightsButtonHtml = `<div><button type="button" class="key-insights-btn" data-book-title="${bookTitle}" data-author="${author}">Key Insights</button></div>`;
+            const anecdotesButtonHtml = `<div><button type="button" class="anecdotes-btn" data-book-title="${bookTitle}" data-author="${author}">Anecdotes</button></div>`;
+            const previewButtonHtml = `<div><button type="button" class="preview-btn" data-book-title="${bookTitle}" data-author="${author}">Preview</button></div>`;
+            pausedEmit = pausedEmit.replace(bookTitleMatch[0], bookTitleMatch[0] + buyNowButtonHtml + moreDetailsButtonHtml + keyInsightsButtonHtml + anecdotesButtonHtml + previewButtonHtml);
           }
 
           // If the cover image URL is not the default, concatenate div tag with the image tag
@@ -184,31 +212,19 @@ const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, bo
             pausedEmit = pausedEmit.replace(bookTitleMatch[0], bookTitleMatch[0] + imageDiv);
           }
 
-          // Create the HTML for the book title
-          let bookInfoHtml = `<div class="book-info">
-          <h3 class="book-title">${bookTitle}</h3>`;
-
-          // If author exists, add author information
-          if (author) {
-          bookInfoHtml += `<span class="book-author">by ${author}</span>`;
-          }
-
-          // Close the book-info div
-          bookInfoHtml += `</div>`;
-
-          // Replace the original text with the new HTML structure
+          const bookInfoHtml = createBookInfoHtml(bookTitle, author);
           pausedEmit = pausedEmit.replace(bookTitleMatch[0], bookInfoHtml);
           pausedEmit = pausedEmit.replace(/\#/g, '');
                     
           // Emit pausedEmit and reset
           completeResponse += pausedEmit;
-          if (moreBooks || !isMoreDetails) {
+          if (moreBooks || (!isMoreDetails && !isKeyInsights && !isAnecdotes) ) {
             // Update the current message with the new chunk.
             session.messages[messageIndex].content += pausedEmit;
             await session.save();
           }
           
-          socket.emit('chunk', { content: pausedEmit, sessionId, isMoreDetails, moreBooks });
+          socket.emit('chunk', { content: pausedEmit, sessionId, isMoreDetails, isKeyInsights, isAnecdotes, moreBooks });
           pausedEmit = "";
         } else {
           // If pausing, start adding to pausedEmit including current chunk
@@ -222,27 +238,43 @@ const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, bo
         // Normal emit when not paused
         completeResponse += chunkContent;
         
-        if (moreBooks || !isMoreDetails) {
+        if (moreBooks || (!isMoreDetails && !isKeyInsights && !isAnecdotes) ) {
+
           // Update the current message with the new chunk.
           session.messages[messageIndex].content += chunkContent;
           await session.save();
         }
-        socket.emit('chunk', { content: chunkContent, sessionId, isMoreDetails, moreBooks });
+        socket.emit('chunk', { content: chunkContent, sessionId, isMoreDetails, isKeyInsights, isAnecdotes, moreBooks });
       }
       const finishReason = chunk.choices[0]?.finish_reason;
       if (finishReason === 'stop') {
         if (isMoreDetails || messages[messages.length - 1].content.startsWith("Explain the book - ")) {
           const MoreDetails = require('./models/MoreDetails');
-          // Check if completeResponse follows the specified format
-          console.log("completeResponse", completeResponse);
-          if (checkFormat(completeResponse)) {
+          // if (checkFormat(completeResponse)) {
               const newDetail = new MoreDetails({
                   bookTitle,
                   author,
                   detailedDescription: completeResponse // Save complete response here
               });
               await newDetail.save();
-          }
+          // }
+        }
+        else if (isKeyInsights) {
+          const KeyInsights = require('./models/KeyInsights');
+            const newDetail = new KeyInsights({
+                bookTitle,
+                author,
+                keyInsights: completeResponse // Save complete response here
+            });
+            await newDetail.save();
+        } else if (isAnecdotes) {
+          const Anecdotes = require('./models/Anecdotes');
+            const newDetail = new Anecdotes({
+                bookTitle,
+                author,
+                anecdotes: completeResponse // Save complete response here
+            });
+            await newDetail.save();
         }
         socket.emit('streamEnd', { message: 'Stream completed', sessionId }); // Emit a message indicating stream end
         break; // Optionally break out of the loop if the stream is finished

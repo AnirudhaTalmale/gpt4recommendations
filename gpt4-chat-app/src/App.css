@@ -1,5 +1,3 @@
-/* Importing the Google Font in your CSS file */
-@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@700&display=swap');
 
 .App {
   display: flex;
@@ -1222,7 +1220,7 @@ body:not(.history-pane-open) .input-area {
 
 .lightbox-content {
   background-color: white;
-  padding:  1% 5% 3% 5%;
+  padding:  1% 6.7% 3% 6.7%;
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   max-width: 550px; /* Adjust as per your content's requirements */
@@ -1230,8 +1228,10 @@ body:not(.history-pane-open) .input-area {
   overflow-y: auto; /* Adds a scrollbar if the content is too long */
   position: relative; 
   font-size: 0.98rem;
-  line-height: 1.68rem;
+  line-height: 1.6rem;
   color: rgba(0, 0, 0, 0.921);
+  margin-left: 1.5rem;
+  margin-right: 1.5rem;
 }
 
 .lightbox-close {
@@ -1242,6 +1242,27 @@ body:not(.history-pane-open) .input-area {
   cursor: pointer;
   z-index: 1001; /* Higher than the lightbox-overlay to ensure it's on top */
   color: white;
+}
+
+/* Custom scrollbar for lightbox-content */
+.lightbox-content::-webkit-scrollbar {
+  width: 12px; /* width of the entire scrollbar */
+}
+
+.lightbox-content::-webkit-scrollbar-track {
+  background: transparent; /* color of the tracking area */
+}
+
+.lightbox-content::-webkit-scrollbar-thumb {
+  background-color: #dcdcdc; /* very light grey color for the scroll thumb */
+  border-radius: 6px; /* roundness of the scroll thumb */
+  border: 3px solid #dcdcdc; /* Creates additional spacing from the scrollbar track */
+}
+
+/* For Firefox */
+.lightbox-content {
+  scrollbar-width: thin; /* "auto" or "thin" */
+  scrollbar-color: #dcdcdc transparent; /* thumb and track color */
 }
 
 
@@ -1309,7 +1330,7 @@ body:not(.history-pane-open) .input-area {
 .buy-now-button {
   background: none;
   border: 1px solid rgba(169, 169, 169, 0.566);
-  font-size: 0.97rem;
+  font-size: 0.95rem;
   padding: 0.25rem 0.6rem;
   border-radius: 0.35rem;
   cursor: pointer;
@@ -1341,10 +1362,101 @@ body:not(.history-pane-open) .input-area {
   box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1); /* Focus ring with a subtle black shade */
 }
 
+.key-insights-btn {
+  background: none;
+  border: 1px solid rgba(169, 169, 169, 0.566);
+  font-size: 0.95rem;
+  padding: 0.25rem 0.6rem;
+  border-radius: 0.35rem;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+  width: 8.215rem;
+  margin-left: -0.1rem;
+  color: rgb(46, 46, 46);
+  margin-top: 0.7rem;
+}
+
+.key-insights-btn:hover {
+  background-color: rgba(0, 0, 0, 0.1); /* Subtle shade change on hover */
+}
+
+.key-insights-btn:active {
+  background-color: rgba(0, 0, 0, 0.2); /* Slightly darker on active state */
+}
+
+.key-insights-btn:focus {
+  outline: none; /* Remove outline on focus */
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1); /* Focus ring with a subtle black shade */
+}
+
+.anecdotes-btn {
+  background: none;
+  border: 1px solid rgba(169, 169, 169, 0.566);
+  font-size: 0.95rem;
+  padding: 0.25rem 0.6rem;
+  border-radius: 0.35rem;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+  width: 8.215rem;
+  margin-left: -0.1rem;
+  color: rgb(46, 46, 46);
+  margin-top: 0.7rem;
+}
+
+
+.anecdotes-btn:hover {
+  background-color: rgba(0, 0, 0, 0.1); /* Subtle shade change on hover */
+}
+
+.anecdotes-btn:active {
+  background-color: rgba(0, 0, 0, 0.2); /* Slightly darker on active state */
+}
+
+.anecdotes-btn:focus {
+  outline: none; /* Remove outline on focus */
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1); /* Focus ring with a subtle black shade */
+}
+
+.preview-btn {
+  background: none;
+  border: 1px solid rgba(169, 169, 169, 0.566);
+  font-size: 0.95rem;
+  padding: 0.25rem 0.6rem;
+  border-radius: 0.35rem;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+  width: 8.215rem;
+  margin-left: -0.1rem;
+  color: rgb(46, 46, 46);
+  margin-top: 0.7rem;
+}
+
+.preview-btn:hover {
+  background-color: rgba(0, 0, 0, 0.1); /* Subtle shade change on hover */
+}
+
+.preview-btn:active {
+  background-color: rgba(0, 0, 0, 0.2); /* Slightly darker on active state */
+}
+
+.preview-btn:focus {
+  outline: none; /* Remove outline on focus */
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1); /* Focus ring with a subtle black shade */
+}
+
 .more-details-btn {
   background: none;
   border: 1px solid rgba(169, 169, 169, 0.566);
-  font-size: 0.97rem;
+  font-size: 0.95rem;
   padding: 0.25rem 0.6rem;
   border-radius: 0.35rem;
   cursor: pointer;
@@ -1419,6 +1531,24 @@ body:not(.history-pane-open) .input-area {
 /* Styles when streaming is active */
  
 .streaming .more-details-btn {
+  cursor: not-allowed;
+  opacity: 0.5;
+  pointer-events: none; /* Prevents clicking */
+}
+
+.streaming .key-insights-btn {
+  cursor: not-allowed;
+  opacity: 0.5;
+  pointer-events: none; /* Prevents clicking */
+}
+
+.streaming .anecdotes-btn {
+  cursor: not-allowed;
+  opacity: 0.5;
+  pointer-events: none; /* Prevents clicking */
+}
+
+.streaming .preview-btn {
   cursor: not-allowed;
   opacity: 0.5;
   pointer-events: none; /* Prevents clicking */
