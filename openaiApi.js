@@ -44,47 +44,49 @@ const getBookCover = async (bookTitleWithAuthor) => {
   try {
     const { bookTitle, author } = parseBookTitle(bookTitleWithAuthor);
 
-    // Check if the book cover is already in the database using bookTitle
     const existingBook = await Book.findOne({ title: bookTitle });
     if (existingBook) {
       existingBook.coverImageUrl = existingBook.coverImageUrl.replace("&edge=curl", "");
       return existingBook.coverImageUrl; // Return the cover image URL from the database
     }
 
-    // Construct the query based on whether the author is available or not
     let query = `intitle:${encodeURIComponent(bookTitle)}`;
     if (author) {
       query += `+inauthor:${encodeURIComponent(author)}`;
     }
-
-    // Update the API call to include the query
     const response = await axios.get(`https://www.googleapis.com/books/v1/volumes?q=${query}&key=${process.env.REACT_APP_GOOGLE_BOOKS_API_KEY}`);
+
+    let coverImageUrl = '';
+    let isbn = ''; 
 
     // Check if items exist and are not empty
     if (response.data.items && response.data.items.length > 0) {
-      const book = response.data.items[0];
+      // Find the first embeddable item, or default to the first item if none are embeddable
+      let book = response.data.items.find(item => item.accessInfo.embeddable === true) || response.data.items[0];
+      const volumeInfo = book.volumeInfo;
 
-      // Check if volumeInfo, imageLinks, and thumbnail exist
-      if (book.volumeInfo && book.volumeInfo.imageLinks && book.volumeInfo.imageLinks.thumbnail) {
-        let coverImageUrl = book.volumeInfo.imageLinks.thumbnail;
-        coverImageUrl = coverImageUrl.replace("&edge=curl", "");
+      // Try to extract ISBN if available
+      const foundIsbn = volumeInfo.industryIdentifiers?.find(id => id.type === 'ISBN_13' || id.type === 'ISBN_10')?.identifier;
+      if (foundIsbn) isbn = foundIsbn;
 
-        // Save the new book cover in the database
-        const newBook = new Book({ title: bookTitle, coverImageUrl });
-        await newBook.save();
-
-        // Return the cover image URL
-        return coverImageUrl;
+      // Try to extract cover image URL if available
+      if (volumeInfo.imageLinks && volumeInfo.imageLinks.thumbnail) {
+        coverImageUrl = volumeInfo.imageLinks.thumbnail.replace("&edge=curl", "");
       }
     }
 
-    // Return default cover image if no suitable image is found
-    return 'default-cover.jpg';
+    const newBook = new Book({ title: bookTitle, coverImageUrl, isbn }); 
+    await newBook.save();
+
+    // Return the cover image URL
+    return coverImageUrl;
+
   } catch (error) {
     console.error(`Error fetching book cover for ${bookTitleWithAuthor}:`, error);
-    return 'default-cover.jpg';
+    return '';
   }
 };
+
 
 const openai = new OpenAI(process.env.OPENAI_API_KEY);
 
@@ -158,14 +160,14 @@ const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, is
 
     const originalBookTitle = bookTitle;
     const originalAuthor = author;
-    let coverImageUrl = 'default-cover.jpg';
+    let coverImageUrl = '';
     let bookTitleMatch;
 
     if (isKeyInsights || isAnecdotes || isMoreDetails) {
       const bookInfoHtml = createBookInfoHtml(bookTitle, author);
       coverImageUrl = await getBookCover(originalBookTitle);
       let imageDiv = ``;
-      if (coverImageUrl !== 'default-cover.jpg') {
+      if (coverImageUrl) {
         imageDiv = `<div><img src="${coverImageUrl}" alt=""></div>`;
       }
       const buyNowButtonHtml = createBuyNowButton(bookTitle, author);
@@ -206,8 +208,7 @@ const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, is
             pausedEmit = pausedEmit.replace(bookTitleMatch[0], bookTitleMatch[0] + buyNowButtonHtml + moreDetailsButtonHtml + keyInsightsButtonHtml + anecdotesButtonHtml + previewButtonHtml);
           }
 
-          // If the cover image URL is not the default, concatenate div tag with the image tag
-          if (coverImageUrl !== 'default-cover.jpg') {
+          if (coverImageUrl) {
             const imageDiv = `<div><img src="${coverImageUrl}" alt=""></div>`;
             pausedEmit = pausedEmit.replace(bookTitleMatch[0], bookTitleMatch[0] + imageDiv);
           }

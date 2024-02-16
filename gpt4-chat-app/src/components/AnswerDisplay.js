@@ -4,8 +4,6 @@ import axios from 'axios';
 import LightboxForBookPreview from './LightboxForBookPreview';
 import '../App.css';
 
-const GOOGLE_BOOKS_API_KEY = 'AIzaSyBh8a2MssG5lBUgGmiX1ls7wIyjxyzUQ1k'; 
-
 function AnswerDisplay({ 
   role, content, userImage, isStreaming, 
   onMoreDetailsClick, onKeyInsightsClick, onAnecdotesClick, showContinueButton, onContinueGenerating 
@@ -39,29 +37,20 @@ function AnswerDisplay({
     }
   }, []);
 
-  const handlePreviewClick = async (title, author) => {
+  const handlePreviewClick = async (title) => {
     if (isViewerLoaded) {
-      const query = encodeURIComponent(`${title}+inauthor:${author}`);
-      const url = `https://www.googleapis.com/books/v1/volumes?q=${query}&key=${GOOGLE_BOOKS_API_KEY}`;
-  
       try {
-        const response = await axios.get(url);
-        if (response.data.items && response.data.items.length > 0) {
-          const book = response.data.items[0]; // Assuming the first result is the desired book
-          const industryIdentifiers = book.volumeInfo.industryIdentifiers || [];
-          const isbn = industryIdentifiers.find(id => id.type === 'ISBN_13' || id.type === 'ISBN_10');
-  
-          if (isbn) {
-            setBookIdForPreview(isbn.identifier); // Store the book ID (or ISBN) for preview
-            setIsLightboxOpen(true); // Open the Lightbox
-          } else {
-            console.log("ISBN not found for the book");
-          }
+        const response = await axios.get(`http://localhost:3000/api/book/isbn?bookTitle=${encodeURIComponent(title)}`);
+        const isbn = response.data.isbn;
+        if (isbn) { // This will be false if isbn is an empty string
+          setBookIdForPreview(isbn); // Store the book ID (or ISBN) for preview
+          setIsLightboxOpen(true); // Open the Lightbox
         } else {
-          console.log("Book not found");
+          console.log("ISBN not found for the book");
+          // Optionally, handle the case when an ISBN is not available
         }
       } catch (error) {
-        console.error("Error fetching book details:", error);
+        console.error("Error fetching ISBN:", error);
       }
     }
   };
