@@ -9,7 +9,7 @@
 /* chat-area header */
 
 ol {
-  padding-inline-start: 6px; /* Adjusts the starting padding of the list to reduce indentation */
+  padding-inline-start: 6px;  /* Adjusts the starting padding of the list to reduce indentation */
 }
 
 ol li::marker {
@@ -1586,7 +1586,6 @@ b div img {
   display: block; /* Fixes issue with extra space under images */
   margin-bottom: 0.5rem;
 }
-
 
 .modal {
   /* ... other styles ... */

@@ -1,15 +1,79 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import DOMPurify from 'dompurify';
 import axios from 'axios';
-
+import LightboxForBookPreview from './LightboxForBookPreview';
 import '../App.css';
+
+const GOOGLE_BOOKS_API_KEY = 'AIzaSyBh8a2MssG5lBUgGmiX1ls7wIyjxyzUQ1k'; 
 
 function AnswerDisplay({ 
   role, content, userImage, isStreaming, 
   onMoreDetailsClick, onKeyInsightsClick, onAnecdotesClick, showContinueButton, onContinueGenerating 
 }) {
-  const [bookId, setBookId] = useState('');
-  const [showModal, setShowModal] = useState(false);
+  const viewerRef = useRef(null);
+  const [isLightboxOpen, setIsLightboxOpen] = useState(false);
+  const [bookIdForPreview, setBookIdForPreview] = useState('');
+  const [isViewerLoaded, setIsViewerLoaded] = useState(false); // State to manage the viewer's load status
+
+  // This function will be modified to load the viewer only upon a button click
+  const loadGoogleBooksViewer = (bookId) => {
+    if (window.google && window.google.books && viewerRef.current) {
+      var viewer = new window.google.books.DefaultViewer(viewerRef.current);
+      viewer.load(`ISBN:${bookId}`, function() {
+        console.error("Google Books could not load the book.");
+      });
+    }
+  };
+
+  useEffect(() => {
+    if (!window.google || !window.google.books) {
+      const script = document.createElement('script');
+      script.src = 'https://www.google.com/books/jsapi.js';
+      script.onload = () => {
+        window.google.books.load();
+        setIsViewerLoaded(true); // Set state to true indicating the Google Books API is loaded
+      };
+      document.body.appendChild(script);
+    } else {
+      setIsViewerLoaded(true); // If the script is already there, just update the state
+    }
+  }, []);
+
+  const handlePreviewClick = async (title, author) => {
+    if (isViewerLoaded) {
+      const query = encodeURIComponent(`${title}+inauthor:${author}`);
+      const url = `https://www.googleapis.com/books/v1/volumes?q=${query}&key=${GOOGLE_BOOKS_API_KEY}`;
+  
+      try {
+        const response = await axios.get(url);
+        if (response.data.items && response.data.items.length > 0) {
+          const book = response.data.items[0]; // Assuming the first result is the desired book
+          const industryIdentifiers = book.volumeInfo.industryIdentifiers || [];
+          const isbn = industryIdentifiers.find(id => id.type === 'ISBN_13' || id.type === 'ISBN_10');
+  
+          if (isbn) {
+            setBookIdForPreview(isbn.identifier); // Store the book ID (or ISBN) for preview
+            setIsLightboxOpen(true); // Open the Lightbox
+          } else {
+            console.log("ISBN not found for the book");
+          }
+        } else {
+          console.log("Book not found");
+        }
+      } catch (error) {
+        console.error("Error fetching book details:", error);
+      }
+    }
+  };
+  
+
+  useEffect(() => {
+    if (isLightboxOpen && bookIdForPreview) {
+      loadGoogleBooksViewer(bookIdForPreview); // Ensure this function is adapted to work with this setup
+    }
+  }, [isLightboxOpen, bookIdForPreview]);
+  
+  
 
   const createMarkup = () => {
     const safeHTML = DOMPurify.sanitize(content, {
@@ -36,50 +100,8 @@ function AnswerDisplay({
       onAnecdotesClick(bookTitle, author);
     }
   };
-
-  
-  const handlePreviewClick = async (bookTitle, author) => {
-    const query = `intitle:${encodeURIComponent(bookTitle)}${author ? `+inauthor:${encodeURIComponent(author)}` : ''}`;
-    const apiUrl = `https://www.googleapis.com/books/v1/volumes?q=${query}&key=AIzaSyBh8a2MssG5lBUgGmiX1ls7wIyjxyzUQ1k`;
-    try {
-      const response = await axios.get(apiUrl);
-      if (response.data.items && response.data.items.length > 0) {
-        const book = response.data.items[0];
-        setBookId(book.id); // Set the Google Books ID state
-      } else {
-        console.log("No preview available");
-        setBookId(''); // Reset the Google Books ID if no preview is available
-      }
-      setShowModal(true);
-    } catch (error) {
-      console.error("Error fetching book preview:", error);
-      setBookId(''); // Reset the Google Books ID in case of an error
-    }
-  };
-
-  const renderBookPreviewModal = () => {
-    if (!bookId) return null;
-
-    const embedUrl = `https://books.google.com/books?id=${bookId}&hl=en&output=embed`;
-    return (
-      <div className="modal" style={{ display: showModal ? 'block' : 'none' }}>
-        <div className="modal-content">
-          <span className="close" onClick={() => setShowModal(false)}>&times;</span>
-          <iframe
-            src={embedUrl}
-            width="600"
-            height="1000"
-            allowFullScreen
-            title="Book Preview"
-            style={{ border: 'none' }}
-          ></iframe>
-        </div>
-      </div>
-    );
-  };
   
   
-
   // In AnswerDisplay component
   const handleContinueGenerating = () => {
     if (onContinueGenerating) {
@@ -162,7 +184,14 @@ function AnswerDisplay({
           )}
         </div>
       </div>
-      {renderBookPreviewModal()}
+      <LightboxForBookPreview
+        isOpen={isLightboxOpen}
+        onClose={() => {
+          setIsLightboxOpen(false);
+          setBookIdForPreview(''); // Reset book ID when closing lightbox
+        }}
+        contentRef={viewerRef}
+      />
     </div>
   );
 }

@@ -4,14 +4,20 @@ import '../App.css';
 function Lightbox({ isOpen, content, onClose, contentRef }) {
     if (!isOpen) return null;
   
+    const hasContent = content !== undefined && content !== null;
+
     return (
         <div className="lightbox-overlay" onClick={onClose}>
-            <div className="lightbox-close" onClick={onClose}>&times;</div> {/* Moved outside of lightbox-content */}
+            <div className="lightbox-close" onClick={onClose}>&times;</div>
             <div className="lightbox-content" ref={contentRef} onClick={(e) => e.stopPropagation()}>
-                <div dangerouslySetInnerHTML={{ __html: content }} />
+                {/* Conditionally render HTML content if it's provided, otherwise assume content is handled externally */}
+                {hasContent ? (
+                    <div dangerouslySetInnerHTML={{ __html: content }} />
+                ) : null}
             </div>
         </div>
     );
 }
 
 export default Lightbox;
+
