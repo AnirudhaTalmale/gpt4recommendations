@@ -44,7 +44,7 @@ function Chat() {
   const isUserAtBottomLightbox = useCallback(() => {
     if (!lightboxContentRef.current) return false;
     const { scrollTop, scrollHeight, clientHeight } = lightboxContentRef.current;
-    const isAtBottom = scrollTop + clientHeight >= scrollHeight - 30;
+    const isAtBottom = scrollTop + clientHeight >= scrollHeight - 20;
     return isAtBottom;
   }, []);
   
