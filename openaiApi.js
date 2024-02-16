@@ -28,6 +28,15 @@ function createBuyNowButton(bookTitle, author = '') {
   return `<div><a href="${amazonUrl}" target="_blank"><button class="buy-now-button">Buy Now</button></a></div>`;
 }
 
+
+// Assuming `isEmbeddable` is a boolean that determines if the book can be previewed
+function createPreviewButtonHtml(bookTitle, author, isEmbeddable) {
+  const disabledStyles = `style="cursor: not-allowed; opacity: 0.5; pointer-events: none;"`;
+  const buttonStyles = isEmbeddable ? "" : disabledStyles;
+
+  return `<div><button type="button" class="preview-btn" data-book-title="${bookTitle}" data-author="${author}" ${buttonStyles}>Preview</button></div>`;
+};
+
 function createBookInfoHtml(bookTitle, author) {
   let bookInfoHtml = `<div class="book-info">
       <h3 class="book-title">${bookTitle}</h3>`;
@@ -47,7 +56,8 @@ const getBookCover = async (bookTitleWithAuthor) => {
     const existingBook = await Book.findOne({ title: bookTitle });
     if (existingBook) {
       existingBook.coverImageUrl = existingBook.coverImageUrl.replace("&edge=curl", "");
-      return existingBook.coverImageUrl; // Return the cover image URL from the database
+      // Assume you also want to return the embeddable status if the book already exists
+      return { coverImageUrl: existingBook.coverImageUrl, embeddable: existingBook.embeddable };
     }
 
     let query = `intitle:${encodeURIComponent(bookTitle)}`;
@@ -57,12 +67,18 @@ const getBookCover = async (bookTitleWithAuthor) => {
     const response = await axios.get(`https://www.googleapis.com/books/v1/volumes?q=${query}&key=${process.env.REACT_APP_GOOGLE_BOOKS_API_KEY}`);
 
     let coverImageUrl = '';
-    let isbn = ''; 
+    let isbn = '';
+    let embeddable = false; // Initialize embeddable as false
 
     // Check if items exist and are not empty
     if (response.data.items && response.data.items.length > 0) {
       // Find the first embeddable item, or default to the first item if none are embeddable
-      let book = response.data.items.find(item => item.accessInfo.embeddable === true) || response.data.items[0];
+      let book = response.data.items.find(item => item.accessInfo.embeddable === true);
+      if (book) {
+        embeddable = true; // Update embeddable status based on the response
+      } else {
+        book = response.data.items[0]; // Default to the first item if none are embeddable
+      }
       const volumeInfo = book.volumeInfo;
 
       // Try to extract ISBN if available
@@ -75,18 +91,19 @@ const getBookCover = async (bookTitleWithAuthor) => {
       }
     }
 
-    const newBook = new Book({ title: bookTitle, coverImageUrl, isbn }); 
+    // Include embeddable status while creating a new book
+    const newBook = new Book({ title: bookTitle, coverImageUrl, isbn, embeddable }); 
     await newBook.save();
 
-    // Return the cover image URL
-    return coverImageUrl;
+    // Return both the cover image URL and embeddable status
+    return { coverImageUrl, embeddable };
 
   } catch (error) {
     console.error(`Error fetching book cover for ${bookTitleWithAuthor}:`, error);
-    return '';
+    // Adjusted to return both coverImageUrl as empty and embeddable as false in case of error
+    return { coverImageUrl: '', embeddable: false };
   }
 };
-
 
 const openai = new OpenAI(process.env.OPENAI_API_KEY);
 
@@ -158,14 +175,10 @@ const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, is
     let pausedEmit = ""; // Variable to hold paused chunks
     let isPaused = false; // Flag to check if emitting is paused
 
-    const originalBookTitle = bookTitle;
-    const originalAuthor = author;
-    let coverImageUrl = '';
-    let bookTitleMatch;
-
     if (isKeyInsights || isAnecdotes || isMoreDetails) {
       const bookInfoHtml = createBookInfoHtml(bookTitle, author);
-      coverImageUrl = await getBookCover(originalBookTitle);
+      const bookCoverResult = await getBookCover(originalBookTitle);
+      coverImageUrl = bookCoverResult.coverImageUrl;
       let imageDiv = ``;
       if (coverImageUrl) {
         imageDiv = `<div><img src="${coverImageUrl}" alt=""></div>`;
@@ -186,10 +199,10 @@ const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, is
           pausedEmit += chunkContent;
 
           // Extract book title enclosed in '#'
-          bookTitleMatch = pausedEmit.match(/#(.*?)#/);
+          let bookTitleMatch = pausedEmit.match(/#(.*?)#/);
           const bookTitleWithAuthor = bookTitleMatch ? bookTitleMatch[1] : "";
 
-          coverImageUrl = await getBookCover(bookTitleWithAuthor); // Example function call
+          const { coverImageUrl, embeddable } = await getBookCover(bookTitleWithAuthor);
 
           // Parse bookTitle and author from the content
           let parsed = parseBookTitle(bookTitleWithAuthor); // Example function call
@@ -204,7 +217,7 @@ const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, is
             const moreDetailsButtonHtml = `<div><button type="button" class="more-details-btn" data-book-title="${bookTitle}" data-author="${author}">Book Info</button></div>`;
             const keyInsightsButtonHtml = `<div><button type="button" class="key-insights-btn" data-book-title="${bookTitle}" data-author="${author}">Key Insights</button></div>`;
             const anecdotesButtonHtml = `<div><button type="button" class="anecdotes-btn" data-book-title="${bookTitle}" data-author="${author}">Anecdotes</button></div>`;
-            const previewButtonHtml = `<div><button type="button" class="preview-btn" data-book-title="${bookTitle}" data-author="${author}">Preview</button></div>`;
+            const previewButtonHtml = createPreviewButtonHtml(bookTitle, author, embeddable);
             pausedEmit = pausedEmit.replace(bookTitleMatch[0], bookTitleMatch[0] + buyNowButtonHtml + moreDetailsButtonHtml + keyInsightsButtonHtml + anecdotesButtonHtml + previewButtonHtml);
           }
 

@@ -1207,6 +1207,19 @@ body:not(.history-pane-open) .input-area {
   font-weight: bold;
 }
 
+/* lightbox for book preveiw */
+
+.lightbox-content-for-book-preview {
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  max-width: 86vw; /* Adjust as per your content's requirements */
+  max-height: 88%; /* Adjust based on content height */
+  overflow-y: auto;
+  color: rgba(0, 0, 0, 0.921);
+  border: 1px solid blue;
+}
+
 /* lightbox component */
 
 .lightbox-overlay {
@@ -1555,7 +1568,7 @@ body:not(.history-pane-open) .input-area {
 .streaming .preview-btn {
   cursor: not-allowed;
   opacity: 0.5;
-  pointer-events: none; /* Prevents clicking */
+  pointer-events: none; 
 }
 
 .streaming a {
