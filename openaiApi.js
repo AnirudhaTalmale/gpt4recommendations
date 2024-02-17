@@ -17,15 +17,9 @@ const parseBookTitle = (bookTitleWithAuthor) => {
   return { bookTitle, author };
 };
 
-const encodeForUrl = (text) => encodeURIComponent(text);
-
 // Function to generate a "Buy Now" button for a book
-function createBuyNowButton(bookTitle, author = '') {
-  let amazonUrl = `https://www.amazon.com/s?k=${encodeForUrl(bookTitle)}`;
-  if (author) {
-    amazonUrl += `+by+${encodeForUrl(author)}`;
-  }
-  return `<div><a href="${amazonUrl}" target="_blank"><button class="buy-now-button">Buy Now</button></a></div>`;
+function createBuyNowButton(amazonLink) {
+  return `<div><a href="${amazonLink}" target="_blank"><button class="buy-now-button">Buy Now</button></a></div>`;
 }
 
 // Assuming `isEmbeddable` is a boolean that determines if the book can be previewed
@@ -77,14 +71,13 @@ const getBookCover = async (bookTitleWithAuthor) => {
   try {
     const { bookTitle, author } = parseBookTitle(bookTitleWithAuthor);
 
-    const amazonLink = await getAmazonLink(bookTitle);
-    console.log("Amazon link is: ", amazonLink);
-
     const existingBook = await Book.findOne({ title: bookTitle });
     if (existingBook) {
-      existingBook.coverImageUrl = existingBook.coverImageUrl.replace("&edge=curl", "");
-      // Assume you also want to return the embeddable status if the book already exists
-      return { coverImageUrl: existingBook.coverImageUrl, embeddable: existingBook.embeddable };
+      return { 
+        coverImageUrl: existingBook.coverImageUrl, 
+        embeddable: existingBook.embeddable, 
+        amazonLink: existingBook.amazonLink 
+      };
     }
 
     let query = `intitle:${encodeURIComponent(bookTitle)}`;
@@ -95,7 +88,8 @@ const getBookCover = async (bookTitleWithAuthor) => {
 
     let coverImageUrl = '';
     let isbn = '';
-    let embeddable = false; // Initialize embeddable as false
+    let embeddable = false;
+    let book = null;
 
     if (response.data.items && response.data.items.length > 0) {
       // First, try to find a book that is embeddable and for sale
@@ -125,12 +119,18 @@ const getBookCover = async (bookTitleWithAuthor) => {
       }
     }
 
-    // Include embeddable status while creating a new book
-    const newBook = new Book({ title: bookTitle, coverImageUrl, isbn, embeddable }); 
+    const amazonLink = await getAmazonLink(bookTitle); // This function needs to be defined to get the Amazon link
+
+    const newBook = new Book({ 
+      title: bookTitle, 
+      coverImageUrl, 
+      isbn, 
+      embeddable, 
+      amazonLink 
+    }); 
     await newBook.save();
 
-    // Return both the cover image URL and embeddable status
-    return { coverImageUrl, embeddable };
+    return { coverImageUrl, embeddable, amazonLink };
 
   } catch (error) {
     console.error(`Error fetching book cover for ${bookTitleWithAuthor}:`, error);
@@ -211,13 +211,13 @@ const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, is
 
     if (isKeyInsights || isAnecdotes || isMoreDetails) {
       const bookInfoHtml = createBookInfoHtml(bookTitle, author);
-      const bookCoverResult = await getBookCover(originalBookTitle);
+      const {coverImageUrl, amazonLink} = await getBookCover(bookTitle);
       coverImageUrl = bookCoverResult.coverImageUrl;
       let imageDiv = ``;
       if (coverImageUrl) {
         imageDiv = `<div><img src="${coverImageUrl}" alt=""></div>`;
       }
-      const buyNowButtonHtml = createBuyNowButton(bookTitle, author);
+      const buyNowButtonHtml = createBuyNowButton(amazonLink);
       completeResponse = bookInfoHtml + imageDiv + buyNowButtonHtml;
       socket.emit('chunk', { content: completeResponse, sessionId, isMoreDetails, isKeyInsights, isAnecdotes, moreBooks });
     }
@@ -236,14 +236,14 @@ const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, is
           let bookTitleMatch = pausedEmit.match(/#(.*?)#/);
           const bookTitleWithAuthor = bookTitleMatch ? bookTitleMatch[1] : "";
 
-          const { coverImageUrl, embeddable } = await getBookCover(bookTitleWithAuthor);
+          const { coverImageUrl, embeddable, amazonLink } = await getBookCover(bookTitleWithAuthor);
 
           // Parse bookTitle and author from the content
           let parsed = parseBookTitle(bookTitleWithAuthor); // Example function call
           bookTitle = parsed.bookTitle;
           author = parsed.author;
 
-          const buyNowButtonHtml = createBuyNowButton(bookTitle, author);
+          const buyNowButtonHtml = createBuyNowButton(amazonLink);
 
           if (isMoreDetails || messages[messages.length - 1].content.startsWith("Explain the book - ")) {
             pausedEmit = pausedEmit.replace(bookTitleMatch[0], bookTitleMatch[0] + buyNowButtonHtml);

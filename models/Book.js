@@ -6,6 +6,7 @@ const bookSchema = new Schema({
   coverImageUrl: { type: String, required: true },
   isbn: { type: String, required: true },
   embeddable: { type: Boolean, required: true },
+  amazonLink: { type: String, required: true },
 });
 
 module.exports = mongoose.model('Book', bookSchema);
