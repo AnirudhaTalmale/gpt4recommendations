@@ -30,19 +30,58 @@ function createPreviewButtonHtml(bookTitle, author, isEmbeddable) {
   return `<div><button type="button" class="preview-btn" data-book-title="${bookTitle}" data-author="${author}" ${buttonStyles}>Preview</button></div>`;
 };
 
-function createBookInfoHtml(bookTitle, author) {
+function createBookInfoHtml(bookTitle, author, amazonStarRating, amazonReviewCount) {
+  console.log("amazonStarRating is: ", amazonStarRating);
+  console.log("amazonReviewCount is: ", amazonReviewCount);
+
   let bookInfoHtml = `<div class="book-info">
       <h3 class="book-title">${bookTitle}</h3>`;
+
   // If author exists, add author information
   if (author) {
     bookInfoHtml += `<span class="book-author">by ${author}</span>`;
   }
+
+  // Start the ratings and review container
+  if (amazonStarRating !== 'Unknown' || amazonReviewCount !== 'Unknown') {
+    bookInfoHtml += `<div class="ratings-and-review">`;
+
+    // Add star rating
+    if (amazonStarRating && amazonStarRating !== 'Unknown') {
+      bookInfoHtml += `<div class="star-rating">`;
+
+      // Add full stars
+      for (let i = 0; i < Math.floor(amazonStarRating); i++) {
+        bookInfoHtml += `<i class="fa-solid fa-star"></i>`;
+      }
+
+      // Check for half star
+      if (amazonStarRating % 1 !== 0) {
+        bookInfoHtml += `<i class="fa-solid fa-star-half-stroke"></i>`;
+      }
+
+      bookInfoHtml += `</div>`; // Close star-rating div
+    }
+
+    // If review count exists, add review count information
+    if (amazonReviewCount && amazonReviewCount !== 'Unknown') {
+      bookInfoHtml += `<span class="review-count">${amazonReviewCount}</span>`;
+    }
+
+    bookInfoHtml += `</div>`; // Close ratings-and-review div
+  }
+
   // Close the book-info div
   bookInfoHtml += `</div>`;
+
   return bookInfoHtml;
 }
 
-async function getAmazonLink(bookTitle) {
+
+
+
+
+async function getAmazonData(bookTitle) {
   try {
     const response = await axios.get(`https://www.googleapis.com/customsearch/v1`, {
       params: {
@@ -54,20 +93,53 @@ async function getAmazonLink(bookTitle) {
     });
 
     if (response.data.items && response.data.items.length > 0) {
-      // Assuming the first result is what we're interested in
-      const firstResultLink = response.data.items[0].link;
-      return firstResultLink;
+      const item = response.data.items[0];
+      const ogImage = item.pagemap.metatags[0]['og:image'];
+      const decodedOgImage = decodeURIComponent(ogImage);
+
+      const starRatingMatch = decodedOgImage.match(/_PIStarRating(.*?),/);
+      const reviewCountMatch = decodedOgImage.match(/_ZA(\d+%2C\d+)/);
+
+      const amazonStarRating = starRatingMatch ? convertStarRating(starRatingMatch[1]) : 'Unknown';
+      const amazonReviewCount = reviewCountMatch ? reviewCountMatch[1].replace('%2C', ',') : 'Unknown';
+  
+      
+
+      // Constructing the result object
+      return {
+        amazonLink: item.link,
+        amazonStarRating,
+        amazonReviewCount
+      };
     } else {
       console.log('No results found.');
-      return '';
+      return {};
     }
   } catch (error) {
     console.error('Error during API request:', error);
-    return '';
+    return {};
   }
 }
 
-const getBookCover = async (bookTitleWithAuthor) => {
+
+// Convert the star rating from string format to numeric format
+function convertStarRating(starString) {
+  const starRatingMap = {
+    'ONE': '1.0',
+    'ONEANDHALF': '1.5',
+    'TWO': '2.0',
+    'TWOANDHALF': '2.5',
+    'THREE': '3.0',
+    'THREEANDHALF': '3.5',
+    'FOUR': '4.0',
+    'FOURANDHALF': '4.5',
+    'FIVE': '5.0'
+  };
+  
+  return starRatingMap[starString] || starString;
+}
+
+const getBookData = async (bookTitleWithAuthor) => {
   try {
     const { bookTitle, author } = parseBookTitle(bookTitleWithAuthor);
 
@@ -119,18 +191,20 @@ const getBookCover = async (bookTitleWithAuthor) => {
       }
     }
 
-    const amazonLink = await getAmazonLink(bookTitle); // This function needs to be defined to get the Amazon link
+    const { amazonLink, amazonStarRating, amazonReviewCount } = await getAmazonData(bookTitle);
 
-    const newBook = new Book({ 
-      title: bookTitle, 
-      coverImageUrl, 
-      isbn, 
-      embeddable, 
-      amazonLink 
-    }); 
-    await newBook.save();
+    // const newBook = new Book({ 
+    //   title: bookTitle, 
+    //   coverImageUrl, 
+    //   isbn, 
+    //   embeddable,
+    //   amazonLink,
+    //   amazonStarRating: amazonStarRating !== 'Unknown' ? amazonStarRating : null,
+    //   amazonReviewCount: amazonReviewCount !== 'Unknown' ? amazonReviewCount : null
+    // }); 
+    // await newBook.save();
 
-    return { coverImageUrl, embeddable, amazonLink };
+    return { coverImageUrl, embeddable, amazonLink, amazonStarRating, amazonReviewCount };
 
   } catch (error) {
     console.error(`Error fetching book cover for ${bookTitleWithAuthor}:`, error);
@@ -210,8 +284,8 @@ const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, is
     let isPaused = false; // Flag to check if emitting is paused
 
     if (isKeyInsights || isAnecdotes || isMoreDetails) {
-      const bookInfoHtml = createBookInfoHtml(bookTitle, author);
-      const {coverImageUrl, amazonLink} = await getBookCover(bookTitle);
+      const {coverImageUrl, amazonLink, amazonStarRating, amazonReviewCount} = await getBookData(bookTitle);
+      const bookInfoHtml = createBookInfoHtml(bookTitle, author, amazonStarRating, amazonReviewCount);
       coverImageUrl = bookCoverResult.coverImageUrl;
       let imageDiv = ``;
       if (coverImageUrl) {
@@ -235,8 +309,7 @@ const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, is
           // Extract book title enclosed in '#'
           let bookTitleMatch = pausedEmit.match(/#(.*?)#/);
           const bookTitleWithAuthor = bookTitleMatch ? bookTitleMatch[1] : "";
-
-          const { coverImageUrl, embeddable, amazonLink } = await getBookCover(bookTitleWithAuthor);
+          const {coverImageUrl, embeddable, amazonLink, amazonStarRating, amazonReviewCount} = await getBookData(bookTitleWithAuthor);
 
           // Parse bookTitle and author from the content
           let parsed = parseBookTitle(bookTitleWithAuthor); // Example function call
@@ -260,7 +333,7 @@ const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, is
             pausedEmit = pausedEmit.replace(bookTitleMatch[0], bookTitleMatch[0] + imageDiv);
           }
 
-          const bookInfoHtml = createBookInfoHtml(bookTitle, author);
+          const bookInfoHtml = createBookInfoHtml(bookTitle, author, amazonStarRating, amazonReviewCount);
           pausedEmit = pausedEmit.replace(bookTitleMatch[0], bookInfoHtml);
           pausedEmit = pausedEmit.replace(/\#/g, '');
                     
@@ -403,7 +476,7 @@ module.exports = openaiApi;
 //       const bookTitleWithAuthorBold = `<b>${bookTitleWithAuthor}</b>`;
 
 //       // Fetch book cover image
-//       const coverImageUrl = await getBookCover(bookTitleWithAuthor);
+//       const coverImageUrl = await getBookData(bookTitleWithAuthor);
       
 //       // Extract book title and author
 //       let { bookTitle, author } = parseBookTitle(bookTitleWithAuthor);

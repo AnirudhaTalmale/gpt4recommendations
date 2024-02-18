@@ -95,6 +95,35 @@ body:not(.history-pane-open) .chat-area {
 }
 
 
+/* --------------- */
+
+.fa-star-half-stroke {
+  color: orange;
+  font-size: 0.9rem;
+}
+
+.fa-star {
+  color: orange;
+  font-size: 0.9rem;
+}
+
+.review-count {
+  font-size: 0.85rem;
+}
+
+.ratings-and-review {
+  display: flex;
+  align-items: center;
+}
+
+.star-rating {
+  margin-right: 10px; /* Adjust as needed */
+}
+
+
+/* --------------- */
+
+
 .chat-area-wrapper {
   display: flex;
   justify-content: center; /* Center the child horizontally */

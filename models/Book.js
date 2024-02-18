@@ -7,6 +7,8 @@ const bookSchema = new Schema({
   isbn: { type: String, required: true },
   embeddable: { type: Boolean, required: true },
   amazonLink: { type: String, required: true },
+  amazonStarRating: { type: Number, default: null },
+  amazonReviewCount: { type: Number, default: null },
 });
 
 module.exports = mongoose.model('Book', bookSchema);
