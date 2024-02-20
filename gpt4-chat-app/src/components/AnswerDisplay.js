@@ -27,7 +27,6 @@ function AnswerDisplay({
   };
 
   const handleAnecdotesClick = (bookTitle, author) => {
-    console.log("i am here");
     if (onAnecdotesClick) {
       onAnecdotesClick(bookTitle, author);
     }
@@ -88,8 +87,8 @@ function AnswerDisplay({
             const author = e.target.getAttribute('data-author');
             handleAnecdotesClick(bookTitle, author);
           } else if (e.target.classList.contains('preview-btn')) {
-            const bookTitle = e.target.getAttribute('data-book-title');
-            onPreviewClick(bookTitle);
+            const isbn = e.target.getAttribute('data-isbn');
+            onPreviewClick(isbn);
           }
         }}>
           {role === 'user' && (

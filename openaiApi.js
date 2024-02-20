@@ -23,11 +23,11 @@ function createBuyNowButton(amazonLink) {
 }
 
 // Assuming `isEmbeddable` is a boolean that determines if the book can be previewed
-function createPreviewButtonHtml(bookTitle, author, isEmbeddable) {
+function createPreviewButtonHtml(isbn, isEmbeddable) {
   const disabledStyles = `style="cursor: not-allowed; opacity: 0.5; pointer-events: none;"`;
   const buttonStyles = isEmbeddable ? "" : disabledStyles;
 
-  return `<div><button type="button" class="preview-btn" data-book-title="${bookTitle}" data-author="${author}" ${buttonStyles}>Preview</button></div>`;
+  return `<div><button type="button" class="preview-btn" data-isbn="${isbn}" ${buttonStyles}>Preview</button></div>`;
 };
 
 function createBookInfoHtml(bookTitle, author, amazonStarRating, amazonReviewCount) {
@@ -176,14 +176,9 @@ const getBookData = async (bookTitleWithAuthor) => {
       }
   
       // If no suitable book is found in embeddableBooks, default to the first book in the response
-      book = book || response.data.items[0];
-  
-      console.log("Selected book is: ", book);
-  
-      // Update embeddable based on the selected book
+      book = book || response.data.items[0];  
       embeddable = book.accessInfo.embeddable;
   
-      // Extract book details
       const volumeInfo = book.volumeInfo;
       const foundIsbn = volumeInfo.industryIdentifiers?.find(id => id.type === 'ISBN_13' || id.type === 'ISBN_10')?.identifier;
       if (foundIsbn) isbn = foundIsbn;
@@ -206,7 +201,7 @@ const getBookData = async (bookTitleWithAuthor) => {
     //   amazonReviewCount: amazonReviewCount !== 'Unknown' ? amazonReviewCount : null
     // }); 
     // await newBook.save();
-    return { coverImageUrl, embeddable, amazonLink, amazonStarRating, amazonReviewCount };
+    return { coverImageUrl, isbn, embeddable, amazonLink, amazonStarRating, amazonReviewCount };
 
   } catch (error) {
     console.error(`Error fetching book cover for ${bookTitleWithAuthor}:`, error);
@@ -287,7 +282,6 @@ const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, is
     if (isKeyInsights || isAnecdotes || isMoreDetails) {
       const {coverImageUrl, amazonLink, amazonStarRating, amazonReviewCount} = await getBookData(bookTitle);
       const bookInfoHtml = createBookInfoHtml(bookTitle, author, amazonStarRating, amazonReviewCount);
-      coverImageUrl = bookCoverResult.coverImageUrl;
       let imageDiv = ``;
       if (coverImageUrl) {
         imageDiv = `<div><img src="${coverImageUrl}" alt=""></div>`;
@@ -310,7 +304,7 @@ const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, is
           // Extract book title enclosed in '#'
           let bookTitleMatch = pausedEmit.match(/#(.*?)#/);
           const bookTitleWithAuthor = bookTitleMatch ? bookTitleMatch[1] : "";
-          const {coverImageUrl, embeddable, amazonLink, amazonStarRating, amazonReviewCount} = await getBookData(bookTitleWithAuthor);
+          const {coverImageUrl, isbn, embeddable, amazonLink, amazonStarRating, amazonReviewCount} = await getBookData(bookTitleWithAuthor);
 
           // Parse bookTitle and author from the content
           let parsed = parseBookTitle(bookTitleWithAuthor); // Example function call
@@ -323,9 +317,9 @@ const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, is
             pausedEmit = pausedEmit.replace(bookTitleMatch[0], bookTitleMatch[0] + buyNowButtonHtml);
           } else {
             const moreDetailsButtonHtml = `<div><button type="button" class="more-details-btn" data-book-title="${bookTitle}" data-author="${author}">Book Info</button></div>`;
-            const keyInsightsButtonHtml = `<div><button type="button" class="key-insights-btn" data-book-title="${bookTitle}" data-author="${author}">Key Insights</button></div>`;
+            const keyInsightsButtonHtml = `<div><button type="button" class="key-insights-btn" data-book-title="${bookTitle}" data-author="${author}">Insights</button></div>`;
             const anecdotesButtonHtml = `<div><button type="button" class="anecdotes-btn" data-book-title="${bookTitle}" data-author="${author}">Anecdotes</button></div>`;
-            const previewButtonHtml = createPreviewButtonHtml(bookTitle, author, embeddable);
+            const previewButtonHtml = createPreviewButtonHtml(isbn, embeddable);
             pausedEmit = pausedEmit.replace(bookTitleMatch[0], bookTitleMatch[0] + buyNowButtonHtml + moreDetailsButtonHtml + keyInsightsButtonHtml + anecdotesButtonHtml + previewButtonHtml);
           }
 

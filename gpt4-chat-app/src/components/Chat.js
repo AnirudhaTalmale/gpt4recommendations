@@ -75,19 +75,13 @@ function Chat() {
     }
   };
 
-  const handlePreviewClick = async (title) => {
+  const handlePreviewClick = async (isbn) => {
     if (isViewerLoaded) {
-      try {
-        const response = await axios.get(`http://localhost:3000/api/book/isbn?bookTitle=${encodeURIComponent(title)}`);
-        const isbn = response.data.isbn;
-        if (isbn) {
-          setBookIdForPreview(isbn);
-          setIsBookPreviewLightboxOpen(true); // Directly open the lightbox here
-        } else {
-          console.log("ISBN not found for the book");
-        }
-      } catch (error) {
-        console.error("Error fetching ISBN:", error);
+      if (isbn) {
+        setBookIdForPreview(isbn);
+        setIsBookPreviewLightboxOpen(true); // Directly open the lightbox here
+      } else {
+        console.log("ISBN not available for the book");
       }
     }
   };
@@ -616,9 +610,9 @@ function Chat() {
       const response = await axios.get(`http://localhost:3000/api/anecdotes`, {
         params: { bookTitle, author }
       });
-      return response; // Return the response for further handling
+      return response; 
     } catch (error) {
-      throw error; // Throw the error to be caught in the calling function
+      throw error; 
     }
   };  
   
@@ -629,6 +623,7 @@ function Chat() {
 
       if (!response || !response.data || !response.data.anecdotes) {
         const userQuery = `${bookTitle}`;
+        console.log("userQuery is:", userQuery);
         handleQuerySubmit(userQuery, false, bookTitle, author, false, false, true);
       } else {
         const anecdotes = response.data.anecdotes;
@@ -647,9 +642,9 @@ function Chat() {
       const response = await axios.get(`http://localhost:3000/api/key-insights`, {
         params: { bookTitle, author }
       });
-      return response; // Return the response for further handling
+      return response; 
     } catch (error) {
-      throw error; // Throw the error to be caught in the calling function
+      throw error;
     }
   };  
   
