@@ -94,11 +94,11 @@ async function getAmazonData(bookTitle) {
       const decodedOgImage = decodeURIComponent(ogImage);
 
       const starRatingMatch = decodedOgImage.match(/_PIStarRating(.*?),/);
-      const reviewCountMatch = decodedOgImage.match(/_ZA(\d+%2C\d+)/);
-
       const amazonStarRating = starRatingMatch ? convertStarRating(starRatingMatch[1]) : 'Unknown';
+      
+      const reviewCountMatch = decodedOgImage.match(/_ZA(\d+(%2C\d+)?)/);
       const amazonReviewCount = reviewCountMatch ? reviewCountMatch[1].replace('%2C', ',') : 'Unknown';
-  
+
       // Constructing the result object
       return {
         amazonLink: item.link,
@@ -154,7 +154,6 @@ const getBookData = async (bookTitleWithAuthor) => {
     let coverImageUrl = '';
     let isbn = '';
     let embeddable = false;
-    let book = null;
 
     if (response.data.items && response.data.items.length > 0) {
       // Filter for embeddable books
@@ -197,22 +196,21 @@ const getBookData = async (bookTitleWithAuthor) => {
 
     const { amazonLink, amazonStarRating, amazonReviewCount } = await getAmazonData(bookTitle);
 
-    const newBook = new Book({ 
-      title: bookTitle, 
-      coverImageUrl, 
-      isbn, 
-      embeddable,
-      amazonLink,
-      amazonStarRating: amazonStarRating !== 'Unknown' ? amazonStarRating : null,
-      amazonReviewCount: amazonReviewCount !== 'Unknown' ? amazonReviewCount : null
-    }); 
-    console.log("newBook is: ", newBook);
-    await newBook.save();
+    // const newBook = new Book({ 
+    //   title: bookTitle, 
+    //   coverImageUrl, 
+    //   isbn, 
+    //   embeddable,
+    //   amazonLink,
+    //   amazonStarRating: amazonStarRating !== 'Unknown' ? amazonStarRating : null,
+    //   amazonReviewCount: amazonReviewCount !== 'Unknown' ? amazonReviewCount : null
+    // }); 
+    // await newBook.save();
     return { coverImageUrl, embeddable, amazonLink, amazonStarRating, amazonReviewCount };
 
   } catch (error) {
     console.error(`Error fetching book cover for ${bookTitleWithAuthor}:`, error);
-    return { coverImageUrl: '', embeddable: false };
+    return { coverImageUrl, embeddable, amazonLink, amazonStarRating, amazonReviewCount };
   }
 };
 

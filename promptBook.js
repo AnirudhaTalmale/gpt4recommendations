@@ -3,4 +3,4 @@ const bookRecommendationPrompt = (userQuery) => {
  Book Title by Author enclosed within the symbol '#'`;
 };
 
-module.exports = bookRecommendationPrompt;
+module.exports = bookRecommendationPrompt;   
