@@ -1335,6 +1335,10 @@ body:not(.history-pane-open) .input-area {
   margin-bottom: -0.001rem;
 }
 
+.message-answer {
+  margin-top: -0.7rem;
+}
+
 .message-question {
   white-space: pre-wrap; /* This will preserve line breaks and spaces as in the input */
   color: black !important;

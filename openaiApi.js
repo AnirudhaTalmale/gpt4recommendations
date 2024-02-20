@@ -157,32 +157,43 @@ const getBookData = async (bookTitleWithAuthor) => {
     let book = null;
 
     if (response.data.items && response.data.items.length > 0) {
-      // First, try to find a book that is embeddable and for sale
+      // Filter for embeddable books
       const embeddableBooks = response.data.items.filter(item => item.accessInfo.embeddable === true);
-      book = embeddableBooks.find(item => item.saleInfo.saleability === "FOR_SALE");
-
-      // If no book is for sale but embeddable, default to the first embeddable book
-      if (!book && embeddableBooks.length > 0) {
-        book = embeddableBooks[0];
-        embeddable = true;
+  
+      // Initialize book as null
+      let book = null;
+  
+      // Find a book that is embeddable, for sale, and has a publishedDate
+      for (let item of embeddableBooks) {
+          if (item.saleInfo.saleability === "FOR_SALE") {
+              if (item.volumeInfo.publishedDate) {
+                  book = item;
+                  break;
+              } else if (!book) {
+                  // Fallback to the first embeddable and for-sale book
+                  book = item;
+              }
+          }
       }
-
-      // If no embeddable books are found, default to the first book in the list
-      if (!book) {
-        book = response.data.items[0];
-      }
-
+  
+      // If no suitable book is found in embeddableBooks, default to the first book in the response
+      book = book || response.data.items[0];
+  
+      console.log("Selected book is: ", book);
+  
       // Update embeddable based on the selected book
       embeddable = book.accessInfo.embeddable;
-
+  
       // Extract book details
       const volumeInfo = book.volumeInfo;
       const foundIsbn = volumeInfo.industryIdentifiers?.find(id => id.type === 'ISBN_13' || id.type === 'ISBN_10')?.identifier;
       if (foundIsbn) isbn = foundIsbn;
       if (volumeInfo.imageLinks && volumeInfo.imageLinks.thumbnail) {
-        coverImageUrl = volumeInfo.imageLinks.thumbnail.replace("&edge=curl", "");
+          coverImageUrl = volumeInfo.imageLinks.thumbnail.replace("&edge=curl", "");
       }
     }
+  
+  
 
     const { amazonLink, amazonStarRating, amazonReviewCount } = await getAmazonData(bookTitle);
 
