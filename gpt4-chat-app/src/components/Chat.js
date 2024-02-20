@@ -5,6 +5,7 @@ import SampleQueries from './SampleQueries';
 import AnswerDisplay from './AnswerDisplay';
 import HistoryPane from './HistoryPane';
 import Lightbox from './Lightbox';
+import LightboxForBookPreview from './LightboxForBookPreview';
 import '../App.css';
 import socket from './socket';
 import Header from './Header';
@@ -40,6 +41,56 @@ function Chat() {
   const [lightboxContent, setLightboxContent] = useState('');
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const [isAtBottomLightbox, setIsAtBottomLightbox] = useState(false);
+  const [isBookPreviewLightboxOpen, setIsBookPreviewLightboxOpen] = useState(false);
+  const [bookIdForPreview, setBookIdForPreview] = useState('');
+  const [isViewerLoaded, setIsViewerLoaded] = useState(false);
+  const bookPreviewRef = useRef(null);
+
+  useEffect(() => {
+    if (!window.google || !window.google.books) {
+      const script = document.createElement('script');
+      script.src = 'https://www.google.com/books/jsapi.js';
+      script.onload = () => {
+        window.google.books.load();
+        setIsViewerLoaded(true);
+      };
+      document.body.appendChild(script);
+    } else {
+      setIsViewerLoaded(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (isBookPreviewLightboxOpen && bookIdForPreview) {
+      loadGoogleBooksViewer(bookIdForPreview);
+    }
+  }, [isBookPreviewLightboxOpen, bookIdForPreview]);
+
+  const loadGoogleBooksViewer = (bookId) => {
+    if (window.google && window.google.books && bookPreviewRef.current) {
+      var viewer = new window.google.books.DefaultViewer(bookPreviewRef.current);
+      viewer.load(`ISBN:${bookId}`, function() {
+        console.error("Google Books could not load the book.");
+      });
+    }
+  };
+
+  const handlePreviewClick = async (title) => {
+    if (isViewerLoaded) {
+      try {
+        const response = await axios.get(`http://localhost:3000/api/book/isbn?bookTitle=${encodeURIComponent(title)}`);
+        const isbn = response.data.isbn;
+        if (isbn) {
+          setBookIdForPreview(isbn);
+          setIsBookPreviewLightboxOpen(true); // Directly open the lightbox here
+        } else {
+          console.log("ISBN not found for the book");
+        }
+      } catch (error) {
+        console.error("Error fetching ISBN:", error);
+      }
+    }
+  };
 
   const isUserAtBottomLightbox = useCallback(() => {
     if (!lightboxContentRef.current) return false;
@@ -721,6 +772,14 @@ function Chat() {
         }}
         contentRef={lightboxContentRef}
       />
+      <LightboxForBookPreview
+        isOpen={isBookPreviewLightboxOpen}
+        onClose={() => {
+          setIsBookPreviewLightboxOpen(false);
+          setBookIdForPreview(''); // Reset book ID when closing lightbox
+        }}
+        contentRef={bookPreviewRef}
+      />
       <HistoryPane
         ref={historyPaneRef}
         sessions={sessions}
@@ -748,6 +807,7 @@ function Chat() {
           const isLastMessageFromAssistant = isLastMessage && msg.role === 'assistant';
           return (
             <AnswerDisplay
+              onPreviewClick={handlePreviewClick}
               key={msg._id} // Assuming msg._id is a unique identifier
               role={msg.role}
               content={msg.content}

@@ -77,10 +77,6 @@ function createBookInfoHtml(bookTitle, author, amazonStarRating, amazonReviewCou
   return bookInfoHtml;
 }
 
-
-
-
-
 async function getAmazonData(bookTitle) {
   try {
     const response = await axios.get(`https://www.googleapis.com/customsearch/v1`, {
@@ -103,8 +99,6 @@ async function getAmazonData(bookTitle) {
       const amazonStarRating = starRatingMatch ? convertStarRating(starRatingMatch[1]) : 'Unknown';
       const amazonReviewCount = reviewCountMatch ? reviewCountMatch[1].replace('%2C', ',') : 'Unknown';
   
-      
-
       // Constructing the result object
       return {
         amazonLink: item.link,
@@ -120,7 +114,6 @@ async function getAmazonData(bookTitle) {
     return {};
   }
 }
-
 
 // Convert the star rating from string format to numeric format
 function convertStarRating(starString) {
@@ -193,22 +186,21 @@ const getBookData = async (bookTitleWithAuthor) => {
 
     const { amazonLink, amazonStarRating, amazonReviewCount } = await getAmazonData(bookTitle);
 
-    // const newBook = new Book({ 
-    //   title: bookTitle, 
-    //   coverImageUrl, 
-    //   isbn, 
-    //   embeddable,
-    //   amazonLink,
-    //   amazonStarRating: amazonStarRating !== 'Unknown' ? amazonStarRating : null,
-    //   amazonReviewCount: amazonReviewCount !== 'Unknown' ? amazonReviewCount : null
-    // }); 
-    // await newBook.save();
-
+    const newBook = new Book({ 
+      title: bookTitle, 
+      coverImageUrl, 
+      isbn, 
+      embeddable,
+      amazonLink,
+      amazonStarRating: amazonStarRating !== 'Unknown' ? amazonStarRating : null,
+      amazonReviewCount: amazonReviewCount !== 'Unknown' ? amazonReviewCount : null
+    }); 
+    console.log("newBook is: ", newBook);
+    await newBook.save();
     return { coverImageUrl, embeddable, amazonLink, amazonStarRating, amazonReviewCount };
 
   } catch (error) {
     console.error(`Error fetching book cover for ${bookTitleWithAuthor}:`, error);
-    // Adjusted to return both coverImageUrl as empty and embeddable as false in case of error
     return { coverImageUrl: '', embeddable: false };
   }
 };

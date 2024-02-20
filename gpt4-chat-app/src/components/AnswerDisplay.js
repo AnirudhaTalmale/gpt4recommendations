@@ -1,68 +1,11 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import DOMPurify from 'dompurify';
-import axios from 'axios';
-import LightboxForBookPreview from './LightboxForBookPreview';
 import '../App.css';
 
 function AnswerDisplay({ 
-  role, content, userImage, isStreaming, 
+  onPreviewClick, role, content, userImage, isStreaming, 
   onMoreDetailsClick, onKeyInsightsClick, onAnecdotesClick, showContinueButton, onContinueGenerating 
 }) {
-  const viewerRef = useRef(null);
-  const [isLightboxOpen, setIsLightboxOpen] = useState(false);
-  const [bookIdForPreview, setBookIdForPreview] = useState('');
-  const [isViewerLoaded, setIsViewerLoaded] = useState(false); // State to manage the viewer's load status
-
-  // This function will be modified to load the viewer only upon a button click
-  const loadGoogleBooksViewer = (bookId) => {
-    if (window.google && window.google.books && viewerRef.current) {
-      var viewer = new window.google.books.DefaultViewer(viewerRef.current);
-      viewer.load(`ISBN:${bookId}`, function() {
-        console.error("Google Books could not load the book.");
-      });
-    }
-  };
-
-  useEffect(() => {
-    if (!window.google || !window.google.books) {
-      const script = document.createElement('script');
-      script.src = 'https://www.google.com/books/jsapi.js';
-      script.onload = () => {
-        window.google.books.load();
-        setIsViewerLoaded(true); // Set state to true indicating the Google Books API is loaded
-      };
-      document.body.appendChild(script);
-    } else {
-      setIsViewerLoaded(true); // If the script is already there, just update the state
-    }
-  }, []);
-
-  const handlePreviewClick = async (title) => {
-    if (isViewerLoaded) {
-      try {
-        const response = await axios.get(`http://localhost:3000/api/book/isbn?bookTitle=${encodeURIComponent(title)}`);
-        const isbn = response.data.isbn;
-        if (isbn) { // This will be false if isbn is an empty string
-          setBookIdForPreview(isbn); // Store the book ID (or ISBN) for preview
-          setIsLightboxOpen(true); // Open the Lightbox
-        } else {
-          console.log("ISBN not found for the book");
-          // Optionally, handle the case when an ISBN is not available
-        }
-      } catch (error) {
-        console.error("Error fetching ISBN:", error);
-      }
-    }
-  };
-  
-
-  useEffect(() => {
-    if (isLightboxOpen && bookIdForPreview) {
-      loadGoogleBooksViewer(bookIdForPreview); // Ensure this function is adapted to work with this setup
-    }
-  }, [isLightboxOpen, bookIdForPreview]);
-  
-  
 
   const createMarkup = () => {
     const safeHTML = DOMPurify.sanitize(content, {
@@ -146,8 +89,7 @@ function AnswerDisplay({
             handleAnecdotesClick(bookTitle, author);
           } else if (e.target.classList.contains('preview-btn')) {
             const bookTitle = e.target.getAttribute('data-book-title');
-            const author = e.target.getAttribute('data-author');
-            handlePreviewClick(bookTitle, author);
+            onPreviewClick(bookTitle);
           }
         }}>
           {role === 'user' && (
@@ -173,14 +115,7 @@ function AnswerDisplay({
           )}
         </div>
       </div>
-      <LightboxForBookPreview
-        isOpen={isLightboxOpen}
-        onClose={() => {
-          setIsLightboxOpen(false);
-          setBookIdForPreview(''); // Reset book ID when closing lightbox
-        }}
-        contentRef={viewerRef}
-      />
+      
     </div>
   );
 }
