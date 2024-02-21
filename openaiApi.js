@@ -97,9 +97,15 @@ async function getAmazonData(bookTitle) {
       const reviewCountMatch = decodedOgImage.match(/_ZA(\d+(%2C\d+)?)/);
       const amazonReviewCount = reviewCountMatch ? reviewCountMatch[1].replace('%2C', ',') : 'Unknown';
 
-      // Constructing the result object
+      let amazonLink = item.pagemap.metatags[0]['og:url'];
+
+      let url = new URL(amazonLink);
+      url.hostname = 'www.amazon.in'; 
+
+      amazonLink = url.href.split('/ref')[0];
+
       return {
-        amazonLink: item.link,
+        amazonLink,
         amazonStarRating,
         amazonReviewCount
       };
@@ -279,7 +285,7 @@ const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, is
           pausedEmit += chunkContent;
 
           // Extract book title enclosed in '#'
-          let bookTitleMatch = pausedEmit.match(/#(.*?)#/);
+          let bookTitleMatch = pausedEmit.match(/#(?:\d+\.\s)?(.*?)#/);
           const bookTitleWithAuthor = bookTitleMatch ? bookTitleMatch[1] : "";
           const {coverImageUrl, isbn, embeddable, amazonLink, amazonStarRating, amazonReviewCount} = await getBookData(bookTitleWithAuthor);
 

@@ -706,7 +706,7 @@ function Chat() {
   
     // Regex to match each book section in the content
     const bookInfoMatches = content.match(/<div class="book-info">[\s\S]*?<\/div>(?=<div)/g) || [];
-    bookInfoMatches.forEach(bookInfo => {
+    bookInfoMatches.forEach((bookInfo, index) => {
       // Extract the book title
       const titleMatch = bookInfo.match(/<h3 class="book-title">(.*?)<\/h3>/);
       const title = titleMatch ? titleMatch[1].trim() : '';
@@ -715,9 +715,9 @@ function Chat() {
       const authorMatch = bookInfo.match(/<span class="book-author">(.*?)<\/span>/);
       const author = authorMatch ? authorMatch[1].trim() : '';
   
-      // Combine title and author
+      // Combine title and author with numbering
       if (title && author) {
-        bookDetails.push(`${title} ${author}`);
+        bookDetails.push(`${index + 1}. ${title} ${author}`);
       }
     });
   
@@ -728,15 +728,21 @@ function Chat() {
   const onContinueGenerating = () => {
     const currentSession = sessions[currentSessionIndex];
     if (currentSession && currentSession.messages.length >= 2) {
-      const lastTwoMessages = currentSession.messages.slice(-2); // Get the last two messages
+        const lastTwoMessages = currentSession.messages.slice(-2); // Get the last two messages
 
-      // Apply extractTags to the content of the last message
-      const processedLastMessageContent = extractTags(lastTwoMessages[1].content);
-      const concatenatedContent = `${lastTwoMessages[0].content}\n${processedLastMessageContent}\n`;
+        // Apply extractTags to the content of the last message and prepend with the required text
+        const processedLastMessageContent = "Previously recommended books are as follows: \n" + extractTags(lastTwoMessages[1].content);
 
-      handleQuerySubmit(concatenatedContent, false, null, null, true);
+        // Prepend the required text to the content of the second to last message and enclose the content in quotes
+        const userQueryContent = `User query - "${lastTwoMessages[0].content}"`;
+
+        // Concatenate the modified contents
+        const concatenatedContent = `${userQueryContent}\n${processedLastMessageContent}\n`;
+
+        handleQuerySubmit(concatenatedContent, false, null, null, true);
     }
   };
+
 
   useEffect(() => {
     const currentSession = sessions[currentSessionIndex];
