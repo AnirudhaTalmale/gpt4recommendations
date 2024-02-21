@@ -208,7 +208,7 @@ const getGoogleBookData = async (title, author) => {
     return { coverImageUrl, isbn, embeddable};
 
   } catch (error) {
-    console.error(`Error fetching book cover for ${bookTitleWithAuthor}:`, error);
+    console.error(`Error fetching book cover for ${title}:`, error);
     return { coverImageUrl: '', isbn: '', embeddable: '' };
   }
 };

@@ -210,6 +210,10 @@ body:not(.history-pane-open) .chat-area {
   .lightbox-close-for-book-preview .fa-xmark {
     font-size: 1rem;
   }
+
+  .lightbox-close {
+    top: 1.5rem !important;
+  }
 }
 
 /* Sample Queries */
@@ -1262,7 +1266,7 @@ body:not(.history-pane-open) .input-area {
   background-color: white;
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  max-width: 83vw; /* Keep the width as is */
+  max-width: 720px; /* Keep the width as is */
   max-height: 100%; /* Allows it to expand to full viewport height */
   height: 100vh; /* Sets the height to the full viewport height */
   overflow-y: auto; /* Keeps the scrollbar if content is longer */
@@ -1309,8 +1313,8 @@ body:not(.history-pane-open) .input-area {
 
 .lightbox-close {
   position: fixed; /* Changed from absolute to fixed */
-  top: 1rem;
-  right: 0.5rem;
+  top: 0.6rem;
+  right: 0.6rem;
   font-size: 28px;
   cursor: pointer;
   z-index: 1001; /* Higher than the lightbox-overlay to ensure it's on top */
@@ -1325,14 +1329,15 @@ body:not(.history-pane-open) .input-area {
 
 .lightbox-close-for-book-preview {
   position: fixed; /* Changed from absolute to fixed */
-  top: 1rem;
-  right: 1rem;
+  top: 0.6rem;
+  right: 0.6rem;
+  font-size: 28px;
   cursor: pointer;
   z-index: 1001; /* Higher than the lightbox-overlay to ensure it's on top */
   background-color: rgba(0, 0, 0, 0.848); /* Black background for the circle */
   border-radius: 50%; /* Make it round */
-  width: 2.3rem; /* Set the width of the circle */
-  height: 2.3rem; /* Set the height of the circle */
+  width: 2rem; /* Set the width of the circle */
+  height: 2rem; /* Set the height of the circle */
   display: flex; /* Use flexbox to center the icon */
   align-items: center; /* Center vertically */
   justify-content: center; /* Center horizontally */
