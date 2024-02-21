@@ -8,7 +8,7 @@ function Lightbox({ isOpen, content, onClose, contentRef }) {
 
     return (
         <div className="lightbox-overlay" onClick={onClose}>
-            <div className="lightbox-close" onClick={onClose}>&times;</div>
+            <div className="lightbox-close" onClick={onClose}><i class="fa-solid fa-xmark"></i></div>
             <div className="lightbox-content" ref={contentRef} onClick={(e) => e.stopPropagation()}>
                 {/* Conditionally render HTML content if it's provided, otherwise assume content is handled externally */}
                 {hasContent ? (

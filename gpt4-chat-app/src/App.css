@@ -191,6 +191,25 @@ body:not(.history-pane-open) .chat-area {
   .lightbox-content {
     max-width: 75%;
   }
+
+  .lightbox-content-for-book-preview {
+    max-width: 100vw !important;
+  }
+
+  .lightbox-content {
+    max-width: 100vw !important;
+  }
+
+  .lightbox-close-for-book-preview {
+    top: 0.35rem !important;
+    left: 0.5rem;
+    width: 1.6rem !important;
+    height: 1.6rem !important;
+  }
+
+  .lightbox-close-for-book-preview .fa-xmark {
+    font-size: 1rem;
+  }
 }
 
 /* Sample Queries */
@@ -1243,7 +1262,7 @@ body:not(.history-pane-open) .input-area {
   background-color: white;
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  max-width: 86vw; /* Keep the width as is */
+  max-width: 83vw; /* Keep the width as is */
   max-height: 100%; /* Allows it to expand to full viewport height */
   height: 100vh; /* Sets the height to the full viewport height */
   overflow-y: auto; /* Keeps the scrollbar if content is longer */
@@ -1259,7 +1278,7 @@ body:not(.history-pane-open) .input-area {
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.85); /* Semi-transparent black background */
+  background-color: rgba(0, 0, 0, 0.823); /* Semi-transparent black background */
   display: flex;
   justify-content: center;
   align-items: center;
@@ -1271,19 +1290,13 @@ body:not(.history-pane-open) .input-area {
   padding:  0% 6.7% 3% 6.7%;
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  max-width: 550px; /* Adjust as per your content's requirements */
+  max-width: 580px; /* Adjust as per your content's requirements */
   max-height: 96%; /* Adjust based on content height */
   overflow-y: auto; /* Adds a scrollbar if the content is too long */
   position: relative; 
   font-size: 0.98rem;
-  line-height: 1.7rem;
+  line-height: 1.72rem;
   color: rgba(0, 0, 0, 0.921);
-  margin-left: 1.5rem;
-  margin-right: 1.5rem;
-}
-
-.lightbox-content ol li {
-  margin-top: 0.3rem;
 }
 
 .lightbox-content .buy-now-button {
@@ -1296,13 +1309,40 @@ body:not(.history-pane-open) .input-area {
 
 .lightbox-close {
   position: fixed; /* Changed from absolute to fixed */
-  top: 6px;
-  right: 15px;
+  top: 1rem;
+  right: 0.5rem;
   font-size: 28px;
   cursor: pointer;
   z-index: 1001; /* Higher than the lightbox-overlay to ensure it's on top */
-  color: white;
+  background-color: rgba(0, 0, 0, 0.848); /* Black background for the circle */
+  border-radius: 50%; /* Make it round */
+  width: 2rem; /* Set the width of the circle */
+  height: 2rem; /* Set the height of the circle */
+  display: flex; /* Use flexbox to center the icon */
+  align-items: center; /* Center vertically */
+  justify-content: center; /* Center horizontally */
 }
+
+.lightbox-close-for-book-preview {
+  position: fixed; /* Changed from absolute to fixed */
+  top: 1rem;
+  right: 1rem;
+  cursor: pointer;
+  z-index: 1001; /* Higher than the lightbox-overlay to ensure it's on top */
+  background-color: rgba(0, 0, 0, 0.848); /* Black background for the circle */
+  border-radius: 50%; /* Make it round */
+  width: 2.3rem; /* Set the width of the circle */
+  height: 2.3rem; /* Set the height of the circle */
+  display: flex; /* Use flexbox to center the icon */
+  align-items: center; /* Center vertically */
+  justify-content: center; /* Center horizontally */
+}
+
+.fa-xmark {
+  color: white;
+  font-size: 1.1rem;
+}
+
 
 /* Custom scrollbar for lightbox-content */
 .lightbox-content::-webkit-scrollbar {

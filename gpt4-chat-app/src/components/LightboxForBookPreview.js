@@ -8,7 +8,7 @@ function LightboxForBookPreview({ isOpen, onClose, contentRef }) {
 
     return (
         <div className="lightbox-overlay" onClick={onClose}>
-            <div className="lightbox-close" onClick={onClose}>&times;</div>
+            <div className="lightbox-close-for-book-preview" onClick={onClose}><i class="fa-solid fa-xmark"></i></div>
             <div className="lightbox-content-for-book-preview" ref={contentRef} style={{ width: '100vw', height: '100vh' }} onClick={(e) => e.stopPropagation()}>
                 {/* The content will be handled by the Google Books viewer which attaches to contentRef */}
             </div>
