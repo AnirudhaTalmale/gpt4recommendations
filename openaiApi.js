@@ -3,7 +3,8 @@ const { OpenAI } = require('openai');
 require('dotenv').config();
 
 const axios = require('axios');
-const Book = require('./models/Book');
+const GoogleBookData = require('./models/GoogleBookData');
+const AmazonBookData = require('./models/AmazonBookData');
 
 const parseBookTitle = (bookTitleWithAuthor) => {
   // Remove any occurrences of opening or closing quotes
@@ -18,9 +19,21 @@ const parseBookTitle = (bookTitleWithAuthor) => {
 };
 
 // Function to generate a "Buy Now" button for a book
-function createBuyNowButton(amazonLink) {
+function createBuyNowButton(amazonLink, bookTitle, author) {
+  // Check if amazonLink is undefined or empty
+  if (!amazonLink) {
+    // Encode book title and author for URL
+    const encodedTitle = encodeURIComponent(bookTitle.trim());
+    const encodedAuthor = encodeURIComponent(author.trim());
+
+    // Create Amazon search link
+    amazonLink = `https://www.amazon.in/s?k=${encodedTitle}+${encodedAuthor}`;
+  }
+
+  // Return the button HTML
   return `<div><a href="${amazonLink}" target="_blank"><button class="buy-now-button">Buy Now</button></a></div>`;
 }
+
 
 // Assuming `isEmbeddable` is a boolean that determines if the book can be previewed
 function createPreviewButtonHtml(isbn, isEmbeddable) {
@@ -75,13 +88,22 @@ function createBookInfoHtml(bookTitle, author, amazonStarRating, amazonReviewCou
   return bookInfoHtml;
 }
 
-async function getAmazonData(bookTitle) {
+async function getAmazonBookData(title, author) {
   try {
+    const existingBook = await AmazonBookData.findOne({ title, author });
+    if (existingBook) {
+      return {
+        amazonLink: existingBook.amazonLink,
+        amazonStarRating: existingBook.amazonStarRating,
+        amazonReviewCount: existingBook.amazonReviewCount
+      };
+    }
+
     const response = await axios.get(`https://www.googleapis.com/customsearch/v1`, {
       params: {
             key: process.env.REACT_APP_GOOGLE_CUSTOM_SEARCH_API_KEY,
             cx: process.env.GOOGLE_CSE_ID,
-            q: `site:amazon.in ${bookTitle}`,
+            q: `site:amazon.in ${title}`,
             num: 1
           }
     });
@@ -104,18 +126,23 @@ async function getAmazonData(bookTitle) {
 
       amazonLink = url.href.split('/ref')[0];
 
-      return {
+      const newAmazonBookData = new AmazonBookData({
+        title,
+        author,
         amazonLink,
-        amazonStarRating,
-        amazonReviewCount
-      };
+        amazonStarRating: amazonStarRating !== 'Unknown' ? amazonStarRating : null,
+        amazonReviewCount: amazonReviewCount !== 'Unknown' ? amazonReviewCount : null
+      }); 
+      await newAmazonBookData.save();
+
+      return { amazonLink, amazonStarRating, amazonReviewCount };
     } else {
       console.log('No results found.');
-      return {};
+      return { amazonLink: '', amazonStarRating: '', amazonReviewCount: '' };
     }
   } catch (error) {
     console.error('Error during API request:', error);
-    return {};
+    return { amazonLink: '', amazonStarRating: '', amazonReviewCount: '' };
   }
 }
 
@@ -136,20 +163,18 @@ function convertStarRating(starString) {
   return starRatingMap[starString] || starString;
 }
 
-const getBookData = async (bookTitleWithAuthor) => {
+const getGoogleBookData = async (title, author) => {
   try {
-    const { bookTitle, author } = parseBookTitle(bookTitleWithAuthor);
-
-    const existingBook = await Book.findOne({ title: bookTitle });
+    const existingBook = await GoogleBookData.findOne({ title, author });
     if (existingBook) {
       return { 
         coverImageUrl: existingBook.coverImageUrl, 
-        embeddable: existingBook.embeddable, 
-        amazonLink: existingBook.amazonLink 
+        isbn: existingBook.isbn, 
+        embeddable: existingBook.embeddable
       };
     }
 
-    let query = `intitle:${encodeURIComponent(bookTitle)}`;
+    let query = `intitle:${encodeURIComponent(title)}`;
     if (author) {
       query += `+inauthor:${encodeURIComponent(author)}`;
     }
@@ -172,23 +197,19 @@ const getBookData = async (bookTitleWithAuthor) => {
       }
     }
 
-    const { amazonLink, amazonStarRating, amazonReviewCount } = await getAmazonData(bookTitle);
-
-    // const newBook = new Book({ 
-    //   title: bookTitle, 
-    //   coverImageUrl, 
-    //   isbn, 
-    //   embeddable,
-    //   amazonLink,
-    //   amazonStarRating: amazonStarRating !== 'Unknown' ? amazonStarRating : null,
-    //   amazonReviewCount: amazonReviewCount !== 'Unknown' ? amazonReviewCount : null
-    // }); 
-    // await newBook.save();
-    return { coverImageUrl, isbn, embeddable, amazonLink, amazonStarRating, amazonReviewCount };
+    const newGoogleBookData = new GoogleBookData({ 
+      title,
+      author,
+      coverImageUrl, 
+      isbn, 
+      embeddable
+    }); 
+    await newGoogleBookData.save();
+    return { coverImageUrl, isbn, embeddable};
 
   } catch (error) {
     console.error(`Error fetching book cover for ${bookTitleWithAuthor}:`, error);
-    return { coverImageUrl, embeddable, amazonLink, amazonStarRating, amazonReviewCount };
+    return { coverImageUrl: '', isbn: '', embeddable: '' };
   }
 };
 
@@ -205,7 +226,7 @@ const fetchMoreDetails = async (bookTitle, author) => {
   } catch (error) {
     throw error; // Throw the error to be caught in the calling function
   }
-};  
+};   
 
 const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, isKeyInsights, isAnecdotes, bookTitle, author, moreBooks) => {
 
@@ -263,13 +284,14 @@ const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, is
     let isPaused = false; // Flag to check if emitting is paused
 
     if (isKeyInsights || isAnecdotes || isMoreDetails) {
-      const {coverImageUrl, amazonLink, amazonStarRating, amazonReviewCount} = await getBookData(bookTitle);
+      const {coverImageUrl} = await getGoogleBookData(bookTitle, author);
+      const {amazonLink, amazonStarRating, amazonReviewCount} = await getAmazonBookData(bookTitle, author);
       const bookInfoHtml = createBookInfoHtml(bookTitle, author, amazonStarRating, amazonReviewCount);
       let imageDiv = ``;
       if (coverImageUrl) {
         imageDiv = `<div><img src="${coverImageUrl}" alt=""></div>`;
       }
-      const buyNowButtonHtml = createBuyNowButton(amazonLink);
+      const buyNowButtonHtml = createBuyNowButton(amazonLink, bookTitle, author);
       completeResponse = bookInfoHtml + imageDiv + buyNowButtonHtml;
       socket.emit('chunk', { content: completeResponse, sessionId, isMoreDetails, isKeyInsights, isAnecdotes, moreBooks });
     }
@@ -287,14 +309,11 @@ const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, is
           // Extract book title enclosed in '#'
           let bookTitleMatch = pausedEmit.match(/#(?:\d+\.\s)?(.*?)#/);
           const bookTitleWithAuthor = bookTitleMatch ? bookTitleMatch[1] : "";
-          const {coverImageUrl, isbn, embeddable, amazonLink, amazonStarRating, amazonReviewCount} = await getBookData(bookTitleWithAuthor);
+          const { bookTitle, author } = parseBookTitle(bookTitleWithAuthor);
+          const {coverImageUrl, isbn, embeddable} = await getGoogleBookData(bookTitle, author);
+          const {amazonLink, amazonStarRating, amazonReviewCount} = await getAmazonBookData(bookTitle, author);
 
-          // Parse bookTitle and author from the content
-          let parsed = parseBookTitle(bookTitleWithAuthor); // Example function call
-          bookTitle = parsed.bookTitle;
-          author = parsed.author;
-
-          const buyNowButtonHtml = createBuyNowButton(amazonLink);
+          const buyNowButtonHtml = createBuyNowButton(amazonLink, bookTitle, author);
 
           if (isMoreDetails || messages[messages.length - 1].content.startsWith("Explain the book - ")) {
             pausedEmit = pausedEmit.replace(bookTitleMatch[0], bookTitleMatch[0] + buyNowButtonHtml);

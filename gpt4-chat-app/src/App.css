@@ -9,11 +9,12 @@
 /* chat-area header */
 
 ol {
-  padding-inline-start: 6px;  /* Adjusts the starting padding of the list to reduce indentation */
+  padding-inline-start: 0px;  /* Adjusts the starting padding of the list to reduce indentation */
 }
 
 ol li::marker {
   color: #777777;
+  font-size: 0.93rem;
 }
 
 
@@ -1267,18 +1268,30 @@ body:not(.history-pane-open) .input-area {
 
 .lightbox-content {
   background-color: white;
-  padding:  1% 6.7% 3% 6.7%;
+  padding:  0% 6.7% 3% 6.7%;
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   max-width: 550px; /* Adjust as per your content's requirements */
-  max-height: 88%; /* Adjust based on content height */
+  max-height: 96%; /* Adjust based on content height */
   overflow-y: auto; /* Adds a scrollbar if the content is too long */
   position: relative; 
   font-size: 0.98rem;
-  line-height: 1.6rem;
+  line-height: 1.7rem;
   color: rgba(0, 0, 0, 0.921);
   margin-left: 1.5rem;
   margin-right: 1.5rem;
+}
+
+.lightbox-content ol li {
+  margin-top: 0.3rem;
+}
+
+.lightbox-content .buy-now-button {
+  margin-bottom: 0.5rem;
+}
+
+.lightbox-content h3 {
+  margin-bottom: -0.15rem !important;
 }
 
 .lightbox-close {
