@@ -5,6 +5,7 @@ import SampleQueries from './SampleQueries';
 import AnswerDisplay from './AnswerDisplay';
 import HistoryPane from './HistoryPane';
 import Lightbox from './Lightbox';
+import LightboxForImage from './LightboxForImage';
 import LightboxForBookPreview from './LightboxForBookPreview';
 import '../App.css';
 import socket from './socket';
@@ -757,7 +758,11 @@ function Chat() {
     }
   }, [sessions, currentSessionIndex]);
   
-
+  const [lightboxImageUrl, setLightboxImageUrl] = useState(null);
+  const handleImageClick = (imageUrl) => {
+    setLightboxImageUrl(imageUrl);
+    setIsLightboxOpen(true);
+  };
 
   return (
     <div className="App">
@@ -772,6 +777,17 @@ function Chat() {
           }
         }}
         contentRef={lightboxContentRef}
+      />
+      <LightboxForImage
+        isOpen={isLightboxOpen}
+        onClose={() => {
+          setIsLightboxOpen(false);
+          setLightboxContent(''); // Clear the content when Lightbox is closed
+          if (isStreaming) {
+            handleStopStreaming(); // Stop streaming if it's active
+          }
+        }}
+        imageUrl={lightboxImageUrl}
       />
       <LightboxForBookPreview
         isOpen={isBookPreviewLightboxOpen}
@@ -819,6 +835,7 @@ function Chat() {
               onAnecdotesClick={handleAnecdotesRequest}
               showContinueButton={showContinueButton && isLastMessageFromAssistant}
               onContinueGenerating={onContinueGenerating}
+              onImageClick={handleImageClick}
             />
           );
         })}

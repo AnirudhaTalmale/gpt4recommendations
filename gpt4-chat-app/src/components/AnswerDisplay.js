@@ -4,7 +4,7 @@ import '../App.css';
 
 function AnswerDisplay({ 
   onPreviewClick, role, content, userImage, isStreaming, 
-  onMoreDetailsClick, onKeyInsightsClick, onAnecdotesClick, showContinueButton, onContinueGenerating 
+  onMoreDetailsClick, onKeyInsightsClick, onAnecdotesClick, showContinueButton, onContinueGenerating, onImageClick 
 }) {
 
   const createMarkup = () => {
@@ -59,6 +59,10 @@ function AnswerDisplay({
     }
   });
 
+  const handleImageClick = (src) => {
+    onImageClick(src); // Propagate the click event and image source up to the parent component
+  };
+
   return (
     <div className={`chat-area-wrapper ${isStreaming ? 'streaming' : ''}`}>
       <div className={`message ${role}`}>
@@ -102,7 +106,15 @@ function AnswerDisplay({
             <>
               <div className="message-sender">ChatGPT</div>
               <br></br>
-              <div className="message-answer" ref={messageAnswerRef} dangerouslySetInnerHTML={createMarkup()} />
+              <div className="message-answer" 
+                ref={messageAnswerRef} 
+                dangerouslySetInnerHTML={createMarkup()} 
+                onClick={(e) => {
+                  if (e.target.tagName === 'IMG') {
+                    handleImageClick(e.target.src);
+                  }
+                }}
+              />
               {showContinueButton && !isStreaming && (
                 <div className="button-container">
                   <button className="continue-generating-btn" onClick={handleContinueGenerating}>

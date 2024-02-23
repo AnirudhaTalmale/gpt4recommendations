@@ -7,6 +7,7 @@ const bookSchema = new Schema({
   amazonLink: { type: String, required: true },
   amazonStarRating: { type: Number, default: null },
   amazonReviewCount: { type: String, default: null },
+  amazonImage: { type: String, default: null },
 });
 
 module.exports = mongoose.model('AmazonBookData', bookSchema);

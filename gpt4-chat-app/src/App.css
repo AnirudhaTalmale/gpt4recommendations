@@ -214,6 +214,10 @@ body:not(.history-pane-open) .chat-area {
   .lightbox-close {
     top: 1.5rem !important;
   }
+
+  .lightbox-content-for-image img {
+    width: 80vw;
+  }
 }
 
 /* Sample Queries */
@@ -772,47 +776,6 @@ body:not(.history-pane-open) .input-area {
   background-color: #c82333;
 }
 
-/* Contact us page */
-
-.contact-us-container {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-}
-
-.buttons-container {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.contact-button {
-  border: 1px solid grey;
-  background-color: transparent;
-  padding: 10px 20px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 10px; /* if you are using icons, this will space them from the text */
-}
-
-/* Replace the following class with actual icons */
-.contact-button::before {
-  content: '';
-  display: inline-block;
-  height: 16px;
-  width: 16px;
-  background-color: grey; /* Placeholder for icon */
-}
-
-.response-time-info {
-  margin-top: 20px;
-  text-align: center;
-}
-
-
 
 /* Home page components */
 
@@ -1303,6 +1266,10 @@ body:not(.history-pane-open) .input-area {
   color: rgba(0, 0, 0, 0.921);
 }
 
+.lightbox-content-for-image img {
+  max-width: 630px;
+}
+
 .lightbox-content .buy-now-button {
   margin-bottom: 0.5rem;
 }
@@ -1397,6 +1364,12 @@ body:not(.history-pane-open) .input-area {
   margin-top: -0.7rem;
 }
 
+.message-answer img {
+  width: 135.625px;
+  height: 208.33333333333334px;
+  cursor: pointer; 
+}
+
 .message-question {
   white-space: pre-wrap; /* This will preserve line breaks and spaces as in the input */
   color: black !important;
@@ -1436,6 +1409,37 @@ body:not(.history-pane-open) .input-area {
   margin-bottom: 1rem;
 }
 
+.content-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start; /* or 'center' depending on your design */
+  /* border: 0.4px solid rgb(250, 250, 250);
+  border-radius: 0.3rem;
+  background-color: rgb(250, 250, 250); */
+  width: 57%;
+  min-width: 297.65px; 
+  margin-bottom: -0.3rem;
+}
+
+.image-container {
+  /* background-color: rgb(239, 239, 239); */
+  width: 220px;
+}
+
+.image-container img {
+  
+}
+
+
+.buttons-container {
+  
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  /* border: 1px solid green; */
+  margin: auto;
+}
+
 .buy-now-button {
   background: none;
   border: 1px solid rgba(169, 169, 169, 0.566);
@@ -1447,11 +1451,10 @@ body:not(.history-pane-open) .input-area {
   text-decoration: none;
   display: inline-block;
   transition: background-color 0.3s ease, border-color 0.3s ease;
-  margin-bottom: 0.7rem;
-  margin-top: 0.7rem;
-  width: 8.215rem;
+  width: 7rem;
   margin-left: -0.1rem;
   color: rgb(46, 46, 46);
+  
 }
 
 .single-button {
@@ -1482,10 +1485,9 @@ body:not(.history-pane-open) .input-area {
   text-decoration: none;
   display: inline-block;
   transition: background-color 0.3s ease, border-color 0.3s ease;
-  width: 8.215rem;
+  width: 7rem;
   margin-left: -0.1rem;
   color: rgb(46, 46, 46);
-  margin-top: 0.7rem;
 }
 
 .key-insights-btn:hover {
@@ -1512,10 +1514,9 @@ body:not(.history-pane-open) .input-area {
   text-decoration: none;
   display: inline-block;
   transition: background-color 0.3s ease, border-color 0.3s ease;
-  width: 8.215rem;
+  width: 7rem;
   margin-left: -0.1rem;
   color: rgb(46, 46, 46);
-  margin-top: 0.7rem;
 }
 
 
@@ -1543,10 +1544,9 @@ body:not(.history-pane-open) .input-area {
   text-decoration: none;
   display: inline-block;
   transition: background-color 0.3s ease, border-color 0.3s ease;
-  width: 8.215rem;
+  width: 7rem;
   margin-left: -0.1rem;
   color: rgb(46, 46, 46);
-  margin-top: 0.7rem;
 }
 
 .preview-btn:hover {
@@ -1573,7 +1573,7 @@ body:not(.history-pane-open) .input-area {
   text-decoration: none;
   display: inline-block;
   transition: background-color 0.3s ease, border-color 0.3s ease;
-  width: 8.215rem;
+  width: 7rem;
   margin-left: -0.1rem;
   color: rgb(46, 46, 46);
 }
@@ -1593,6 +1593,7 @@ body:not(.history-pane-open) .input-area {
 }
 
 .button-container {
+  flex: 1;
   display: flex;
   justify-content: flex-end; /* Aligns the button to the right horizontally */
   align-items: center; /* Keeps the button centered vertically if needed */
@@ -1721,6 +1722,8 @@ b div img {
 
 .lightbox-content img {
   margin-top: 0.7rem;
+  width: 135.625px;
+  height: 208.33333333333334px;
 }
 
 .lightbox-content  h3 {

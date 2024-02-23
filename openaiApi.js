@@ -95,17 +95,18 @@ async function getAmazonBookData(title, author) {
       return {
         amazonLink: existingBook.amazonLink,
         amazonStarRating: existingBook.amazonStarRating,
-        amazonReviewCount: existingBook.amazonReviewCount
+        amazonReviewCount: existingBook.amazonReviewCount,
+        amazonImage: existingBook.amazonImage // Assuming you store the image URL in the database
       };
     }
 
     const response = await axios.get(`https://www.googleapis.com/customsearch/v1`, {
       params: {
-            key: process.env.REACT_APP_GOOGLE_CUSTOM_SEARCH_API_KEY,
-            cx: process.env.GOOGLE_CSE_ID,
-            q: `site:amazon.in ${title}`,
-            num: 1
-          }
+        key: process.env.REACT_APP_GOOGLE_CUSTOM_SEARCH_API_KEY,
+        cx: process.env.GOOGLE_CSE_ID,
+        q: `site:amazon.in ${title}`,
+        num: 1
+      }
     });
 
     if (response.data.items && response.data.items.length > 0) {
@@ -120,10 +121,10 @@ async function getAmazonBookData(title, author) {
       const amazonReviewCount = reviewCountMatch ? reviewCountMatch[1].replace('%2C', ',') : 'Unknown';
 
       let amazonLink = item.pagemap.metatags[0]['og:url'];
+      let amazonImage = item.pagemap.cse_image ? item.pagemap.cse_image[0].src : '';
 
       let url = new URL(amazonLink);
       url.hostname = 'www.amazon.in'; 
-
       amazonLink = url.href.split('/ref')[0];
 
       const newAmazonBookData = new AmazonBookData({
@@ -131,20 +132,22 @@ async function getAmazonBookData(title, author) {
         author,
         amazonLink,
         amazonStarRating: amazonStarRating !== 'Unknown' ? amazonStarRating : null,
-        amazonReviewCount: amazonReviewCount !== 'Unknown' ? amazonReviewCount : null
+        amazonReviewCount: amazonReviewCount !== 'Unknown' ? amazonReviewCount : null,
+        amazonImage // Storing the image URL
       }); 
       await newAmazonBookData.save();
 
-      return { amazonLink, amazonStarRating, amazonReviewCount };
+      return { amazonLink, amazonStarRating, amazonReviewCount, amazonImage };
     } else {
       console.log('No results found.');
-      return { amazonLink: '', amazonStarRating: '', amazonReviewCount: '' };
+      return { amazonLink: '', amazonStarRating: '', amazonReviewCount: '', amazonImage: '' };
     }
   } catch (error) {
     console.error('Error during API request:', error);
-    return { amazonLink: '', amazonStarRating: '', amazonReviewCount: '' };
+    return { amazonLink: '', amazonStarRating: '', amazonReviewCount: '', amazonImage: '' };
   }
 }
+
 
 // Convert the star rating from string format to numeric format
 function convertStarRating(starString) {
@@ -168,7 +171,7 @@ const getGoogleBookData = async (title, author) => {
     const existingBook = await GoogleBookData.findOne({ title, author });
     if (existingBook) {
       return { 
-        coverImageUrl: existingBook.coverImageUrl, 
+        googleImage: existingBook.googleImage, 
         isbn: existingBook.isbn, 
         embeddable: existingBook.embeddable
       };
@@ -180,7 +183,7 @@ const getGoogleBookData = async (title, author) => {
     }
     const response = await axios.get(`https://www.googleapis.com/books/v1/volumes?q=${query}&key=${process.env.REACT_APP_GOOGLE_BOOKS_API_KEY}`);
 
-    let coverImageUrl = '';
+    let googleImage = '';
     let isbn = '';
     let embeddable = false;
 
@@ -193,23 +196,23 @@ const getGoogleBookData = async (title, author) => {
       const foundIsbn = volumeInfo.industryIdentifiers?.find(id => id.type === 'ISBN_13' || id.type === 'ISBN_10')?.identifier;
       if (foundIsbn) isbn = foundIsbn;
       if (volumeInfo.imageLinks?.thumbnail) {
-        coverImageUrl = volumeInfo.imageLinks.thumbnail.replace("&edge=curl", "");
+        googleImage = volumeInfo.imageLinks.thumbnail.replace("&edge=curl", "");
       }
     }
 
     const newGoogleBookData = new GoogleBookData({ 
       title,
       author,
-      coverImageUrl, 
+      googleImage, 
       isbn, 
       embeddable
     }); 
     await newGoogleBookData.save();
-    return { coverImageUrl, isbn, embeddable};
+    return { googleImage, isbn, embeddable};
 
   } catch (error) {
     console.error(`Error fetching book cover for ${title}:`, error);
-    return { coverImageUrl: '', isbn: '', embeddable: '' };
+    return { googleImage: '', isbn: '', embeddable: '' };
   }
 };
 
@@ -284,12 +287,12 @@ const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, is
     let isPaused = false; // Flag to check if emitting is paused
 
     if (isKeyInsights || isAnecdotes || isMoreDetails) {
-      const {coverImageUrl} = await getGoogleBookData(bookTitle, author);
-      const {amazonLink, amazonStarRating, amazonReviewCount} = await getAmazonBookData(bookTitle, author);
+      const {googleImage} = await getGoogleBookData(bookTitle, author);
+      const {amazonLink, amazonStarRating, amazonReviewCount, amazonImage} = await getAmazonBookData(bookTitle, author);
       const bookInfoHtml = createBookInfoHtml(bookTitle, author, amazonStarRating, amazonReviewCount);
-      let imageDiv = ``;
-      if (coverImageUrl) {
-        imageDiv = `<div><img src="${coverImageUrl}" alt=""></div>`;
+      let imageDiv = '';
+      if (amazonImage || googleImage) {
+        imageDiv = `<div><img src="${amazonImage || googleImage}" alt=""></div>`;
       }
       const buyNowButtonHtml = createBuyNowButton(amazonLink, bookTitle, author);
       completeResponse = bookInfoHtml + imageDiv + buyNowButtonHtml;
@@ -310,10 +313,17 @@ const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, is
           let bookTitleMatch = pausedEmit.match(/#(?:\d+\.\s)?(.*?)#/);
           const bookTitleWithAuthor = bookTitleMatch ? bookTitleMatch[1] : "";
           const { bookTitle, author } = parseBookTitle(bookTitleWithAuthor);
-          const {coverImageUrl, isbn, embeddable} = await getGoogleBookData(bookTitle, author);
-          const {amazonLink, amazonStarRating, amazonReviewCount} = await getAmazonBookData(bookTitle, author);
+          const {googleImage, isbn, embeddable} = await getGoogleBookData(bookTitle, author);
+          const {amazonLink, amazonStarRating, amazonReviewCount, amazonImage} = await getAmazonBookData(bookTitle, author);
+          console.log("amazonImage is: ", amazonImage);
 
           const buyNowButtonHtml = createBuyNowButton(amazonLink, bookTitle, author);
+
+          let imageSource = amazonImage || googleImage;
+          let imageDiv = '';
+          if (imageSource) {
+            imageDiv = `<div class="image-container"><img src="${imageSource}" alt=""></div>`;
+          }
 
           if (isMoreDetails || messages[messages.length - 1].content.startsWith("Explain the book - ")) {
             pausedEmit = pausedEmit.replace(bookTitleMatch[0], bookTitleMatch[0] + buyNowButtonHtml);
@@ -322,13 +332,21 @@ const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, is
             const keyInsightsButtonHtml = `<div><button type="button" class="key-insights-btn" data-book-title="${bookTitle}" data-author="${author}">Insights</button></div>`;
             const anecdotesButtonHtml = `<div><button type="button" class="anecdotes-btn" data-book-title="${bookTitle}" data-author="${author}">Anecdotes</button></div>`;
             const previewButtonHtml = createPreviewButtonHtml(isbn, embeddable);
-            pausedEmit = pausedEmit.replace(bookTitleMatch[0], bookTitleMatch[0] + buyNowButtonHtml + moreDetailsButtonHtml + keyInsightsButtonHtml + anecdotesButtonHtml + previewButtonHtml);
+
+            const buttonsHtml = buyNowButtonHtml + moreDetailsButtonHtml + keyInsightsButtonHtml + anecdotesButtonHtml + previewButtonHtml;
+            const buttonsDiv = `<div class="buttons-container">${buttonsHtml}</div>`;
+
+            const contentDiv = `<div class="content-container">${imageDiv}${buttonsDiv}</div>`;
+
+            pausedEmit = pausedEmit.replace(bookTitleMatch[0], bookTitleMatch[0] + contentDiv);
           }
 
-          if (coverImageUrl) {
-            const imageDiv = `<div><img src="${coverImageUrl}" alt=""></div>`;
-            pausedEmit = pausedEmit.replace(bookTitleMatch[0], bookTitleMatch[0] + imageDiv);
-          }
+          // let imageSource = amazonImage || googleImage;
+          // let imageDiv = '';
+          // if (imageSource) {
+          //   imageDiv = `<div><img src="${imageSource}" alt=""></div>`;
+          //   pausedEmit = pausedEmit.replace(bookTitleMatch[0], bookTitleMatch[0] + imageDiv);
+          // }
 
           const bookInfoHtml = createBookInfoHtml(bookTitle, author, amazonStarRating, amazonReviewCount);
           pausedEmit = pausedEmit.replace(bookTitleMatch[0], bookInfoHtml);
@@ -453,60 +471,5 @@ openaiApi.stopStream = () => {
 
 module.exports = openaiApi;
 
-// openaiApi.getNewsletter = async (prompt) => {
-//   try {
-//     const response = await openai.chat.completions.create({
-//       model: "gpt-4-1106-preview",
-//       messages: [{ role: 'system', content: prompt }],
-//     });
 
-//     let newsletterContent = response.choices[0]?.message?.content.trim();
-//     console.log("newsletterContent: ", newsletterContent);
-
-//     const bookListMatches = [...newsletterContent.matchAll(/#([\s\S]*?)#/g)];
-
-//     for (const match of bookListMatches) {
-//       const bookTitleWithAuthor = match[1];
-//       console.log("bookTitleWithAuthor: ", bookTitleWithAuthor);
-      
-//       // Enclose book title and author in <b> tags
-//       const bookTitleWithAuthorBold = `<b>${bookTitleWithAuthor}</b>`;
-
-//       // Fetch book cover image
-//       const coverImageUrl = await getBookData(bookTitleWithAuthor);
-      
-//       // Extract book title and author
-//       let { bookTitle, author } = parseBookTitle(bookTitleWithAuthor);
-
-//       const encodedTitle = encodeForUrl(bookTitle);
-//       let amazonUrl = `https://www.amazon.in/s?k=${encodedTitle}`;
-//       let detailsUrl = `http://localhost:3001/?bookTitle=${encodedTitle}`;
-
-//       if (author) {
-//         const encodedAuthor = `+by+${encodeForUrl(author)}`;
-//         amazonUrl += encodedAuthor;
-
-//         const encodedAuthorMoreDetials = `&author=${encodeForUrl(author)}`;
-//         detailsUrl += encodedAuthorMoreDetials;
-//       }
-
-//       const buyNowButtonHtml = `<div><a href="${amazonUrl}" style="cursor: pointer; text-decoration: none;" target="_blank"><button style="background: none; border: 1px solid black; font-family: Arial, sans-serif; font-size: 1rem; padding: 0.25rem 0.6rem; border-radius: 0.7rem; cursor: pointer; text-align: center; display: inline-block; margin-bottom: 0.7rem; margin-top: 0.7rem; width: 8.3rem;">Buy now</button></a></div>`;
-//       const moreDetailsButtonHtml = `<div><a href="${detailsUrl}" style="text-decoration: none;" target="_blank"><button type="button" style="background: none; border: 1px solid black; font-family: Arial, sans-serif; font-size: 1rem; padding: 0.25rem 0.6rem; border-radius: 0.7rem; cursor: pointer; text-align: center; display: inline-block; margin-bottom: 0.2rem; width: 8.3rem;">More Details</button></a></div>`;
-
-//       newsletterContent = newsletterContent.replace(match[0], bookTitleWithAuthorBold + buyNowButtonHtml + moreDetailsButtonHtml);
-
-//       // If the cover image URL is not the default, concatenate div tag with the image tag
-//       if (coverImageUrl !== 'default-cover.jpg') {
-//         const imageDiv = `<div style="margin-top: 0.8rem; margin-bottom: -0.1rem;"><img src="${coverImageUrl}" alt=""></div>`;
-//         newsletterContent = newsletterContent.replace(bookTitleWithAuthorBold, bookTitleWithAuthorBold + imageDiv);
-//       }
-//     }
-
-//     newsletterContent = newsletterContent.replace(/\#/g, '');
-//     return newsletterContent;
-//   } catch (error) {
-//     console.log('Error getting newsletter content', error);
-//     return "Error getting newsletter content";
-//   }
-// };
 
