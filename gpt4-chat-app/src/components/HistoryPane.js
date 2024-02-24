@@ -7,6 +7,22 @@ import '../App.css';
 
 const straightLinePath = 'M15,25 L15,5';
 
+const getDefaultImage = (displayName) => {
+  if (!displayName || displayName.length === 0) return '';
+
+  const firstLetter = displayName.charAt(0).toUpperCase();
+  // Updated color array with shades of grey
+  const colors = ['#A0A0A0', '#808080', '#606060', '#404040']; // Example of grey color array
+  const bgColor = colors[Math.floor(Math.random() * colors.length)]; // Randomly select a background color
+
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100">
+                <circle cx="50" cy="50" r="50" fill="${bgColor}" />
+                <text x="50%" y="50%" dy=".35em" text-anchor="middle" fill="white" font-family="Arial" font-size="50">${firstLetter}</text>
+               </svg>`;
+
+  return `data:image/svg+xml;base64,${Buffer.from(svg).toString('base64')}`;
+};
+
 const HistoryPane = forwardRef(({
   sessions, 
   onNewSession,
@@ -33,6 +49,10 @@ const HistoryPane = forwardRef(({
       const newPath = isPaneOpen ? 'M15,25 L10,15 L15,5' : 'M15,25 L20,15 L15,5';
       lineRef.current.setAttribute('d', newPath);
     }
+  };
+
+  const getUserImage = () => {
+    return userImage || getDefaultImage(userName);
   };
   
   const handleMouseLeave = () => {
@@ -308,7 +328,7 @@ const HistoryPane = forwardRef(({
 
         <div className="user-info-container">
           <div className={`user-entry ${isEntryActive ? 'active' : ''}`} onClick={toggleDropdown} ref={userEntryRef}>
-            <img src={userImage} alt="" className="history-pane-image" />
+            <img src={getUserImage()} alt="" className="history-pane-image" />
             <span>{userName}</span>
           </div>
           {isDropdownOpen && (

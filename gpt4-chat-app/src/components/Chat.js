@@ -565,7 +565,6 @@ function Chat() {
   useEffect(() => {
     checkAuthStatus();
   }, [checkAuthStatus]);
-  
 
   const handleDeleteSession = async (sessionId) => {
     try {
@@ -576,7 +575,7 @@ function Chat() {
         setCurrentSessionId(prevCurrentSessionId => {
             if (prevCurrentSessionId === sessionId) {
                 // If the deleted session was the current one, switch to another session (e.g., the last one) or set to null if no sessions are left
-                return sessions.length > 1 ? sessions[sessions.length - 2]._id : null;
+                return sessions.length > 1 ? sessions[sessions.length - 1]._id : null;
             }
             return prevCurrentSessionId; // If the deleted session was not the current one, keep the current session ID unchanged
         });
@@ -584,7 +583,6 @@ function Chat() {
         console.error('Error deleting session:', error);
     }
   };
-
   
   const setCurrentSessionIdWithStreamCheck = newSessionId => {
     if (currentSessionId !== newSessionId && isStreaming) {
