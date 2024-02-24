@@ -5,23 +5,25 @@ function InputBox({ onSubmit, isStreaming, onStopStreaming, initialQuery }) {
   const [input, setInput] = useState(initialQuery || '');
   const [isInputNotEmpty, setIsInputNotEmpty] = useState(false);
   const [rows, setRows] = useState(1);
-  const [sendButtonRight, setSendButtonRight] = useState('2.7rem'); // Default value
+  const [sendButtonRight, setSendButtonRight] = useState('2.7rem');
+  const [stopButtonRight, setStopButtonRight] = useState('2.7rem');
 
-  const updateSendButtonPosition = () => {
+  const updateButtonPositions = () => {
     const parentWidth = document.querySelector('.input-area').clientWidth;
     const inputBoxWidth = textareaRef.current.clientWidth;
     const newRightPosition = (parentWidth - inputBoxWidth) / 2 + 12 + 'px'; // Example calculation, adjust as needed
     setSendButtonRight(newRightPosition);
-  };
+    setStopButtonRight(newRightPosition); // Update for stop button as well
+  };  
   
   useEffect(() => {
-    updateSendButtonPosition();
-    // Add a resize event listener if necessary
-    window.addEventListener('resize', updateSendButtonPosition);
+    updateButtonPositions();
+    window.addEventListener('resize', updateButtonPositions);
     return () => {
-      window.removeEventListener('resize', updateSendButtonPosition);
+      window.removeEventListener('resize', updateButtonPositions);
     };
   }, []);
+  
   
   
   const textareaRef = useRef(null);
@@ -99,7 +101,7 @@ function InputBox({ onSubmit, isStreaming, onStopStreaming, initialQuery }) {
         rows={rows}
       />
       {isStreaming ? (
-        <button type="button" className="stop-button" onClick={onStopStreaming}>
+        <button type="button" className="stop-button" onClick={onStopStreaming} style={{ right: stopButtonRight }}>
           <i className="fa-regular fa-circle-stop"></i>
         </button>
       ) : (

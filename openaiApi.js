@@ -402,7 +402,7 @@ const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, is
                 author,
                 keyInsights: completeResponse // Save complete response here
             });
-            await newDetail.save();
+            // await newDetail.save();
         } else if (isAnecdotes) {
           const Anecdotes = require('./models/Anecdotes');
             const newDetail = new Anecdotes({

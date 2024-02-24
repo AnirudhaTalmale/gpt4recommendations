@@ -759,9 +759,11 @@ function Chat() {
   }, [sessions, currentSessionIndex]);
   
   const [lightboxImageUrl, setLightboxImageUrl] = useState(null);
+  const [isLightboxForImageOpen, setIsLightboxForImageOpen] = useState(false);
+
   const handleImageClick = (imageUrl) => {
     setLightboxImageUrl(imageUrl);
-    setIsLightboxOpen(true);
+    setIsLightboxForImageOpen(true);
   };
 
   return (
@@ -779,10 +781,9 @@ function Chat() {
         contentRef={lightboxContentRef}
       />
       <LightboxForImage
-        isOpen={isLightboxOpen}
+        isOpen={isLightboxForImageOpen}
         onClose={() => {
-          setIsLightboxOpen(false);
-          setLightboxContent(''); // Clear the content when Lightbox is closed
+          setIsLightboxForImageOpen(false);
           if (isStreaming) {
             handleStopStreaming(); // Stop streaming if it's active
           }

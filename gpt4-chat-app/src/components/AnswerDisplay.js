@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import DOMPurify from 'dompurify';
 import '../App.css';
 
@@ -6,6 +6,10 @@ function AnswerDisplay({
   onPreviewClick, role, content, userImage, isStreaming, 
   onMoreDetailsClick, onKeyInsightsClick, onAnecdotesClick, showContinueButton, onContinueGenerating, onImageClick 
 }) {
+  const [isKeyInsightsClicked, setIsKeyInsightsClicked] = useState(false);
+  const [isMoreDetailsClicked, setIsMoreDetailsClicked] = useState(false);
+  const [isAnecdotesClicked, setIsAnecdotesClicked] = useState(false);
+  const [isContinueGeneratingClicked, setIsContinueGeneratingClicked] = useState(false);
 
   const createMarkup = () => {
     const safeHTML = DOMPurify.sanitize(content, {
@@ -13,32 +17,51 @@ function AnswerDisplay({
     });
     return { __html: safeHTML };
   };
-
-  const handleMoreDetailsClick = (bookTitle, author) => {
-    if (onMoreDetailsClick) {
-      onMoreDetailsClick(bookTitle, author);
-    }
-  };
   
   const handleKeyInsightsClick = (bookTitle, author) => {
-    if (onKeyInsightsClick) {
+    if (!isKeyInsightsClicked && onKeyInsightsClick) {
+      setIsKeyInsightsClicked(true);
       onKeyInsightsClick(bookTitle, author);
+  
+      // Reset the state after a delay
+      setTimeout(() => {
+        setIsKeyInsightsClicked(false);
+      }, 3500); 
     }
   };
-
+  
+  const handleMoreDetailsClick = (bookTitle, author) => {
+    if (!isMoreDetailsClicked && onMoreDetailsClick) {
+      setIsMoreDetailsClicked(true);
+      onMoreDetailsClick(bookTitle, author);
+  
+      setTimeout(() => {
+        setIsMoreDetailsClicked(false);
+      }, 3500); // Adjust the delay as needed
+    }
+  };
+  
   const handleAnecdotesClick = (bookTitle, author) => {
-    if (onAnecdotesClick) {
+    if (!isAnecdotesClicked && onAnecdotesClick) {
+      setIsAnecdotesClicked(true);
       onAnecdotesClick(bookTitle, author);
+  
+      setTimeout(() => {
+        setIsAnecdotesClicked(false);
+      }, 3500); // Adjust the delay as needed
     }
   };
   
-  
-  // In AnswerDisplay component
   const handleContinueGenerating = () => {
-    if (onContinueGenerating) {
+    if (!isContinueGeneratingClicked && onContinueGenerating) {
+      setIsContinueGeneratingClicked(true);
       onContinueGenerating();
+  
+      setTimeout(() => {
+        setIsContinueGeneratingClicked(false);
+      }, 3500); // Adjust the delay as needed
     }
-  };
+  };  
 
   const messageAnswerRef = useRef(null);
 
