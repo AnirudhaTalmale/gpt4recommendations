@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import '../App.css';
 
-function InputBox({ onSubmit, isStreaming, onStopStreaming, initialQuery }) {
+function InputBox({ onSubmit, isStreaming, onStopStreaming, initialQuery, onHeightChange }) {
   const [input, setInput] = useState(initialQuery || '');
   const [isInputNotEmpty, setIsInputNotEmpty] = useState(false);
   const [rows, setRows] = useState(1);
@@ -74,9 +74,8 @@ function InputBox({ onSubmit, isStreaming, onStopStreaming, initialQuery }) {
     // Combine the two methods for a more accurate count
     const totalLineCount = Math.max(lineCountNewLines, lineCountWrap);
   
-    console.log("lineCount is: ", totalLineCount);
     setRows(Math.min(totalLineCount, maxHeightRem / rowHeightRem));
-  };
+  }
   
   // Utility function to measure text width
   function getTextWidth(text, font) {
@@ -87,6 +86,17 @@ function InputBox({ onSubmit, isStreaming, onStopStreaming, initialQuery }) {
     return context.measureText(text).width;
   }
   
+  const handleHeightChange = useCallback((newHeight) => {
+    onHeightChange(newHeight);
+  }, [onHeightChange]); // onHeightChange is the dependency
+  
+
+  useEffect(() => {
+    if (textareaRef.current) {
+      const newHeight = textareaRef.current.scrollHeight;
+      handleHeightChange(newHeight);
+    }
+  }, [rows, handleHeightChange]); 
 
   return (
     <form onSubmit={handleSubmit} className="input-area">

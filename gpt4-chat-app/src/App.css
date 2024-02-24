@@ -232,7 +232,6 @@ body:not(.history-pane-open) .sample-queries-container {
   justify-content: space-around;
   padding: 1rem;
   position: fixed;
-  bottom: 3.5rem;
   left: 260px;
   right: 0px;
   max-width: 41.5rem; /* Same as input-area */

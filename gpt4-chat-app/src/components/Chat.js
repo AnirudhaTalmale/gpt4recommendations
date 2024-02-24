@@ -790,6 +790,8 @@ function Chat() {
     setIsLightboxForImageOpen(true);
   };
 
+  const [inputBoxHeight, setInputBoxHeight] = useState(0);
+
   return (
     <div className="App">
       <Lightbox
@@ -866,9 +868,19 @@ function Chat() {
         })}
       </div>
       { (sessions.length === 0 || (sessions.find(session => session._id === selectedSessionId) && sessions.find(session => session._id === selectedSessionId).messages.length === 0)) && (
-          <SampleQueries onSubmit={handleQuerySubmit} />
+          <SampleQueries
+            onSubmit={handleQuerySubmit}
+            inputBoxHeight={inputBoxHeight} // And here you pass the inputBoxHeight state down to SampleQueries
+          />
       )}
-      <InputBox onSubmit={handleQuerySubmit} isLoading={isLoading} isStreaming={isStreaming} onStopStreaming={handleStopStreaming} initialQuery={initialQuery} />
+      <InputBox
+        onSubmit={handleQuerySubmit}
+        isLoading={isLoading}
+        isStreaming={isStreaming}
+        onStopStreaming={handleStopStreaming}
+        initialQuery={initialQuery}
+        onHeightChange={setInputBoxHeight} // Here you pass the setInputBoxHeight function to the InputBox
+      />
       
     </div>
   );
