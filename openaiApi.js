@@ -188,8 +188,8 @@ const getGoogleBookData = async (title, author) => {
     let embeddable = false;
 
     if (response.data.items?.length) {
-      // Find the first embeddable book or default to the first book in the response
-      const book = response.data.items.find(item => item.accessInfo.embeddable) || response.data.items[0];
+      const englishBooks = response.data.items.filter(item => item.volumeInfo.language === 'en');
+      const book = englishBooks.find(item => item.accessInfo.embeddable) || englishBooks[0];
       embeddable = book.accessInfo.embeddable;
     
       const { volumeInfo } = book;

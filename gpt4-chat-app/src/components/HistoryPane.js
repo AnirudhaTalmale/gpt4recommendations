@@ -77,6 +77,7 @@ const HistoryPane = forwardRef(({
       if (dropdownRef.current && !dropdownRef.current.contains(event.target) &&
           userEntryRef.current && !userEntryRef.current.contains(event.target)) {
         setIsDropdownOpen(false);
+        setIsEntryActive(false);
       }
     }
 

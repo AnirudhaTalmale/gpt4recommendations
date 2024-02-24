@@ -24,8 +24,6 @@ function InputBox({ onSubmit, isStreaming, onStopStreaming, initialQuery }) {
     };
   }, []);
   
-  
-  
   const textareaRef = useRef(null);
   const rowHeightRem = 1.75; // Estimated row height in rem
   const maxHeightRem = 12; // Max height in rem
