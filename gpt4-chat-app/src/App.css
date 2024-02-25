@@ -1338,13 +1338,97 @@ body:not(.history-pane-open) .input-area {
   scrollbar-color: #dcdcdc transparent; /* thumb and track color */
 }
 
+/* AnswerDisplay Edit functionality */
+
+.answer-display-textarea {
+  width: 100%;
+  height: auto; /* Adjust height automatically */
+  font-size: inherit;
+  font-family: inherit;
+  line-height: inherit;
+  border: none;
+  resize: none; /* Disable manual resizing */
+  margin-left: 0.05rem;
+  margin-top: -0.12rem;
+  background-color: rgb(253, 253, 253);
+}
+
+.answer-display-textarea:focus {
+  outline: none; /* Removes the default focus outline */
+}
+
+/* Container for the buttons to center them horizontally */
+.button-container {
+  display: flex; /* Use flexbox */
+  justify-content: center !important; /* Center children horizontally */
+  align-items: center; /* Center children vertically */
+  /* border: 1px solid red; */
+  margin-top: -0.55rem !important;
+  margin-bottom: 0.4rem;
+}
+
+.fa-pen {
+  display: none;
+  color: rgb(89, 89, 89);
+  cursor: pointer;
+  padding: 6px;
+  font-size: 0.85rem;
+  position: absolute;
+  left: -5px; /* Align with the start of the text */
+  bottom: 14px; /* Position it within the container */
+}
+
+.fa-pen:hover {
+  color: black;
+}
+
+.message-question-container:hover .fa-pen {
+  display: block;
+}
+
+/* Styles for Save button */
+button.save-button {
+  background-color: #10A37F; /* Green background */
+  border: none;
+  color: white;
+  padding: 10px 12px;
+  text-align: center;
+  text-decoration: none;
+  font-size: 0.85rem;
+  margin: 4px 4.5px;
+  cursor: pointer;
+  border-radius: 6px; /* Rounded corners */
+  font-weight: bold;
+}
+
+/* Styles for Cancel button */
+button.cancel-button {
+  font-weight: bold;
+  padding: 10px 12px;
+  text-align: center;
+  text-decoration: none;
+  font-size: 0.85rem;
+  margin: 4px 4.5px;
+  cursor: pointer;
+  border-radius: 6px; /* Rounded corners */
+  border: 1px solid lightgrey;
+  background-color: inherit;
+}
+
+button.save-button:hover {
+  background-color: #0d7f62;
+}
+
+button.cancel-button:hover {
+  background-color: rgba(0, 0, 0, 0.06); /* Slightly darker overlay */
+}
+
 
 /* AnswerDisplay component */
 
 .message {
   display: flex;
   align-items: flex-start; /* Aligns items at the start of the container */
-  margin-bottom: 1.5rem;
   max-width: 600px;
   font-size: 0.98rem;
   color: rgba(0, 0, 0, 0.921);
@@ -1361,24 +1445,32 @@ body:not(.history-pane-open) .input-area {
   margin-bottom: -0.001rem;
 }
 
-.message-answer {
-  margin-top: -0.7rem;
-}
-
 .message-answer img {
   width: 135.625px;
   height: 208.33333333333334px;
   cursor: pointer; 
 }
 
+.message-question-container {
+  position: relative;
+  margin-left: 0.18rem;
+  /* border: 1px solid black; */
+  padding-bottom: 2.9rem;
+}
+
+.message-answer {
+  padding-bottom: 2.9rem;
+}
+
 .message-question {
-  white-space: pre-wrap; /* This will preserve line breaks and spaces as in the input */
+  white-space: pre-wrap;
   color: black !important;
 }
 
+
+
 .message-icon {
   margin-right: 0.8rem; /* Adjust as needed */
-  /* Add styles for your icons here */
 }
 
 .display-image {
@@ -1427,13 +1519,7 @@ body:not(.history-pane-open) .input-area {
   width: 220px;
 }
 
-.image-container img {
-  
-}
-
-
 .buttons-container {
-  
   display: flex;
   flex-direction: column;
   gap: 0.75rem;

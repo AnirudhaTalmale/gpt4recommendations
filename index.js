@@ -289,7 +289,7 @@ io.on('connection', (socket) => {
   let currentSessionId;
   
   socket.on('query', async (data) => {
-    const { sessionId, message, isMoreDetails, isKeyInsights, isAnecdotes, bookTitle, author, moreBooks } = data;
+    const { sessionId, message, isMoreDetails, isKeyInsights, isAnecdotes, bookTitle, author, moreBooks, isEdit } = data;
     currentSessionId = sessionId; 
   
     // Find the session and update it with the new message and response
@@ -298,14 +298,23 @@ io.on('connection', (socket) => {
       return res.status(404).json({ message: 'Session not found' });
     }
 
-    if (!isMoreDetails && !moreBooks && !isKeyInsights && !isAnecdotes) {
-       // Add the user message to the session and save
-       session.messages.push({
+    if (!isMoreDetails && !moreBooks && !isKeyInsights && !isAnecdotes && !isEdit) {
+      // Add the user message to the session
+      const newMessage = {
         role: 'user',
         contentType: 'simple',
         content: message.content
-      });
+      };
+      session.messages.push(newMessage);
+
+      // Save the session
       await session.save();
+
+      // The newly added message will be the last in the array
+      const savedMessage = session.messages[session.messages.length - 1];
+
+      // Emit the saved message back to the client
+      socket.emit('messageSaved', { sessionId, savedMessage });
     }
 
     // Check message limit
@@ -861,6 +870,31 @@ app.get('/api/book/isbn', async (req, res) => {
   } catch (error) {
     console.error('GET /api/book/isbn - Error:', error);
     res.status(500).json({ message: 'Error retrieving the ISBN', error: error.toString() });
+  }
+});
+
+app.post('/api/session/:sessionId/edit-message/:messageId', async (req, res) => {
+  const { sessionId, messageId } = req.params;
+  const { newContent } = req.body;
+
+  try {
+    const session = await Session.findById(sessionId);
+    if (!session) return res.status(404).json({ message: 'Session not found' });
+
+    const messageIndex = session.messages.findIndex(message => message._id.toString() === messageId);
+    if (messageIndex === -1) return res.status(404).json({ message: 'Message not found' });
+
+    // Update the content of the edited message
+    session.messages[messageIndex].content = newContent;
+
+    // Remove all subsequent messages
+    session.messages = session.messages.slice(0, messageIndex + 1);
+
+    await session.save();
+    res.json({ message: 'Message updated and subsequent messages removed' });
+  } catch (error) {
+    console.error('Error updating message:', error);
+    res.status(500).json({ message: 'Error updating the message', error: error.toString() });
   }
 });
 

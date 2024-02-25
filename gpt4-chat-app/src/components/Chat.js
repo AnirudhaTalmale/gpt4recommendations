@@ -33,6 +33,7 @@ function Chat() {
   const [bookTitleState, setBookTitleState] = useState(null);
   const [authorState, setAuthorState] = useState(null);
   const [moreBooks, setMoreBooks] = useState(false);
+  const [isEdit, setIsEdit] = useState(false);
   const lightboxContentRef = useRef(null);
   const [lightboxContent, setLightboxContent] = useState('');
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
@@ -342,13 +343,14 @@ function Chat() {
         isAnecdotes: isAnecdotesState,
         bookTitle: bookTitleState,
         author: authorState,
-        moreBooks: moreBooks // Use the moreBooks state here
+        moreBooks: moreBooks,
+        isEdit: isEdit
       });
 
       // Reset lastUserMessage to avoid duplicate emissions
       setLastUserMessage(null);
     }
-  }, [lastUserMessage, sessions, isMoreDetailsState, isKeyInsightsState, isAnecdotesState, bookTitleState, authorState, moreBooks]);
+  }, [lastUserMessage, sessions, isMoreDetailsState, isKeyInsightsState, isAnecdotesState, bookTitleState, authorState, moreBooks, isEdit]);
 
   const handleStopStreaming = useCallback(async () => {
     try {
@@ -431,7 +433,7 @@ function Chat() {
     };
   }, [updateSessionMessages, currentSessionIdRef]); // Updated dependencies
 
-  const handleQuerySubmit = async (query, isMoreDetails = false, bookTitle = null, author = null, moreBooks = false, isKeyInsights = false, isAnecdotes = false) => {
+  const handleQuerySubmit = async (query, isMoreDetails = false, bookTitle = null, author = null, moreBooks = false, isKeyInsights = false, isAnecdotes = false, isEdit = false) => {
     setIsLoading(true);
   
     // Get the current session's ID
@@ -461,8 +463,9 @@ function Chat() {
       setBookTitleState(bookTitle);
       setAuthorState(author);
       setMoreBooks(moreBooks);
+      setIsEdit(isEdit);
 
-      if (!isMoreDetails && !moreBooks && !isKeyInsights && !isAnecdotes) {
+      if (!isMoreDetails && !moreBooks && !isKeyInsights && !isAnecdotes && !isEdit) {
         updateSessionMessages(query, 'simple', true);
       }
       else {
@@ -478,7 +481,8 @@ function Chat() {
           isAnecdotes,
           bookTitle,
           author,
-          moreBooks
+          moreBooks,
+          isEdit
         });
       }
     }
@@ -510,6 +514,33 @@ function Chat() {
       }
     }
   }, [userData, sessions]);
+
+  useEffect(() => {
+    const handleNewMessageSaved = (data) => {
+      const { sessionId, savedMessage } = data;
+  
+      if (sessionId === currentSessionIdRef.current) {
+        setSessions((prevSessions) => {
+          return prevSessions.map((session) => {
+            if (session._id === sessionId) {
+              // Replace the last message (which was added without an ID) with the savedMessage
+              return {
+                ...session,
+                messages: [...session.messages.slice(0, -1), savedMessage],
+              };
+            }
+            return session;
+          });
+        });
+      }
+    };
+  
+    socket.on('messageSaved', handleNewMessageSaved);
+  
+    return () => {
+      socket.off('messageSaved', handleNewMessageSaved);
+    };
+  }, [currentSessionIdRef]);
 
   const loadSessions = useCallback(async (currentUserData) => {
     // Check if currentUserData.id is used instead of currentUserData.id
@@ -792,6 +823,33 @@ function Chat() {
 
   const [inputBoxHeight, setInputBoxHeight] = useState(0);
 
+  // Message-question edit functionality
+
+  const handleEditMessage = async (sessionId, messageId, newContent) => {
+    try {
+      const response = await axios.post(`http://localhost:3000/api/session/${sessionId}/edit-message/${messageId}`, { newContent });
+      if (response.status === 200) {
+        // Update the local state to reflect the changes
+        setSessions(prevSessions => prevSessions.map(session => {
+          if (session._id === sessionId) {
+            // Keep messages up to the edited one
+            const updatedMessages = session.messages.filter((msg, index) => {
+              return index <= session.messages.findIndex(m => m._id === messageId);
+            });
+            // Update the content of the edited message
+            updatedMessages[updatedMessages.length - 1].content = newContent;
+            return { ...session, messages: updatedMessages };
+          }
+          return session;
+        }));
+        handleQuerySubmit(newContent, false, null, null, false, false, false, true);
+      }
+    } catch (error) {
+      console.error('Error editing message:', error);
+    }
+  };
+  
+
   return (
     <div className="App">
       <Lightbox
@@ -863,6 +921,9 @@ function Chat() {
             showContinueButton={showContinueButton && isLastMessageFromAssistant}
             onContinueGenerating={onContinueGenerating}
             onImageClick={handleImageClick}
+            sessionId={currentSessionId} // You need to pass the current session ID
+            messageId={msg._id} // Assuming each message has a unique ID
+            onEditMessage={handleEditMessage}
           />
           );
         })}

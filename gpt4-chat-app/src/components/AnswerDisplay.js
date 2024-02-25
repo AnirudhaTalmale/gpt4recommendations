@@ -1,11 +1,12 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useCallback, useState, useEffect, useRef } from 'react';
 import DOMPurify from 'dompurify';
 import '../App.css';
 
 function AnswerDisplay({ 
   onPreviewClick, role, content, userImage, isStreaming, 
-  onMoreDetailsClick, onKeyInsightsClick, onAnecdotesClick, showContinueButton, onContinueGenerating, onImageClick 
+  onMoreDetailsClick, onKeyInsightsClick, onAnecdotesClick, showContinueButton, onContinueGenerating, onImageClick, onEditMessage, sessionId, messageId 
 }) {
+  
   const [isKeyInsightsClicked, setIsKeyInsightsClicked] = useState(false);
   const [isMoreDetailsClicked, setIsMoreDetailsClicked] = useState(false);
   const [isAnecdotesClicked, setIsAnecdotesClicked] = useState(false);
@@ -86,9 +87,82 @@ function AnswerDisplay({
     onImageClick(src); // Propagate the click event and image source up to the parent component
   };
 
+  // Edit mode
+
+  const [isEditing, setIsEditing] = useState(false);
+  const [editableContent, setEditableContent] = useState(content);
+
+  const handleEditClick = () => {
+    setIsEditing(true);
+  };
+  
+  const handleCancel = () => {
+    setIsEditing(false);
+    setEditableContent(content); // Reset the content to original if cancel is clicked
+  };
+
+  const handleSave = () => {
+    setIsEditing(false);
+    console.log("Input Query:", editableContent);
+    if (onEditMessage) {
+      onEditMessage(sessionId, messageId, editableContent); // Call the edit message function
+    }
+  };
+
+  const handleTextChange = (e) => {
+    setEditableContent(e.target.value);
+    adjustHeight(e.target);
+  };
+  
+  
+  
+  
+  const sanitizeIdForClass = (id) => {
+    if (typeof id === 'string') {
+      return `msg-${id.replace(/[^a-zA-Z0-9]/g, '-')}`;
+    } else {
+      return ''; // or some default string value
+    }
+  };
+  
+  
+  const [messageQuestionHeight, setMessageQuestionHeight] = useState(null);
+
+  useEffect(() => {
+    if (!isEditing) {
+      const sanitizedId = sanitizeIdForClass(messageId);
+      if (sanitizedId) {
+        const messageQuestion = document.querySelector(`.${sanitizedId} .message-question`);
+        if (messageQuestion) {
+          setMessageQuestionHeight(messageQuestion.offsetHeight);
+        }
+      }
+    }
+  }, [isEditing, messageId]);
+  
+
+  const adjustHeight = useCallback(() => {
+    if (isEditing && messageQuestionHeight !== null) {
+      const sanitizedId = sanitizeIdForClass(messageId);
+      if (sanitizedId) {
+        const textarea = document.querySelector(`.${sanitizedId} textarea`);
+        if (textarea) {
+          textarea.style.height = `${messageQuestionHeight}px`;
+        }
+      }
+    }
+  }, [isEditing, messageQuestionHeight, messageId]);
+  
+  
+  useEffect(() => {
+    if (isEditing) {
+      adjustHeight();
+    }
+  }, [isEditing, adjustHeight]);
+
   return (
     <div className={`chat-area-wrapper ${isStreaming ? 'streaming' : ''}`}>
-      <div className={`message ${role}`}>
+      <div className={`message ${sanitizeIdForClass(messageId)} ${role}`}>
         <div className="message-icon">
           {role === 'user' ? (
             userImage ? (
@@ -122,7 +196,28 @@ function AnswerDisplay({
             <>
               <div className="message-sender">You</div>
               <br></br>
-              <div className="message-question">{content}</div>
+              {isEditing ? (
+                <textarea 
+                  className="answer-display-textarea"
+                  value={editableContent}
+                  onChange={handleTextChange} 
+                />
+              ) : (
+                <div className="message-question-container">
+                  <div className="message-question">
+                    {editableContent}
+                  </div>
+                  {!isEditing && (
+                    <i className="fa-solid fa-pen" onClick={handleEditClick}></i>
+                  )}
+                </div>
+              )}
+              {isEditing && (
+                <div className="button-container">
+                  <button onClick={handleSave} className="save-button">Save & Submit</button>
+                  <button onClick={handleCancel} className="cancel-button">Cancel</button>
+                </div>
+              )}
             </>
           )}
           {role === 'assistant' && (
@@ -155,3 +250,4 @@ function AnswerDisplay({
 }
 
 export default AnswerDisplay;
+
