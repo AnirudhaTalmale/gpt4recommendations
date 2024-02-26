@@ -10,7 +10,6 @@ const BlogPostPreview = ({ title, image, postId }) => (
   </div>
 );
 
-
 const BlogPage = () => {
   const [posts, setPosts] = useState([]);
   const navigate = useNavigate();
@@ -41,7 +40,7 @@ const BlogPage = () => {
       <div className="blog-posts-container">
         {posts.length > 0 ? (
           posts.map(post => (
-            <Link to={`/blog/${post._id}`} className="blog-post-link" key={post._id}>
+            <Link to={`/blog/${post._id}`} state={{ isAdmin }} className="blog-post-link" key={post._id}>
               <BlogPostPreview title={post.title} image={post.image} postId={post._id} />
             </Link>
           ))

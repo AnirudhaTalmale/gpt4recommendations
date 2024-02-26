@@ -1908,9 +1908,9 @@ b div img {
 /* BlogPostPage.css */
 
 .blogPostContainer {
-  max-width: 35rem;
+  max-width: 40rem;
   margin: auto;
-  padding: 5rem;
+  padding: 2rem;
 }
 
 .blogPostContainer h1 {
@@ -1929,8 +1929,8 @@ b div img {
 
 .blogPostContainer div {
   margin-bottom: 20px;
-  line-height: 1.6;
-  color: #444;
+  line-height: 1.8rem;
+  font-size: 1rem;
 }
 
 .blogPostContainer button {

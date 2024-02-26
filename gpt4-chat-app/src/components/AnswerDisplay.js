@@ -166,7 +166,7 @@ function AnswerDisplay({
         <div className="message-icon">
           {role === 'user' ? (
             userImage ? (
-              <div><img src={userImage} alt="/favicon.ico" className="display-image" /></div> // Display user image
+              <div><img src={userImage} alt="" className="display-image" /></div> // Display user image
             ) : (
               <span>U</span> // Fallback if no image is available
             )

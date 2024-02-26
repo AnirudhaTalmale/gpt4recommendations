@@ -1,14 +1,16 @@
 // BlogPostPage.js
 import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom'; // Import useNavigate
+import { useParams, useNavigate, useLocation } from 'react-router-dom'; // Import useLocation
 import DOMPurify from 'dompurify';
 import '../App.css';
 
 const BlogPostPage = () => {
   const { postId } = useParams();
-  const navigate = useNavigate(); // Initialize navigate function
+  const navigate = useNavigate();
+  const location = useLocation(); // Use location to access state
   const [post, setPost] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
+  const isAdmin = location.state?.isAdmin; 
 
   useEffect(() => {
     fetch(`http://localhost:3000/api/blogposts/${postId}`)
@@ -77,8 +79,8 @@ const BlogPostPage = () => {
           <h1>{post.title}</h1>
           {post.image && <img src={`data:image/jpeg;base64,${post.image}`} alt={post.title} style={{ maxWidth: '100%' }} />}
           <div dangerouslySetInnerHTML={createMarkup(post.content)} />
-          <button onClick={() => setIsEditing(true)}>Edit</button>
-          <button onClick={handleDelete}>Delete Post</button>
+          {isAdmin && <button onClick={() => setIsEditing(true)}>Edit</button>}
+          {isAdmin && <button onClick={handleDelete}>Delete Post</button>}
         </>
       )}
     </div>
