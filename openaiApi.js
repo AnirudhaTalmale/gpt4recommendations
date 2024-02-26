@@ -90,15 +90,15 @@ function createBookInfoHtml(bookTitle, author, amazonStarRating, amazonReviewCou
 
 async function getAmazonBookData(title, author) {
   try {
-    const existingBook = await AmazonBookData.findOne({ title, author });
-    if (existingBook) {
-      return {
-        amazonLink: existingBook.amazonLink,
-        amazonStarRating: existingBook.amazonStarRating,
-        amazonReviewCount: existingBook.amazonReviewCount,
-        amazonImage: existingBook.amazonImage // Assuming you store the image URL in the database
-      };
-    }
+    // const existingBook = await AmazonBookData.findOne({ title, author });
+    // if (existingBook) {
+    //   return {
+    //     amazonLink: existingBook.amazonLink,
+    //     amazonStarRating: existingBook.amazonStarRating,
+    //     amazonReviewCount: existingBook.amazonReviewCount,
+    //     amazonImage: existingBook.amazonImage // Assuming you store the image URL in the database
+    //   };
+    // }
 
     const response = await axios.get(`https://www.googleapis.com/customsearch/v1`, {
       params: {
@@ -111,6 +111,7 @@ async function getAmazonBookData(title, author) {
 
     if (response.data.items && response.data.items.length > 0) {
       const item = response.data.items[0];
+      
       const ogImage = item.pagemap.metatags[0]['og:image'];
       const decodedOgImage = decodeURIComponent(ogImage);
 
@@ -121,7 +122,9 @@ async function getAmazonBookData(title, author) {
       const amazonReviewCount = reviewCountMatch ? reviewCountMatch[1].replace('%2C', ',') : 'Unknown';
 
       let amazonLink = item.pagemap.metatags[0]['og:url'];
-      let amazonImage = item.pagemap.cse_image ? item.pagemap.cse_image[0].src : '';
+
+      const imageIdMatch = ogImage.match(/(https:\/\/m\.media-amazon\.com\/images\/I\/[^.]+)/);
+      let amazonImage = imageIdMatch ? `${imageIdMatch[1]}._AC_UF1000,1000_QL80_.jpg` : '';
 
       let url = new URL(amazonLink);
       url.hostname = 'www.amazon.in'; 
@@ -315,7 +318,6 @@ const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, is
           const { bookTitle, author } = parseBookTitle(bookTitleWithAuthor);
           const {googleImage, isbn, embeddable} = await getGoogleBookData(bookTitle, author);
           const {amazonLink, amazonStarRating, amazonReviewCount, amazonImage} = await getAmazonBookData(bookTitle, author);
-          console.log("amazonImage is: ", amazonImage);
 
           const buyNowButtonHtml = createBuyNowButton(amazonLink, bookTitle, author);
 

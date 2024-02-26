@@ -1,6 +1,6 @@
 //BlogPage.js
 import React, { useEffect, useState } from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import '../App.css'; // Import the CSS file
 
 const BlogPostPreview = ({ title, image, postId }) => (
@@ -12,7 +12,7 @@ const BlogPostPreview = ({ title, image, postId }) => (
 
 const BlogPage = () => {
   const [posts, setPosts] = useState([]);
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const location = useLocation();
   const isAdmin = location.state?.isAdmin; 
 
@@ -29,9 +29,9 @@ const BlogPage = () => {
       .catch(error => console.error('Error fetching blog posts:', error));
   }, []);
 
-  const handleCreateNewPost = () => {
-    navigate('/new-blog-post');
-  };
+  // const handleCreateNewPost = () => {
+  //   navigate('/new-blog-post');
+  // };
 
   return (
     <div className="blog-page">
@@ -49,11 +49,11 @@ const BlogPage = () => {
         )}
       </div>
       
-      {isAdmin && (
+      {/* {isAdmin && (
         <button onClick={handleCreateNewPost} className="new-post-button">
           Create New Blog Post
         </button>
-      )}
+      )} */}
     </div>
   );
 };

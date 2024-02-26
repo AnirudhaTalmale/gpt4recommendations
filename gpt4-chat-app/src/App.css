@@ -676,8 +676,13 @@ body:not(.history-pane-open) .input-area {
   margin-left: 0.08rem;
 }
 
+.dropdown-menu .fa-file {
+  margin-right: 1.08rem;
+  margin-left: 0.355rem;
+}
+
 .dropdown-menu .fa-blog {
-  margin-right: 1.18rem;
+  margin-right: 0.93rem;
   margin-left: 0.31rem;
 }
 
