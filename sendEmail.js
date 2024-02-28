@@ -14,7 +14,7 @@ const sendEmail = async (to, subject, body) => {
 
   // Send mail with defined transport object
   let info = await transporter.sendMail({
-    from: '"ChatGPT" <anirudhatalmale4@gmail.com>',
+    from: '"GetBooks" <anirudhatalmale4@gmail.com>',
     to: to, 
     subject: subject, 
     html: body 

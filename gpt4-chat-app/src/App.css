@@ -791,6 +791,15 @@ body:not(.history-pane-open) .input-area {
   height: 100vh;
 }
 
+.chatgpt-text {
+  position: absolute; /* Position it relative to the home-page-wrapper */
+  top: 25px; /* Adjust the distance from the top as needed */
+  font-weight: bold; /* Make the font bold */
+  font-size: 22px; /* Adjust the font size as needed */
+  left: 25px;
+}
+
+
 .sample-prompts-container {
   display: none; /* Hide the prompts container on small screens */
   background-color: #f7f2cb; /* Yellow background color */
@@ -808,6 +817,9 @@ body:not(.history-pane-open) .input-area {
   justify-content: center;
   background-color: #FFFFFF; /* White background color */
 }
+
+
+
 
 /* Adjustments for medium screens */
 @media (min-width: 650px) {
@@ -834,6 +846,8 @@ body:not(.history-pane-open) .input-area {
   .login-signup-button {
     width: auto; /* Allow buttons to adjust their width automatically */
   }
+
+  
 }
 
 /* Large screens */
@@ -863,6 +877,12 @@ body:not(.history-pane-open) .input-area {
   .home-page-container  h1 {
     font-size: 32.5px !important; /* Large font size for the heading */
   }
+  .chatgpt-text {
+    color: rgb(255, 111, 0);
+    padding-left: 2.5%;
+    left: 0px;
+  } 
+   
 }
 
 /* Extra large screens */
@@ -929,7 +949,7 @@ body:not(.history-pane-open) .input-area {
 
 .animated-prompt {
   font-size: 40px; /* Adjust size as needed */
-  color: rgb(255, 115, 0); /* The text color of the prompts */
+  color: #FE7600;
   opacity: 1; /* Make fully visible */
   text-align: left; /* Left-aligns the text */
   width: 100%; /* Ensures the prompt takes up the full width of its container */
@@ -1480,8 +1500,8 @@ button.cancel-button:hover {
 
 .display-image {
   margin-top: 0rem;
-  width: 1.6rem;
-  height: 1.6rem;
+  width: 1.5rem;
+  height: 1.5rem;
   border-radius: 50%;
   border: none;
 }
@@ -1493,7 +1513,6 @@ button.cancel-button:hover {
 .message-sender {
   font-weight: bold; /* Make the icon text bold */
   margin-bottom: -1.4rem;
-  color: rgb(14, 156, 52);
   user-select: none;
   display: block;
 }

@@ -119,7 +119,7 @@ const HistoryPane = forwardRef(({
         </button>
 
         <div className="header-container-chat-with-us">
-          <button className="new-session-button-chat-with-us">ChatGPT</button>
+          <button className="new-session-button-chat-with-us">GetBooks</button>
           {!isAdmin && (
             <button className="new-session-button-chat-with-us" onClick={handleNewSessionCreation}>
               <i className="fa-regular fa-pen-to-square"></i>
@@ -170,12 +170,12 @@ const HistoryPane = forwardRef(({
                 </a>
               </li>
               <li>
-                <a href="mailto:anirudhatalmale4@gmail.com" className="dropdown-link" style={{ display: 'block', width: '100%', height: '100%' }}>
+                <a href="mailto:getbooksai@gmail.com" className="dropdown-link" style={{ display: 'block', width: '100%', height: '100%' }}>
                   <i className="fa-solid fa-envelope"></i> Mail us
                 </a>
               </li>
               <li onClick={handleChatWithUs}>
-                <i class="fa-solid fa-comments"></i> ChatGPT
+                <i class="fa-solid fa-comments"></i> GetBooks
               </li>
               <li onClick={handleLogout}>
                 <i class="fa-solid fa-arrow-right-from-bracket"></i> Log out

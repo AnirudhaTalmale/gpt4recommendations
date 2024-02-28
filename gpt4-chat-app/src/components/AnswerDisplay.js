@@ -171,7 +171,7 @@ function AnswerDisplay({
               <span>U</span> // Fallback if no image is available
             )
           ) : (
-            <div><img src="/favicon.ico" className="display-image" alt="" /></div> // Icon for the assistant
+            <div><img src="/GetBooks.webp" className="display-image" alt="" /></div> // Icon for the assistant
           )}
         </div>
         <div className="message-content" onClick={(e) => {
@@ -222,7 +222,7 @@ function AnswerDisplay({
           )}
           {role === 'assistant' && (
             <>
-              <div className="message-sender">ChatGPT</div>
+              <div className="message-sender">GetBooks</div>
               <br></br>
               <div className="message-answer" 
                 ref={messageAnswerRef} 
