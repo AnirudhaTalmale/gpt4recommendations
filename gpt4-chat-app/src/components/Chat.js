@@ -17,8 +17,17 @@ function Chat() {
   const [isPaneOpen, setIsPaneOpen] = useState(window.innerWidth >= 760 ? true : false);
   const [currentSessionId, setCurrentSessionId] = useState(() => {
     const savedSessionId = localStorage.getItem('currentSessionId');
+  
+    // Check if savedSessionId is the string "null" and log if it is
+    if (savedSessionId === "null") {
+      console.log("Converting 'null' string to null");
+      return null;
+    }
+  
+    // Return the savedSessionId if it's not null, otherwise return null
     return savedSessionId !== null ? savedSessionId : null;
-  });  
+  });
+  
   
   const [isLoading, setIsLoading] = useState(false);
   const [userData, setUserData] = useState(null);
@@ -217,30 +226,31 @@ function Chat() {
 
   
   useEffect(() => {
-    // Save currentSessionId to localStorage
-    localStorage.setItem('currentSessionId', currentSessionId);
-    
-    if (currentSessionId) {
-      setSelectedSessionId(currentSessionId);
+    // Check if currentSessionId is not null and not the string "null" before saving to localStorage
+    if (currentSessionId !== null && currentSessionId !== "null") {
+      localStorage.setItem('currentSessionId', currentSessionId);
     } else {
-      setSelectedSessionId(null);
+      // If currentSessionId is null, remove the item from localStorage
+      localStorage.removeItem('currentSessionId');
     }
+  
+    // Set selectedSessionId based on the validity of currentSessionId
+    setSelectedSessionId(currentSessionId && currentSessionId !== "null" ? currentSessionId : null);
   }, [currentSessionId]);
-
   
   useEffect(() => {
     const savedSessionId = localStorage.getItem('currentSessionId');
-    if (savedSessionId) {
+    // Check if savedSessionId is neither null nor the string "null"
+    if (savedSessionId && savedSessionId !== "null") {
       setCurrentSessionId(savedSessionId);
     } else if (sessions.length > 0) {
-      // If there is no saved session ID, load the latest session's ID
+      // If there is no valid saved session ID, load the latest session's ID
       setCurrentSessionId(sessions[sessions.length - 1]._id);
     } else {
       // If there are no sessions, set to null
       setCurrentSessionId(null);
     }
-  }, [sessions]);
-
+  }, [sessions]);  
   
   const handleSavedQueryParams = useCallback(() => {
     const savedQueryParams = localStorage.getItem('queryParams');
@@ -281,9 +291,12 @@ function Chat() {
     setSessions(prevSessions => {
       // Find the current session by its ID
       const currentSessionId = currentSessionIdRef.current;
+      console.log("currentSessionId inside updateSession is ", currentSessionId);
       const updatedSessions = [...prevSessions];
       const currentSessionIndex = updatedSessions.findIndex(session => session._id === currentSessionId);
-      if (currentSessionIndex === -1) return updatedSessions; // If session not found, return the sessions as is
+      if (currentSessionIndex === -1) {
+        return updatedSessions; // If session not found, return the sessions as is
+      }
 
       const currentSession = { ...updatedSessions[currentSessionIndex] };
       
@@ -321,35 +334,6 @@ function Chat() {
     });
   }, []);
 
-
-  useEffect(() => {
-    // Find the current session by its ID
-    const currentSessionId = currentSessionIdRef.current;
-    const currentSession = sessions.find(session => session._id === currentSessionId);
-
-    if (lastUserMessage && currentSession?._id === lastUserMessage.sessionId) {
-      const isFirstQuery = currentSession?.messages?.length === 1;
-
-      socket.emit('query', {
-        sessionId: lastUserMessage.sessionId,
-        message: {
-          role: 'user',
-          content: lastUserMessage.content,
-          isFirstQuery
-        },
-        isMoreDetails: isMoreDetailsState,
-        isKeyInsights: isKeyInsightsState,
-        isAnecdotes: isAnecdotesState,
-        bookTitle: bookTitleState,
-        author: authorState,
-        moreBooks: moreBooks,
-        isEdit: isEdit
-      });
-
-      // Reset lastUserMessage to avoid duplicate emissions
-      setLastUserMessage(null);
-    }
-  }, [lastUserMessage, sessions, isMoreDetailsState, isKeyInsightsState, isAnecdotesState, bookTitleState, authorState, moreBooks, isEdit]);
 
   const handleStopStreaming = useCallback(async () => {
     try {
@@ -430,63 +414,89 @@ function Chat() {
     return () => {
       socket.off('messageLimitReached', handleMessageLimitReached);
     };
-  }, [updateSessionMessages, currentSessionIdRef]); // Updated dependencies
+  }, [updateSessionMessages, currentSessionIdRef]); 
+  
+  useEffect(() => {
+    // Find the current session by its ID
+    const currentSessionId = currentSessionIdRef.current;
+    const currentSession = sessions.find(session => session._id === currentSessionId);
 
+    if (lastUserMessage && currentSession?._id === lastUserMessage.sessionId) {
+      const isFirstQuery = currentSession?.messages?.length === 1;
+
+      socket.emit('query', {
+        sessionId: lastUserMessage.sessionId,
+        message: {
+          role: 'user',
+          content: lastUserMessage.content,
+          isFirstQuery
+        },
+        isMoreDetails: isMoreDetailsState,
+        isKeyInsights: isKeyInsightsState,
+        isAnecdotes: isAnecdotesState,
+        bookTitle: bookTitleState,
+        author: authorState,
+        moreBooks: moreBooks,
+        isEdit: isEdit
+      });
+
+      // Reset lastUserMessage to avoid duplicate emissions
+      setLastUserMessage(null);
+    }
+  }, [lastUserMessage, sessions, isMoreDetailsState, isKeyInsightsState, isAnecdotesState, bookTitleState, authorState, moreBooks, isEdit]);
+  
   const handleQuerySubmit = async (query, isMoreDetails = false, bookTitle = null, author = null, moreBooks = false, isKeyInsights = false, isAnecdotes = false, isEdit = false) => {
     setIsLoading(true);
   
     // Get the current session's ID
     const currentSessionId = currentSessionIdRef.current;
+    let currentSession = sessions.find(session => session._id === currentSessionId);
 
     // If there's no current session ID, create a new session
     if (!currentSessionId) {
-      await handleNewSession();
-    } else {
-      // Find the current session
-      const currentSession = sessions.find(session => session._id === currentSessionId);
-      
-      const isFirstQuery = currentSession?.messages?.length === 0;
-      if (!isMoreDetails && query.startsWith("Explain the book - ")) {
-        const queryWithoutPrefix = query.slice("Explain the book - ".length);
-        const parts = queryWithoutPrefix.split(" by ");
+      currentSession = await handleNewSession();
+    }
+    
+    const isFirstQuery = currentSession?.messages?.length === 0;
+    if (!isMoreDetails && query.startsWith("Explain the book - ")) {
+      const queryWithoutPrefix = query.slice("Explain the book - ".length);
+      const parts = queryWithoutPrefix.split(" by ");
 
-        if (parts.length > 0) {
-          bookTitle = parts[0].trim();
-          author = parts.length > 1 ? parts[1].trim() : null;
-        }
-      }
-
-      setIsMoreDetailsState(isMoreDetails);
-      setIsKeyInsightsState(isKeyInsights);
-      setIsAnecdotesState(isAnecdotes);
-      setBookTitleState(bookTitle);
-      setAuthorState(author);
-      setMoreBooks(moreBooks);
-      setIsEdit(isEdit);
-
-      if (!isMoreDetails && !moreBooks && !isKeyInsights && !isAnecdotes && !isEdit) {
-        updateSessionMessages(query, 'simple', true);
-      }
-      else {
-        socket.emit('query', {
-          sessionId: currentSessionId, // Use the current session ID
-          message: {
-            role: 'user',
-            content: query,
-            isFirstQuery
-          },
-          isMoreDetails,
-          isKeyInsights,
-          isAnecdotes,
-          bookTitle,
-          author,
-          moreBooks,
-          isEdit
-        });
+      if (parts.length > 0) {
+        bookTitle = parts[0].trim();
+        author = parts.length > 1 ? parts[1].trim() : null;
       }
     }
-  };
 
+    setIsMoreDetailsState(isMoreDetails);
+    setIsKeyInsightsState(isKeyInsights);
+    setIsAnecdotesState(isAnecdotes);
+    setBookTitleState(bookTitle);
+    setAuthorState(author);
+    setMoreBooks(moreBooks);
+    setIsEdit(isEdit);
+
+    if (!isMoreDetails && !moreBooks && !isKeyInsights && !isAnecdotes && !isEdit) {
+      updateSessionMessages(query, 'simple', true);
+    }
+    else {
+      socket.emit('query', {
+        sessionId: currentSessionId, // Use the current session ID
+        message: {
+          role: 'user',
+          content: query,
+          isFirstQuery
+        },
+        isMoreDetails,
+        isKeyInsights,
+        isAnecdotes,
+        bookTitle,
+        author,
+        moreBooks,
+        isEdit
+      });
+    }
+  };
 
   const isSessionEmpty = (session) => {
     return session.messages.length === 0;
@@ -498,14 +508,18 @@ function Chat() {
     if (sessions.length > 0 && isSessionEmpty(sessions[sessions.length - 1])) {
       const lastSessionId = sessions[sessions.length - 1]._id;
       setCurrentSessionId(lastSessionId);
+      currentSessionIdRef.current = lastSessionId;
       return sessions[sessions.length - 1]; // Return the last session if it's empty
     } else {
       try {
-        if (!userData) return;
+        if (!userData) {
+          return;
+        } 
         const res = await axios.post('http://localhost:3000/api/session', { userId: userData.id });
         const newSession = res.data;
         setSessions(prevSessions => [...prevSessions, newSession]);
         setCurrentSessionId(newSession._id);
+        currentSessionIdRef.current = newSession._id;
         setSelectedSessionId(newSession._id);
         return newSession; // Return the new session data
       } catch (error) {
@@ -595,21 +609,24 @@ function Chat() {
 
   const handleDeleteSession = async (sessionId) => {
     try {
-        await axios.delete(`http://localhost:3000/api/session/${sessionId}`);
-        setSessions(prevSessions => prevSessions.filter(session => session._id !== sessionId));
-
-        // Update the current session ID after deletion
-        setCurrentSessionId(prevCurrentSessionId => {
-            if (prevCurrentSessionId === sessionId) {
-                // If the deleted session was the current one, switch to another session (e.g., the last one) or set to null if no sessions are left
-                return sessions.length > 1 ? sessions[sessions.length - 1]._id : null;
-            }
-            return prevCurrentSessionId; // If the deleted session was not the current one, keep the current session ID unchanged
-        });
+      await axios.delete(`http://localhost:3000/api/session/${sessionId}`);
+      setSessions(prevSessions => prevSessions.filter(session => session._id !== sessionId));
+  
+      // Update the current session ID after deletion
+      setCurrentSessionId(prevCurrentSessionId => {
+        if (prevCurrentSessionId === sessionId) {
+          // If the deleted session was the current one, switch to another session (e.g., the last one) or set to null if no sessions are left
+          const newSessionId = sessions.length > 1 ? sessions[sessions.length - 1]._id : null;
+          currentSessionIdRef.current = newSessionId; // Also update the ref synchronously
+          return newSessionId;
+        }
+        return prevCurrentSessionId; // Keep the current session ID unchanged if the deleted session was not the current one
+      });
     } catch (error) {
-        console.error('Error deleting session:', error);
+      console.error('Error deleting session:', error);
     }
   };
+  
   
   const setCurrentSessionIdWithStreamCheck = newSessionId => {
     if (currentSessionId !== newSessionId && isStreaming) {

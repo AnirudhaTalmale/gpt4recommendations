@@ -53,7 +53,7 @@ function AnswerDisplay({ role, content, userImage, onMoreDetailsClick, attachmen
     if (showRoleLabel) {
       return role === 'user' ? (
         userImage ? (
-          <div><img src={userImage} alt="User" className="display-image-chat-with-us" /></div>
+          <div><img src={userImage} alt="" className="display-image-chat-with-us" /></div>
         ) : (
           <span>U</span>
         )
@@ -73,7 +73,7 @@ function AnswerDisplay({ role, content, userImage, onMoreDetailsClick, attachmen
         </div>
         <div className="message-content-chat-with-us">
           {showRoleLabel && (
-            <div className="message-sender-chat-with-us">{role === 'user' ? 'You' : 'OpenAI Team'}</div>
+            <div className="message-sender-chat-with-us">{role === 'user' ? 'You' : 'GetBooks Team'}</div>
           )}
 
           <div className="combined-message-block-chat-with-us">

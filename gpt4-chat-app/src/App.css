@@ -2573,8 +2573,8 @@ body:not(.history-pane-open-chat-with-us) .chat-area-chat-with-us {
 
 .display-image-chat-with-us {
   margin-top: 0rem;
-  width: 1.6rem;
-  height: 1.6rem;
+  width: 1.5rem;
+  height: 1.5rem;
   border-radius: 50%;
   border: none;
 }
@@ -2587,7 +2587,6 @@ body:not(.history-pane-open-chat-with-us) .chat-area-chat-with-us {
   font-weight: bold; /* Make the icon text bold */
   font-family: SÃ¶hne, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, sans-serif, Helvetica Neue, Arial, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
   margin-bottom: 2rem !important;
-  color: rgb(14, 156, 52);
   user-select: none;
   display: block;
   margin-bottom: 1rem;
