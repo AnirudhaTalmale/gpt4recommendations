@@ -631,7 +631,7 @@ body:not(.history-pane-open) .input-area {
   width: 2rem;
   height: 2rem;
   border-radius: 50%;
-  margin-left: 0.8rem;
+  margin-left: 0.33rem;
   margin-right: 0.8rem;
   user-select: none;
 }
@@ -1703,13 +1703,13 @@ button.cancel-button:hover {
   box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1); /* Focus ring with a subtle black shade */
 }
 
-.button-container {
+.button-container-continue-generating-btn {
   flex: 1;
   display: flex;
   justify-content: flex-end; /* Aligns the button to the right horizontally */
   align-items: center; /* Keeps the button centered vertically if needed */
   width: 100%; /* Take the full width of the parent to allow right alignment */
-  margin-top: 1rem; /* Adjust the margin as needed */
+  margin-top: -1.5rem; /* Adjust the margin as needed */
 }
 
 
@@ -1728,7 +1728,7 @@ button.cancel-button:hover {
   color: rgb(46, 46, 46); /* Same text color as other buttons */
   margin-top: 0.1rem;
   margin-bottom: 1.5rem;
-  margin-right: 0.2rem;
+  margin-right: 0.5rem;
 }
 
 .continue-generating-btn:hover {

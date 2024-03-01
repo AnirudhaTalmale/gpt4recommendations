@@ -19,7 +19,6 @@ const HistoryPane = forwardRef(({
 }, ref) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isEntryActive, setIsEntryActive] = useState(false);
-  console.log("isAdmin is: ", isAdmin);
 
   const dropdownRef = useRef(null);
   const userEntryRef = useRef(null);

@@ -103,7 +103,6 @@ function AnswerDisplay({
 
   const handleSave = () => {
     setIsEditing(false);
-    console.log("Input Query:", editableContent);
     if (onEditMessage) {
       onEditMessage(sessionId, messageId, editableContent); // Call the edit message function
     }
@@ -234,7 +233,7 @@ function AnswerDisplay({
                 }}
               />
               {showContinueButton && !isStreaming && (
-                <div className="button-container">
+                <div className="button-container-continue-generating-btn">
                   <button className="continue-generating-btn" onClick={handleContinueGenerating}>
                     <i className="fa-solid fa-forward"></i> More books
                   </button>

@@ -291,7 +291,6 @@ function Chat() {
     setSessions(prevSessions => {
       // Find the current session by its ID
       const currentSessionId = currentSessionIdRef.current;
-      console.log("currentSessionId inside updateSession is ", currentSessionId);
       const updatedSessions = [...prevSessions];
       const currentSessionIndex = updatedSessions.findIndex(session => session._id === currentSessionId);
       if (currentSessionIndex === -1) {
