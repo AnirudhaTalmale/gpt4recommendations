@@ -25,7 +25,7 @@ function Chat() {
 
   useEffect(() => {
     setIsAdmin(userData?.email === 'anirudhatalmale4@gmail.com');
-  }, [userData]); 
+  }, [userData]);  
   
 
   const togglePane = useCallback(() => {

@@ -24,10 +24,9 @@ function createBuyNowButton(amazonLink, bookTitle, author) {
   if (!amazonLink) {
     // Encode book title and author for URL
     const encodedTitle = encodeURIComponent(bookTitle.trim());
-    const encodedAuthor = encodeURIComponent(author.trim());
 
     // Create Amazon search link
-    amazonLink = `https://www.amazon.in/s?k=${encodedTitle}+${encodedAuthor}`;
+    amazonLink = `https://www.amazon.in/s?k=${encodedTitle}`;
   }
 
   // Return the button HTML

@@ -23,7 +23,7 @@ const multer = require('multer');
 const nodemailer = require('nodemailer');
 const jwt = require('jsonwebtoken');
 
-
+ 
 require('dotenv').config();
 
 const app = express();
@@ -82,7 +82,7 @@ let transporter = nodemailer.createTransport({
   port: 587,
   secure: false,
   auth: {
-    user: process.env.EMAIL_USER,
+    user: process.env.EMAIL_USER, 
     pass: process.env.EMAIL_PASS
   }
 });
@@ -195,9 +195,9 @@ app.post('/send-verification-email', async (req, res) => {
       
     // Send verification email
     transporter.sendMail({
-      from: '"OpenAI" <' + process.env.EMAIL_USER + '>',
+      from: '"GetBooksAI" <' + process.env.EMAIL_USER + '>',
       to: email,
-      subject: 'OpenAI - Verify your email',
+      subject: 'GetBooksAI - Verify your email',
       html: `
         <div style="font-family: 'Arial', sans-serif; text-align: left; padding: 20px; max-width: 600px; margin: auto;">
           <h1 style="font-size: 26px;">Verify your email address</h1>
