@@ -3,8 +3,8 @@ const { OpenAI } = require('openai');
 require('dotenv').config();
 
 const axios = require('axios');
-const GoogleBookData = require('./models/GoogleBookData');
-const AmazonBookData = require('./models/AmazonBookData');
+const GoogleBookData = require('./models/models-chat/GoogleBookData');
+const AmazonBookData = require('./models/models-chat/AmazonBookData');
 
 const parseBookTitle = (bookTitleWithAuthor) => {
   // Remove any occurrences of opening or closing quotes
@@ -383,7 +383,7 @@ const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, is
       const finishReason = chunk.choices[0]?.finish_reason;
       if (finishReason === 'stop') {
         if (isMoreDetails || messages[messages.length - 1].content.startsWith("Explain the book - ")) {
-          const MoreDetails = require('./models/MoreDetails');
+          const MoreDetails = require('./models/models-chat/MoreDetails');
           // if (checkFormat(completeResponse)) {
               const newDetail = new MoreDetails({
                   bookTitle,
@@ -394,7 +394,7 @@ const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, is
           // }
         }
         else if (isKeyInsights) {
-          const KeyInsights = require('./models/KeyInsights');
+          const KeyInsights = require('./models/models-chat/KeyInsights');
             const newDetail = new KeyInsights({
                 bookTitle,
                 author,
@@ -402,7 +402,7 @@ const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, is
             });
             // await newDetail.save();
         } else if (isAnecdotes) {
-          const Anecdotes = require('./models/Anecdotes');
+          const Anecdotes = require('./models/models-chat/Anecdotes');
             const newDetail = new Anecdotes({
                 bookTitle,
                 author,

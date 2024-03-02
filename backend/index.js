@@ -1,27 +1,28 @@
 const mongoose = require('mongoose');
 const openaiApi = require('./openaiApi');
-const Session = require('./models/Session');
-const EmailRateLimit = require('./models/EmailRateLimit');
-const MoreDetails = require('./models/MoreDetails');
-const Book = require('./models/GoogleBookData');
-const KeyInsightsModel = require('./models/KeyInsights'); 
-const AnecdotesModel = require('./models/Anecdotes'); 
-const ChatWithUsSession = require('./models-chat-with-us/ChatWithUsSession');
-const UserSession = require('./models-chat-with-us/UserSession');
-const BlogPost = require('./models/BlogPost'); // Adjust the path as necessary
+const Session = require('./models/models-chat/Session');
+const EmailRateLimit = require('./models/models-chat/EmailRateLimit');
+const MoreDetails = require('./models/models-chat/MoreDetails');
+const Book = require('./models/models-chat/GoogleBookData');
+const KeyInsightsModel = require('./models/models-chat/KeyInsights'); 
+const AnecdotesModel = require('./models/models-chat/Anecdotes'); 
+const ChatWithUsSession = require('./models/models-chat-with-us/ChatWithUsSession');
+const UserSession = require('./models/models-chat-with-us/UserSession');
+const BlogPost = require('./models/models-chat/BlogPost'); // Adjust the path as necessary
 const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
-const bookRecommendationPrompt = require('./promptBook');
-const moreBooksRecommendationPrompt = require('./promptMoreBooks');
-const moreDetailsPrompt = require('./promptMoreDetails');
-const keyInsightsPrompt = require('./promptKeyInsights');
-const anecdotesPrompt = require('./promptAnecdotes');
+const bookRecommendationPrompt = require('./prompts/promptBook');
+const moreBooksRecommendationPrompt = require('./prompts/promptMoreBooks');
+const moreDetailsPrompt = require('./prompts/promptMoreDetails');
+const keyInsightsPrompt = require('./prompts/promptKeyInsights');
+const anecdotesPrompt = require('./prompts/promptAnecdotes');
 const passportSetup = require('./passport-setup'); // Import the setup function
 const axios = require('axios');
 const multer = require('multer');
 const nodemailer = require('nodemailer');
 const jwt = require('jsonwebtoken');
+
  
 require('dotenv').config();
 
@@ -571,7 +572,7 @@ app.get('/api/chat-with-us-sessions', async (req, res) => {
   }
 });
 
-const User = require('./models/User'); // Import the User model
+const User = require('./models/models-chat/User'); // Import the User model
 
 app.post('/api/chat-with-us-session', async (req, res) => {
   try {
