@@ -24,7 +24,7 @@ const NewBlogPost = () => {
       formData.append('image', image);
     }
 
-    fetch('http://localhost:3000/api/blogposts', {
+    fetch(`${process.env.REACT_APP_BACKEND_URL}/api/blogposts`, {
       method: 'POST',
       body: formData,
     })

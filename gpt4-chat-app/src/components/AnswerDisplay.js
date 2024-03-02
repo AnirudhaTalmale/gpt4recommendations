@@ -5,7 +5,7 @@ import '../App.css';
 function AnswerDisplay({ 
   onPreviewClick, role, content, userImage, isStreaming, 
   onMoreDetailsClick, onKeyInsightsClick, onAnecdotesClick, showContinueButton, onContinueGenerating, onImageClick, onEditMessage, sessionId, messageId 
-}) {
+}) { 
   
   const [isKeyInsightsClicked, setIsKeyInsightsClicked] = useState(false);
   const [isMoreDetailsClicked, setIsMoreDetailsClicked] = useState(false);

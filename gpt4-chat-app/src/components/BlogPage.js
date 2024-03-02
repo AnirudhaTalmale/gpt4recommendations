@@ -17,7 +17,7 @@ const BlogPage = () => {
   const isAdmin = location.state?.isAdmin; 
 
   useEffect(() => {
-    fetch('http://localhost:3000/api/blogposts')
+    fetch(`${process.env.REACT_APP_BACKEND_URL}/api/blogposts`)
       .then(response => response.json())
       .then(data => {
         if (Array.isArray(data)) {

@@ -336,7 +336,7 @@ function Chat() {
 
   const handleStopStreaming = useCallback(async () => {
     try {
-      await axios.post('http://localhost:3000/api/stop-stream');
+      await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/stop-stream`);
       setIsStreaming(false);
       
     } catch (error) {
@@ -514,7 +514,7 @@ function Chat() {
         if (!userData) {
           return;
         } 
-        const res = await axios.post('http://localhost:3000/api/session', { userId: userData.id });
+        const res = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/session`, { userId: userData.id });
         const newSession = res.data;
         setSessions(prevSessions => [...prevSessions, newSession]);
         setCurrentSessionId(newSession._id);
@@ -563,26 +563,25 @@ function Chat() {
     
     try {
       // Adjust the params to use currentUserData.id as well
-      const res = await axios.get('http://localhost:3000/api/sessions', { params: { userId: currentUserData.id } }); // Changed from _id to .id
+      const res = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/sessions`, { params: { userId: currentUserData.id } }); // Changed from _id to .id
       setSessions(res.data);
       setIsInitialLoad(false);
     } catch (error) {
       console.error('Error loading sessions:', error);
     }
-  }, []);
+  }, []); 
 
   const checkAuthStatus = useCallback(async () => {
     try {
-      const authResponse = await axios.get('http://localhost:3000/api/check-auth', { withCredentials: true });
-  
+      const authResponse = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/check-auth`, { withCredentials: true });
       if (authResponse.status === 200 && authResponse.data.isAuthenticated) {
         if (!authResponse.data.onboardingComplete) {
-          window.location.href = 'http://localhost:3001/onboarding';
+          window.location.href = `${process.env.REACT_APP_FRONTEND_URL}/onboarding`;
           return; 
         }
   
         // If onboarding is complete, proceed to fetch user info
-        const userInfoResponse = await axios.get('http://localhost:3000/api/user-info', { withCredentials: true });
+        const userInfoResponse = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/user-info`, { withCredentials: true });
   
         if (userInfoResponse.status === 200 && userInfoResponse.data.isAuthenticated) {
           const currentUserData = userInfoResponse.data.user;
@@ -593,12 +592,12 @@ function Chat() {
         }
       } else {
         localStorage.setItem('queryParams', window.location.search);
-        window.location.href = 'http://localhost:3001/auth/login';
+        window.location.href = `${process.env.REACT_APP_FRONTEND_URL}/auth/login`;
       }
     } catch (error) {
       console.error('Error checking authentication status:', error);
       localStorage.setItem('queryParams', window.location.search);
-      window.location.href = 'http://localhost:3001/auth/login';
+      window.location.href = `${process.env.REACT_APP_FRONTEND_URL}/auth/login`;
     }
   }, [loadSessions, setUserData, handleSavedQueryParams]);
   
@@ -608,7 +607,7 @@ function Chat() {
 
   const handleDeleteSession = async (sessionId) => {
     try {
-      await axios.delete(`http://localhost:3000/api/session/${sessionId}`);
+      await axios.delete(`${process.env.REACT_APP_BACKEND_URL}/api/session/${sessionId}`);
       setSessions(prevSessions => prevSessions.filter(session => session._id !== sessionId));
   
       // Update the current session ID after deletion
@@ -667,7 +666,7 @@ function Chat() {
 
   const fetchAnecdotes = async (bookTitle, author) => {
     try {
-      const response = await axios.get(`http://localhost:3000/api/anecdotes`, {
+      const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/anecdotes`, {
         params: { bookTitle, author }
       });
       return response; 
@@ -699,7 +698,7 @@ function Chat() {
 
   const fetchKeyInsights = async (bookTitle, author) => {
     try {
-      const response = await axios.get(`http://localhost:3000/api/key-insights`, {
+      const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/key-insights`, {
         params: { bookTitle, author }
       });
       return response; 
@@ -730,7 +729,7 @@ function Chat() {
 
   const fetchMoreDetails = async (bookTitle, author) => {
     try {
-      const response = await axios.get(`http://localhost:3000/api/more-details`, {
+      const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/more-details`, {
         params: { bookTitle, author }
       });
       return response; // Return the response for further handling
@@ -839,7 +838,7 @@ function Chat() {
 
   const handleEditMessage = async (sessionId, messageId, newContent) => {
     try {
-      const response = await axios.post(`http://localhost:3000/api/session/${sessionId}/edit-message/${messageId}`, { newContent });
+      const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/session/${sessionId}/edit-message/${messageId}`, { newContent });
       if (response.status === 200) {
         // Update the local state to reflect the changes
         setSessions(prevSessions => prevSessions.map(session => {

@@ -10,7 +10,7 @@ function EmailVerificationPage() {
 
     const resendVerificationEmail = async () => {
         try {
-            await axios.post('http://localhost:3000/send-verification-email', { email: emailToBeVerified });
+            await axios.post(`${process.env.REACT_APP_BACKEND_URL}/send-verification-email`, { email: emailToBeVerified });
             setEmailResent(true);
             setCountdown(30); // Reset countdown
         } catch (error) {

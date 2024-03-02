@@ -22,7 +22,6 @@ const axios = require('axios');
 const multer = require('multer');
 const nodemailer = require('nodemailer');
 const jwt = require('jsonwebtoken');
-
  
 require('dotenv').config();
 
@@ -36,7 +35,7 @@ const cors = require('cors');
 
 // Update CORS configuration to allow specific origin and credentials
 const corsOptions = {
-  origin: 'http://localhost:3001', // Your frontend's URL
+  origin: `${process.env.FRONTEND_URL}`, // Your frontend's URL
   credentials: true, // Enable credentials
 };
 
@@ -191,7 +190,7 @@ app.post('/send-verification-email', async (req, res) => {
     );
 
     const hasDisplayName = user && user.displayName ? 'true' : 'false';
-    const verificationUrl = `http://localhost:3001/onboarding?token=${newVerificationToken}&hasDisplayName=${hasDisplayName}`;
+    const verificationUrl = `${process.env.FRONTEND_URL}/onboarding?token=${newVerificationToken}&hasDisplayName=${hasDisplayName}`;
       
     // Send verification email
     transporter.sendMail({

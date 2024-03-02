@@ -125,7 +125,7 @@ function Chat() {
 
   const fetchReceiverIdByEmail = async (email) => {
     try {
-      const response = await axios.get('http://localhost:3000/api/get-user-by-email', {
+      const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/get-user-by-email`, {
         params: { email: email }
       });
       return response.data._id; // Assuming the user object is returned directly
@@ -142,7 +142,7 @@ function Chat() {
     }
     
     try {
-      const res = await axios.get('http://localhost:3000/api/chat-with-us-sessions', {
+      const res = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/chat-with-us-sessions`, {
         params: {
           userId: currentUserData.id,
           role: isAdmin ? 'assistant' : 'user'
@@ -194,18 +194,18 @@ function Chat() {
   
   const checkAuthStatus = useCallback(async () => {
     try {
-      const authResponse = await axios.get('http://localhost:3000/api/check-auth', { withCredentials: true });
+      const authResponse = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/check-auth`, { withCredentials: true });
   
       if (authResponse.status === 200 && authResponse.data.isAuthenticated) {
         // Check if onboarding is complete, if not, redirect to onboarding page
         if (!authResponse.data.onboardingComplete) {
           // User is authenticated but hasn't completed onboarding
-          window.location.href = 'http://localhost:3001/onboarding';
+          window.location.href = `${process.env.REACT_APP_FRONTEND_URL}/onboarding`;
           return; // Exit the function early as we're redirecting
         }
   
         // If onboarding is complete, proceed to fetch user info
-        const userInfoResponse = await axios.get('http://localhost:3000/api/user-info', { withCredentials: true });
+        const userInfoResponse = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/user-info`, { withCredentials: true });
   
         if (userInfoResponse.status === 200 && userInfoResponse.data.isAuthenticated) {
           const currentUserData = userInfoResponse.data.user;
@@ -215,12 +215,12 @@ function Chat() {
       } else {
         // Save the current query params to local storage before redirecting
         localStorage.setItem('queryParams', window.location.search);
-        window.location.href = 'http://localhost:3001/auth/login';
+        window.location.href = `${process.env.REACT_APP_FRONTEND_URL}/auth/login`;
       }
     } catch (error) {
       console.error('Error checking authentication status:', error);
       localStorage.setItem('queryParams', window.location.search);
-      window.location.href = 'http://localhost:3001/auth/login';
+      window.location.href = `${process.env.REACT_APP_FRONTEND_URL}/auth/login`;
     }
   }, [loadSessions, setUserData]);
   
@@ -390,7 +390,7 @@ function Chat() {
       attachments: base64Attachments
     });    
   };
-
+  
   const convertToBase64 = (file) => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -415,7 +415,7 @@ function Chat() {
           console.error('Receiver ID not found');
           return;
         }
-        const res = await axios.post('http://localhost:3000/api/chat-with-us-session', {
+        const res = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/chat-with-us-session`, {
           userId: userData.id,
           receiverId: receiverId
         });
@@ -481,7 +481,7 @@ function Chat() {
         return;
       }
   
-      await axios.delete(`http://localhost:3000/api/chat-with-us-session/${sessionId}`, {
+      await axios.delete(`${process.env.REACT_APP_BACKEND_URL}/api/chat-with-us-session/${sessionId}`, {
         data: { userId: userData.id } // Passing userId in the body of DELETE request
       });
   

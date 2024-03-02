@@ -28,12 +28,12 @@ function HomePage() {
         return re.test(email);
     };
 
-    const handleLoginWithEmail = async (event) => {
+    const handleLoginWithEmail = async (event) => { 
       event.preventDefault();
     
       if (email && validateEmail(email)) {
         setEmailError('');
-        axios.post('http://localhost:3000/send-verification-email', { email })
+        axios.post(`${process.env.REACT_APP_BACKEND_URL}/send-verification-email`, { email })
           .then(() => {
             navigate('/verify-email', { state: { emailToBeVerified: email } });
           })
@@ -46,7 +46,7 @@ function HomePage() {
               console.error('Error sending email:', error);
               setEmailError('Error sending verification email. Please try again.');
             }
-          });
+          }); 
       } else {
         setEmailError('Email is not valid');
       }
@@ -64,7 +64,7 @@ function HomePage() {
   
 
     const handleSignupGoogle = () => {
-        window.location.href = 'http://localhost:3000/auth/google?prompt=select_account';
+        window.location.href = `${process.env.REACT_APP_BACKEND_URL}/auth/google?prompt=select_account`;
     };
 
   return (

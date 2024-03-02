@@ -57,9 +57,9 @@ const HistoryPane = forwardRef(({
 
   const handleLogout = async () => {
     try {
-      const response = await axios.get('http://localhost:3000/auth/logout', { withCredentials: true });
+      const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/auth/logout`, { withCredentials: true });
       if (response.data.message === 'Logged out successfully') {
-        window.location.href = 'http://localhost:3001';
+        window.location.href = `${process.env.REACT_APP_FRONTEND_URL}`;
       }
     } catch (error) {
       console.error('Error during logout:', error);
@@ -97,9 +97,9 @@ const HistoryPane = forwardRef(({
 
   const handleConfirmDelete = async () => {
     try {
-      const response = await axios.delete('http://localhost:3000/api/user/delete', { withCredentials: true });
+      const response = await axios.delete(`${process.env.REACT_APP_BACKEND_URL}/api/user/delete`, { withCredentials: true });
       if (response.data.message === 'Account deleted successfully') {
-        window.location.href = 'http://localhost:3001';
+        window.location.href = `${process.env.REACT_APP_FRONTEND_URL}`;
       }
     } catch (error) {
       console.error('Error during account deletion:', error);

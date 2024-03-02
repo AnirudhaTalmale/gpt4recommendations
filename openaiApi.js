@@ -89,15 +89,15 @@ function createBookInfoHtml(bookTitle, author, amazonStarRating, amazonReviewCou
 
 async function getAmazonBookData(title, author) {
   try {
-    // const existingBook = await AmazonBookData.findOne({ title, author });
-    // if (existingBook) {
-    //   return {
-    //     amazonLink: existingBook.amazonLink,
-    //     amazonStarRating: existingBook.amazonStarRating,
-    //     amazonReviewCount: existingBook.amazonReviewCount,
-    //     amazonImage: existingBook.amazonImage // Assuming you store the image URL in the database
-    //   };
-    // }
+    const existingBook = await AmazonBookData.findOne({ title, author });
+    if (existingBook) {
+      return {
+        amazonLink: existingBook.amazonLink,
+        amazonStarRating: existingBook.amazonStarRating,
+        amazonReviewCount: existingBook.amazonReviewCount,
+        amazonImage: existingBook.amazonImage // Assuming you store the image URL in the database
+      };
+    }
 
     const response = await axios.get(`https://www.googleapis.com/customsearch/v1`, {
       params: {
@@ -221,7 +221,7 @@ let isStreamingActive = false;
 
 const fetchMoreDetails = async (bookTitle, author) => {
   try {
-    const response = await axios.get(`http://localhost:3000/api/more-details`, {
+    const response = await axios.get(`${process.env.BACKEND_URL}/api/more-details`, {
       params: { bookTitle, author }
     });
     return response; // Return the response for further handling

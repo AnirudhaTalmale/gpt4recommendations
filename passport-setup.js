@@ -5,7 +5,7 @@ const User = require('./models/User'); // Import your User model
 passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: "http://localhost:3000/auth/google/callback"
+    callbackURL: process.env.BACKEND_URL + "/auth/google/callback"
   },
   async (accessToken, refreshToken, profile, done) => {
     try {
@@ -105,7 +105,7 @@ module.exports = (app) => {
     passport.authenticate('google', { failureRedirect: '/auth/login' }),
     (req, res) => {
       // Successful authentication, redirect home.
-      res.redirect('http://localhost:3001/chat');
+      res.redirect(`${process.env.FRONTEND_URL}/chat`);
     }
   );
 };

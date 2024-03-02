@@ -2,6 +2,6 @@
 import io from 'socket.io-client';
 
 // Connect to your server
-const socket = io('http://localhost:3000');
+const socket = io(`${process.env.REACT_APP_BACKEND_URL}`);
 
 export default socket;
