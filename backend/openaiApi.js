@@ -3,7 +3,7 @@ const { OpenAI } = require('openai');
 require('dotenv').config();
 
 const axios = require('axios');
-const GoogleBookData = require('./models/models-chat/GoogleBookData');
+const GoogleBookData = require('./models/models-chat/GoogleBookData'); 
 const AmazonBookData = require('./models/models-chat/AmazonBookData');
 
 const parseBookTitle = (bookTitleWithAuthor) => {

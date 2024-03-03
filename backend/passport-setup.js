@@ -105,7 +105,7 @@ module.exports = (app) => {
     passport.authenticate('google', { failureRedirect: '/auth/login' }),
     (req, res) => {
       // Successful authentication, redirect home.
-      res.redirect(`${process.env.FRONTEND_URL}/chat`);
+      res.redirect(`${process.env.FRONTEND_URL}/chat`); 
     }
   );
 };
