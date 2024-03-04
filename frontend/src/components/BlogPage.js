@@ -30,7 +30,7 @@ const BlogPage = () => {
   }, []);
 
   // const handleCreateNewPost = () => {
-  //   navigate('/new-blog-post');
+  //   navigate('/new-blog-post'); 
   // };
 
   return (

@@ -21,8 +21,8 @@ const passportSetup = require('./passport-setup'); // Import the setup function
 const axios = require('axios');
 const multer = require('multer');
 const nodemailer = require('nodemailer');
-const jwt = require('jsonwebtoken');
-
+const jwt = require('jsonwebtoken'); 
+  
  
 require('dotenv').config();
 
@@ -408,7 +408,7 @@ io.on('connection', (socket) => {
         socket.emit('error', 'Error processing your request');
       }
     }
-  });  
+  });   
 
   socket.on('join-chat-session', (sessionId) => {
     socket.join(sessionId);
@@ -942,33 +942,5 @@ app.get('/api/blogposts/:postId', async (req, res) => {
   } catch (error) {
     console.error('GET /api/blogposts/:postId - Error:', error);
     res.status(500).json({ message: 'Error retrieving the blog post', error: error.toString() });
-  }
-});
- 
-app.delete('/api/blogposts/:postId', async (req, res) => {
-  const { postId } = req.params;
-  try {
-    const blogPost = await BlogPost.findByIdAndDelete(postId);
-    if (!blogPost) {
-      return res.status(404).json({ message: 'Blog post not found' });
-    }
-    res.status(200).json({ message: 'Blog post deleted' });
-  } catch (error) {
-    console.error('DELETE /api/blogposts/:postId - Error:', error);
-    res.status(500).json({ message: 'Error deleting the blog post', error: error.toString() });
-  }
-});
-
-app.put('/api/blogposts/:postId', async (req, res) => {
-  const { postId } = req.params;
-  try {
-    const updatedPost = await BlogPost.findByIdAndUpdate(postId, req.body, { new: true });
-    if (!updatedPost) {
-      return res.status(404).json({ message: 'Blog post not found' });
-    }
-    res.json(updatedPost);
-  } catch (error) {
-    console.error('PUT /api/blogposts/:postId - Error:', error);
-    res.status(500).json({ message: 'Error updating the blog post', error: error.toString() });
   }
 });

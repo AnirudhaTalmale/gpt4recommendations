@@ -209,7 +209,7 @@ function AnswerDisplay({
                   {!isEditing && (
                     <i className="fa-solid fa-pen" onClick={handleEditClick}></i>
                   )}
-                </div>
+                </div> 
               )}
               {isEditing && (
                 <div className="button-container">
