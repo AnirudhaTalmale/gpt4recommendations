@@ -61,7 +61,11 @@ const sessionConfig = {
   secret: 'your_secret_key', // Replace with a secret key of your choice
   resave: false,
   saveUninitialized: true,
-  cookie: { secure: false } // Set to true if using https
+  cookie: {
+    secure: process.env.NODE_ENV === "production", // Use secure cookies in production
+    sameSite: process.env.NODE_ENV === "production" ? 'None' : 'Lax', // Adjust sameSite policy based on environment
+    httpOnly: true,
+  }
 };
 
 // Use the session middleware
