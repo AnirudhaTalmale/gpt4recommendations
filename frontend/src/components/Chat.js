@@ -602,8 +602,8 @@ function Chat() {
         }
       } else {
         console.log("Authentication failed, redirecting to login page");
-        localStorage.setItem('queryParams', window.location.search);
-        window.location.href = `${process.env.REACT_APP_FRONTEND_URL}/auth/login`;
+        // localStorage.setItem('queryParams', window.location.search);
+        // window.location.href = `${process.env.REACT_APP_FRONTEND_URL}/auth/login`;
       }
     } catch (error) {
       console.error('Error checking authentication status:', error);
