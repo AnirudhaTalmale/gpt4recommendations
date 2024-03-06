@@ -62,7 +62,8 @@ const sessionConfig = {
   resave: false,
   saveUninitialized: true,
   store: MongoStore.create({ 
-    mongoUrl: process.env.MONGO_URI // Your MongoDB connection string
+    mongoUrl: process.env.MONGO_URI,
+    collectionName: 'auth_sessions'
   }),
   cookie: {
     secure: process.env.NODE_ENV === "production",
@@ -77,7 +78,7 @@ app.use(session(sessionConfig));
 
 passportSetup(app); // Set up passport with the app
 
-mongoose.connect(process.env.MONGO_URI)
+mongoose.connect(process.env.MONGO_URI) 
   .then(() => console.log('MongoDB Connected'))
   .catch(err => console.error('MongoDB Connection Error:', err));
 
