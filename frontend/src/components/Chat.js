@@ -576,6 +576,8 @@ function Chat() {
   
     try {
       console.log("Sending request to check authentication");
+      console.log(document.cookie);
+
       const authResponse = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/check-auth`, { withCredentials: true });
   
       if (authResponse.status === 200 && authResponse.data.isAuthenticated) {
