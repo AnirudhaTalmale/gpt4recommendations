@@ -66,7 +66,7 @@ const sessionConfig = {
     collectionName: 'auth_sessions'
   }),
   cookie: {
-    secure: process.env.NODE_ENV === "production",
+    secure: process.env.NODE_ENV === "x",
     sameSite: process.env.NODE_ENV === "production" ? 'None' : 'Lax',
     httpOnly: false,
   }
@@ -122,7 +122,7 @@ app.get('/api/check-auth', (req, res) => {
     console.log('User is not authenticated');
     res.json({ isAuthenticated: false });
   }
-});
+}); 
 
 app.get('/api/user-info', (req, res) => {
   console.log('Received request on /api/user-info');
