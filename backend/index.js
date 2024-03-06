@@ -66,7 +66,7 @@ const sessionConfig = {
     collectionName: 'auth_sessions'
   }),
   cookie: {
-    secure: process.env.NODE_ENV === "x",
+    secure: process.env.NODE_ENV === "production",
     sameSite: process.env.NODE_ENV === "production" ? 'None' : 'Lax',
     httpOnly: false,
   }
