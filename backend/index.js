@@ -60,7 +60,7 @@ const MongoStore = require('connect-mongo');
 const sessionConfig = {
   secret: 'your_secret_key', // Replace with a secret key of your choice
   resave: false,
-  saveUninitialized: true,
+  saveUninitialized: false,
   store: MongoStore.create({ 
     mongoUrl: process.env.MONGO_URI,
     collectionName: 'auth_sessions'
