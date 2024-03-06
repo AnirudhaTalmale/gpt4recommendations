@@ -79,10 +79,9 @@ mongoose.connect(process.env.MONGO_URI)
 
     // Use the session middleware with Mongo store
     app.use(session(sessionConfig));
+    passportSetup(app);
   })
   .catch(err => console.error('MongoDB Connection Error:', err));
-
-passportSetup(app);
 
 app.get('/', (req, res) => {
   res.send('Hello World!');
