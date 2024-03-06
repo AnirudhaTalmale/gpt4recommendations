@@ -99,41 +99,61 @@ server.listen(PORT, () => {
 // Authentication Code: 
 
 app.get('/api/check-auth', (req, res) => {
+  console.log('Received request on /api/check-auth');
+
   if (req.isAuthenticated()) {
+    console.log('User is authenticated');
+
     // Check if onboarding is complete based on the displayName being set
     if (req.user.displayName) {
+      console.log('Onboarding is complete for user:', req.user.displayName);
       res.json({ isAuthenticated: true, onboardingComplete: true, user: req.user });
     } else {
+      console.log('Onboarding is not complete for user:', req.user);
       res.json({ isAuthenticated: true, onboardingComplete: false, user: req.user });
     }
   } else {
+    console.log('User is not authenticated');
     res.json({ isAuthenticated: false });
   }
 });
 
 app.get('/api/user-info', (req, res) => {
+  console.log('Received request on /api/user-info');
+
   if (req.isAuthenticated()) {
+    console.log('User is authenticated');
+
     let email = req.user.local && req.user.local.email ? req.user.local.email : '';
+    console.log('Email obtained:', email);
 
     let image = req.user.image;
     if (!image) {
+      console.log('No image found for user, getting default image');
       image = getDefaultImage(req.user.displayName);
+    } else {
+      console.log('User image found');
     }
 
+    const userInfo = {
+      id: req.user._id,
+      name: req.user.displayName,
+      email: email,
+      image: image,
+      role: req.user.role
+    };
+
+    console.log('Sending user info:', userInfo);
     res.json({
       isAuthenticated: true,
-      user: {
-        id: req.user._id,
-        name: req.user.displayName,
-        email: email,
-        image: req.user.image,
-        role: req.user.role
-      }
+      user: userInfo
     });
   } else {
+    console.log('User is not authenticated');
     res.status(401).json({ isAuthenticated: false });
   }
 });
+
 
 app.get('/auth/logout', (req, res, next) => {
   const accessToken = req.user.accessToken; // Retrieve the stored access token

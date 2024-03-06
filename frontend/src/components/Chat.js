@@ -572,25 +572,34 @@ function Chat() {
   }, []); 
 
   const checkAuthStatus = useCallback(async () => {
+    console.log("Starting authentication status check");
+  
     try {
+      console.log("Sending request to check authentication");
       const authResponse = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/check-auth`, { withCredentials: true });
+  
       if (authResponse.status === 200 && authResponse.data.isAuthenticated) {
+        console.log("Authenticated successfully");
+  
         if (!authResponse.data.onboardingComplete) {
+          console.log("Onboarding is incomplete, redirecting to onboarding page");
           window.location.href = `${process.env.REACT_APP_FRONTEND_URL}/onboarding`;
-          return; 
+          return;
         }
   
-        // If onboarding is complete, proceed to fetch user info
+        console.log("Onboarding complete, fetching user information");
         const userInfoResponse = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/user-info`, { withCredentials: true });
   
         if (userInfoResponse.status === 200 && userInfoResponse.data.isAuthenticated) {
+          console.log("User information retrieved successfully");
           const currentUserData = userInfoResponse.data.user;
           setUserData(currentUserData);
-
+  
           loadSessions(currentUserData);
           handleSavedQueryParams();
         }
       } else {
+        console.log("Authentication failed, redirecting to login page");
         localStorage.setItem('queryParams', window.location.search);
         window.location.href = `${process.env.REACT_APP_FRONTEND_URL}/auth/login`;
       }
@@ -602,8 +611,10 @@ function Chat() {
   }, [loadSessions, setUserData, handleSavedQueryParams]);
   
   useEffect(() => {
+    console.log("Invoking checkAuthStatus on component mount");
     checkAuthStatus();
   }, [checkAuthStatus]);
+  
 
   const handleDeleteSession = async (sessionId) => {
     try {

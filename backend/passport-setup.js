@@ -8,32 +8,35 @@ passport.use(new GoogleStrategy({
     callbackURL: process.env.BACKEND_URL + "/auth/google/callback"
   },
   async (accessToken, refreshToken, profile, done) => {
+    console.log('Google Strategy callback triggered');
     try {
-      const userEmail = profile.emails[0].value; // Get user's email from profile
+      const userEmail = profile.emails[0].value;
+      console.log('User email obtained from Google:', userEmail);
 
-      // Try to find a user either by Google ID or by local email
       let user = await User.findOne({ 
         $or: [{ 'google.id': profile.id }, { 'local.email': userEmail }]
       });
 
       if (user) {
-        // If user exists but doesn't have a Google ID, link it
+        console.log('User found in database:', user);
+
         if (!user.google || !user.google.id) {
+          console.log('Linking Google ID to existing user');
           user.google = {
             id: profile.id,
             // Add any additional Google specific info here
           };
 
-          // Optionally update other fields if needed
           user.displayName = profile.displayName;
           user.firstName = profile.name.givenName;
           user.lastName = profile.name.familyName;
           user.image = profile.photos[0].value;
 
           await user.save();
+          console.log('User updated with Google info');
         }
       } else {
-        // If user doesn't exist, create a new one
+        console.log('User not found, creating new user');
         const userRole = userEmail === "anirudhatalmale4@gmail.com" ? 'assistant' : 'user';
 
         user = new User({
@@ -41,37 +44,37 @@ passport.use(new GoogleStrategy({
             id: profile.id,
           },
           local: {
-            email: userEmail, // Use local sub-document to store email
+            email: userEmail,
           },
           displayName: profile.displayName,
           firstName: profile.name.givenName,
           lastName: profile.name.familyName,
           image: profile.photos[0].value,
           role: userRole,
-          // Add any other fields you need
         });
 
         await user.save();
+        console.log('New user created:', user);
       }
 
-      // Save the accessToken in the user object
       user.accessToken = accessToken;
       return done(null, user);
     } catch (error) {
+      console.error('Error in Google Strategy:', error);
       return done(error, null);
     }
   }
 ));
 
-// Serialize user into the sessions
 passport.serializeUser((user, done) => {
+  console.log('Serializing user:', user.id);
   done(null, user.id);
 });
 
-// Deserialize user from the sessions
 passport.deserializeUser(async (id, done) => {
   try {
     const user = await User.findById(id);
+    console.log('Deserializing user:', user);
     done(null, user);
   } catch (err) {
     console.error("Error in deserializeUser:", err);
@@ -79,12 +82,11 @@ passport.deserializeUser(async (id, done) => {
   }
 });
 
-// Export a function to attach to the Express app
 module.exports = (app) => {
   app.use(passport.initialize());
   app.use(passport.session());
+  console.log('Passport initialized and session middleware set up');
 
-  // This is a helper function to check if the request is authenticated
   app.use((req, res, next) => {
     req.isAuthenticated = function() {
       var property = 'user';
@@ -96,15 +98,16 @@ module.exports = (app) => {
     next();
   });
 
-  // Google Auth Routes
   app.get('/auth/google', passport.authenticate('google', {
     scope: ['profile', 'email']
-  }));
+  }), (req, res) => {
+    // The request will be redirected to Google, so this function will not be called.
+  });
   
   app.get('/auth/google/callback', 
     passport.authenticate('google', { failureRedirect: '/auth/login' }),
     (req, res) => {
-      // Successful authentication, redirect home.
+      console.log('Google authentication successful, redirecting to chat');
       res.redirect(`${process.env.FRONTEND_URL}/chat`); 
     }
   );
