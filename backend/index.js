@@ -55,27 +55,34 @@ app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
 const session = require('express-session');
+const MongoStore = require('connect-mongo');
 
 // Session configuration
-const sessionConfig = {
-  secret: 'your_secret_key', // Replace with a secret key of your choice
-  resave: false,
-  saveUninitialized: true,
-  cookie: {
-    secure: process.env.NODE_ENV === "production", // Use secure cookies in production
-    sameSite: process.env.NODE_ENV === "production" ? 'None' : 'Lax', // Adjust sameSite policy based on environment
-    httpOnly: true,
-  }
-};
-
-// Use the session middleware
-app.use(session(sessionConfig));
-
-passportSetup(app); // Set up passport with the app
-
 mongoose.connect(process.env.MONGO_URI)
-  .then(() => console.log('MongoDB Connected'))
+  .then(() => {
+    console.log('MongoDB Connected');
+
+    // Session configuration
+    const sessionConfig = {
+      secret: 'your_secret_key', // Replace with your secret key
+      resave: false,
+      saveUninitialized: true,
+      store: MongoStore.create({ 
+        mongoUrl: process.env.MONGO_URI // Directly using the connection string
+      }),
+      cookie: {
+        secure: process.env.NODE_ENV === "production",
+        sameSite: process.env.NODE_ENV === "production" ? 'None' : 'Lax',
+        httpOnly: true,
+      }
+    }; 
+
+    // Use the session middleware with Mongo store
+    app.use(session(sessionConfig));
+  })
   .catch(err => console.error('MongoDB Connection Error:', err));
+
+passportSetup(app);
 
 app.get('/', (req, res) => {
   res.send('Hello World!');
