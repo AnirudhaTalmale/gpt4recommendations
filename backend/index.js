@@ -105,6 +105,7 @@ server.listen(PORT, () => {
 
 app.get('/api/check-auth', (req, res) => {
   console.log('Received request on /api/check-auth');
+  console.log('Session details:', req.session);
 
   if (req.isAuthenticated()) {
     console.log('User is authenticated');
