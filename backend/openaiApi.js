@@ -18,7 +18,6 @@ const parseBookTitle = (bookTitleWithAuthor) => {
   return { bookTitle, author };
 };
 
-// Function to generate a "Buy Now" button for a book
 function createBuyNowButton(amazonLink, bookTitle, author) {
   // Check if amazonLink is undefined or empty
   if (!amazonLink) {
@@ -33,8 +32,6 @@ function createBuyNowButton(amazonLink, bookTitle, author) {
   return `<div><a href="${amazonLink}" target="_blank"><button class="buy-now-button">Buy Now</button></a></div>`;
 }
 
-
-// Assuming `isEmbeddable` is a boolean that determines if the book can be previewed
 function createPreviewButtonHtml(isbn, isEmbeddable) {
   const disabledStyles = `style="cursor: not-allowed; opacity: 0.5; pointer-events: none;"`;
   const buttonStyles = isEmbeddable ? "" : disabledStyles;
@@ -150,8 +147,6 @@ async function getAmazonBookData(title, author) {
   }
 }
 
-
-// Convert the star rating from string format to numeric format
 function convertStarRating(starString) {
   const starRatingMap = {
     'ONE': '1.0',
@@ -224,9 +219,9 @@ const fetchMoreDetails = async (bookTitle, author) => {
     const response = await axios.get(`${process.env.BACKEND_URL}/api/more-details`, {
       params: { bookTitle, author }
     });
-    return response; // Return the response for further handling
+    return response; 
   } catch (error) {
-    throw error; // Throw the error to be caught in the calling function
+    throw error; 
   }
 };   
 
@@ -339,13 +334,6 @@ const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, is
             pausedEmit = pausedEmit.replace(bookTitleMatch[0], bookTitleMatch[0] + contentDiv);
           }
 
-          // let imageSource = amazonImage || googleImage;
-          // let imageDiv = '';
-          // if (imageSource) {
-          //   imageDiv = `<div><img src="${imageSource}" alt=""></div>`;
-          //   pausedEmit = pausedEmit.replace(bookTitleMatch[0], bookTitleMatch[0] + imageDiv);
-          // }
-
           const bookInfoHtml = createBookInfoHtml(bookTitle, author, amazonStarRating, amazonReviewCount);
           pausedEmit = pausedEmit.replace(bookTitleMatch[0], bookInfoHtml);
           pausedEmit = pausedEmit.replace(/\#/g, '');
@@ -384,14 +372,12 @@ const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, is
       if (finishReason === 'stop') {
         if (isMoreDetails || messages[messages.length - 1].content.startsWith("Explain the book - ")) {
           const MoreDetails = require('./models/models-chat/MoreDetails');
-          // if (checkFormat(completeResponse)) {
-              const newDetail = new MoreDetails({
-                  bookTitle,
-                  author,
-                  detailedDescription: completeResponse // Save complete response here
-              });
-              await newDetail.save();
-          // }
+          const newDetail = new MoreDetails({
+              bookTitle,
+              author,
+              detailedDescription: completeResponse // Save complete response here
+          });
+          await newDetail.save();
         }
         else if (isKeyInsights) {
           const KeyInsights = require('./models/models-chat/KeyInsights');
@@ -400,7 +386,7 @@ const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, is
                 author,
                 keyInsights: completeResponse // Save complete response here
             });
-            // await newDetail.save();
+            await newDetail.save();
         } else if (isAnecdotes) {
           const Anecdotes = require('./models/models-chat/Anecdotes');
             const newDetail = new Anecdotes({

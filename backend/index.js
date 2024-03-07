@@ -105,18 +105,13 @@ server.listen(PORT, () => {
 // Authentication Code: 
 
 app.get('/api/check-auth', (req, res) => {
-  console.log('Received request on /api/check-auth');
-  console.log('Session details:', req.session);
 
   if (req.isAuthenticated()) {
-    console.log('User is authenticated');
 
     // Check if onboarding is complete based on the displayName being set
     if (req.user.displayName) {
-      console.log('Onboarding is complete for user:', req.user.displayName);
       res.json({ isAuthenticated: true, onboardingComplete: true, user: req.user });
     } else {
-      console.log('Onboarding is not complete for user:', req.user);
       res.json({ isAuthenticated: true, onboardingComplete: false, user: req.user });
     }
   } else {
@@ -126,20 +121,14 @@ app.get('/api/check-auth', (req, res) => {
 }); 
 
 app.get('/api/user-info', (req, res) => {
-  console.log('Received request on /api/user-info');
 
   if (req.isAuthenticated()) {
-    console.log('User is authenticated');
 
     let email = req.user.local && req.user.local.email ? req.user.local.email : '';
-    console.log('Email obtained:', email);
 
     let image = req.user.image;
     if (!image) {
-      console.log('No image found for user, getting default image');
       image = getDefaultImage(req.user.displayName);
-    } else {
-      console.log('User image found');
     }
 
     const userInfo = {
@@ -150,7 +139,6 @@ app.get('/api/user-info', (req, res) => {
       role: req.user.role
     };
 
-    console.log('Sending user info:', userInfo);
     res.json({
       isAuthenticated: true,
       user: userInfo
@@ -173,7 +161,6 @@ app.get('/auth/logout', (req, res, next) => {
     }).then(() => {
       console.log('Google token revoked');
     }).catch(err => {
-      console.error('Error revoking Google token:', err);
     });
 
     req.session.destroy(function(err) {
