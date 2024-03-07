@@ -32,6 +32,22 @@ function createBuyNowButton(amazonLink, bookTitle, author) {
   return `<div><a href="${amazonLink}" target="_blank"><button class="buy-now-button">Buy Now</button></a></div>`;
 }
 
+function checkFormatMoreDetails(content) {
+  const pattern = /<div class="book-info">\s*<h3 class="book-title">[^<]+<\/h3>\s*<span class="book-author">[^<]+<\/span>\s*<\/div>\s*<div>\s*<img src="[^"]+" alt="[^"]*">\s*<\/div>\s*<div>\s*<a href="[^"]+" target="_blank">\s*<button class="buy-now-button">[^<]+<\/button>\s*<\/a>\s*<\/div>\s*<h3>Book Summary<\/h3>\s*<p>[^<]+<\/p>\s*<h3>Author's Credibility<\/h3>\s*<p>[^<]+<\/p>\s*<h3>Endorsements and Praise<\/h3>\s*<p>[^<]+<\/p>/;
+  return pattern.test(content);
+}
+
+function checkFormatKeyInsights(content) {
+  const pattern = /<div class="book-info">\s*<h3 class="book-title">[^<]+<\/h3>\s*<span class="book-author">[^<]+<\/span>\s*<\/div>\s*<div>\s*<img src="[^"]+" alt="[^"]*">\s*<\/div>\s*<div>\s*<a href="[^"]+" target="_blank">\s*<button class="buy-now-button">[^<]+<\/button>\s*<\/a>\s*<\/div>\s*<h3>Key Insights<\/h3>\s*<ol>(?:\s*<li><strong>[^<]+<\/strong>:\s*[^<]+<\/li>\s*)+<\/ol>/;
+  return pattern.test(content);                                                                                                                                                                                                                                                                       
+}
+
+function checkFormatAnecdotes(content) {
+  const pattern = /<div class="book-info">\s*<h3 class="book-title">[^<]+<\/h3>\s*<span class="book-author">[^<]+<\/span>\s*<\/div>\s*<div>\s*<img src="[^"]+" alt="[^"]*">\s*<\/div>\s*<div>\s*<a href="[^"]+" target="_blank">\s*<button class="buy-now-button">[^<]+<\/button>\s*<\/a>\s*<\/div>\s*<h3>Key Anecdotes<\/h3>\s*<ol>(\s*<li>\s*<strong>[^<]+<\/strong>:\s*[^<]+\s*<\/li>)+\s*<\/ol>/;
+  return pattern.test(content);
+}
+
+
 function createPreviewButtonHtml(isbn, isEmbeddable) {
   const disabledStyles = `style="cursor: not-allowed; opacity: 0.5; pointer-events: none;"`;
   const buttonStyles = isEmbeddable ? "" : disabledStyles;
@@ -377,7 +393,9 @@ const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, is
               author,
               detailedDescription: completeResponse // Save complete response here
           });
-          await newDetail.save();
+          if (checkFormatMoreDetails) {
+            await newDetail.save();
+          }
         }
         else if (isKeyInsights) {
           const KeyInsights = require('./models/models-chat/KeyInsights');
@@ -386,7 +404,9 @@ const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, is
                 author,
                 keyInsights: completeResponse // Save complete response here
             });
-            await newDetail.save();
+            if (checkFormatKeyInsights) {
+              await newDetail.save();
+            }
         } else if (isAnecdotes) {
           const Anecdotes = require('./models/models-chat/Anecdotes');
             const newDetail = new Anecdotes({
@@ -394,7 +414,9 @@ const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, is
                 author,
                 anecdotes: completeResponse // Save complete response here
             });
-            await newDetail.save();
+            if (checkFormatAnecdotes) {
+              await newDetail.save();
+            }
         }
         socket.emit('streamEnd', { message: 'Stream completed', sessionId }); // Emit a message indicating stream end
         break; // Optionally break out of the loop if the stream is finished
