@@ -112,6 +112,33 @@ async function getAmazonBookData(title, author) {
       };
     }
 
+    let amazonImage = '';
+    try {
+      const imageResponse = await axios.get('https://www.googleapis.com/customsearch/v1', {
+        params: {
+          key: process.env.REACT_APP_GOOGLE_CUSTOM_SEARCH_API_KEY,
+          cx: process.env.GOOGLE_CSE_ID,
+          q: `"${title}" book image`,
+          searchType: 'image',
+          fileType: 'jpg',
+          num: 1
+        }
+      });
+
+      if (imageResponse.data.items && imageResponse.data.items.length > 0) {
+        const imageItem = imageResponse.data.items[0];
+    
+        // Validate the title
+        if (imageItem.title.toLowerCase().includes(title.toLowerCase())) {
+          amazonImage = imageItem.link;
+        } else {
+          console.log('Image title does not match the search');
+        }
+      }
+    } catch (error) {
+      console.error('Error during image API request:', error);
+    }
+
     const response = await axios.get(`https://www.googleapis.com/customsearch/v1`, {
       params: {
         key: process.env.REACT_APP_GOOGLE_CUSTOM_SEARCH_API_KEY,
@@ -123,6 +150,18 @@ async function getAmazonBookData(title, author) {
 
     if (response.data.items && response.data.items.length > 0) {
       const item = response.data.items[0];
+
+      // Check if the result's domain ends with 'amazon.in'
+      if (!item.displayLink.endsWith('amazon.in')) {
+        console.log('Result is not from a valid Amazon India domain');
+        return { amazonLink: '', amazonStarRating: '', amazonReviewCount: '', amazonImage };
+      }
+
+      // Validate the title
+      if (!item.title.toLowerCase().includes(title.toLowerCase())) {
+        console.log('Title does not match the search');
+        return { amazonLink: '', amazonStarRating: '', amazonReviewCount: '', amazonImage };
+      }
       
       const ogImage = item.pagemap.metatags[0]['og:image'];
       const decodedOgImage = decodeURIComponent(ogImage);
@@ -134,9 +173,6 @@ async function getAmazonBookData(title, author) {
       const amazonReviewCount = reviewCountMatch ? reviewCountMatch[1].replace('%2C', ',') : 'Unknown';
 
       let amazonLink = item.pagemap.metatags[0]['og:url'];
-
-      const imageIdMatch = ogImage.match(/(https:\/\/m\.media-amazon\.com\/images\/I\/[^.]+)/);
-      let amazonImage = imageIdMatch ? `${imageIdMatch[1]}._AC_UF1000,1000_QL80_.jpg` : '';
 
       let url = new URL(amazonLink);
       url.hostname = 'www.amazon.in'; 
