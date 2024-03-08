@@ -1553,6 +1553,10 @@ button.cancel-button:hover {
   padding-top: 0.1rem;
 }
 
+.buttons-container.no-image {
+  margin: 0%;
+}
+
 .buy-now-button {
   background: none;
   border: 1px solid rgba(169, 169, 169, 0.566);

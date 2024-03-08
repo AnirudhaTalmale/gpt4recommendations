@@ -13,11 +13,21 @@ function AnswerDisplay({
   const [isContinueGeneratingClicked, setIsContinueGeneratingClicked] = useState(false);
 
   const createMarkup = () => {
-    const safeHTML = DOMPurify.sanitize(content, {
+    let modifiedContent = content;
+  
+    // Check if the content contains image-container
+    const containsImageContainer = content.includes('class="image-container"');
+    if (!containsImageContainer) {
+      // Add the 'no-image' class to buttons-container if image-container is not present
+      modifiedContent = modifiedContent.replace('class="buttons-container"', 'class="buttons-container no-image"');
+    }
+  
+    const safeHTML = DOMPurify.sanitize(modifiedContent, {
       ADD_ATTR: ['target'], // Allow 'target' attribute for anchor tags
     });
     return { __html: safeHTML };
   };
+  
   
   const handleKeyInsightsClick = (bookTitle, author) => {
     if (!isKeyInsightsClicked && onKeyInsightsClick) {

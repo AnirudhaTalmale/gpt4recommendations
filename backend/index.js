@@ -62,7 +62,7 @@ const sessionConfig = {
   secret: 'your_secret_key', // Replace with a secret key of your choice
   resave: false,
   saveUninitialized: false,
-  store: MongoStore.create({ 
+  store: MongoStore.create({
     mongoUrl: process.env.MONGO_URI_GET_BOOKS_AI,
     collectionName: 'auth_sessions'
   }),
@@ -71,7 +71,7 @@ const sessionConfig = {
     sameSite: process.env.NODE_ENV === "production" ? 'None' : 'Lax',
     httpOnly: false,
   }
-};
+}; 
 
 // Use the session middleware
 app.use(session(sessionConfig));
