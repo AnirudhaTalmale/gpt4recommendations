@@ -29,10 +29,10 @@ function AnswerDisplay({
   };
   
   
-  const handleKeyInsightsClick = (bookTitle, author) => {
+  const handleKeyInsightsClick = (isbn, bookTitle, author) => {
     if (!isKeyInsightsClicked && onKeyInsightsClick) {
       setIsKeyInsightsClicked(true);
-      onKeyInsightsClick(bookTitle, author);
+      onKeyInsightsClick(isbn, bookTitle, author);
   
       // Reset the state after a delay
       setTimeout(() => {
@@ -41,10 +41,10 @@ function AnswerDisplay({
     }
   };
   
-  const handleMoreDetailsClick = (bookTitle, author) => {
+  const handleMoreDetailsClick = (isbn, bookTitle, author) => {
     if (!isMoreDetailsClicked && onMoreDetailsClick) {
       setIsMoreDetailsClicked(true);
-      onMoreDetailsClick(bookTitle, author);
+      onMoreDetailsClick(isbn, bookTitle, author);
   
       setTimeout(() => {
         setIsMoreDetailsClicked(false);
@@ -52,10 +52,10 @@ function AnswerDisplay({
     }
   };
   
-  const handleAnecdotesClick = (bookTitle, author) => {
+  const handleAnecdotesClick = (isbn, bookTitle, author) => {
     if (!isAnecdotesClicked && onAnecdotesClick) {
       setIsAnecdotesClicked(true);
-      onAnecdotesClick(bookTitle, author);
+      onAnecdotesClick(isbn, bookTitle, author);
   
       setTimeout(() => {
         setIsAnecdotesClicked(false);
@@ -186,16 +186,19 @@ function AnswerDisplay({
         <div className="message-content" onClick={(e) => {
           if (e.target.classList.contains('more-details-btn')) {
             const bookTitle = e.target.getAttribute('data-book-title');
+            const isbn = e.target.getAttribute('data-isbn');
             const author = e.target.getAttribute('data-author');
-            handleMoreDetailsClick(bookTitle, author);
+            handleMoreDetailsClick(isbn, bookTitle, author);
           } else if (e.target.classList.contains('key-insights-btn')) {
             const bookTitle = e.target.getAttribute('data-book-title');
+            const isbn = e.target.getAttribute('data-isbn');
             const author = e.target.getAttribute('data-author');
-            handleKeyInsightsClick(bookTitle, author);
+            handleKeyInsightsClick(isbn, bookTitle, author);
           } else if (e.target.classList.contains('anecdotes-btn')) {
             const bookTitle = e.target.getAttribute('data-book-title');
+            const isbn = e.target.getAttribute('data-isbn');
             const author = e.target.getAttribute('data-author');
-            handleAnecdotesClick(bookTitle, author);
+            handleAnecdotesClick(isbn, bookTitle, author);
           } else if (e.target.classList.contains('preview-btn')) {
             const isbn = e.target.getAttribute('data-isbn');
             onPreviewClick(isbn);

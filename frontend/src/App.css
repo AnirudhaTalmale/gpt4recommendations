@@ -1282,7 +1282,7 @@ body:not(.history-pane-open) .input-area {
 .lightbox-content {
   background-color: white;
   padding:  0% 6.7% 3% 6.7%;
-  border-radius: 10px;
+  border-radius: 5px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   max-width: 580px; /* Adjust as per your content's requirements */
   max-height: 96%; /* Adjust based on content height */
@@ -1951,8 +1951,6 @@ b div img {
 .blogPostContainer h1 {
   margin-bottom: 2rem;
   text-align: center;
-  color: black !important;
-  font-size: 2.5rem;
 }
 
 .blogPostContainer img {

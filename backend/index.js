@@ -8,7 +8,6 @@ const KeyInsightsModel = require('./models/models-chat/KeyInsights');
 const AnecdotesModel = require('./models/models-chat/Anecdotes'); 
 const ChatWithUsSession = require('./models/models-chat-with-us/ChatWithUsSession');
 const UserSession = require('./models/models-chat-with-us/UserSession');
-const BlogPost = require('./models/models-chat/BlogPost'); // Adjust the path as necessary
 const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
@@ -307,7 +306,7 @@ io.on('connection', (socket) => {
   let currentSessionId;
   
   socket.on('query', async (data) => {
-    const { sessionId, message, isMoreDetails, isKeyInsights, isAnecdotes, bookTitle, author, moreBooks, isEdit } = data;
+    const { sessionId, message, isMoreDetails, isKeyInsights, isAnecdotes, isbn, bookTitle, author, moreBooks, isEdit } = data;
     currentSessionId = sessionId; 
   
     // Find the session and update it with the new message and response
@@ -419,7 +418,7 @@ io.on('connection', (socket) => {
 
       try {
         console.log("messagesForGPT4", messagesForGPT4);
-        await openaiApi(messagesForGPT4, socket, session, currentSessionId, isMoreDetails, isKeyInsights, isAnecdotes, bookTitle, author, moreBooks);
+        await openaiApi(messagesForGPT4, socket, session, currentSessionId, isMoreDetails, isKeyInsights, isAnecdotes, isbn, bookTitle, author, moreBooks);
         await session.user.save();
       } catch (error) {
         console.error('Error processing query:', error);
@@ -706,20 +705,23 @@ app.post('/api/stop-stream', (req, res) => {
 
 app.get('/api/more-details', async (req, res) => { 
   try {
-    // Retrieve bookTitle and author from query parameters
-    const { bookTitle, author } = req.query;
+    // Retrieve bookTitle and isbn from query parameters
+    const { isbn, bookTitle } = req.query;
 
-    // Initialize query object
-    let query = {
-      bookTitle: new RegExp(bookTitle, 'i') // Always search by title
-    };
-
-    // Add author to the query if it's provided
-    if (author) {
-      query.author = new RegExp(author, 'i');
+    // Initialize query object based on whether isbn or bookTitle is provided
+    let query = {};
+    if (isbn) {
+      // If isbn is provided, use it in the query
+      query.isbn = new RegExp(isbn, 'i'); // Case-insensitive search for isbn
+    } else if (bookTitle) {
+      // If isbn is not provided but bookTitle is, use bookTitle in the query
+      query.bookTitle = new RegExp(bookTitle, 'i'); // Case-insensitive search for bookTitle
+    } else {
+      // If neither isbn nor bookTitle is provided, return an error response
+      return res.status(400).json({ message: 'ISBN or book title must be provided' });
     }
 
-    // Perform a case-insensitive search
+    // Perform a search using the constructed query
     const bookDetails = await MoreDetails.findOne(query);
 
     if (!bookDetails) {
@@ -734,19 +736,23 @@ app.get('/api/more-details', async (req, res) => {
 });
 
 
+
 app.get('/api/key-insights', async (req, res) => { 
   try {
     // Retrieve bookTitle and author from query parameters
-    const { bookTitle, author } = req.query;
+    const { isbn, bookTitle } = req.query;
 
-    // Initialize query object
-    let query = {
-      bookTitle: new RegExp(bookTitle, 'i') // Always search by title
-    };
-
-    // Add author to the query if it's provided
-    if (author) {
-      query.author = new RegExp(author, 'i');
+    // Initialize query object based on whether isbn or bookTitle is provided
+    let query = {};
+    if (isbn) {
+      // If isbn is provided, use it in the query
+      query.isbn = new RegExp(isbn, 'i'); // Case-insensitive search for isbn
+    } else if (bookTitle) {
+      // If isbn is not provided but bookTitle is, use bookTitle in the query
+      query.bookTitle = new RegExp(bookTitle, 'i'); // Case-insensitive search for bookTitle
+    } else {
+      // If neither isbn nor bookTitle is provided, return an error response
+      return res.status(400).json({ message: 'ISBN or book title must be provided' });
     }
 
     // Perform a case-insensitive search
@@ -765,17 +771,19 @@ app.get('/api/key-insights', async (req, res) => {
 
 app.get('/api/anecdotes', async (req, res) => { 
   try {
-    // Retrieve bookTitle and author from query parameters
-    const { bookTitle, author } = req.query;
+    const { isbn, bookTitle } = req.query;
 
-    // Initialize query object
-    let query = {
-      bookTitle: new RegExp(bookTitle, 'i') // Always search by title
-    };
-
-    // Add author to the query if it's provided
-    if (author) {
-      query.author = new RegExp(author, 'i');
+    // Initialize query object based on whether isbn or bookTitle is provided
+    let query = {};
+    if (isbn) {
+      // If isbn is provided, use it in the query
+      query.isbn = new RegExp(isbn, 'i'); // Case-insensitive search for isbn
+    } else if (bookTitle) {
+      // If isbn is not provided but bookTitle is, use bookTitle in the query
+      query.bookTitle = new RegExp(bookTitle, 'i'); // Case-insensitive search for bookTitle
+    } else {
+      // If neither isbn nor bookTitle is provided, return an error response
+      return res.status(400).json({ message: 'ISBN or book title must be provided' });
     }
 
     // Perform a case-insensitive search
@@ -913,52 +921,5 @@ app.post('/api/session/:sessionId/edit-message/:messageId', async (req, res) => 
   } catch (error) {
     console.error('Error updating message:', error);
     res.status(500).json({ message: 'Error updating the message', error: error.toString() });
-  }
-});
-
-
-// ---------------------- End points for Blog posts ----------------------------
-
-app.post('/api/blogposts', upload.single('image'), async (req, res) => {
-  try {
-    // Extract text fields from req.body and file from req.file
-    const { title, content } = req.body;
-    let image;
-    if (req.file) {
-      // Convert file buffer to a string (e.g., Base64) or save to server and get URL
-      image = req.file.buffer.toString('base64'); // Example conversion to Base64
-    }
-
-    const newPost = new BlogPost({ title, content, image });
-    await newPost.save();
-
-    res.status(201).json(newPost);
-  } catch (error) {
-    console.error('POST /api/blogposts - Error:', error);
-    res.status(500).json({ message: 'Error creating a new blog post', error: error.toString() });
-  }
-});
-
-app.get('/api/blogposts', async (req, res) => {
-  try {
-    const blogPosts = await BlogPost.find();
-    res.json(blogPosts);
-  } catch (error) {
-    console.error('GET /api/blogposts - Error:', error);
-    res.status(500).json({ message: 'Error retrieving blog posts', error: error.toString() });
-  }
-});
-
-app.get('/api/blogposts/:postId', async (req, res) => {
-  const { postId } = req.params;
-  try {
-    const blogPost = await BlogPost.findById(postId);
-    if (!blogPost) {
-      return res.status(404).json({ message: 'Blog post not found' });
-    }
-    res.json(blogPost);
-  } catch (error) {
-    console.error('GET /api/blogposts/:postId - Error:', error);
-    res.status(500).json({ message: 'Error retrieving the blog post', error: error.toString() });
   }
 });

@@ -253,29 +253,7 @@ const fetchMoreDetails = async (bookTitle, author) => {
   }
 };   
 
-const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, isKeyInsights, isAnecdotes, bookTitle, author, moreBooks) => {
-
-  if (!isMoreDetails && messages[messages.length - 1].content.startsWith("Explain the book - ")) {
-    try {
-      const response = await fetchMoreDetails(bookTitle, author);
-      if (response && response.data && response.data.detailedDescription) {
-        const detailedDescription = response.data.detailedDescription;
-
-        messageIndex = session.messages.push({
-          role: 'assistant',
-          contentType: 'simple',
-          content: detailedDescription
-        }) - 1;
-        await session.save();
-
-        socket.emit('chunk', { content: detailedDescription, sessionId, isMoreDetails, moreBooks });
-        socket.emit('streamEnd', { message: 'Stream completed', sessionId });
-        return; // End the function here if details are successfully fetched
-      }
-    } catch (error) {
-      console.log("Error fetching book details inside openaiApi code");
-    }
-  }
+const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, isKeyInsights, isAnecdotes, isbn, bookTitle, author, moreBooks) => {
 
   isStreamingActive = true;
 
@@ -349,9 +327,9 @@ const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, is
           if (isMoreDetails || messages[messages.length - 1].content.startsWith("Explain the book - ")) {
             pausedEmit = pausedEmit.replace(bookTitleMatch[0], bookTitleMatch[0] + buyNowButtonHtml);
           } else {
-            const moreDetailsButtonHtml = `<div><button type="button" class="more-details-btn" data-book-title="${bookTitle}" data-author="${author}">Book Info</button></div>`;
-            const keyInsightsButtonHtml = `<div><button type="button" class="key-insights-btn" data-book-title="${bookTitle}" data-author="${author}">Insights</button></div>`;
-            const anecdotesButtonHtml = `<div><button type="button" class="anecdotes-btn" data-book-title="${bookTitle}" data-author="${author}">Anecdotes</button></div>`;
+            const moreDetailsButtonHtml = `<div><button type="button" class="more-details-btn" data-isbn="${isbn}" data-book-title="${bookTitle}" data-author="${author}">Book Info</button></div>`;
+            const keyInsightsButtonHtml = `<div><button type="button" class="key-insights-btn" data-isbn="${isbn}" data-book-title="${bookTitle}" data-author="${author}">Insights</button></div>`;
+            const anecdotesButtonHtml = `<div><button type="button" class="anecdotes-btn" data-isbn="${isbn}" data-book-title="${bookTitle}" data-author="${author}">Anecdotes</button></div>`;
             const previewButtonHtml = createPreviewButtonHtml(isbn, embeddable);
 
             const buttonsHtml = buyNowButtonHtml + moreDetailsButtonHtml + keyInsightsButtonHtml + anecdotesButtonHtml + previewButtonHtml;
@@ -401,9 +379,9 @@ const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, is
         if (isMoreDetails || messages[messages.length - 1].content.startsWith("Explain the book - ")) {
           const MoreDetails = require('./models/models-chat/MoreDetails');
           const newDetail = new MoreDetails({
-              bookTitle,
-              author,
-              detailedDescription: completeResponse // Save complete response here
+            isbn,
+            bookTitle,
+            detailedDescription: completeResponse // Save complete response here
           });
           if (checkFormatMoreDetails) {
             await newDetail.save();
@@ -411,24 +389,24 @@ const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, is
         }
         else if (isKeyInsights) {
           const KeyInsights = require('./models/models-chat/KeyInsights');
-            const newDetail = new KeyInsights({
-                bookTitle,
-                author,
-                keyInsights: completeResponse // Save complete response here
-            });
-            if (checkFormatKeyInsights) {
-              await newDetail.save();
-            }
+          const newDetail = new KeyInsights({
+            isbn,
+            bookTitle,
+            keyInsights: completeResponse // Save complete response here
+          });
+          if (checkFormatKeyInsights) {
+            await newDetail.save();
+          }
         } else if (isAnecdotes) {
           const Anecdotes = require('./models/models-chat/Anecdotes');
-            const newDetail = new Anecdotes({
-                bookTitle,
-                author,
-                anecdotes: completeResponse // Save complete response here
-            });
-            if (checkFormatAnecdotes) {
-              await newDetail.save();
-            }
+          const newDetail = new Anecdotes({
+            isbn,
+            bookTitle,
+            anecdotes: completeResponse // Save complete response here
+          });
+          if (checkFormatAnecdotes) {
+            await newDetail.save();
+          }
         }
         socket.emit('streamEnd', { message: 'Stream completed', sessionId }); // Emit a message indicating stream end
         break; // Optionally break out of the loop if the stream is finished
