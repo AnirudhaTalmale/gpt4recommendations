@@ -809,7 +809,7 @@ function Chat() {
         // Concatenate the modified contents
         const concatenatedContent = `${userQueryContent}\n${processedLastMessageContent}\n`;
 
-        handleQuerySubmit(concatenatedContent, false, null, null, true);
+        handleQuerySubmit(concatenatedContent, false, null, null, null, true);
     }
   };
 
@@ -861,7 +861,7 @@ function Chat() {
           }
           return session;
         }));
-        handleQuerySubmit(newContent, false, null, null, false, false, false, true);
+        handleQuerySubmit(newContent, false, null, null, null, false, false, false, true);
       }
     } catch (error) {
       console.error('Error editing message:', error);
