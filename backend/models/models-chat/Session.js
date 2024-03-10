@@ -10,7 +10,7 @@ const messageSchema = new Schema({
 
 // Session Schema
 const sessionSchema = new Schema({
-  user: { type: Schema.Types.ObjectId, ref: 'User' },
+  user: { type: Schema.Types.ObjectId, ref: 'User', index: true },
   sessionName: { type: String, default: 'New Chat' },
   messages: [messageSchema]
 }, { timestamps: true });
