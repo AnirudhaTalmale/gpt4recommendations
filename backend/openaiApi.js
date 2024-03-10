@@ -3,8 +3,7 @@ const { OpenAI } = require('openai');
 require('dotenv').config();
 
 const axios = require('axios');
-const GoogleBookData = require('./models/models-chat/GoogleBookData'); 
-const AmazonBookData = require('./models/models-chat/AmazonBookData');
+const BookData = require('./models/models-chat/BookData'); 
 
 const parseBookTitle = (bookTitleWithAuthor) => {
   // Remove any occurrences of opening or closing quotes
@@ -18,7 +17,7 @@ const parseBookTitle = (bookTitleWithAuthor) => {
   return { bookTitle, author };
 };
 
-function createBuyNowButton(amazonLink, bookTitle, author) {
+function createBuyNowButton(amazonLink, bookTitle) {
   // Check if amazonLink is undefined or empty
   if (!amazonLink) {
     // Encode book title and author for URL
@@ -100,18 +99,8 @@ function createBookInfoHtml(bookTitle, author, amazonStarRating, amazonReviewCou
   return bookInfoHtml;
 }
 
-async function getAmazonBookData(title, author) {
+async function getAmazonBookData(title) {
   try {
-    const existingBook = await AmazonBookData.findOne({ title, author });
-    if (existingBook) {
-      return {
-        amazonLink: existingBook.amazonLink,
-        amazonStarRating: existingBook.amazonStarRating,
-        amazonReviewCount: existingBook.amazonReviewCount,
-        amazonImage: existingBook.amazonImage // Assuming you store the image URL in the database
-      };
-    }
-
     const response = await axios.get(`https://www.googleapis.com/customsearch/v1`, {
       params: {
         key: process.env.REACT_APP_GOOGLE_CUSTOM_SEARCH_API_KEY,
@@ -127,13 +116,13 @@ async function getAmazonBookData(title, author) {
       // Check if the result's domain ends with 'amazon.in'
       if (!item.displayLink.endsWith('amazon.in')) {
         console.log('Result is not from a valid Amazon India domain');
-        return { amazonLink: '', amazonStarRating: '', amazonReviewCount: '', amazonImage };
+        return { amazonLink: '', amazonStarRating: '', amazonReviewCount: '', amazonImage: '' };
       }
 
       // Validate the title
       if (!item.title.toLowerCase().includes(title.toLowerCase())) {
         console.log('Title does not match the search');
-        return { amazonLink: '', amazonStarRating: '', amazonReviewCount: '', amazonImage };
+        return { amazonLink: '', amazonStarRating: '', amazonReviewCount: '', amazonImage: '' };
       }
       
       const ogImage = item.pagemap.metatags[0]['og:image'];
@@ -153,16 +142,6 @@ async function getAmazonBookData(title, author) {
       let url = new URL(amazonLink);
       url.hostname = 'www.amazon.in'; 
       amazonLink = url.href.split('/ref')[0];
-
-      const newAmazonBookData = new AmazonBookData({
-        title,
-        author,
-        amazonLink,
-        amazonStarRating: amazonStarRating !== 'Unknown' ? amazonStarRating : null,
-        amazonReviewCount: amazonReviewCount !== 'Unknown' ? amazonReviewCount : null,
-        amazonImage // Storing the image URL
-      }); 
-      await newAmazonBookData.save();
 
       return { amazonLink, amazonStarRating, amazonReviewCount, amazonImage };
     } else {
@@ -191,17 +170,8 @@ function convertStarRating(starString) {
   return starRatingMap[starString] || starString;
 }
 
-const getGoogleBookData = async (title, author) => {
+const getGoogleBookData = async (title) => {
   try {
-    const existingBook = await GoogleBookData.findOne({ title, author });
-    if (existingBook) {
-      return { 
-        googleImage: existingBook.googleImage, 
-        isbn: existingBook.isbn, 
-        embeddable: existingBook.embeddable
-      };
-    }
-
     let query = `intitle:${encodeURIComponent(title)}`;
     const response = await axios.get(`https://www.googleapis.com/books/v1/volumes?q=${query}&key=${process.env.REACT_APP_GOOGLE_BOOKS_API_KEY}`);
 
@@ -221,37 +191,61 @@ const getGoogleBookData = async (title, author) => {
         googleImage = volumeInfo.imageLinks.thumbnail.replace("&edge=curl", "");
       }
     }
-
-    const newGoogleBookData = new GoogleBookData({ 
-      title,
-      author,
-      googleImage, 
-      isbn, 
-      embeddable
-    }); 
-    await newGoogleBookData.save();
     return { googleImage, isbn, embeddable};
 
   } catch (error) {
     console.error(`Error fetching book cover for ${title}:`, error);
-    return { googleImage: '', isbn: '', embeddable: '' };
+    return { googleImage: '', isbn: '', embeddable: false };
   }
 };
+
+const getBookData = async (title, author, isbn = '') => {
+  try {
+    let existingBook = isbn ? await BookData.findOne({ isbn }) : await BookData.findOne({ title });
+
+    if (existingBook) {
+      return {
+        isbn: existingBook.isbn,
+        title: existingBook.title,
+        author: existingBook.author,
+        bookImage: existingBook.bookImage,
+        embeddable: existingBook.embeddable,
+        amazonLink: existingBook.amazonLink,
+        amazonStarRating: existingBook.amazonStarRating,
+        amazonReviewCount: existingBook.amazonReviewCount
+      };
+    }
+    
+    const amazonData = await getAmazonBookData(title);
+    const googleData = await getGoogleBookData(title);
+
+    // Merge data
+    const bookData = {
+      isbn: googleData.isbn,
+      title: title,
+      author: author,
+      bookImage: amazonData.amazonImage || googleData.googleImage, // Choose one based on availability or preference
+      embeddable: googleData.embeddable,
+      amazonLink: amazonData.amazonLink,
+      amazonStarRating: amazonData.amazonStarRating,
+      amazonReviewCount: amazonData.amazonReviewCount
+    };
+
+    // Save merged data
+    const newBookData = new BookData(bookData);
+    await newBookData.save();
+
+    return bookData;
+  } catch (error) {
+    console.error('Error during book data aggregation:', error);
+    return { isbn: '', title: '', author: '', bookImage: '', embeddable: false, amazonLink: '', amazonStarRating: 'Unknown', amazonReviewCount: 'Unknown' };
+  }
+};
+
 
 const openai = new OpenAI(process.env.OPENAI_API_KEY);
 
 let isStreamingActive = false;
-
-const fetchMoreDetails = async (bookTitle, author) => {
-  try {
-    const response = await axios.get(`${process.env.BACKEND_URL}/api/more-details`, {
-      params: { bookTitle, author }
-    });
-    return response; 
-  } catch (error) {
-    throw error; 
-  }
-};   
 
 const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, isKeyInsights, isAnecdotes, isbn, bookTitle, author, moreBooks) => {
 
@@ -287,14 +281,13 @@ const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, is
     let isPaused = false; // Flag to check if emitting is paused
 
     if (isKeyInsights || isAnecdotes || isMoreDetails) {
-      const {googleImage} = await getGoogleBookData(bookTitle, author);
-      const {amazonLink, amazonStarRating, amazonReviewCount, amazonImage} = await getAmazonBookData(bookTitle, author);
+      const { bookImage, amazonLink, amazonStarRating, amazonReviewCount } = await getBookData(bookTitle, author, isbn);
       const bookInfoHtml = createBookInfoHtml(bookTitle, author, amazonStarRating, amazonReviewCount);
       let imageDiv = '';
-      if (amazonImage || googleImage) {
-        imageDiv = `<div><img src="${amazonImage || googleImage}" alt=""></div>`;
+      if (bookImage) {
+        imageDiv = `<div><img src="${bookImage}" alt=""></div>`;
       }
-      const buyNowButtonHtml = createBuyNowButton(amazonLink, bookTitle, author);
+      const buyNowButtonHtml = createBuyNowButton(amazonLink, bookTitle);
       completeResponse = bookInfoHtml + imageDiv + buyNowButtonHtml;
       socket.emit('chunk', { content: completeResponse, sessionId, isMoreDetails, isKeyInsights, isAnecdotes, moreBooks });
     }
@@ -313,12 +306,10 @@ const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, is
           let bookTitleMatch = pausedEmit.match(/#(?:\d+\.\s)?(.*?)#/);
           const bookTitleWithAuthor = bookTitleMatch ? bookTitleMatch[1] : "";
           const { bookTitle, author } = parseBookTitle(bookTitleWithAuthor);
-          const {googleImage, isbn, embeddable} = await getGoogleBookData(bookTitle, author);
-          const {amazonLink, amazonStarRating, amazonReviewCount, amazonImage} = await getAmazonBookData(bookTitle, author);
+          const { isbn, bookImage, embeddable, amazonLink, amazonStarRating, amazonReviewCount } = await getBookData(bookTitle, author);
+          const buyNowButtonHtml = createBuyNowButton(amazonLink, bookTitle);
 
-          const buyNowButtonHtml = createBuyNowButton(amazonLink, bookTitle, author);
-
-          let imageSource = amazonImage || googleImage;
+          let imageSource = bookImage;
           let imageDiv = '';
           if (imageSource) {
             imageDiv = `<div class="image-container"><img src="${imageSource}" alt=""></div>`;

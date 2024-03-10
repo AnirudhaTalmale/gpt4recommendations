@@ -3,7 +3,6 @@ const openaiApi = require('./openaiApi');
 const Session = require('./models/models-chat/Session');
 const EmailRateLimit = require('./models/models-chat/EmailRateLimit');
 const MoreDetails = require('./models/models-chat/MoreDetails');
-const Book = require('./models/models-chat/GoogleBookData');
 const KeyInsightsModel = require('./models/models-chat/KeyInsights'); 
 const AnecdotesModel = require('./models/models-chat/Anecdotes'); 
 const ChatWithUsSession = require('./models/models-chat-with-us/ChatWithUsSession');
@@ -872,30 +871,6 @@ app.delete('/api/user/delete', async (req, res) => {
   } catch (error) {
     console.error('DELETE /api/user/delete - Error:', error);
     res.status(500).json({ message: 'Error deleting the account', error: error.toString() });
-  }
-});
-
-// Endpoint to get ISBN by book title
-app.get('/api/book/isbn', async (req, res) => {
-  try {
-    const { bookTitle } = req.query; // Get book title from query parameter
-
-    if (!bookTitle) {
-      return res.status(400).json({ message: 'Book title is required' });
-    }
-
-    // Search for the book by title (case-insensitive)
-    const book = await Book.findOne({ title: new RegExp(bookTitle, 'i') });
-
-    if (!book) {
-      return res.status(404).json({ message: 'Book not found' });
-    }
-
-    // Return the ISBN number of the found book
-    res.json({ isbn: book.isbn });
-  } catch (error) {
-    console.error('GET /api/book/isbn - Error:', error);
-    res.status(500).json({ message: 'Error retrieving the ISBN', error: error.toString() });
   }
 });
 
