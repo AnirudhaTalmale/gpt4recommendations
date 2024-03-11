@@ -4,6 +4,7 @@ require('dotenv').config();
 
 const axios = require('axios');
 const BookData = require('./models/models-chat/BookData'); 
+const redisClient = require('./redisClient');
 
 const parseBookTitle = (bookTitleWithAuthor) => {
   // Remove any occurrences of opening or closing quotes
@@ -201,10 +202,20 @@ const getGoogleBookData = async (title) => {
 
 const getBookData = async (title, author, isbn = '') => {
   try {
-    let existingBook = isbn ? await BookData.findOne({ isbn }) : await BookData.findOne({ title });
+    let cacheKey = `book-data:${isbn || title}`;
+
+    // Check if the data is available in Redis cache
+    let cachedData = await redisClient.get(cacheKey);
+    if (cachedData) {
+      return JSON.parse(cachedData);
+    }
+
+    // Fetch from database
+    let query = isbn ? { isbn } : { title };
+    let existingBook = await BookData.findOne(query);
 
     if (existingBook) {
-      return {
+      let bookDetails = {
         isbn: existingBook.isbn,
         title: existingBook.title,
         author: existingBook.author,
@@ -214,6 +225,10 @@ const getBookData = async (title, author, isbn = '') => {
         amazonStarRating: existingBook.amazonStarRating,
         amazonReviewCount: existingBook.amazonReviewCount
       };
+
+      await redisClient.set(cacheKey, JSON.stringify(bookDetails));
+
+      return bookDetails;
     }
     
     const amazonData = await getAmazonBookData(title);

@@ -20,6 +20,8 @@ const axios = require('axios');
 const multer = require('multer');
 const nodemailer = require('nodemailer');
 const jwt = require('jsonwebtoken'); 
+const redisClient = require('./redisClient');
+
   
  
 require('dotenv').config();
@@ -99,6 +101,7 @@ const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
+
 
 // Authentication Code: 
 
@@ -702,103 +705,113 @@ app.post('/api/stop-stream', (req, res) => {
   }
 });
 
-app.get('/api/more-details', async (req, res) => { 
+app.get('/api/more-details', async (req, res) => {
   try {
-    // Retrieve bookTitle and isbn from query parameters
     const { isbn, bookTitle } = req.query;
+    let cacheKey = `more-details:${isbn || bookTitle}`;
 
-    // Initialize query object based on whether isbn or bookTitle is provided
+    // Try fetching the result from Redis first
+    let cachedData = await redisClient.get(cacheKey);
+    if (cachedData) {
+      return res.json(JSON.parse(cachedData));
+    }
+
     let query = {};
     if (isbn) {
-      // If isbn is provided, use it in the query
-      query.isbn = new RegExp(isbn, 'i'); // Case-insensitive search for isbn
+      query.isbn = new RegExp(isbn, 'i');
     } else if (bookTitle) {
-      // If isbn is not provided but bookTitle is, use bookTitle in the query
-      query.bookTitle = new RegExp(bookTitle, 'i'); // Case-insensitive search for bookTitle
+      query.bookTitle = new RegExp(bookTitle, 'i');
     } else {
-      // If neither isbn nor bookTitle is provided, return an error response
       return res.status(400).json({ message: 'ISBN or book title must be provided' });
     }
 
-    // Perform a search using the constructed query
     const bookDetails = await MoreDetails.findOne(query);
-
     if (!bookDetails) {
       return res.status(404).json({ message: 'Details not found for this book' });
     }
 
+    // Save the result in Redis without an expiration time
+    await redisClient.set(cacheKey, JSON.stringify(bookDetails));
+
     res.json(bookDetails);
   } catch (error) {
-    console.error('Server error:', error); // Log the error for debugging
+    console.error('Server error:', error);
     res.status(500).json({ message: 'Server error occurred while fetching book details' });
   }
 });
 
 
-
-app.get('/api/key-insights', async (req, res) => { 
+app.get('/api/key-insights', async (req, res) => {
   try {
-    // Retrieve bookTitle and author from query parameters
     const { isbn, bookTitle } = req.query;
+    let cacheKey = `key-insights:${isbn || bookTitle}`;
 
-    // Initialize query object based on whether isbn or bookTitle is provided
+    // Try fetching the result from Redis first
+    let cachedData = await redisClient.get(cacheKey);
+    if (cachedData) {
+      return res.json(JSON.parse(cachedData));
+    }
+
     let query = {};
     if (isbn) {
-      // If isbn is provided, use it in the query
-      query.isbn = new RegExp(isbn, 'i'); // Case-insensitive search for isbn
+      query.isbn = new RegExp(isbn, 'i');
     } else if (bookTitle) {
-      // If isbn is not provided but bookTitle is, use bookTitle in the query
-      query.bookTitle = new RegExp(bookTitle, 'i'); // Case-insensitive search for bookTitle
+      query.bookTitle = new RegExp(bookTitle, 'i');
     } else {
-      // If neither isbn nor bookTitle is provided, return an error response
       return res.status(400).json({ message: 'ISBN or book title must be provided' });
     }
 
-    // Perform a case-insensitive search
-    const keyInsightsResult = await KeyInsightsModel.findOne(query); // Use the correctly named model for the query
-
+    const keyInsightsResult = await KeyInsightsModel.findOne(query);
     if (!keyInsightsResult) {
       return res.status(404).json({ message: 'Key Insights not found for this book' });
     }
 
+    // Save the result in Redis without an expiration time
+    await redisClient.set(cacheKey, JSON.stringify(keyInsightsResult));
+
     res.json(keyInsightsResult);
   } catch (error) {
-    console.error('Server error:', error); // Log the error for debugging
+    console.error('Server error:', error);
     res.status(500).json({ message: 'Server error occurred while fetching book details' });
   }
 });
 
-app.get('/api/anecdotes', async (req, res) => { 
+
+app.get('/api/anecdotes', async (req, res) => {
   try {
     const { isbn, bookTitle } = req.query;
+    let cacheKey = `anecdotes:${isbn || bookTitle}`;
 
-    // Initialize query object based on whether isbn or bookTitle is provided
+    // Try fetching the result from Redis first
+    let cachedData = await redisClient.get(cacheKey);
+    if (cachedData) {
+      return res.json(JSON.parse(cachedData));
+    }
+
+    // If not in cache, continue with MongoDB query
     let query = {};
     if (isbn) {
-      // If isbn is provided, use it in the query
-      query.isbn = new RegExp(isbn, 'i'); // Case-insensitive search for isbn
+      query.isbn = new RegExp(isbn, 'i');
     } else if (bookTitle) {
-      // If isbn is not provided but bookTitle is, use bookTitle in the query
-      query.bookTitle = new RegExp(bookTitle, 'i'); // Case-insensitive search for bookTitle
+      query.bookTitle = new RegExp(bookTitle, 'i');
     } else {
-      // If neither isbn nor bookTitle is provided, return an error response
       return res.status(400).json({ message: 'ISBN or book title must be provided' });
     }
 
-    // Perform a case-insensitive search
-    const AnecdotesResult = await AnecdotesModel.findOne(query); // Use the correctly named model for the query
-
+    const AnecdotesResult = await AnecdotesModel.findOne(query);
     if (!AnecdotesResult) {
       return res.status(404).json({ message: 'Key Insights not found for this book' });
     }
 
+    // Save the result in Redis without an expiration time
+    await redisClient.set(cacheKey, JSON.stringify(AnecdotesResult));
+
     res.json(AnecdotesResult);
   } catch (error) {
-    console.error('Server error:', error); // Log the error for debugging
+    console.error('Server error:', error);
     res.status(500).json({ message: 'Server error occurred while fetching book details' });
   }
 });
-
 
 app.post('/api/session', async (req, res) => {
   try {
@@ -898,3 +911,28 @@ app.post('/api/session/:sessionId/edit-message/:messageId', async (req, res) => 
     res.status(500).json({ message: 'Error updating the message', error: error.toString() });
   }
 });
+
+
+// development route: 
+
+if (process.env.NODE_ENV === 'local') {
+  app.get('/api/redis-data', async (req, res) => {
+    try {
+      // Fetch all keys
+      const keys = await redisClient.keys('*');
+      let data = {};
+
+      // Fetch values for each key
+      for (const key of keys) {
+        const value = await redisClient.get(key);
+        data[key] = JSON.parse(value);
+      }
+
+      res.json(data);
+    } catch (error) {
+      console.error('Server error:', error);
+      res.status(500).json({ message: 'Server error occurred while fetching Redis data' });
+    }
+  });
+}
+
