@@ -915,7 +915,7 @@ app.post('/api/session/:sessionId/edit-message/:messageId', async (req, res) => 
 
 // development route: 
 
-// if (process.env.NODE_ENV === 'local') {
+if (process.env.NODE_ENV === 'local') {
   app.get('/api/redis-data', async (req, res) => {
     try {
       // Fetch all keys
@@ -934,5 +934,5 @@ app.post('/api/session/:sessionId/edit-message/:messageId', async (req, res) => 
       res.status(500).json({ message: 'Server error occurred while fetching Redis data' });
     }
   });
-// }
+}
 
