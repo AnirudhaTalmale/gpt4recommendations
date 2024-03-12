@@ -53,34 +53,38 @@ function Chat() {
   const bookPreviewRef = useRef(null);
 
   useEffect(() => {
-    if (!window.google || !window.google.books) {
-      const script = document.createElement('script');
-      script.src = 'https://www.google.com/books/jsapi.js';
-      script.onload = () => {
-        window.google.books.load();
+    const checkIfGoogleBooksIsLoaded = () => {
+      // Simply check if the API is available and set isViewerLoaded accordingly
+      if (window.google && window.google.books) {
         setIsViewerLoaded(true);
-      };
-      document.body.appendChild(script);
-    } else {
-      setIsViewerLoaded(true);
-    }
+      } else {
+        // Log error or handle the case where the API isn't available
+        console.error("Google Books API is not available.");
+      }
+    };
+  
+    checkIfGoogleBooksIsLoaded();
   }, []);
 
   useEffect(() => {
-    if (isBookPreviewLightboxOpen && bookIdForPreview) {
+    if (isBookPreviewLightboxOpen && bookIdForPreview && isViewerLoaded) {
       loadGoogleBooksViewer(bookIdForPreview);
     }
-  }, [isBookPreviewLightboxOpen, bookIdForPreview]);
+  }, [isBookPreviewLightboxOpen, bookIdForPreview, isViewerLoaded]);
 
   const loadGoogleBooksViewer = (bookId) => {
-    if (window.google && window.google.books && bookPreviewRef.current) {
+    if (bookPreviewRef.current) {
       var viewer = new window.google.books.DefaultViewer(bookPreviewRef.current);
-      viewer.load(`ISBN:${bookId}`, function() {
+      viewer.load(`ISBN:${bookId}`, null, function() {
+        // This function is called when the book is successfully loaded.
+        console.log("book successfully loaded and initialized!");
+      }, function() {
+        // This function is called when there's an error loading the book.
         console.error("Google Books could not load the book.");
       });
     }
   };
-
+  
   const handlePreviewClick = async (isbn) => {
     if (isViewerLoaded) {
       if (isbn) {
@@ -567,28 +571,21 @@ function Chat() {
   }, []); 
 
   const checkAuthStatus = useCallback(async () => {
-    console.log("Starting authentication status check");
   
     try {
-      console.log("Sending request to check authentication");
-      console.log(document.cookie);
 
       const authResponse = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/check-auth`, { withCredentials: true });
   
       if (authResponse.status === 200 && authResponse.data.isAuthenticated) {
-        console.log("Authenticated successfully");
   
         if (!authResponse.data.onboardingComplete) {
-          console.log("Onboarding is incomplete, redirecting to onboarding page");
           window.location.href = `${process.env.REACT_APP_FRONTEND_URL}/onboarding`;
           return;
         }
   
-        console.log("Onboarding complete, fetching user information");
         const userInfoResponse = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/user-info`, { withCredentials: true });
   
         if (userInfoResponse.status === 200 && userInfoResponse.data.isAuthenticated) {
-          console.log("User information retrieved successfully");
           const currentUserData = userInfoResponse.data.user;
           setUserData(currentUserData);
   
@@ -608,7 +605,6 @@ function Chat() {
   }, [loadSessions, setUserData, handleSavedQueryParams]);
   
   useEffect(() => {
-    console.log("Invoking checkAuthStatus on component mount");
     checkAuthStatus();
   }, [checkAuthStatus]);
   
