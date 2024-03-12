@@ -5,6 +5,7 @@ const EmailRateLimit = require('./models/models-chat/EmailRateLimit');
 const MoreDetails = require('./models/models-chat/MoreDetails');
 const KeyInsightsModel = require('./models/models-chat/KeyInsights'); 
 const AnecdotesModel = require('./models/models-chat/Anecdotes'); 
+const BookData = require('./models/models-chat/BookData'); 
 const ChatWithUsSession = require('./models/models-chat-with-us/ChatWithUsSession');
 const UserSession = require('./models/models-chat-with-us/UserSession');
 const express = require('express');
@@ -220,7 +221,7 @@ app.post('/send-verification-email', async (req, res) => {
       html: `
         <div style="font-family: 'Arial', sans-serif; text-align: left; padding: 20px; max-width: 600px; margin: auto;">
           <h1 style="font-size: 26px;">Verify your email address</h1>
-          <p style="font-size: 16px;">To continue setting up your OpenAI account, please verify that this is your email address.</p>
+          <p style="font-size: 16px;">To continue setting up your GetBooksAI account, please verify that this is your email address.</p>
           <a href="${verificationUrl}" style="background-color: #4CAF50; color: white; padding: 8px 18px; text-decoration: none; border-radius: 5px; display: inline-block; font-size: 16px;">Verify email address</a>
           <p style="color: #666666; margin-top: 28px; font-size: 12px;">This link will expire in 15 minutes. If you did not make this request, please disregard this email.</p>
         </div>
@@ -912,7 +913,19 @@ app.post('/api/session/:sessionId/edit-message/:messageId', async (req, res) => 
   }
 });
 
+// GET endpoint to fetch books for gallery display
+app.get('/api/books', async (req, res) => {
+  try {
+    // Fetch all books or implement filtering logic as needed
+    const books = await BookData.find({}).lean(); // .lean() for faster reads without Mongoose overhead
 
+    res.json(books);
+  } catch (error) {
+    console.error('GET /api/books - Server error:', error);
+    res.status(500).json({ message: 'Server error occurred while fetching books', error: error.toString() });
+  }
+});
+ 
 // development route: 
 
 if (process.env.NODE_ENV === 'local') {

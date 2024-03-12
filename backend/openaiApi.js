@@ -100,6 +100,8 @@ function createBookInfoHtml(bookTitle, author, amazonStarRating, amazonReviewCou
   return bookInfoHtml;
 }
 
+
+
 async function getAmazonBookData(title) {
   try {
     const response = await axios.get(`https://www.googleapis.com/customsearch/v1`, {
@@ -472,6 +474,7 @@ openaiApi.stopStream = () => {
 };
 
 module.exports = openaiApi;
+
 
 
 

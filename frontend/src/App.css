@@ -2690,3 +2690,66 @@ body:not(.history-pane-open-chat-with-us) .chat-area-chat-with-us {
 .combined-message-block-chat-with-us {
   margin-top: -1.5rem;
 }
+
+
+/* Book Gallery */
+
+.gallery-book-gallery {
+  margin-top: -6rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); /* Adjust the minmax for your preferred item width */
+  gap: 20px; /* Adjust the gap size as per your preference */
+  padding: 20px; /* Adds some padding around the grid */
+  /* border: 1px solid green; */
+}
+
+.item-book-gallery {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.image-book-gallery img {
+  width: 22vw; /* Ensures image fills the container width */
+  height: 32vh; /* Fixed height for all images */
+  /* object-fit: cover; Ensures images cover the area, are cropped to fit if necessary */
+  border-radius: 10px;
+}
+
+.title-book-gallery, .author-book-gallery, .ratings-and-review-book-gallery {
+  text-align: left; /* Aligns text to the left */
+  width: 100%; /* Ensures the elements take the full width of their parent */
+}
+
+.title-book-gallery {
+  font-weight: bold;
+  font-size: 1.05rem;
+}
+
+.title-book-gallery, .author-book-gallery, .ratings-and-review-book-gallery {
+  margin-left: 0.5rem;
+  margin-top: 0.3rem;
+}
+
+/* Review Count Style */
+.review-count-book-gallery {
+  font-size: 0.85rem; /* Adjust size as needed */
+}
+
+/* Ratings and Review Container */
+.ratings-and-review-book-gallery {
+  display: flex;
+  align-items: center;
+}
+
+/* Star Rating Container */
+.star-rating-book-gallery {
+  margin-right: 10px; /* Adjust spacing as needed */
+}
+
+.full-star-book-gallery, .half-star-book-gallery {
+  color: orange;
+  font-size: 0.9rem; /* Adjust size as needed */
+}
+
+

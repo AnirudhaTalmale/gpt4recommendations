@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import axios from 'axios';
 import InputBox from './InputBox';
-import SampleQueries from './SampleQueries';
+// import SampleQueries from './SampleQueries';
+import BookGallery from './BookGallery';
 import AnswerDisplay from './AnswerDisplay';
 import HistoryPane from './HistoryPane';
 import Lightbox from './Lightbox';
@@ -77,7 +78,6 @@ function Chat() {
       var viewer = new window.google.books.DefaultViewer(bookPreviewRef.current);
       viewer.load(`ISBN:${bookId}`, null, function() {
         // This function is called when the book is successfully loaded.
-        console.log("book successfully loaded and initialized!");
       }, function() {
         // This function is called when there's an error loading the book.
         console.error("Google Books could not load the book.");
@@ -912,12 +912,6 @@ function Chat() {
       />
       <Header isPaneOpen={isPaneOpen} onNewSession={handleNewSession} togglePane={togglePane} />
       <div className="chat-area" ref={chatAreaRef}>
-        
-        {sessions.find(session => session._id === selectedSessionId) && sessions.find(session => session._id === selectedSessionId).messages.length === 0 && (
-          <div className="chat-heading">
-            Discover Your Next Great Read!
-          </div>
-        )}
         {sessions.find(session => session._id === selectedSessionId)?.messages.map((msg, index, messageArray) => {
         const isLastMessage = index === messageArray.length - 1;
         const isLastMessageFromAssistant = isLastMessage && msg.role === 'assistant';
@@ -943,10 +937,11 @@ function Chat() {
         })}
       </div>
       { (sessions.length === 0 || (sessions.find(session => session._id === selectedSessionId) && sessions.find(session => session._id === selectedSessionId).messages.length === 0)) && (
-          <SampleQueries
-            onSubmit={handleQuerySubmit}
-            inputBoxHeight={inputBoxHeight} // And here you pass the inputBoxHeight state down to SampleQueries
-          />
+        // <SampleQueries
+        //   onSubmit={handleQuerySubmit}
+        //   inputBoxHeight={inputBoxHeight} // And here you pass the inputBoxHeight state down to SampleQueries
+        // />
+        <BookGallery />
       )}
       <InputBox
         onSubmit={handleQuerySubmit}
