@@ -1,6 +1,8 @@
 // openaiApi.js
 const { OpenAI } = require('openai');
+
 require('dotenv').config();
+const openai = new OpenAI(process.env.OPENAI_API_KEY);
 
 const axios = require('axios');
 const BookData = require('./models/models-chat/BookData'); 
@@ -17,6 +19,8 @@ const parseBookTitle = (bookTitleWithAuthor) => {
 
   return { bookTitle, author };
 };
+
+
 
 function createBuyNowButton(amazonLink, bookTitle) {
   // Check if amazonLink is undefined or empty
@@ -99,7 +103,6 @@ function createBookInfoHtml(bookTitle, author, amazonStarRating, amazonReviewCou
 
   return bookInfoHtml;
 }
-
 
 
 async function getAmazonBookData(title) {
@@ -202,6 +205,42 @@ const getGoogleBookData = async (title) => {
   }
 };
 
+const getGenreData = async (title) => {
+  try {
+    const prompt = `Respond with just a single array of strings containing genres for the book - "${title}".`;
+
+    const response = await openai.chat.completions.create({
+      model: "gpt-4-1106-preview",
+      messages: [{ role: 'system', content: prompt }],
+      max_tokens: 100, 
+    });
+
+    let genresText = response.choices[0]?.message?.content.trim();
+
+    // Simple regex to match an array format like ["Genre 1", "Genre 2"]
+    const arrayRegex = /\["[^"]+"(, "[^"]+")*\]/;
+    const match = genresText.match(arrayRegex);
+  
+    let genresArray;
+    if (match) {
+      try {
+        genresArray = JSON.parse(match[0]);
+      } catch (error) {
+        console.error('Failed to parse genres as JSON:', error);
+        genresArray = []; // Default to an empty array if parsing fails
+      }
+    } else {
+      console.error('No valid JSON array found in the response');
+      genresArray = []; // Default to an empty array if no array is found
+    }
+    
+    return genresArray;
+  } catch (error) {
+    console.error('Error fetching genre data:', error);
+    return []; // Return an empty array in case of error
+  }
+};
+
 const getBookData = async (title, author, isbn = '') => {
   try {
     let cacheKey = `book-data:${isbn || title}`;
@@ -235,6 +274,8 @@ const getBookData = async (title, author, isbn = '') => {
     
     const amazonData = await getAmazonBookData(title);
     const googleData = await getGoogleBookData(title);
+    const genreData = await getGenreData(title); 
+    console.log(genreData);
 
     // Merge data
     const bookData = {
@@ -245,7 +286,8 @@ const getBookData = async (title, author, isbn = '') => {
       embeddable: googleData.embeddable,
       amazonLink: amazonData.amazonLink,
       amazonStarRating: amazonData.amazonStarRating,
-      amazonReviewCount: amazonData.amazonReviewCount
+      amazonReviewCount: amazonData.amazonReviewCount,
+      genres: genreData,
     };
 
     // Save merged data
@@ -260,7 +302,7 @@ const getBookData = async (title, author, isbn = '') => {
 };
 
 
-const openai = new OpenAI(process.env.OPENAI_API_KEY);
+
 
 let isStreamingActive = false;
 

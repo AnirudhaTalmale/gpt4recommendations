@@ -10,6 +10,7 @@ const bookSchema = new Schema({
   amazonLink: { type: String, required: true },
   amazonStarRating: { type: Number, default: null },
   amazonReviewCount: { type: String, default: null },
+  genres: [{ type: String, required: true, index: true }],
 });
 
 module.exports = mongoose.model('BookData', bookSchema);
