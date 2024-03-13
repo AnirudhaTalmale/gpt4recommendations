@@ -16,7 +16,9 @@ const HistoryPane = forwardRef(({
   isPaneOpen, 
   togglePane,
   selectedSessionId,
-  setSelectedSessionId
+  setSelectedSessionId,
+  onBookGalleryClick,
+  onHideBookGallery
 }, ref) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isEntryActive, setIsEntryActive] = useState(false);
@@ -116,6 +118,7 @@ const HistoryPane = forwardRef(({
   const handleNewSessionCreation = async () => {
     const newSession = await onNewSession(); // Assume onNewSession returns the newly created session object
     setSelectedSessionId(newSession._id); // Set the selectedSessionId to the new session's ID
+    onHideBookGallery();
     if (window.innerWidth < 760) {
       togglePane();
     }
@@ -136,6 +139,7 @@ const HistoryPane = forwardRef(({
   const handleSessionSelect = (sessionId) => {
     onSelectSession(sessionId); // Update to use the session ID
     setSelectedSessionId(sessionId); // Update the selected session ID
+    onHideBookGallery();
     if (window.innerWidth < 760) {
       togglePane();
     }
@@ -215,15 +219,27 @@ const HistoryPane = forwardRef(({
         </button>
 
         <div onClick={handleNewSessionCreation} className="header-container">
-
           <button className="new-session-button">
-            GetBooks
+            GetBooks 
           </button>
-          
           <button  className="new-session-button">
             <i className="fa-regular fa-pen-to-square"></i>
           </button>
         </div>
+
+        <div className="header-container book-gallery">
+          <button className="new-session-button" onClick={onBookGalleryClick}>
+            Book Gallery 
+          </button>
+        </div>
+
+        <div className="header-container shorts">
+
+          <button className="new-session-button">
+            Shorts
+          </button>
+        </div>
+        
 
         <div className="history-content">
           {categorizedSessions.today.length > 0 && (

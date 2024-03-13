@@ -36,18 +36,22 @@ function BookGallery() {
       {books.map((book, index) => (
         <div key={index} className="item-book-gallery">
           <div className="image-book-gallery">
-            {book.bookImage && <img src={book.bookImage} alt={`Cover of ${book.title}`} />}
-          </div>
-          <div className="title-book-gallery">{book.title}</div>
-          <span className="author-book-gallery">by {book.author}</span>
-          <div className="ratings-and-review-book-gallery">
-            {book.amazonStarRating !== 'Unknown' && (
-              <div className="star-rating-book-gallery">
-                {renderStarRating(book.amazonStarRating)}
-              </div>
-            )}
-            {book.amazonReviewCount !== 'Unknown' && (
-              <span className="review-count-book-gallery">{book.amazonReviewCount} reviews</span>
+            {book.bookImage && (
+              <>
+                <img src={book.bookImage} alt={`Cover of ${book.title}`} />
+                <div className="title-book-gallery">{book.title}</div>
+                <span className="author-book-gallery">by {book.author}</span>
+                <div className="ratings-and-review-book-gallery">
+                  {book.amazonStarRating !== 'Unknown' && (
+                    <div className="star-rating-book-gallery">
+                      {renderStarRating(book.amazonStarRating)}
+                    </div>
+                  )}
+                  {book.amazonReviewCount !== 'Unknown' && (
+                    <span className="review-count-book-gallery">{book.amazonReviewCount} reviews</span>
+                  )}
+                </div>
+              </>
             )}
           </div>
         </div>
@@ -55,5 +59,6 @@ function BookGallery() {
     </div>
   );
 }
+
 
 export default BookGallery;

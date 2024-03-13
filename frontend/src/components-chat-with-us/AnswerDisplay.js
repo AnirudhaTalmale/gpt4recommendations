@@ -58,7 +58,7 @@ function AnswerDisplay({ role, content, userImage, onMoreDetailsClick, attachmen
           <span>U</span>
         )
       ) : (
-        <div><img src="/GetBooks.webp" alt="Assistant" className="display-image-chat-with-us" /></div>
+        <div><img src="/GetBooks.webp" alt="" className="display-image-chat-with-us" /></div>
       );
     } else {
       return <div className="display-image-chat-with-us"></div>;

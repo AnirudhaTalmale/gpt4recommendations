@@ -105,7 +105,7 @@ function InputBox({ onSubmit, isStreaming, onStopStreaming, initialQuery, onHeig
         value={input}
         onChange={handleInputChange}
         onKeyDown={handleKeyDown}
-        placeholder="Ask me about books..."
+        placeholder="Explain your query"
         rows={rows}
       />
       {isStreaming ? (

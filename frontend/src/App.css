@@ -489,19 +489,14 @@ body:not(.history-pane-open) .input-area {
 .header-container {
   display: flex;
   justify-content: space-between;
-  padding-left: 0.5rem;
-  padding-right: 0.5rem;
-  padding-top: 0.6rem;
-  padding-bottom: 0.8rem;
+  padding: 0.5rem 0.4rem;
   align-items: center; /* Align buttons vertically */
   position: relative; 
   &:hover {
     background-color: hsla(0,0%,100%,.1);
-    border-radius: 0.5rem;
+    border-radius: 0.34rem;
   }
   cursor: pointer;
-  margin-bottom: 2rem;
-  margin-top: 0.3rem;
 }
 
 .new-session-button {
@@ -512,6 +507,7 @@ body:not(.history-pane-open) .input-area {
   font-size: 1rem;
   font-weight: bold;
 }
+
 
 /* Styles for the main content area */
 .history-content {
@@ -2694,57 +2690,83 @@ body:not(.history-pane-open-chat-with-us) .chat-area-chat-with-us {
 
 /* Book Gallery */
 
+
 .gallery-book-gallery {
-  margin-top: -6rem;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); /* Adjust the minmax for your preferred item width */
-  gap: 20px; /* Adjust the gap size as per your preference */
-  padding: 20px; /* Adds some padding around the grid */
-  /* border: 1px solid green; */
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 3vh 3vw; 
+  padding: 3rem 4.5rem;
 }
 
 .item-book-gallery {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: stretch; /* This will stretch the child elements to fit the width */
+}
+
+.image-book-gallery {
+ /* border: 1px solid #ccc;  */
+  width: 12.5rem;
+  display: flex; /* Changed to flex to allow for column direction */
+  flex-direction: column; /* Stack children vertically */
+  align-items: left; /* Align children in the center */
+  overflow: hidden;
 }
 
 .image-book-gallery img {
-  width: 22vw; /* Ensures image fills the container width */
-  height: 32vh; /* Fixed height for all images */
-  /* object-fit: cover; Ensures images cover the area, are cropped to fit if necessary */
-  border-radius: 10px;
+  width: 20vh;
+  height: 30vh;
+  margin-bottom: 0.34rem;
 }
 
-.title-book-gallery, .author-book-gallery, .ratings-and-review-book-gallery {
-  text-align: left; /* Aligns text to the left */
-  width: 100%; /* Ensures the elements take the full width of their parent */
-}
-
+/* Adjusted styles for text elements within the image container */
 .title-book-gallery {
+  width: 100%; /* Matches the width of the image */
+  text-align: left; /* Align text to the center or left as per your design */
+  padding: 0.5rem 0; /* Add padding to the top and bottom */
   font-weight: bold;
-  font-size: 1.05rem;
+  margin-bottom: -0.8rem;
 }
 
-.title-book-gallery, .author-book-gallery, .ratings-and-review-book-gallery {
-  margin-left: 0.5rem;
-  margin-top: 0.3rem;
+.author-book-gallery {
+  width: 100%; /* Matches the width of the image */
+  text-align: left; /* Align text to the center or left as per your design */
+  padding: 0.5rem 0; /* Add padding to the top and bottom */
+  font-size: 0.86rem;
+  margin-bottom: -0.5rem;
 }
 
-/* Review Count Style */
+.title-book-gallery, .author-book-gallery {
+  white-space: nowrap; /* Prevent text from wrapping to a new line */
+  overflow: hidden; /* Hide overflow text */
+  text-overflow: ellipsis; /* Add ellipsis to overflow text */
+}
+
+.ratings-and-review-book-gallery {
+  width: 100%; /* Matches the width of the image */
+  display: flex;
+  justify-content: left; /* Align items to the center or start as per your design */
+  padding: 0.5rem 0; /* Add padding to the top and bottom */
+}
+
+/* Remove padding from the sides if you want the text to stretch to the edges */
+.title-book-gallery, .author-book-gallery {
+  padding-left: 0;
+  padding-right: 0;
+}
+
 .review-count-book-gallery {
   font-size: 0.85rem; /* Adjust size as needed */
 }
 
-/* Ratings and Review Container */
 .ratings-and-review-book-gallery {
+  padding-left: 0px;
   display: flex;
   align-items: center;
 }
 
-/* Star Rating Container */
 .star-rating-book-gallery {
-  margin-right: 10px; /* Adjust spacing as needed */
+  margin-right: 5px; /* Adjust spacing as needed */
 }
 
 .full-star-book-gallery, .half-star-book-gallery {
