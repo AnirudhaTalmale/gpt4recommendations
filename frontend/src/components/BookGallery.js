@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import '../App.css'; 
 
-function BookGallery() {
+function BookGallery({ onCloseHistoryPane }) {
   const [books, setBooks] = useState([]);
   const [genres, setGenres] = useState([]);
   const [selectedGenre, setSelectedGenre] = useState('All');
@@ -68,7 +68,7 @@ function BookGallery() {
 
   return (
     <>
-    <form onSubmit={handleSearch} className="search-bar-container">
+      <form onSubmit={handleSearch} className="search-bar-container">
         <div className="search-bar">
             <input
             type="text"
@@ -118,7 +118,7 @@ function BookGallery() {
           </div>
       ))}
     </div>
-  </>
+   </>
 );
 }
 

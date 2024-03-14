@@ -2,7 +2,6 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import axios from 'axios';
 import InputBox from './InputBox';
 import SampleQueries from './SampleQueries';
-import BookGallery from './BookGallery';
 import AnswerDisplay from './AnswerDisplay';
 import HistoryPane from './HistoryPane';
 import Lightbox from './Lightbox';
@@ -52,7 +51,6 @@ function Chat() {
   const [bookIdForPreview, setBookIdForPreview] = useState('');
   const [isViewerLoaded, setIsViewerLoaded] = useState(false);
   const bookPreviewRef = useRef(null);
-  const [showBookGallery, setShowBookGallery] = useState(false);
 
   useEffect(() => {
     const checkIfGoogleBooksIsLoaded = () => {
@@ -162,7 +160,7 @@ function Chat() {
   const togglePane = useCallback(() => {
     setIsPaneOpen(!isPaneOpen);
   }, [isPaneOpen]); 
-
+  
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth < 760) {
@@ -911,66 +909,53 @@ function Chat() {
         togglePane={togglePane}
         selectedSessionId={selectedSessionId}
         setSelectedSessionId={setSelectedSessionId}
-        onBookGalleryClick={() => {
-          setShowBookGallery(true); // Show the Book Gallery
-          togglePane(); // Close the History Pane if it's open
-        }}
-        onHideBookGallery={() => setShowBookGallery(false)}
-        isBookGalleryOpen={showBookGallery}
       />
-      {showBookGallery ? (
-        // Assuming you have imported BookGallery component at the top
-        <BookGallery />
-      ) : (
-        <>
-          <Header isPaneOpen={isPaneOpen} onNewSession={handleNewSession} togglePane={togglePane} />
-          <div className="chat-area" ref={chatAreaRef}>
-            {sessions.find(session => session._id === selectedSessionId) && sessions.find(session => session._id === selectedSessionId).messages.length === 0 && (
-              <div className="chat-heading">
-                Discover Your Next Great Read!
-              </div>
-            )}
-
-            {sessions.find(session => session._id === selectedSessionId)?.messages.map((msg, index, messageArray) => {
-            const isLastMessage = index === messageArray.length - 1;
-            const isLastMessageFromAssistant = isLastMessage && msg.role === 'assistant';
-            return (
-              <AnswerDisplay
-                onPreviewClick={handlePreviewClick}
-                key={msg._id} // Assuming msg._id is a unique identifier
-                role={msg.role}
-                content={msg.content}
-                userImage={userData?.image}
-                isStreaming={isStreaming}
-                onMoreDetailsClick={handleMoreDetailsRequest}
-                onKeyInsightsClick={handleKeyInsightsRequest}
-                onAnecdotesClick={handleAnecdotesRequest}
-                showContinueButton={showContinueButton && isLastMessageFromAssistant}
-                onContinueGenerating={onContinueGenerating}
-                onImageClick={handleImageClick}
-                sessionId={currentSessionId} // You need to pass the current session ID
-                messageId={msg._id} // Assuming each message has a unique ID
-                onEditMessage={handleEditMessage}
-              />
-              );
-            })}
+      <Header isPaneOpen={isPaneOpen} onNewSession={handleNewSession} togglePane={togglePane} />
+      <div className="chat-area" ref={chatAreaRef}>
+        {sessions.find(session => session._id === selectedSessionId) && sessions.find(session => session._id === selectedSessionId).messages.length === 0 && (
+          <div className="chat-heading">
+            Discover Your Next Great Read!
           </div>
-          { (sessions.length === 0 || (sessions.find(session => session._id === selectedSessionId) && sessions.find(session => session._id === selectedSessionId).messages.length === 0)) && (
-              <SampleQueries
-                onSubmit={handleQuerySubmit}
-                inputBoxHeight={inputBoxHeight} // And here you pass the inputBoxHeight state down to SampleQueries
-              />
-          )}
-          <InputBox
-            onSubmit={handleQuerySubmit}
-            isLoading={isLoading}
+        )}
+
+        {sessions.find(session => session._id === selectedSessionId)?.messages.map((msg, index, messageArray) => {
+        const isLastMessage = index === messageArray.length - 1;
+        const isLastMessageFromAssistant = isLastMessage && msg.role === 'assistant';
+        return (
+          <AnswerDisplay
+            onPreviewClick={handlePreviewClick}
+            key={msg._id} // Assuming msg._id is a unique identifier
+            role={msg.role}
+            content={msg.content}
+            userImage={userData?.image}
             isStreaming={isStreaming}
-            onStopStreaming={handleStopStreaming}
-            initialQuery={initialQuery}
-            onHeightChange={setInputBoxHeight} // Here you pass the setInputBoxHeight function to the InputBox
+            onMoreDetailsClick={handleMoreDetailsRequest}
+            onKeyInsightsClick={handleKeyInsightsRequest}
+            onAnecdotesClick={handleAnecdotesRequest}
+            showContinueButton={showContinueButton && isLastMessageFromAssistant}
+            onContinueGenerating={onContinueGenerating}
+            onImageClick={handleImageClick}
+            sessionId={currentSessionId} // You need to pass the current session ID
+            messageId={msg._id} // Assuming each message has a unique ID
+            onEditMessage={handleEditMessage}
           />
-        </>
+          );
+        })}
+      </div>
+      { (sessions.length === 0 || (sessions.find(session => session._id === selectedSessionId) && sessions.find(session => session._id === selectedSessionId).messages.length === 0)) && (
+          <SampleQueries
+            onSubmit={handleQuerySubmit}
+            inputBoxHeight={inputBoxHeight} // And here you pass the inputBoxHeight state down to SampleQueries
+          />
       )}
+      <InputBox
+        onSubmit={handleQuerySubmit}
+        isLoading={isLoading}
+        isStreaming={isStreaming}
+        onStopStreaming={handleStopStreaming}
+        initialQuery={initialQuery}
+        onHeightChange={setInputBoxHeight} // Here you pass the setInputBoxHeight function to the InputBox
+      />
     </div>
   );
 }

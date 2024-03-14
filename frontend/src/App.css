@@ -2690,14 +2690,12 @@ body:not(.history-pane-open-chat-with-us) .chat-area-chat-with-us {
 
 /* Book Gallery */
 
-
-
 .gallery-book-gallery {
   /* border: 1px solid black; */
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
   gap: 3vh 0vw; 
-  padding: 9rem 0rem 2rem 3.5rem;
+  padding: 8.1rem 0rem 2rem 3.5rem;
 }
 
 .item-book-gallery {
@@ -2867,13 +2865,12 @@ body:not(.history-pane-open-chat-with-us) .chat-area-chat-with-us {
   border-left: 1px solid #d5d5d5;
   border-radius: 0px 10px 10px 0px;
   background-color: #f0f0f0;
-  padding: 10px;
+  padding: 0 0.9rem;
   cursor: pointer;
 }
 
 .search-bar button i {
   font-size: 1.25rem;
-  
 }
 
 .search-bar input:focus {

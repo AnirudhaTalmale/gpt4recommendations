@@ -8,6 +8,7 @@ import NewBlogPost from './components/NewBlogPost';
 import ChatWithUs from './components-chat-with-us/Chat';
 import HomePage from './components/HomePage';
 import EmailVerificationPage from './components/EmailVerificationPage'; 
+import BookGallery from './components/BookGallery'; 
 import './App.css';
 
 function App() {
@@ -24,6 +25,7 @@ function App() {
           <Route path="/blog" element={<BlogPage />} />
           <Route path="/blog/:postId" element={<BlogPostPage />} />
           <Route path="/new-blog-post" element={<NewBlogPost />} />
+          <Route path="/book-gallery" element={<BookGallery />} />
         </Routes>
       </div>
     </Router>

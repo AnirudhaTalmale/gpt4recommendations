@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect, forwardRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import ConfirmationDialog from './ConfirmationDialog'; 
 
@@ -16,15 +17,15 @@ const HistoryPane = forwardRef(({
   isPaneOpen, 
   togglePane,
   selectedSessionId,
-  setSelectedSessionId,
-  onBookGalleryClick,
-  onHideBookGallery,
-  isBookGalleryOpen
+  setSelectedSessionId
 }, ref) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isEntryActive, setIsEntryActive] = useState(false);
   const [wasClosedManually, setWasClosedManually] = useState(false);
   const lineRef = useRef(null);
+
+  const navigate = useNavigate(); 
+  const onBookGalleryClick = () => navigate('/book-gallery');
 
   const handleMouseEnter = () => {
     if (lineRef.current) {
@@ -119,7 +120,6 @@ const HistoryPane = forwardRef(({
   const handleNewSessionCreation = async () => {
     const newSession = await onNewSession(); // Assume onNewSession returns the newly created session object
     setSelectedSessionId(newSession._id); // Set the selectedSessionId to the new session's ID
-    onHideBookGallery();
     if (window.innerWidth < 760) {
       togglePane();
     }
@@ -127,7 +127,7 @@ const HistoryPane = forwardRef(({
 
   useEffect(() => {
     const handleResize = () => {
-      if (!wasClosedManually && window.innerWidth >= 760 && !isPaneOpen && !isBookGalleryOpen) {
+      if (!wasClosedManually && window.innerWidth >= 760 && !isPaneOpen) {
         togglePane(); // Automatically open the pane if enough space is available
       }
     };
@@ -135,12 +135,11 @@ const HistoryPane = forwardRef(({
     window.addEventListener('resize', handleResize);
 
     return () => window.removeEventListener('resize', handleResize);
-  }, [wasClosedManually, isPaneOpen, togglePane, isBookGalleryOpen]);
+  }, [wasClosedManually, isPaneOpen, togglePane]);
   
   const handleSessionSelect = (sessionId) => {
     onSelectSession(sessionId); // Update to use the session ID
     setSelectedSessionId(sessionId); // Update the selected session ID
-    onHideBookGallery();
     if (window.innerWidth < 760) {
       togglePane();
     }
@@ -204,6 +203,8 @@ const HistoryPane = forwardRef(({
       setIsConfirmDialogOpen(false);
     }
   };
+
+  
 
   return (
     <div ref={ref}>
