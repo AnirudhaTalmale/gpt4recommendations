@@ -445,10 +445,11 @@ function Chat() {
         moreBooks: moreBooks,
         isEdit: isEdit
       });
-
+      console.log("page refreshed");
       // Reset lastUserMessage to avoid duplicate emissions
       setLastUserMessage(null);
     }
+    
   }, [lastUserMessage, sessions, isMoreDetailsState, isKeyInsightsState, isAnecdotesState, bookTitleState, isbnState, authorState, moreBooks, isEdit]);
   
   const handleQuerySubmit = async (query, isMoreDetails = false, isbn = null, bookTitle = null, author = null, moreBooks = false, isKeyInsights = false, isAnecdotes = false, isEdit = false) => {
@@ -910,8 +911,12 @@ function Chat() {
         togglePane={togglePane}
         selectedSessionId={selectedSessionId}
         setSelectedSessionId={setSelectedSessionId}
-        onBookGalleryClick={() => setShowBookGallery(true)}
+        onBookGalleryClick={() => {
+          setShowBookGallery(true); // Show the Book Gallery
+          togglePane(); // Close the History Pane if it's open
+        }}
         onHideBookGallery={() => setShowBookGallery(false)}
+        isBookGalleryOpen={showBookGallery}
       />
       {showBookGallery ? (
         // Assuming you have imported BookGallery component at the top

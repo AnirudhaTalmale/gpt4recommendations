@@ -18,7 +18,8 @@ const HistoryPane = forwardRef(({
   selectedSessionId,
   setSelectedSessionId,
   onBookGalleryClick,
-  onHideBookGallery
+  onHideBookGallery,
+  isBookGalleryOpen
 }, ref) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isEntryActive, setIsEntryActive] = useState(false);
@@ -126,7 +127,7 @@ const HistoryPane = forwardRef(({
 
   useEffect(() => {
     const handleResize = () => {
-      if (!wasClosedManually && window.innerWidth >= 760 && !isPaneOpen) {
+      if (!wasClosedManually && window.innerWidth >= 760 && !isPaneOpen && !isBookGalleryOpen) {
         togglePane(); // Automatically open the pane if enough space is available
       }
     };
@@ -134,7 +135,7 @@ const HistoryPane = forwardRef(({
     window.addEventListener('resize', handleResize);
 
     return () => window.removeEventListener('resize', handleResize);
-  }, [wasClosedManually, isPaneOpen, togglePane]);
+  }, [wasClosedManually, isPaneOpen, togglePane, isBookGalleryOpen]);
   
   const handleSessionSelect = (sessionId) => {
     onSelectSession(sessionId); // Update to use the session ID

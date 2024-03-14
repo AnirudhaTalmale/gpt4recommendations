@@ -913,20 +913,46 @@ app.post('/api/session/:sessionId/edit-message/:messageId', async (req, res) => 
   }
 });
 
-// GET endpoint to fetch books for gallery display
-app.get('/api/books', async (req, res) => {
-  try {
-    // Fetch all books or implement filtering logic as needed
-    const books = await BookData.find({}).lean(); // .lean() for faster reads without Mongoose overhead
+// Book Gallery Endpoints
 
+app.get('/api/books', async (req, res) => {
+  const query = {};
+  if (req.query.genre && req.query.genre !== 'All') {
+    query.genres = req.query.genre;
+  }
+  if (req.query.search) {
+    query.$or = [
+      { title: { $regex: req.query.search, $options: 'i' } },
+      { author: { $regex: req.query.search, $options: 'i' } }
+    ];
+  }
+
+  try {
+    const books = await BookData.find(query).lean();
     res.json(books);
   } catch (error) {
     console.error('GET /api/books - Server error:', error);
     res.status(500).json({ message: 'Server error occurred while fetching books', error: error.toString() });
   }
 });
+
+
+app.get('/api/genres', async (req, res) => {
+  try {
+    const genreCounts = await BookData.aggregate([
+      { $unwind: '$genres' },
+      { $group: { _id: '$genres', count: { $sum: 1 } } },
+      { $sort: { count: -1 } }
+    ]);
+
+    res.json(genreCounts.map(g => g._id));
+  } catch (error) {
+    console.error('GET /api/genres - Server error:', error);
+    res.status(500).json({ message: 'Server error occurred while fetching genres', error: error.toString() });
+  }
+});
  
-// development route: 
+// development routes: 
 
 if (process.env.NODE_ENV === 'local') {
   app.get('/api/redis-data', async (req, res) => {

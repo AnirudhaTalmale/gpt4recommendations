@@ -475,7 +475,7 @@ body:not(.history-pane-open) .input-area {
   left: 0;
   top: 0;
   bottom: 0;
-  z-index: 2; /* Ensure pane is below the toggle button */
+  z-index: 10000; /* Ensure pane is below the toggle button */
   display: flex;
   flex-direction: column;
 }
@@ -2691,11 +2691,13 @@ body:not(.history-pane-open-chat-with-us) .chat-area-chat-with-us {
 /* Book Gallery */
 
 
+
 .gallery-book-gallery {
+  /* border: 1px solid black; */
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 3vh 3vw; 
-  padding: 3rem 4.5rem;
+  gap: 3vh 0vw; 
+  padding: 9rem 0rem 2rem 3.5rem;
 }
 
 .item-book-gallery {
@@ -2734,6 +2736,7 @@ body:not(.history-pane-open-chat-with-us) .chat-area-chat-with-us {
   padding: 0.5rem 0; /* Add padding to the top and bottom */
   font-size: 0.86rem;
   margin-bottom: -0.5rem;
+  color: rgb(104, 103, 103);
 }
 
 .title-book-gallery, .author-book-gallery {
@@ -2747,6 +2750,7 @@ body:not(.history-pane-open-chat-with-us) .chat-area-chat-with-us {
   display: flex;
   justify-content: left; /* Align items to the center or start as per your design */
   padding: 0.5rem 0; /* Add padding to the top and bottom */
+  color: rgb(104, 103, 103);
 }
 
 /* Remove padding from the sides if you want the text to stretch to the edges */
@@ -2756,7 +2760,7 @@ body:not(.history-pane-open-chat-with-us) .chat-area-chat-with-us {
 }
 
 .review-count-book-gallery {
-  font-size: 0.85rem; /* Adjust size as needed */
+  font-size: 0.83rem; /* Adjust size as needed */
 }
 
 .ratings-and-review-book-gallery {
@@ -2765,13 +2769,115 @@ body:not(.history-pane-open-chat-with-us) .chat-area-chat-with-us {
   align-items: center;
 }
 
-.star-rating-book-gallery {
-  margin-right: 5px; /* Adjust spacing as needed */
-}
-
 .full-star-book-gallery, .half-star-book-gallery {
   color: orange;
   font-size: 0.9rem; /* Adjust size as needed */
+}
+
+.genre-tabs-container {
+  /* border: 1px solid green; */
+  padding: 0.8rem 0rem 0.8rem 3vw;
+  display: flex;
+  overflow-x: auto;
+  white-space: nowrap;
+  margin-bottom: 0.5rem;
+  scroll-padding: 1rem;
+  scrollbar-width: none; /* Hide scrollbar for Firefox */
+  -ms-overflow-style: none; /* Hide scrollbar for Internet Explorer and Edge */
+  position: fixed;
+  top: 5%; /* Adjust this value based on the actual height of the search bar, including any margin/padding */
+  width: 95vw; /* Ensure it spans the full width */
+  z-index: 1000; /* Make sure it's high enough to stay above other content but below the search bar if you want */
+  background-color: #fff; /* Add a background color to ensure the content does not show through */
+}
+
+/* Hide scrollbar for Chrome, Safari, and Opera */
+.genre-tabs-container::-webkit-scrollbar {
+  display: none;
+}
+
+.genre-tab {
+  flex: 0 0 auto;
+  height: 2.1rem;
+  margin-right: 1rem;
+  font-size: 0.88rem;
+  padding: 1rem 1rem;
+  border: none;
+  border-radius: 0.4rem;
+  background-color: #f0f0f0;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  align-items: center; /* Add this line */
+  display: flex; /* Add this line if not already present */
+  justify-content: center; /* Centers the content horizontally */
+}
+
+
+.genre-tab.active {
+  background-color: #d0d0d0;
+}
+
+.genre-tabs-container::-webkit-scrollbar {
+  height: 8px;
+}
+
+.genre-tabs-container::-webkit-scrollbar-track {
+  background: #f0f0f0;
+}
+
+.genre-tabs-container::-webkit-scrollbar-thumb {
+  background-color: #888;
+  border-radius: 10px;
+}
+
+.search-bar-container {
+  /* border: 1px solid green; */
+  padding: 0 !important;
+  position: fixed; /* Changed from sticky to fixed */
+  top: 0; /* Keep it at the top of the viewport */
+  width: 100%; /* Ensure it spans the full width */
+  z-index: 1001; /* Ensure it's above other content */
+  background-color: #fff; /* Match your background to prevent see-through */
+  padding-top: 1rem;
+}
+
+
+.search-bar {
+  margin: 0.5rem auto;
+  border: 1px solid #d5d5d5;
+  display: flex;
+  align-items: center;
+  height: 2.3rem;
+  border-radius: 10px;
+  width: 50vw;
+}
+
+.search-bar input {
+  border: none;
+  padding: 10px 15px;
+  margin-right: 5px;
+  border-radius: 10px;
+  width: 100%;
+  font-size: 0.93rem;
+}
+
+.search-bar button {
+  height: 2.3rem;
+  border: none;
+  border-left: 1px solid #d5d5d5;
+  border-radius: 0px 10px 10px 0px;
+  background-color: #f0f0f0;
+  padding: 10px;
+  cursor: pointer;
+}
+
+.search-bar button i {
+  font-size: 1.25rem;
+  
+}
+
+.search-bar input:focus {
+  outline: none;
 }
 
 
