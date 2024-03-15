@@ -258,8 +258,20 @@ function BookDetails() {
     );
   };
 
+  const renderStarRating = (rating) => {
+    let stars = [];
+    for (let i = 0; i < Math.floor(rating); i++) {
+      stars.push(<i key={`star-${i}`} className="fa fa-star full-star-book-gallery" style={{color: 'orange', fontSize: '0.9rem'}}></i>);
+    }
+    if (rating % 1 !== 0) {
+      stars.push(<i key="half-star" className="fa fa-star-half-stroke half-star-book-gallery" style={{color: 'orange', fontSize: '0.9rem'}}></i>);
+    }
+    return <div style={{display: 'flex', alignItems: 'center', marginRight: '10px'}}>{stars}</div>;
+  };
+  
+
   return (
-    <div className="book-details-container">
+    <>
       <Lightbox
         isOpen={isLightboxOpen}
         content={lightboxContent}
@@ -282,9 +294,32 @@ function BookDetails() {
         }}
         contentRef={bookPreviewRef}
       />
-      <div className="book-details-content-container">
+      <ConfirmationDialog
+        isOpen={isConfirmationDialogOpen}
+        onClose={() => setIsConfirmationDialogOpen(false)}
+        messageLimitReached={true}
+        messageContent={confirmationMessage}
+      />
+      <div className="book-details-container">
+      <div className="book-details-content-wrapper">
+        <div className="book-details-image-and-info">
         <div className="book-details-image-container" onClick={handleImageClick}>
             {book.bookImage && <img src={book.bookImage} alt="" />}
+        </div>
+        <div className="book-details-info">
+            <div className="title-book-details">{book.title}</div>
+            <div className="author-book-details">by {book.author}</div>
+            <div className="ratings-and-review-book-gallery">
+                {book.amazonStarRating !== 'Unknown' && (
+                    <div className="star-rating-book-gallery">
+                    {renderStarRating(book.amazonStarRating)}
+                    </div>
+                )}
+                {book.amazonReviewCount !== 'Unknown' && (
+                    <span className="review-count-book-gallery">{book.amazonReviewCount} </span>
+                )}
+            </div>
+        </div>
         </div>
         <div className="book-details-buttons-container">
             <button className="buy-now-button" onClick={handleBuyNowClick}>Buy Now</button>
@@ -294,13 +329,9 @@ function BookDetails() {
             <button type="button" className="preview-btn" disabled={previewButtonDisabled} onClick={handlePreviewClick}>Preview</button>
         </div>
       </div>
-      <ConfirmationDialog
-        isOpen={isConfirmationDialogOpen}
-        onClose={() => setIsConfirmationDialogOpen(false)}
-        messageLimitReached={true}
-        messageContent={confirmationMessage}
-      />
+      
     </div>
+    </>
   );
 }
 

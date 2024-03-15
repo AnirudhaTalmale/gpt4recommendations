@@ -2745,18 +2745,18 @@ body:not(.history-pane-open-chat-with-us) .chat-area-chat-with-us {
   text-overflow: ellipsis; /* Add ellipsis to overflow text */
 }
 
+/* Remove padding from the sides if you want the text to stretch to the edges */
+.title-book-gallery, .author-book-gallery {
+  padding-left: 0;
+  padding-right: 0;
+}
+
 .ratings-and-review-book-gallery {
   width: 100%; /* Matches the width of the image */
   display: flex;
   justify-content: left; /* Align items to the center or start as per your design */
   padding: 0.5rem 0; /* Add padding to the top and bottom */
   color: rgb(104, 103, 103);
-}
-
-/* Remove padding from the sides if you want the text to stretch to the edges */
-.title-book-gallery, .author-book-gallery {
-  padding-left: 0;
-  padding-right: 0;
 }
 
 .review-count-book-gallery {
@@ -2895,38 +2895,100 @@ body:not(.history-pane-open-chat-with-us) .chat-area-chat-with-us {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh; /* Adjust as necessary to fit your layout */
-  /* Adding these lines to ensure the child (.content-container) takes up needed space */
+  height: 100vh;
   width: 100%;
-  padding: 10px; /* Adjust padding as necessary */
+  padding: 10px;
 }
 
-.book-details-content-container {
+.book-details-content-wrapper {
   display: flex;
-  justify-content: space-between; /* This will create space between the image and buttons if needed */
-  align-items: center;
-  /* The width here should be auto to accommodate the combined width of the image and buttons */
+  justify-content: space-between;
+  align-items: flex-start; /* Adjust to align items at the start */
   width: auto;
-  box-sizing: border-box; /* Ensures padding is included in the width */
+}
+
+.book-details-image-and-info {
+  display: flex;
+  flex-direction: column; /* This stacks the image and info */
+  align-items: center; /* Center-align the content for a neat look */
+  width: 30vh; /* Match the width to the book image width */
 }
 
 .book-details-image-container img {
   width: 30vh;
   height: 45vh;
   cursor: pointer;
-  /* Ensure your image maintains aspect ratio or adjust as needed */
+}
+
+.book-details-info {
+  /* Style for the book details info */
+  text-align: center; /* Center-align the text */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 100%; /* Ensure the info section does not exceed the image width */
 }
 
 .book-details-buttons-container {
   display: flex;
   flex-direction: column;
-  margin-left: 2.5rem; /* Adjust space between image and buttons */
-  width: fit-content;
+  margin-left: 2.5rem;
+  align-self: center; /* Add this line to vertically center the buttons container */
 }
 
 .book-details-buttons-container button:not(:last-child) {
-  margin-bottom: 1rem; /* This adds space between the buttons */
+  margin-bottom: 1rem;
 }
 
+.book-details-rating {
+  width: 100%; /* Matches the width of the image */
+  display: flex;
+  justify-content: left; /* Align items to the center or start as per your design */
+  padding: 0.5rem 0; /* Add padding to the top and bottom */
+  color: rgb(104, 103, 103);
+}
 
+.review-count-book-details {
+  font-size: 0.83rem; /* Adjust size as needed */
+}
+
+.book-details-rating {
+  padding-left: 0px;
+  display: flex;
+  align-items: center;
+}
+
+.full-star-book-gallery, .half-star-book-gallery {
+  color: orange;
+  font-size: 0.9rem; /* Adjust size as needed */
+}
+
+.title-book-details {
+  width: 100%; /* Matches the width of the image */
+  text-align: left; /* Align text to the center or left as per your design */
+  padding: 0.5rem 0; /* Add padding to the top and bottom */
+  font-weight: bold;
+  margin-bottom: -0.8rem;
+}
+
+.author-book-details {
+  width: 100%; /* Matches the width of the image */
+  text-align: left; /* Align text to the center or left as per your design */
+  padding: 0.5rem 0; /* Add padding to the top and bottom */
+  font-size: 0.86rem;
+  margin-bottom: -0.5rem;
+  color: rgb(104, 103, 103);
+}
+
+.title-book-details, .author-book-details {
+  white-space: normal; /* Prevent text from wrapping to a new line */
+  overflow: hidden; /* Hide overflow text */
+  text-overflow: ellipsis; /* Add ellipsis to overflow text */
+}
+
+/* Remove padding from the sides if you want the text to stretch to the edges */
+.title-book-details, .author-book-details {
+  padding-left: 0;
+  padding-right: 0;
+}
 
