@@ -35,6 +35,11 @@ function checkFormatAnecdotes(content) {
   return pattern.test(content);
 }
 
+function checkFormatQuotes(content) {
+  const pattern = /<div class="book-info">\s*<h3 class="book-title">[^<]+<\/h3>\s*<span class="book-author">[^<]+<\/span>\s*<\/div>\s*<div>\s*<img src="[^"]+" alt="[^"]*">\s*<\/div>\s*<div>\s*<a href="[^"]+" target="_blank">\s*<button class="buy-now-button">[^<]+<\/button>\s*<\/a>\s*<\/div>\s*<h3>Key Quotes<\/h3>\s*<ol>(\s*<li>[^<]+<\/li>)+\s*<\/ol>/;
+  return pattern.test(content);
+}
+
 
 function createPreviewButtonHtml(isbn, isEmbeddable) {
   const disabledStyles = `style="cursor: not-allowed; opacity: 0.5; pointer-events: none;"`;
@@ -291,7 +296,7 @@ const getBookData = async (title, author, isbn = '') => {
 
 let isStreamingActive = false;
 
-const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, isKeyInsights, isAnecdotes, isbn, bookTitle, author, moreBooks) => {
+const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, isKeyInsights, isAnecdotes, isQuotes, isbn, bookTitle, author, moreBooks) => {
 
   isStreamingActive = true;
 
@@ -305,7 +310,7 @@ const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, is
     });    
 
     let messageIndex;
-    if (!isMoreDetails && !isKeyInsights && !isAnecdotes) {
+    if (!isMoreDetails && !isKeyInsights && !isAnecdotes && !isQuotes) {
       if (moreBooks) {
         // Update the last message in the session instead of creating a new one
         messageIndex = session.messages.length - 1;
@@ -324,7 +329,7 @@ const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, is
     let pausedEmit = ""; // Variable to hold paused chunks
     let isPaused = false; // Flag to check if emitting is paused
 
-    if (isKeyInsights || isAnecdotes || isMoreDetails) {
+    if (isKeyInsights || isAnecdotes || isQuotes || isMoreDetails) {
       const { bookImage, amazonLink, amazonStarRating, amazonReviewCount } = await getBookData(bookTitle, author, isbn);
       const bookInfoHtml = createBookInfoHtml(bookTitle, author, amazonStarRating, amazonReviewCount);
       let imageDiv = '';
@@ -333,7 +338,7 @@ const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, is
       }
       const buyNowButtonHtml = `<div><a href="${amazonLink}" target="_blank"><button class="buy-now-button">Buy Now</button></a></div>`;
       completeResponse = bookInfoHtml + imageDiv + buyNowButtonHtml;
-      socket.emit('chunk', { content: completeResponse, sessionId, isMoreDetails, isKeyInsights, isAnecdotes, moreBooks });
+      socket.emit('chunk', { content: completeResponse, sessionId, isMoreDetails, isKeyInsights, isAnecdotes, isQuotes, moreBooks });
     }
 
     for await (const chunk of stream) {
@@ -365,9 +370,10 @@ const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, is
             const moreDetailsButtonHtml = `<div><button type="button" class="more-details-btn" data-isbn="${isbn}" data-book-title="${bookTitle}" data-author="${author}">Book Info</button></div>`;
             const keyInsightsButtonHtml = `<div><button type="button" class="key-insights-btn" data-isbn="${isbn}" data-book-title="${bookTitle}" data-author="${author}">Insights</button></div>`;
             const anecdotesButtonHtml = `<div><button type="button" class="anecdotes-btn" data-isbn="${isbn}" data-book-title="${bookTitle}" data-author="${author}">Anecdotes</button></div>`;
+            const quotesButtonHtml = `<div><button type="button" class="quotes-btn" data-isbn="${isbn}" data-book-title="${bookTitle}" data-author="${author}">Quotes</button></div>`;
             const previewButtonHtml = createPreviewButtonHtml(isbn, embeddable);
 
-            const buttonsHtml = buyNowButtonHtml + moreDetailsButtonHtml + keyInsightsButtonHtml + anecdotesButtonHtml + previewButtonHtml;
+            const buttonsHtml = buyNowButtonHtml + moreDetailsButtonHtml + keyInsightsButtonHtml + anecdotesButtonHtml + quotesButtonHtml + previewButtonHtml;
             const buttonsDiv = `<div class="buttons-container">${buttonsHtml}</div>`;
 
             const contentDiv = `<div class="content-container">${imageDiv}${buttonsDiv}</div>`;
@@ -387,7 +393,7 @@ const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, is
             await session.save();
           }
           
-          socket.emit('chunk', { content: pausedEmit, sessionId, isMoreDetails, isKeyInsights, isAnecdotes, moreBooks });
+          socket.emit('chunk', { content: pausedEmit, sessionId, isMoreDetails, isKeyInsights, isAnecdotes, isQuotes, moreBooks });
           pausedEmit = "";
         } else {
           // If pausing, start adding to pausedEmit including current chunk
@@ -401,13 +407,13 @@ const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, is
         // Normal emit when not paused
         completeResponse += chunkContent;
         
-        if (moreBooks || (!isMoreDetails && !isKeyInsights && !isAnecdotes) ) {
+        if (moreBooks || (!isMoreDetails && !isKeyInsights && !isAnecdotes && !isQuotes) ) {
 
           // Update the current message with the new chunk.
           session.messages[messageIndex].content += chunkContent;
           await session.save();
         }
-        socket.emit('chunk', { content: chunkContent, sessionId, isMoreDetails, isKeyInsights, isAnecdotes, moreBooks });
+        socket.emit('chunk', { content: chunkContent, sessionId, isMoreDetails, isKeyInsights, isAnecdotes, isQuotes, moreBooks });
       }
       const finishReason = chunk.choices[0]?.finish_reason;
       if (finishReason === 'stop') {
@@ -440,6 +446,16 @@ const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, is
             anecdotes: completeResponse // Save complete response here
           });
           if (checkFormatAnecdotes) {
+            await newDetail.save();
+          }
+        } else if (isQuotes) {
+          const Quotes = require('./models/models-chat/Quotes');
+          const newDetail = new Quotes({
+            isbn,
+            bookTitle,
+            quotes: completeResponse // Save complete response here
+          });
+          if (checkFormatQuotes) {
             await newDetail.save();
           }
         }

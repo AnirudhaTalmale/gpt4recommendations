@@ -7,7 +7,7 @@ import HistoryPane from './HistoryPane';
 import Lightbox from './Lightbox';
 import LightboxForImage from './LightboxForImage';
 import LightboxForBookPreview from './LightboxForBookPreview';
-import { handleAnecdotesRequest, handleKeyInsightsRequest, handleMoreDetailsRequest } from './CommonFunctions';
+import { handleAnecdotesRequest, handleKeyInsightsRequest, handleMoreDetailsRequest, handleQuotesRequest } from './CommonFunctions';
 import '../App.css';
 import socket from './socket';
 import Header from './Header';
@@ -40,6 +40,7 @@ function Chat() {
   const [isMoreDetailsState, setIsMoreDetailsState] = useState(false);
   const [isKeyInsightsState, setIsKeyInsightsState] = useState(false);
   const [isAnecdotesState, setIsAnecdotesState] = useState(false);
+  const [isQuotesState, setIsQuotesState] = useState(false);
   const [bookTitleState, setBookTitleState] = useState(null);
   const [isbnState, setIsbnState] = useState(null);
   const [authorState, setAuthorState] = useState(null);
@@ -373,12 +374,12 @@ function Chat() {
   useEffect(() => {
     let streamTimeout;
   
-    const handleStreamChunk = ({ content, sessionId, isMoreDetails, isKeyInsights, isAnecdotes, moreBooks }) => {
+    const handleStreamChunk = ({ content, sessionId, isMoreDetails, isKeyInsights, isAnecdotes, isQuotes, moreBooks }) => {
       // Get the current session's ID
       const currentSessionId = currentSessionIdRef.current;
 
       if (currentSessionId === sessionId) {
-        if (isMoreDetails || isKeyInsights || isAnecdotes) {
+        if (isMoreDetails || isKeyInsights || isAnecdotes || isQuotes) {
           setLightboxContent(prevContent => prevContent + content);
           setIsStreaming(true);
           setIsLightboxOpen(true);
@@ -439,6 +440,7 @@ function Chat() {
         isMoreDetails: isMoreDetailsState,
         isKeyInsights: isKeyInsightsState,
         isAnecdotes: isAnecdotesState,
+        isQuotes: isQuotesState,
         isbn: isbnState,
         bookTitle: bookTitleState,
         author: authorState,
@@ -450,9 +452,9 @@ function Chat() {
       setLastUserMessage(null);
     }
     
-  }, [lastUserMessage, sessions, isMoreDetailsState, isKeyInsightsState, isAnecdotesState, bookTitleState, isbnState, authorState, moreBooks, isEdit]);
+  }, [lastUserMessage, sessions, isMoreDetailsState, isKeyInsightsState, isAnecdotesState, isQuotesState, bookTitleState, isbnState, authorState, moreBooks, isEdit]);
   
-  const handleQuerySubmit = async (query, isMoreDetails = false, isbn = null, bookTitle = null, author = null, moreBooks = false, isKeyInsights = false, isAnecdotes = false, isEdit = false) => {
+  const handleQuerySubmit = async (query, isMoreDetails = false, isbn = null, bookTitle = null, author = null, moreBooks = false, isKeyInsights = false, isAnecdotes = false, isQuotes = false, isEdit = false) => {
     setIsLoading(true);
   
     // Get the current session's ID
@@ -469,13 +471,14 @@ function Chat() {
     setIsMoreDetailsState(isMoreDetails);
     setIsKeyInsightsState(isKeyInsights);
     setIsAnecdotesState(isAnecdotes);
+    setIsQuotesState(isQuotes);
     setIsbnState(isbn);
     setBookTitleState(bookTitle);
     setAuthorState(author);
     setMoreBooks(moreBooks);
     setIsEdit(isEdit);
 
-    if (!isMoreDetails && !moreBooks && !isKeyInsights && !isAnecdotes && !isEdit) {
+    if (!isMoreDetails && !moreBooks && !isKeyInsights && !isAnecdotes && !isQuotes && !isEdit) {
       updateSessionMessages(query, 'simple', true);
     }
     else {
@@ -489,6 +492,7 @@ function Chat() {
         isMoreDetails,
         isKeyInsights,
         isAnecdotes,
+        isQuotes,
         isbn,
         bookTitle,
         author,
@@ -670,100 +674,19 @@ function Chat() {
     };
   }, [isPaneOpen, togglePane]);
 
-  // const fetchAnecdotes = async (isbn, bookTitle) => {
-  //   try {
-  //     const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/anecdotes`, {
-  //       params: { isbn, bookTitle }
-  //     });
-  //     return response; 
-  //   } catch (error) {
-  //     throw error; 
-  //   }
-  // };  
-  
-
-  // const handleAnecdotesRequest = async (isbn, bookTitle, author) => {
-  //   try {
-  //     const response = await fetchAnecdotes(isbn, bookTitle);
-
-  //     if (!response || !response.data || !response.data.anecdotes) {
-  //       const userQuery = `${bookTitle}`;
-  //       handleQuerySubmit(userQuery, false, isbn, bookTitle, author, false, false, true);
-  //     } else {
-  //       const anecdotes = response.data.anecdotes;
-  //       setLightboxContent(''); // Reset the content
-  //       setLightboxContent(anecdotes);
-  //       setIsLightboxOpen(true);
-  //     }
-  //   } catch (error) {
-  //     const userQuery = `${bookTitle}`;
-  //     handleQuerySubmit(userQuery, false, isbn, bookTitle, author, false, false, true);
-  //   }
-  // };
-
-  // const fetchKeyInsights = async (isbn, bookTitle) => {
-  //   try {
-  //     const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/key-insights`, {
-  //       params: { isbn, bookTitle }
-  //     });
-  //     return response; 
-  //   } catch (error) {
-  //     throw error;
-  //   }
-  // };  
-  
-
-  // const handleKeyInsightsRequest = async (isbn, bookTitle, author) => {
-  //   try {
-  //     const response = await fetchKeyInsights(isbn, bookTitle);
-
-  //     if (!response || !response.data || !response.data.keyInsights) {
-  //       const userQuery = `${bookTitle}`;
-  //       handleQuerySubmit(userQuery, false, isbn, bookTitle, author, false, true);
-  //     } else {
-  //       const keyInsights = response.data.keyInsights;
-  //       setLightboxContent(''); // Reset the content
-  //       setLightboxContent(keyInsights);
-  //       setIsLightboxOpen(true);
-  //     }
-  //   } catch (error) {
-  //     const userQuery = `${bookTitle}`;
-  //     handleQuerySubmit(userQuery, false, isbn, bookTitle, author, false, true);
-  //   }
-  // };
-
-  // const fetchMoreDetails = async (isbn, bookTitle) => {
-  //   try {
-  //     const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/more-details`, {
-  //       params: { isbn, bookTitle }
-  //     });
-  //     return response; // Return the response for further handling
-  //   } catch (error) {
-  //     throw error; // Throw the error to be caught in the calling function
-  //   }
-  // };  
-
-  // const handleMoreDetailsRequest = async (isbn, bookTitle, author) => {
-  //   try {
-  //     const response = await fetchMoreDetails(isbn, bookTitle);
-
-  //     if (!response || !response.data || !response.data.detailedDescription) {
-  //       const userQuery = `Explain the book - ${bookTitle} by ${author} - `;
-  //       handleQuerySubmit(userQuery, true, isbn, bookTitle, author);
-  //     } else {
-  //       const detailedDescription = response.data.detailedDescription;
-  //       setLightboxContent(''); // Reset the content
-  //       setLightboxContent(detailedDescription);
-  //       setIsLightboxOpen(true);
-  //     }
-  //   } catch (error) {
-  //     const userQuery = `Explain the book - ${bookTitle} - `;
-  //     handleQuerySubmit(userQuery, true, isbn, bookTitle, author);
-  //   }
-  // };
-
   const wrappedHandleAnecdotesRequest = (isbn, bookTitle, author) => {
     handleAnecdotesRequest(
+      isbn,
+      bookTitle,
+      author,
+      handleQuerySubmit,
+      setIsLightboxOpen,
+      setLightboxContent
+    );
+  };
+
+  const wrappedHandleQuotesRequest = (isbn, bookTitle, author) => {
+    handleQuotesRequest(
       isbn,
       bookTitle,
       author,
@@ -891,7 +814,7 @@ function Chat() {
           }
           return session;
         }));
-        handleQuerySubmit(newContent, false, null, null, null, false, false, false, true);
+        handleQuerySubmit(newContent, false, null, null, null, false, false, false, false, true);
       }
     } catch (error) {
       console.error('Error editing message:', error);
@@ -966,6 +889,7 @@ function Chat() {
             onMoreDetailsClick={wrappedHandleMoreDetailsRequest}
             onKeyInsightsClick={wrappedHandleKeyInsightsRequest}
             onAnecdotesClick={wrappedHandleAnecdotesRequest}
+            onQuotesClick={wrappedHandleQuotesRequest}
             showContinueButton={showContinueButton && isLastMessageFromAssistant}
             onContinueGenerating={onContinueGenerating}
             onImageClick={handleImageClick}

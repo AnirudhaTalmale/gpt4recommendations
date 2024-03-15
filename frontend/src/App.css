@@ -1648,6 +1648,37 @@ button.cancel-button:hover {
   box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1); /* Focus ring with a subtle black shade */
 }
 
+
+.quotes-btn {
+  background: none;
+  border: 1px solid rgba(169, 169, 169, 0.566);
+  font-size: 0.95rem;
+  padding: 0.25rem 0.6rem;
+  border-radius: 0.35rem;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+  width: 7rem;
+  margin-left: -0.1rem;
+  color: rgb(46, 46, 46);
+}
+
+
+.quotes-btn:hover {
+  background-color: rgba(0, 0, 0, 0.1); /* Subtle shade change on hover */
+}
+
+.quotes-btn:active {
+  background-color: rgba(0, 0, 0, 0.2); /* Slightly darker on active state */
+}
+
+.quotes-btn:focus {
+  outline: none; /* Remove outline on focus */
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1); /* Focus ring with a subtle black shade */
+}
+
 .preview-btn {
   background: none;
   border: 1px solid rgba(169, 169, 169, 0.566);
@@ -1768,6 +1799,12 @@ button.cancel-button:hover {
 }
 
 .streaming .anecdotes-btn {
+  cursor: not-allowed;
+  opacity: 0.5;
+  pointer-events: none; /* Prevents clicking */
+}
+
+.streaming .quotes-btn {
   cursor: not-allowed;
   opacity: 0.5;
   pointer-events: none; /* Prevents clicking */
@@ -2932,7 +2969,7 @@ body:not(.history-pane-open-chat-with-us) .chat-area-chat-with-us {
 .book-details-buttons-container {
   display: flex;
   flex-direction: column;
-  margin-left: 2.5rem;
+  margin-left: 4.2rem;
   align-self: center; /* Add this line to vertically center the buttons container */
 }
 

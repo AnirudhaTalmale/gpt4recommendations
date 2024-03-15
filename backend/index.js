@@ -6,6 +6,7 @@ const MoreDetails = require('./models/models-chat/MoreDetails');
 const User = require('./models/models-chat/User');
 const KeyInsightsModel = require('./models/models-chat/KeyInsights'); 
 const AnecdotesModel = require('./models/models-chat/Anecdotes'); 
+const QuotesModel = require('./models/models-chat/Quotes'); 
 const BookData = require('./models/models-chat/BookData'); 
 const ChatWithUsSession = require('./models/models-chat-with-us/ChatWithUsSession');
 const UserSession = require('./models/models-chat-with-us/UserSession');
@@ -17,6 +18,7 @@ const moreBooksRecommendationPrompt = require('./prompts/promptMoreBooks');
 const moreDetailsPrompt = require('./prompts/promptMoreDetails');
 const keyInsightsPrompt = require('./prompts/promptKeyInsights');
 const anecdotesPrompt = require('./prompts/promptAnecdotes');
+const quotesPrompt = require('./prompts/promptQuotes');
 const passportSetup = require('./passport-setup'); // Import the setup function
 const axios = require('axios');
 const multer = require('multer');
@@ -310,7 +312,7 @@ io.on('connection', (socket) => {
   let currentSessionId;
   
   socket.on('query', async (data) => {
-    const { sessionId, message, isMoreDetails, isKeyInsights, isAnecdotes, isbn, bookTitle, author, moreBooks, isEdit } = data;
+    const { sessionId, message, isMoreDetails, isKeyInsights, isAnecdotes, isQuotes, isbn, bookTitle, author, moreBooks, isEdit } = data;
     currentSessionId = sessionId; 
   
     // Find the session and update it with the new message and response
@@ -319,7 +321,7 @@ io.on('connection', (socket) => {
       return res.status(404).json({ message: 'Session not found' });
     }
 
-    if (!isMoreDetails && !moreBooks && !isKeyInsights && !isAnecdotes && !isEdit) {
+    if (!isMoreDetails && !moreBooks && !isKeyInsights && !isAnecdotes && !isQuotes && !isEdit) {
       // Add the user message to the session
       const newMessage = {
         role: 'user',
@@ -368,9 +370,9 @@ io.on('connection', (socket) => {
         </div>`;
     
       // Emit a warning message to the client and set the limitMessage as the session name
-      socket.emit('messageLimitReached', { content: limitMessage, sessionId: currentSessionId, isMoreDetails, isKeyInsights, isAnecdotes });
+      socket.emit('messageLimitReached', { content: limitMessage, sessionId: currentSessionId, isMoreDetails, isKeyInsights, isAnecdotes, isQuotes });
     
-      if(!isMoreDetails && message.isFirstQuery && !isKeyInsights && !isAnecdotes) {
+      if(!isMoreDetails && message.isFirstQuery && !isKeyInsights && !isAnecdotes && !isQuotes) {
         // Update the session name with the limitMessage and save the session
         const newSessionName = 'Message limit reached';
         session.sessionName = newSessionName;
@@ -387,6 +389,8 @@ io.on('connection', (socket) => {
       completePrompt = keyInsightsPrompt(message.content);
     } else if (isAnecdotes) {
       completePrompt = anecdotesPrompt(message.content);
+    } else if (isQuotes) {
+      completePrompt = quotesPrompt(message.content);
     } else if (moreBooks) {
       completePrompt = moreBooksRecommendationPrompt(message.content);
     } else {
@@ -410,7 +414,7 @@ io.on('connection', (socket) => {
     }    
     else {
 
-      if (message.isFirstQuery && !isMoreDetails && !isKeyInsights && !isAnecdotes && !moreBooks) {
+      if (message.isFirstQuery && !isMoreDetails && !isKeyInsights && !isAnecdotes && !isQuotes && !moreBooks) {
         // Get the 4-word summary
         const summary = await openaiApi.getSummary(message.content);
         session.sessionName = summary; // Update the session name with the summary
@@ -422,7 +426,7 @@ io.on('connection', (socket) => {
 
       try {
         console.log("messagesForGPT4", messagesForGPT4);
-        await openaiApi(messagesForGPT4, socket, session, currentSessionId, isMoreDetails, isKeyInsights, isAnecdotes, isbn, bookTitle, author, moreBooks);
+        await openaiApi(messagesForGPT4, socket, session, currentSessionId, isMoreDetails, isKeyInsights, isAnecdotes, isQuotes, isbn, bookTitle, author, moreBooks);
         await session.user.save();
       } catch (error) {
         console.error('Error processing query:', error);
@@ -432,7 +436,7 @@ io.on('connection', (socket) => {
   });   
 
   socket.on('specific-book-query', async (data) => {
-    const { userId, message, isMoreDetails, isKeyInsights, isAnecdotes, isbn, bookTitle, author, moreBooks } = data;
+    const { userId, message, isMoreDetails, isKeyInsights, isAnecdotes, isQuotes, isbn, bookTitle, author, moreBooks } = data;
 
     // Check message limit
     const now = new Date();
@@ -474,6 +478,8 @@ io.on('connection', (socket) => {
       completePrompt = keyInsightsPrompt(message.content);
     } else if (isAnecdotes) {
       completePrompt = anecdotesPrompt(message.content);
+    } else if (isQuotes) {
+      completePrompt = quotesPrompt(message.content);
     } else if (moreBooks) {
       completePrompt = moreBooksRecommendationPrompt(message.content);
     } else {
@@ -484,7 +490,7 @@ io.on('connection', (socket) => {
 
     try {
       console.log("messagesForGPT4", messagesForGPT4);
-      await openaiApi(messagesForGPT4, socket, session, userId, isMoreDetails, isKeyInsights, isAnecdotes, isbn, bookTitle, author, moreBooks);
+      await openaiApi(messagesForGPT4, socket, session, userId, isMoreDetails, isKeyInsights, isAnecdotes, isQuotes, isbn, bookTitle, author, moreBooks);
       await user.save();
     } catch (error) {
       console.log('Error processing query:', error);
@@ -838,6 +844,42 @@ app.get('/api/key-insights', async (req, res) => {
   }
 });
 
+
+app.get('/api/quotes', async (req, res) => {
+  try {
+    const { isbn, bookTitle } = req.query;
+    let cacheKey = `quotes:${isbn || bookTitle}`;
+
+    // Try fetching the result from Redis first
+    let cachedData = await redisClient.get(cacheKey);
+    if (cachedData) {
+      return res.json(JSON.parse(cachedData));
+    }
+
+    // If not in cache, continue with MongoDB query
+    let query = {};
+    if (isbn) {
+      query.isbn = new RegExp(isbn, 'i');
+    } else if (bookTitle) {
+      query.bookTitle = new RegExp(bookTitle, 'i');
+    } else {
+      return res.status(400).json({ message: 'ISBN or book title must be provided' });
+    }
+
+    const QuotesResult = await QuotesModel.findOne(query);
+    if (!QuotesResult) {
+      return res.status(404).json({ message: 'Key Insights not found for this book' });
+    }
+
+    // Save the result in Redis without an expiration time
+    await redisClient.set(cacheKey, JSON.stringify(QuotesResult));
+
+    res.json(QuotesResult);
+  } catch (error) {
+    console.error('Server error:', error);
+    res.status(500).json({ message: 'Server error occurred while fetching book details' });
+  }
+});
 
 app.get('/api/anecdotes', async (req, res) => {
   try {

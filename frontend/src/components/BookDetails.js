@@ -4,7 +4,7 @@ import LightboxForBookPreview from './LightboxForBookPreview';
 import { useParams } from 'react-router-dom';
 import socket from './socket';
 import Lightbox from './Lightbox';
-import { handleAnecdotesRequest, handleKeyInsightsRequest, handleMoreDetailsRequest } from './CommonFunctions';
+import { handleAnecdotesRequest, handleKeyInsightsRequest, handleMoreDetailsRequest, handleQuotesRequest } from './CommonFunctions';
 import axios from 'axios';
 import ConfirmationDialog from './ConfirmationDialog'; // Import ConfirmationDialog component
 
@@ -170,7 +170,7 @@ function BookDetails() {
   }, []);
   
 
-  const handleQuerySubmit = async (query, isMoreDetails = false, isbn = null, bookTitle = null, author = null, moreBooks = false, isKeyInsights = false, isAnecdotes = false, isEdit = false) => {
+  const handleQuerySubmit = async (query, isMoreDetails = false, isbn = null, bookTitle = null, author = null, moreBooks = false, isKeyInsights = false, isAnecdotes = false, isQuotes = false, isEdit = false) => {
     
     const isFirstQuery = false;
       socket.emit('specific-book-query', {
@@ -183,6 +183,7 @@ function BookDetails() {
         isMoreDetails,
         isKeyInsights,
         isAnecdotes,
+        isQuotes,
         isbn,
         bookTitle,
         author,
@@ -227,6 +228,17 @@ function BookDetails() {
 
   const wrappedHandleAnecdotesRequest = () => {
     handleAnecdotesRequest(
+        book.isbn,
+      book.title,
+      book.author,
+      handleQuerySubmit,
+      setIsLightboxOpen,
+      setLightboxContent
+    );
+  };
+
+  const wrappedHandleQuotesRequest = () => {
+    handleQuotesRequest(
         book.isbn,
       book.title,
       book.author,
@@ -326,6 +338,7 @@ function BookDetails() {
             <button type="button" className="more-details-btn" onClick={wrappedHandleMoreDetailsRequest}>Book Info</button>
             <button type="button" className="key-insights-btn" onClick={wrappedHandleKeyInsightsRequest}>Insights</button>
             <button type="button" className="anecdotes-btn" onClick={wrappedHandleAnecdotesRequest}>Anecdotes</button>
+            <button type="button" className="quotes-btn" onClick={wrappedHandleQuotesRequest}>Quotes</button>
             <button type="button" className="preview-btn" disabled={previewButtonDisabled} onClick={handlePreviewClick}>Preview</button>
         </div>
       </div>

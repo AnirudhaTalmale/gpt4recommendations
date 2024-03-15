@@ -28,6 +28,34 @@ export const handleAnecdotesRequest = async (isbn, bookTitle, author, handleQuer
   }
 };
 
+export const fetchQuotes = async (isbn, bookTitle) => {
+    try {
+      const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/quotes`, {
+        params: { isbn, bookTitle }
+      });
+      return response.data.quotes; 
+    } catch (error) {
+      throw error; 
+    }
+  };  
+  
+  export const handleQuotesRequest = async (isbn, bookTitle, author, handleQuerySubmit, setIsLightboxOpen, setLightboxContent) => {
+    try {
+      const quotes = await fetchQuotes(isbn, bookTitle);
+      if (!quotes) {
+        const userQuery = `${bookTitle}`;
+        handleQuerySubmit(userQuery, false, isbn, bookTitle, author, false, false, false, true);
+      } else {
+        setLightboxContent(''); // Reset the content
+        setLightboxContent(quotes);
+        setIsLightboxOpen(true);
+      }
+    } catch (error) {
+      const userQuery = `${bookTitle}`;
+      handleQuerySubmit(userQuery, false, isbn, bookTitle, author, false, false, false, true);
+    }
+  };
+
 export const fetchKeyInsights = async (isbn, bookTitle) => {
   try {
     const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/key-insights`, {

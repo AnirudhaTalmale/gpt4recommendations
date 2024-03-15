@@ -4,12 +4,13 @@ import '../App.css';
 
 function AnswerDisplay({ 
   onPreviewClick, role, content, userImage, isStreaming, 
-  onMoreDetailsClick, onKeyInsightsClick, onAnecdotesClick, showContinueButton, onContinueGenerating, onImageClick, onEditMessage, sessionId, messageId 
+  onMoreDetailsClick, onKeyInsightsClick, onAnecdotesClick, onQuotesClick, showContinueButton, onContinueGenerating, onImageClick, onEditMessage, sessionId, messageId 
 }) { 
   
   const [isKeyInsightsClicked, setIsKeyInsightsClicked] = useState(false);
   const [isMoreDetailsClicked, setIsMoreDetailsClicked] = useState(false);
   const [isAnecdotesClicked, setIsAnecdotesClicked] = useState(false);
+  const [isQuotesClicked, setIsQuotesClicked] = useState(false);
   const [isContinueGeneratingClicked, setIsContinueGeneratingClicked] = useState(false);
 
   const createMarkup = () => {
@@ -59,6 +60,17 @@ function AnswerDisplay({
   
       setTimeout(() => {
         setIsAnecdotesClicked(false);
+      }, 3500); // Adjust the delay as needed
+    }
+  };
+
+  const handleQuotesClick = (isbn, bookTitle, author) => {
+    if (!isQuotesClicked && onQuotesClick) {
+      setIsQuotesClicked(true);
+      onQuotesClick(isbn, bookTitle, author);
+  
+      setTimeout(() => {
+        setIsQuotesClicked(false);
       }, 3500); // Adjust the delay as needed
     }
   };
@@ -199,6 +211,11 @@ function AnswerDisplay({
             const isbn = e.target.getAttribute('data-isbn');
             const author = e.target.getAttribute('data-author');
             handleAnecdotesClick(isbn, bookTitle, author);
+          } else if (e.target.classList.contains('quotes-btn')) {
+            const bookTitle = e.target.getAttribute('data-book-title');
+            const isbn = e.target.getAttribute('data-isbn');
+            const author = e.target.getAttribute('data-author');
+            handleQuotesClick(isbn, bookTitle, author);
           } else if (e.target.classList.contains('preview-btn')) {
             const isbn = e.target.getAttribute('data-isbn');
             onPreviewClick(isbn);
