@@ -7,9 +7,11 @@ import HistoryPane from './HistoryPane';
 import Lightbox from './Lightbox';
 import LightboxForImage from './LightboxForImage';
 import LightboxForBookPreview from './LightboxForBookPreview';
+import { handleAnecdotesRequest, handleKeyInsightsRequest, handleMoreDetailsRequest } from './CommonFunctions';
 import '../App.css';
 import socket from './socket';
 import Header from './Header';
+
 
 function Chat() {
 
@@ -22,7 +24,7 @@ function Chat() {
     if (savedSessionId === "null") {
       console.log("Converting 'null' string to null");
       return null;
-    }
+    } 
   
     // Return the savedSessionId if it's not null, otherwise return null
     return savedSessionId !== null ? savedSessionId : null;
@@ -668,97 +670,129 @@ function Chat() {
     };
   }, [isPaneOpen, togglePane]);
 
-  const fetchAnecdotes = async (isbn, bookTitle) => {
-    try {
-      const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/anecdotes`, {
-        params: { isbn, bookTitle }
-      });
-      return response; 
-    } catch (error) {
-      throw error; 
-    }
-  };  
+  // const fetchAnecdotes = async (isbn, bookTitle) => {
+  //   try {
+  //     const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/anecdotes`, {
+  //       params: { isbn, bookTitle }
+  //     });
+  //     return response; 
+  //   } catch (error) {
+  //     throw error; 
+  //   }
+  // };  
   
 
-  const handleAnecdotesRequest = async (isbn, bookTitle, author) => {
-    try {
-      const response = await fetchAnecdotes(isbn, bookTitle);
+  // const handleAnecdotesRequest = async (isbn, bookTitle, author) => {
+  //   try {
+  //     const response = await fetchAnecdotes(isbn, bookTitle);
 
-      if (!response || !response.data || !response.data.anecdotes) {
-        const userQuery = `${bookTitle}`;
-        console.log("userQuery is:", userQuery);
-        handleQuerySubmit(userQuery, false, isbn, bookTitle, author, false, false, true);
-      } else {
-        const anecdotes = response.data.anecdotes;
-        setLightboxContent(''); // Reset the content
-        setLightboxContent(anecdotes);
-        setIsLightboxOpen(true);
-      }
-    } catch (error) {
-      const userQuery = `${bookTitle}`;
-      handleQuerySubmit(userQuery, false, isbn, bookTitle, author, false, false, true);
-    }
-  };
+  //     if (!response || !response.data || !response.data.anecdotes) {
+  //       const userQuery = `${bookTitle}`;
+  //       handleQuerySubmit(userQuery, false, isbn, bookTitle, author, false, false, true);
+  //     } else {
+  //       const anecdotes = response.data.anecdotes;
+  //       setLightboxContent(''); // Reset the content
+  //       setLightboxContent(anecdotes);
+  //       setIsLightboxOpen(true);
+  //     }
+  //   } catch (error) {
+  //     const userQuery = `${bookTitle}`;
+  //     handleQuerySubmit(userQuery, false, isbn, bookTitle, author, false, false, true);
+  //   }
+  // };
 
-  const fetchKeyInsights = async (isbn, bookTitle) => {
-    try {
-      const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/key-insights`, {
-        params: { isbn, bookTitle }
-      });
-      return response; 
-    } catch (error) {
-      throw error;
-    }
-  };  
+  // const fetchKeyInsights = async (isbn, bookTitle) => {
+  //   try {
+  //     const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/key-insights`, {
+  //       params: { isbn, bookTitle }
+  //     });
+  //     return response; 
+  //   } catch (error) {
+  //     throw error;
+  //   }
+  // };  
   
 
-  const handleKeyInsightsRequest = async (isbn, bookTitle, author) => {
-    try {
-      const response = await fetchKeyInsights(isbn, bookTitle);
+  // const handleKeyInsightsRequest = async (isbn, bookTitle, author) => {
+  //   try {
+  //     const response = await fetchKeyInsights(isbn, bookTitle);
 
-      if (!response || !response.data || !response.data.keyInsights) {
-        const userQuery = `${bookTitle}`;
-        handleQuerySubmit(userQuery, false, isbn, bookTitle, author, false, true);
-      } else {
-        const keyInsights = response.data.keyInsights;
-        setLightboxContent(''); // Reset the content
-        setLightboxContent(keyInsights);
-        setIsLightboxOpen(true);
-      }
-    } catch (error) {
-      const userQuery = `${bookTitle}`;
-      handleQuerySubmit(userQuery, false, isbn, bookTitle, author, false, true);
-    }
+  //     if (!response || !response.data || !response.data.keyInsights) {
+  //       const userQuery = `${bookTitle}`;
+  //       handleQuerySubmit(userQuery, false, isbn, bookTitle, author, false, true);
+  //     } else {
+  //       const keyInsights = response.data.keyInsights;
+  //       setLightboxContent(''); // Reset the content
+  //       setLightboxContent(keyInsights);
+  //       setIsLightboxOpen(true);
+  //     }
+  //   } catch (error) {
+  //     const userQuery = `${bookTitle}`;
+  //     handleQuerySubmit(userQuery, false, isbn, bookTitle, author, false, true);
+  //   }
+  // };
+
+  // const fetchMoreDetails = async (isbn, bookTitle) => {
+  //   try {
+  //     const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/more-details`, {
+  //       params: { isbn, bookTitle }
+  //     });
+  //     return response; // Return the response for further handling
+  //   } catch (error) {
+  //     throw error; // Throw the error to be caught in the calling function
+  //   }
+  // };  
+
+  // const handleMoreDetailsRequest = async (isbn, bookTitle, author) => {
+  //   try {
+  //     const response = await fetchMoreDetails(isbn, bookTitle);
+
+  //     if (!response || !response.data || !response.data.detailedDescription) {
+  //       const userQuery = `Explain the book - ${bookTitle} by ${author} - `;
+  //       handleQuerySubmit(userQuery, true, isbn, bookTitle, author);
+  //     } else {
+  //       const detailedDescription = response.data.detailedDescription;
+  //       setLightboxContent(''); // Reset the content
+  //       setLightboxContent(detailedDescription);
+  //       setIsLightboxOpen(true);
+  //     }
+  //   } catch (error) {
+  //     const userQuery = `Explain the book - ${bookTitle} - `;
+  //     handleQuerySubmit(userQuery, true, isbn, bookTitle, author);
+  //   }
+  // };
+
+  const wrappedHandleAnecdotesRequest = (isbn, bookTitle, author) => {
+    handleAnecdotesRequest(
+      isbn,
+      bookTitle,
+      author,
+      handleQuerySubmit,
+      setIsLightboxOpen,
+      setLightboxContent
+    );
   };
 
-  const fetchMoreDetails = async (isbn, bookTitle) => {
-    try {
-      const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/more-details`, {
-        params: { isbn, bookTitle }
-      });
-      return response; // Return the response for further handling
-    } catch (error) {
-      throw error; // Throw the error to be caught in the calling function
-    }
-  };  
+  const wrappedHandleKeyInsightsRequest = (isbn, bookTitle, author) => {
+    handleKeyInsightsRequest(
+      isbn,
+      bookTitle,
+      author,
+      handleQuerySubmit,
+      setIsLightboxOpen,
+      setLightboxContent
+    );
+  };
 
-  const handleMoreDetailsRequest = async (isbn, bookTitle, author) => {
-    try {
-      const response = await fetchMoreDetails(isbn, bookTitle);
-
-      if (!response || !response.data || !response.data.detailedDescription) {
-        const userQuery = `Explain the book - ${bookTitle} by ${author} - `;
-        handleQuerySubmit(userQuery, true, isbn, bookTitle, author);
-      } else {
-        const detailedDescription = response.data.detailedDescription;
-        setLightboxContent(''); // Reset the content
-        setLightboxContent(detailedDescription);
-        setIsLightboxOpen(true);
-      }
-    } catch (error) {
-      const userQuery = `Explain the book - ${bookTitle} - `;
-      handleQuerySubmit(userQuery, true, isbn, bookTitle, author);
-    }
+  const wrappedHandleMoreDetailsRequest = (isbn, bookTitle, author) => {
+    handleMoreDetailsRequest(
+      isbn,
+      bookTitle,
+      author,
+      handleQuerySubmit,
+      setIsLightboxOpen,
+      setLightboxContent
+    );
   };
 
   const [showContinueButton, setShowContinueButton] = useState(false);
@@ -929,9 +963,9 @@ function Chat() {
             content={msg.content}
             userImage={userData?.image}
             isStreaming={isStreaming}
-            onMoreDetailsClick={handleMoreDetailsRequest}
-            onKeyInsightsClick={handleKeyInsightsRequest}
-            onAnecdotesClick={handleAnecdotesRequest}
+            onMoreDetailsClick={wrappedHandleMoreDetailsRequest}
+            onKeyInsightsClick={wrappedHandleKeyInsightsRequest}
+            onAnecdotesClick={wrappedHandleAnecdotesRequest}
             showContinueButton={showContinueButton && isLastMessageFromAssistant}
             onContinueGenerating={onContinueGenerating}
             onImageClick={handleImageClick}

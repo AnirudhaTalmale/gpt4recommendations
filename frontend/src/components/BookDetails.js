@@ -2,6 +2,10 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import LightboxForImage from './LightboxForImage';
 import LightboxForBookPreview from './LightboxForBookPreview';
 import { useParams } from 'react-router-dom';
+import socket from './socket';
+import Lightbox from './Lightbox';
+import { handleAnecdotesRequest, handleKeyInsightsRequest, handleMoreDetailsRequest } from './CommonFunctions';
+
 
 function BookDetails() {
   const { bookId } = useParams();
@@ -11,6 +15,46 @@ function BookDetails() {
   const [bookIdForPreview, setBookIdForPreview] = useState('');
   const [isViewerLoaded, setIsViewerLoaded] = useState(false);
   const bookPreviewRef = useRef(null);
+  const [lightboxImageUrl, setLightboxImageUrl] = useState(null);
+  const [isLightboxOpen, setIsLightboxOpen] = useState(false);
+  const [lightboxContent, setLightboxContent] = useState('');
+  const lightboxContentRef = useRef(null);
+  const [isAtBottomLightbox, setIsAtBottomLightbox] = useState(false);
+
+  const isUserAtBottomLightbox = useCallback(() => {
+    if (!lightboxContentRef.current) return false;
+    const { scrollTop, scrollHeight, clientHeight } = lightboxContentRef.current;
+    const isAtBottom = scrollTop + clientHeight >= scrollHeight - 20;
+    return isAtBottom;
+  }, []);
+  
+  const scrollToBottomLightbox = () => {
+    if (lightboxContentRef.current) {
+      lightboxContentRef.current.scrollTop = lightboxContentRef.current.scrollHeight;
+    }
+  };
+
+  useEffect(() => {
+    if (isAtBottomLightbox) {
+      scrollToBottomLightbox();
+    }
+  }, [lightboxContent, isAtBottomLightbox]);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsAtBottomLightbox(isUserAtBottomLightbox());
+    };
+  
+    const lightboxContentElement = lightboxContentRef.current;
+  
+    if (isLightboxOpen && lightboxContentElement) {
+      lightboxContentElement.addEventListener('scroll', handleScroll);
+  
+      return () => {
+        lightboxContentElement.removeEventListener('scroll', handleScroll);
+      };
+    }
+  }, [isLightboxOpen, isUserAtBottomLightbox]);
 
   useEffect(() => {
     const checkIfGoogleBooksIsLoaded = () => {
@@ -53,11 +97,48 @@ function BookDetails() {
       }
     }
   };
+
+
+  useEffect(() => {
+    const handleStreamChunk = ({ content }) => {
+        setLightboxContent(prevContent => prevContent + content);
+        setIsLightboxOpen(true);
+    };
+  
+    socket.on('chunk', handleStreamChunk);
+  
+    return () => {
+      socket.off('chunk', handleStreamChunk);
+    };
+  }, []);
   
 
+  const handleQuerySubmit = async (query, isMoreDetails = false, isbn = null, bookTitle = null, author = null, moreBooks = false, isKeyInsights = false, isAnecdotes = false, isEdit = false) => {
+    
+    const isFirstQuery = false;
+    console.log("socket to be triggered");
+      socket.emit('specific-book-query', {
+        sessionId: "book-gallery", // Use the current session ID
+        message: {
+          role: 'user',
+          content: query,
+          isFirstQuery
+        },
+        isMoreDetails,
+        isKeyInsights,
+        isAnecdotes,
+        isbn,
+        bookTitle,
+        author,
+        moreBooks,
+        isEdit
+      });
+    
+  };
 
-  const [lightboxImageUrl, setLightboxImageUrl] = useState(null);
-  const [isLightboxOpen, setIsLightboxOpen] = useState(false);
+
+
+  
 
   const fetchBookDetails = useCallback(async () => {
     try {
@@ -90,8 +171,52 @@ function BookDetails() {
     setIsLightboxOpen(true);
   };
 
+
+
+  const wrappedHandleAnecdotesRequest = () => {
+    handleAnecdotesRequest(
+        book.isbn,
+      book.title,
+      book.author,
+      handleQuerySubmit,
+      setIsLightboxOpen,
+      setLightboxContent
+    );
+  };
+
+  const wrappedHandleKeyInsightsRequest = () => {
+    handleKeyInsightsRequest(
+      book.isbn,
+      book.title,
+      book.author,
+      handleQuerySubmit,
+      setIsLightboxOpen,
+      setLightboxContent
+    );
+  };
+
+  const wrappedHandleMoreDetailsRequest = () => {
+    handleMoreDetailsRequest(
+        book.isbn,
+        book.title,
+        book.author,
+      handleQuerySubmit,
+      setIsLightboxOpen,
+      setLightboxContent
+    );
+  };
+
   return (
     <div className="book-details-container">
+      <Lightbox
+        isOpen={isLightboxOpen}
+        content={lightboxContent}
+        onClose={() => {
+          setIsLightboxOpen(false);
+          setLightboxContent(''); // Clear the content when Lightbox is closed
+        }}
+        contentRef={lightboxContentRef}
+      />
       <LightboxForImage
         isOpen={isLightboxOpen}
         imageUrl={lightboxImageUrl}
@@ -111,9 +236,9 @@ function BookDetails() {
         </div>
         <div className="book-details-buttons-container">
             <button className="buy-now-button" onClick={handleBuyNowClick}>Buy Now</button>
-            <button type="button" className="more-details-btn">Book Info</button>
-            <button type="button" className="key-insights-btn">Insights</button>
-            <button type="button" className="anecdotes-btn">Anecdotes</button>
+            <button type="button" className="more-details-btn" onClick={wrappedHandleMoreDetailsRequest}>Book Info</button>
+            <button type="button" className="key-insights-btn" onClick={wrappedHandleKeyInsightsRequest}>Insights</button>
+            <button type="button" className="anecdotes-btn" onClick={wrappedHandleAnecdotesRequest}>Anecdotes</button>
             <button type="button" className="preview-btn" disabled={previewButtonDisabled} onClick={handlePreviewClick}>Preview</button>
         </div>
       </div>

@@ -430,6 +430,32 @@ io.on('connection', (socket) => {
     }
   });   
 
+  socket.on('specific-book-query', async (data) => {
+    const { sessionId, message, isMoreDetails, isKeyInsights, isAnecdotes, isbn, bookTitle, author, moreBooks } = data;
+
+    let completePrompt;
+    if (isMoreDetails || message.content.startsWith("Explain the book - ")) {
+      completePrompt = moreDetailsPrompt(message.content);
+    } else if (isKeyInsights) {
+      completePrompt = keyInsightsPrompt(message.content);
+    } else if (isAnecdotes) {
+      completePrompt = anecdotesPrompt(message.content);
+    } else if (moreBooks) {
+      completePrompt = moreBooksRecommendationPrompt(message.content);
+    } else {
+      completePrompt = bookRecommendationPrompt(message.content);
+    }
+
+    const messagesForGPT4 = [{ role: 'user', content: completePrompt }];
+
+    try {
+      console.log("messagesForGPT4", messagesForGPT4);
+      await openaiApi(messagesForGPT4, socket, session, sessionId, isMoreDetails, isKeyInsights, isAnecdotes, isbn, bookTitle, author, moreBooks);
+    } catch (error) {
+      console.log('Error processing query:', error);
+    }
+  });
+
   socket.on('join-chat-session', (sessionId) => {
     socket.join(sessionId);
   });

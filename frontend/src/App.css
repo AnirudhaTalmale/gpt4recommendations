@@ -15,6 +15,7 @@ ol {
 ol li::marker {
   color: #777777;
   font-size: 0.93rem;
+  
 }
 
 
@@ -1272,7 +1273,7 @@ body:not(.history-pane-open) .input-area {
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1000; /* High z-index to make sure it's above other elements */
+  z-index: 100000; /* High z-index to make sure it's above other elements */
 }
 
 .lightbox-content {
@@ -2910,8 +2911,8 @@ body:not(.history-pane-open-chat-with-us) .chat-area-chat-with-us {
 }
 
 .book-details-image-container img {
-  width: 20vh;
-  height: 30vh;
+  width: 30vh;
+  height: 45vh;
   cursor: pointer;
   /* Ensure your image maintains aspect ratio or adjust as needed */
 }
