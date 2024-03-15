@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
+
 
 import '../App.css'; 
 
@@ -8,6 +10,42 @@ function BookGallery({ onCloseHistoryPane }) {
   const [genres, setGenres] = useState([]);
   const [selectedGenre, setSelectedGenre] = useState('All');
   const [searchTerm, setSearchTerm] = useState('');
+  const [userData, setUserData] = useState(null);
+
+  const checkAuthStatus = useCallback(async () => {
+  
+    try {
+
+      const authResponse = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/check-auth`, { withCredentials: true });
+  
+      if (authResponse.status === 200 && authResponse.data.isAuthenticated) {
+  
+        if (!authResponse.data.onboardingComplete) {
+          window.location.href = `${process.env.REACT_APP_FRONTEND_URL}/onboarding`;
+          return;
+        }
+  
+        const userInfoResponse = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/user-info`, { withCredentials: true });
+  
+        if (userInfoResponse.status === 200 && userInfoResponse.data.isAuthenticated) {
+          const currentUserData = userInfoResponse.data.user;
+          setUserData(currentUserData);
+        }
+      } else {
+        console.log("Authentication failed, redirecting to login page");
+        localStorage.setItem('queryParams', window.location.search);
+        window.location.href = `${process.env.REACT_APP_FRONTEND_URL}/auth/login`;
+      }
+    } catch (error) {
+      console.error('Error checking authentication status:', error);
+      localStorage.setItem('queryParams', window.location.search);
+      window.location.href = `${process.env.REACT_APP_FRONTEND_URL}/auth/login`;
+    }
+  }, [setUserData]);
+  
+  useEffect(() => {
+    checkAuthStatus();
+  }, [checkAuthStatus]);
   
   const handleSearch = useCallback(async (e) => {
     e.preventDefault();

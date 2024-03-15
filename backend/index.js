@@ -485,6 +485,7 @@ io.on('connection', (socket) => {
     try {
       console.log("messagesForGPT4", messagesForGPT4);
       await openaiApi(messagesForGPT4, socket, session, userId, isMoreDetails, isKeyInsights, isAnecdotes, isbn, bookTitle, author, moreBooks);
+      await user.save();
     } catch (error) {
       console.log('Error processing query:', error);
     }
