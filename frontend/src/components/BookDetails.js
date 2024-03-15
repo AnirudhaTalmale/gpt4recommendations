@@ -5,6 +5,8 @@ import { useParams } from 'react-router-dom';
 import socket from './socket';
 import Lightbox from './Lightbox';
 import { handleAnecdotesRequest, handleKeyInsightsRequest, handleMoreDetailsRequest } from './CommonFunctions';
+import axios from 'axios';
+import ConfirmationDialog from './ConfirmationDialog'; // Import ConfirmationDialog component
 
 
 function BookDetails() {
@@ -20,6 +22,61 @@ function BookDetails() {
   const [lightboxContent, setLightboxContent] = useState('');
   const lightboxContentRef = useRef(null);
   const [isAtBottomLightbox, setIsAtBottomLightbox] = useState(false);
+  const [userData, setUserData] = useState(null);
+  const [isConfirmationDialogOpen, setIsConfirmationDialogOpen] = useState(false);
+  const [confirmationMessage, setConfirmationMessage] = useState('');
+
+  useEffect(() => {
+    const handleMessageLimitReached = ({ userId: reachedUserId, limitMessage }) => {
+      // Check if the message is for the current user
+      if (userData && reachedUserId === userData.id) {
+        setConfirmationMessage(limitMessage);
+        setIsConfirmationDialogOpen(true);
+      }
+    };
+
+    socket.on('messageLimitReached', handleMessageLimitReached);
+
+    return () => {
+      socket.off('messageLimitReached', handleMessageLimitReached);
+    };
+  }, [userData]); 
+
+
+  const checkAuthStatus = useCallback(async () => {
+  
+    try {
+
+      const authResponse = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/check-auth`, { withCredentials: true });
+  
+      if (authResponse.status === 200 && authResponse.data.isAuthenticated) {
+  
+        if (!authResponse.data.onboardingComplete) {
+          window.location.href = `${process.env.REACT_APP_FRONTEND_URL}/onboarding`;
+          return;
+        }
+  
+        const userInfoResponse = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/user-info`, { withCredentials: true });
+  
+        if (userInfoResponse.status === 200 && userInfoResponse.data.isAuthenticated) {
+          const currentUserData = userInfoResponse.data.user;
+          setUserData(currentUserData);
+        }
+      } else {
+        console.log("Authentication failed, redirecting to login page");
+        localStorage.setItem('queryParams', window.location.search);
+        window.location.href = `${process.env.REACT_APP_FRONTEND_URL}/auth/login`;
+      }
+    } catch (error) {
+      console.error('Error checking authentication status:', error);
+      localStorage.setItem('queryParams', window.location.search);
+      window.location.href = `${process.env.REACT_APP_FRONTEND_URL}/auth/login`;
+    }
+  }, [setUserData]);
+  
+  useEffect(() => {
+    checkAuthStatus();
+  }, [checkAuthStatus]);
 
   const isUserAtBottomLightbox = useCallback(() => {
     if (!lightboxContentRef.current) return false;
@@ -116,9 +173,8 @@ function BookDetails() {
   const handleQuerySubmit = async (query, isMoreDetails = false, isbn = null, bookTitle = null, author = null, moreBooks = false, isKeyInsights = false, isAnecdotes = false, isEdit = false) => {
     
     const isFirstQuery = false;
-    console.log("socket to be triggered");
       socket.emit('specific-book-query', {
-        sessionId: "book-gallery", // Use the current session ID
+        userId: userData.id,
         message: {
           role: 'user',
           content: query,
@@ -135,10 +191,6 @@ function BookDetails() {
       });
     
   };
-
-
-
-  
 
   const fetchBookDetails = useCallback(async () => {
     try {
@@ -242,6 +294,12 @@ function BookDetails() {
             <button type="button" className="preview-btn" disabled={previewButtonDisabled} onClick={handlePreviewClick}>Preview</button>
         </div>
       </div>
+      <ConfirmationDialog
+        isOpen={isConfirmationDialogOpen}
+        onClose={() => setIsConfirmationDialogOpen(false)}
+        messageLimitReached={true}
+        messageContent={confirmationMessage}
+      />
     </div>
   );
 }

@@ -3,6 +3,7 @@ const openaiApi = require('./openaiApi');
 const Session = require('./models/models-chat/Session');
 const EmailRateLimit = require('./models/models-chat/EmailRateLimit');
 const MoreDetails = require('./models/models-chat/MoreDetails');
+const User = require('./models/models-chat/User');
 const KeyInsightsModel = require('./models/models-chat/KeyInsights'); 
 const AnecdotesModel = require('./models/models-chat/Anecdotes'); 
 const BookData = require('./models/models-chat/BookData'); 
@@ -431,7 +432,40 @@ io.on('connection', (socket) => {
   });   
 
   socket.on('specific-book-query', async (data) => {
-    const { sessionId, message, isMoreDetails, isKeyInsights, isAnecdotes, isbn, bookTitle, author, moreBooks } = data;
+    const { userId, message, isMoreDetails, isKeyInsights, isAnecdotes, isbn, bookTitle, author, moreBooks } = data;
+
+    // Check message limit
+    const now = new Date();
+
+    let user = await User.findById(userId);
+
+    if (user.firstMessageTimestamp === undefined || user.messageCount === undefined) {
+      user.firstMessageTimestamp = now;
+      user.messageCount = 0;
+    }
+
+    if (!user.firstMessageTimestamp || now - user.firstMessageTimestamp.getTime() > WINDOW_DURATION) {
+      // Reset if more than 3 hours have passed
+      user.firstMessageTimestamp = now;
+      user.messageCount = 1;
+    } else {
+      // Increment message count
+      user.messageCount += 1;
+    }
+
+    if (user.messageCount > MESSAGE_LIMIT) {
+      const timePassed = now - user.firstMessageTimestamp.getTime();
+      const timeRemaining = WINDOW_DURATION - timePassed;
+      const resetTime = new Date(now.getTime() + timeRemaining);
+    
+      // Formatting the reset time in HH:MM format
+      const resetTimeString = resetTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      const limitMessage = `You have reached the message limit. Try again after ${resetTimeString}.`;
+    
+      // Emit a warning message to the client and set the limitMessage as the session name
+      socket.emit('messageLimitReached', { userId, limitMessage });
+      return;
+    }   
 
     let completePrompt;
     if (isMoreDetails || message.content.startsWith("Explain the book - ")) {
@@ -450,7 +484,7 @@ io.on('connection', (socket) => {
 
     try {
       console.log("messagesForGPT4", messagesForGPT4);
-      await openaiApi(messagesForGPT4, socket, session, sessionId, isMoreDetails, isKeyInsights, isAnecdotes, isbn, bookTitle, author, moreBooks);
+      await openaiApi(messagesForGPT4, socket, session, userId, isMoreDetails, isKeyInsights, isAnecdotes, isbn, bookTitle, author, moreBooks);
     } catch (error) {
       console.log('Error processing query:', error);
     }
@@ -618,7 +652,7 @@ app.get('/api/chat-with-us-sessions', async (req, res) => {
   }
 });
 
-const User = require('./models/models-chat/User'); // Import the User model
+
 
 app.post('/api/chat-with-us-session', async (req, res) => {
   try {
