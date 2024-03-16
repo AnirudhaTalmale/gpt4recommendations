@@ -26,8 +26,6 @@ const nodemailer = require('nodemailer');
 const jwt = require('jsonwebtoken'); 
 const redisClient = require('./redisClient');
 
-  
- 
 require('dotenv').config();
 
 const app = express();
@@ -1019,19 +1017,41 @@ app.post('/api/session/:sessionId/edit-message/:messageId', async (req, res) => 
 // Book Gallery Endpoints
 
 app.get('/api/books', async (req, res) => {
-  const query = {};
+  // Construct a unique cache key based on query parameters
+  let cacheKey = 'books-list';
   if (req.query.genre && req.query.genre !== 'All') {
-    query.genres = req.query.genre;
+    cacheKey += `:genre=${req.query.genre}`;
   }
   if (req.query.search) {
-    query.$or = [
-      { title: { $regex: req.query.search, $options: 'i' } },
-      { author: { $regex: req.query.search, $options: 'i' } }
-    ];
+    cacheKey += `:search=${req.query.search}`;
   }
 
   try {
+    // Try fetching the books list from Redis first
+    let cachedData = await redisClient.get(cacheKey);
+    if (cachedData) {
+      return res.json(JSON.parse(cachedData));
+    }
+
+    // Construct the query object based on request parameters
+    const query = {};
+    if (req.query.genre && req.query.genre !== 'All') {
+      query.genres = req.query.genre;
+    }
+    if (req.query.search) {
+      query.$or = [
+        { title: { $regex: req.query.search, $options: 'i' } },
+        { author: { $regex: req.query.search, $options: 'i' } }
+      ];
+    }
+
+    // Fetch from the database if not found in cache
     const books = await BookData.find(query).lean();
+
+    // Save the fetched books list in Redis with a TTL of 6 hours (21600 seconds)
+    await redisClient.set(cacheKey, JSON.stringify(books), 'EX', 21600);
+
+    // Return the books list
     res.json(books);
   } catch (error) {
     console.error('GET /api/books - Server error:', error);
@@ -1042,12 +1062,25 @@ app.get('/api/books', async (req, res) => {
 
 app.get('/api/genres', async (req, res) => {
   try {
+    const cacheKey = 'genres-list';
+
+    // Try fetching the genres list from Redis first
+    let cachedData = await redisClient.get(cacheKey);
+    if (cachedData) {
+      return res.json(JSON.parse(cachedData));
+    }
+
+    // If not found in cache, fetch from the database
     const genreCounts = await BookData.aggregate([
       { $unwind: '$genres' },
       { $group: { _id: '$genres', count: { $sum: 1 } } },
       { $sort: { count: -1 } }
     ]);
 
+    // Save the fetched genres list in Redis with a TTL of 6 hours (21600 seconds)
+    await redisClient.set(cacheKey, JSON.stringify(genreCounts.map(g => g._id)), 'EX', 21600);
+
+    // Return the genres list
     res.json(genreCounts.map(g => g._id));
   } catch (error) {
     console.error('GET /api/genres - Server error:', error);
@@ -1055,18 +1088,38 @@ app.get('/api/genres', async (req, res) => {
   }
 });
 
+
+// Book Detail Endpoints
+
 app.get('/api/books/:bookId', async (req, res) => {
   try {
-    const book = await BookData.findOne({ _id: req.params.bookId }).lean();
+    const bookId = req.params.bookId;
+    let cacheKey = `book-details:${bookId}`;
+
+    // Try fetching the book details from Redis first
+    let cachedData = await redisClient.get(cacheKey);
+    if (cachedData) {
+      return res.json(JSON.parse(cachedData));
+    }
+
+    // If not found in cache, fetch from the database
+    const book = await BookData.findOne({ _id: bookId }).lean();
     if (!book) {
       return res.status(404).json({ message: 'Book not found' });
     }
+
+    // Save the fetched book details in Redis without an expiration time
+    // You might choose to set an expiration time depending on your requirements
+    await redisClient.set(cacheKey, JSON.stringify(book));
+
+    // Return the book details
     res.json(book);
   } catch (error) {
     console.error('GET /api/books/:bookId - Server error:', error);
     res.status(500).json({ message: 'Server error occurred while fetching book details', error: error.toString() });
   }
 });
+
 
  
 // development routes: 
