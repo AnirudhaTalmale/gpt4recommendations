@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import '../App.css';
 
-function InputBox({ onSubmit, isStreaming, onStopStreaming, initialQuery, onHeightChange }) {
-  const [input, setInput] = useState(initialQuery || '');
+function InputBox({ onSubmit, isStreaming, onStopStreaming, onHeightChange }) {
+  const [input, setInput] = useState('');
   const [isInputNotEmpty, setIsInputNotEmpty] = useState(false);
   const [rows, setRows] = useState(1);
   const [sendButtonRight, setSendButtonRight] = useState('2.7rem');
@@ -53,11 +53,6 @@ function InputBox({ onSubmit, isStreaming, onStopStreaming, initialQuery, onHeig
       }
     } 
   };
-
-  useEffect(() => {
-    setInput(initialQuery);
-    setIsInputNotEmpty(initialQuery.length > 0);
-  }, [initialQuery]);  
 
   const handleInputChange = (e) => {
     setInput(e.target.value);

@@ -806,7 +806,6 @@ app.get('/api/more-details', async (req, res) => {
   }
 });
 
-
 app.get('/api/key-insights', async (req, res) => {
   try {
     const { isbn, bookTitle } = req.query;
@@ -841,7 +840,6 @@ app.get('/api/key-insights', async (req, res) => {
     res.status(500).json({ message: 'Server error occurred while fetching book details' });
   }
 });
-
 
 app.get('/api/quotes', async (req, res) => {
   try {
@@ -947,7 +945,6 @@ app.get('/api/sessions', async (req, res) => {
     res.status(500).json({ message: 'Error retrieving sessions', error: error.toString() });
   }
 });
-
 
 // DELETE endpoint for deleting a session
 app.delete('/api/session/:sessionId', async (req, res) => {

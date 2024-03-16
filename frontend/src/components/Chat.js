@@ -16,21 +16,17 @@ import { useNavigate } from 'react-router-dom';
 
 
 function Chat() {
-
+  const navigate = useNavigate();
   const [sessions, setSessions] = useState([]);
   const [isPaneOpen, setIsPaneOpen] = useState(window.innerWidth >= 760 ? true : false);
   let { sessionId: urlSessionId } = useParams();
   let location = useLocation(); 
   const [currentSessionId, setCurrentSessionId] = useState(urlSessionId || null);
   const [selectedSessionId, setSelectedSessionId] = useState(null);
-
-  
-  
   const [isLoading, setIsLoading] = useState(false);
   const [userData, setUserData] = useState(null);
   const [isStreaming, setIsStreaming] = useState(false);
   const historyPaneRef = useRef(null);
-  
   const [lastUserMessage, setLastUserMessage] = useState(null);
   const [isMoreDetailsState, setIsMoreDetailsState] = useState(false);
   const [isKeyInsightsState, setIsKeyInsightsState] = useState(false);
@@ -63,8 +59,6 @@ function Chat() {
   
     checkIfGoogleBooksIsLoaded();
   }, []);
-
-  
 
   useEffect(() => {
     if (isBookPreviewLightboxOpen && bookIdForPreview && isViewerLoaded) {
@@ -131,23 +125,6 @@ function Chat() {
   }, [isLightboxOpen, isUserAtBottomLightbox]);
 
   const currentSessionIdRef = useRef(currentSessionId);
-
-  const [initialQuery, setInitialQuery] = useState('');
-
-  useEffect(() => {
-    const queryParams = new URLSearchParams(window.location.search);
-    const bookTitle = queryParams.get('bookTitle');
-    const author = queryParams.get('author');
-
-    if (bookTitle) {
-      let query = `Explain the book - ${bookTitle}`;
-      if (author) {
-        query += ` by ${author}`;
-      }
-      setInitialQuery(query);
-    }
-  }, []);
-
   const chatAreaRef = useRef(null);
   const [shouldAutoScroll, setShouldAutoScroll] = useState(false);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
@@ -283,7 +260,6 @@ function Chat() {
       return updatedSessions;
     });
   }, []);
-
 
   const handleStopStreaming = useCallback(async () => {
     try {
@@ -451,10 +427,6 @@ function Chat() {
     return session.messages.length === 0;
   };
 
-  
-
-  const navigate = useNavigate();
-
   const handleNewSession = useCallback(async () => {
       // Check if the last session is empty and return its ID if so
       if (sessions.length > 0 && isSessionEmpty(sessions[sessions.length - 1])) {
@@ -541,9 +513,7 @@ function Chat() {
   }, []); 
 
   const checkAuthStatus = useCallback(async () => {
-  
     try {
-
       const authResponse = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/check-auth`, { withCredentials: true });
   
       if (authResponse.status === 200 && authResponse.data.isAuthenticated) {
@@ -784,7 +754,6 @@ function Chat() {
     }
   };
   
-
   return (
     <div className="App">
       <Lightbox
@@ -820,7 +789,6 @@ function Chat() {
       <HistoryPane
         ref={historyPaneRef}
         sessions={sessions}
-        onNewSession={handleNewSession}
         onSelectSession={setCurrentSessionIdWithStreamCheck}
         onDeleteSession={handleDeleteSession}
         userName={userData?.name}
@@ -874,7 +842,6 @@ function Chat() {
         isLoading={isLoading}
         isStreaming={isStreaming}
         onStopStreaming={handleStopStreaming}
-        initialQuery={initialQuery}
         onHeightChange={setInputBoxHeight} // Here you pass the setInputBoxHeight function to the InputBox
       />
     </div>

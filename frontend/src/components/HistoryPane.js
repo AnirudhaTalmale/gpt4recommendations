@@ -9,7 +9,6 @@ const straightLinePath = 'M15,25 L15,5';
 
 const HistoryPane = forwardRef(({
   sessions, 
-  onNewSession,
   onSelectSession, 
   onDeleteSession, 
   userName, 
@@ -232,7 +231,7 @@ const HistoryPane = forwardRef(({
 
         <div className="header-container book-gallery">
           <button className="new-session-button" onClick={onBookGalleryClick}>
-            Book Gallery 
+            Gallery 
           </button>
         </div>
 

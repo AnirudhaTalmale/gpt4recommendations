@@ -10,7 +10,6 @@ function BookGallery({ onCloseHistoryPane }) {
   const [genres, setGenres] = useState([]);
   const [selectedGenre, setSelectedGenre] = useState('All');
   const [searchTerm, setSearchTerm] = useState('');
-  const [userData, setUserData] = useState(null);
 
   const checkAuthStatus = useCallback(async () => {
   
@@ -28,8 +27,6 @@ function BookGallery({ onCloseHistoryPane }) {
         const userInfoResponse = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/user-info`, { withCredentials: true });
   
         if (userInfoResponse.status === 200 && userInfoResponse.data.isAuthenticated) {
-          const currentUserData = userInfoResponse.data.user;
-          setUserData(currentUserData);
         }
       } else {
         console.log("Authentication failed, redirecting to login page");
@@ -41,7 +38,7 @@ function BookGallery({ onCloseHistoryPane }) {
       localStorage.setItem('queryParams', window.location.search);
       window.location.href = `${process.env.REACT_APP_FRONTEND_URL}/auth/login`;
     }
-  }, [setUserData]);
+  }, []);
   
   useEffect(() => {
     checkAuthStatus();
