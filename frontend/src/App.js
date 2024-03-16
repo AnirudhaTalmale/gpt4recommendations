@@ -20,6 +20,7 @@ function App() {
           <Route path="/auth/login" element={<HomePage />} />
           <Route path="/verify-email" element={<EmailVerificationPage />} />
           <Route path="/onboarding" element={<OnboardingPage />} /> 
+          <Route path="/chat/:sessionId" element={<Chat />} />
           <Route path="/chat" element={<Chat />} />
           <Route path="/" element={<HomePage />} />
           <Route path="/chat-with-us" element={<ChatWithUs />} />

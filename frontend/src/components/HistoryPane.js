@@ -118,10 +118,9 @@ const HistoryPane = forwardRef(({
   };
 
   const handleNewSessionCreation = async () => {
-    const newSession = await onNewSession(); // Assume onNewSession returns the newly created session object
-    setSelectedSessionId(newSession._id); // Set the selectedSessionId to the new session's ID
+    navigate(`/chat`);
     if (window.innerWidth < 760) {
-      togglePane();
+      togglePane(); // Close the pane on smaller screens
     }
   };
 
@@ -140,6 +139,8 @@ const HistoryPane = forwardRef(({
   const handleSessionSelect = (sessionId) => {
     onSelectSession(sessionId); // Update to use the session ID
     setSelectedSessionId(sessionId); // Update the selected session ID
+    navigate(`/chat/${sessionId}`);
+
     if (window.innerWidth < 760) {
       togglePane();
     }

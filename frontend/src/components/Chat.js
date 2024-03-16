@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { useParams, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import InputBox from './InputBox';
 import SampleQueries from './SampleQueries';
@@ -11,31 +12,37 @@ import { handleAnecdotesRequest, handleKeyInsightsRequest, handleMoreDetailsRequ
 import '../App.css';
 import socket from './socket';
 import Header from './Header';
+import { useNavigate } from 'react-router-dom';
 
 
 function Chat() {
 
   const [sessions, setSessions] = useState([]);
   const [isPaneOpen, setIsPaneOpen] = useState(window.innerWidth >= 760 ? true : false);
-  const [currentSessionId, setCurrentSessionId] = useState(() => {
-    const savedSessionId = localStorage.getItem('currentSessionId');
+  let { sessionId: urlSessionId } = useParams();
+  let location = useLocation(); 
+  // const [currentSessionId, setCurrentSessionId] = useState(() => {
+  //   const savedSessionId = localStorage.getItem('currentSessionId');
   
-    // Check if savedSessionId is the string "null" and log if it is
-    if (savedSessionId === "null") {
-      console.log("Converting 'null' string to null");
-      return null;
-    } 
+  //   // Check if savedSessionId is the string "null" and log if it is
+  //   if (savedSessionId === "null") {
+  //     console.log("Converting 'null' string to null");
+  //     return null;
+  //   } 
   
-    // Return the savedSessionId if it's not null, otherwise return null
-    return savedSessionId !== null ? savedSessionId : null;
-  });
+  //   // Return the savedSessionId if it's not null, otherwise return null
+  //   return savedSessionId !== null ? savedSessionId : null;
+  // });
+  const [currentSessionId, setCurrentSessionId] = useState(urlSessionId || null);
+  const [selectedSessionId, setSelectedSessionId] = useState(null);
+
   
   
   const [isLoading, setIsLoading] = useState(false);
   const [userData, setUserData] = useState(null);
   const [isStreaming, setIsStreaming] = useState(false);
   const historyPaneRef = useRef(null);
-  const [selectedSessionId, setSelectedSessionId] = useState(null);
+  
   const [lastUserMessage, setLastUserMessage] = useState(null);
   const [isMoreDetailsState, setIsMoreDetailsState] = useState(false);
   const [isKeyInsightsState, setIsKeyInsightsState] = useState(false);
@@ -68,6 +75,8 @@ function Chat() {
   
     checkIfGoogleBooksIsLoaded();
   }, []);
+
+  
 
   useEffect(() => {
     if (isBookPreviewLightboxOpen && bookIdForPreview && isViewerLoaded) {
@@ -134,11 +143,6 @@ function Chat() {
   }, [isLightboxOpen, isUserAtBottomLightbox]);
 
   const currentSessionIdRef = useRef(currentSessionId);
-
-  // Update the ref whenever currentSessionId changes
-  useEffect(() => {
-    currentSessionIdRef.current = currentSessionId;
-  }, [currentSessionId]);
 
   const [initialQuery, setInitialQuery] = useState('');
 
@@ -230,20 +234,6 @@ function Chat() {
       }
     }
   }, [currentSessionId, shouldAutoScroll, sessions]);
-
-  
-  useEffect(() => {
-    // Check if currentSessionId is not null and not the string "null" before saving to localStorage
-    if (currentSessionId !== null && currentSessionId !== "null") {
-      localStorage.setItem('currentSessionId', currentSessionId);
-    } else {
-      // If currentSessionId is null, remove the item from localStorage
-      localStorage.removeItem('currentSessionId');
-    }
-  
-    // Set selectedSessionId based on the validity of currentSessionId
-    setSelectedSessionId(currentSessionId && currentSessionId !== "null" ? currentSessionId : null);
-  }, [currentSessionId]);
   
   useEffect(() => {
     const savedSessionId = localStorage.getItem('currentSessionId');
@@ -459,11 +449,13 @@ function Chat() {
   
     // Get the current session's ID
     const currentSessionId = currentSessionIdRef.current;
-    let currentSession = sessions.find(session => session._id === currentSessionId);
+    let currentSession;
 
     // If there's no current session ID, create a new session
     if (!currentSessionId) {
       currentSession = await handleNewSession();
+    } else {
+      currentSession = sessions.find(session => session._id === currentSessionId);
     }
     
     const isFirstQuery = currentSession?.messages?.length === 0;
@@ -506,31 +498,50 @@ function Chat() {
     return session.messages.length === 0;
   };
 
+  
+
+  const navigate = useNavigate();
+
   const handleNewSession = useCallback(async () => {
-    
-    // Check if the last session is empty and return its ID if so
-    if (sessions.length > 0 && isSessionEmpty(sessions[sessions.length - 1])) {
-      const lastSessionId = sessions[sessions.length - 1]._id;
-      setCurrentSessionId(lastSessionId);
-      currentSessionIdRef.current = lastSessionId;
-      return sessions[sessions.length - 1]; // Return the last session if it's empty
-    } else {
-      try {
-        if (!userData) {
-          return;
-        } 
-        const res = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/session`, { userId: userData.id });
-        const newSession = res.data;
-        setSessions(prevSessions => [...prevSessions, newSession]);
-        setCurrentSessionId(newSession._id);
-        currentSessionIdRef.current = newSession._id;
-        setSelectedSessionId(newSession._id);
-        return newSession; // Return the new session data
-      } catch (error) {
-        console.error('Error creating new session:', error);
+      // Check if the last session is empty and return its ID if so
+      if (sessions.length > 0 && isSessionEmpty(sessions[sessions.length - 1])) {
+        const lastSessionId = sessions[sessions.length - 1]._id;
+        setCurrentSessionId(lastSessionId);
+        currentSessionIdRef.current = lastSessionId;
+        navigate(`/chat/${lastSessionId}`); // Navigate to the session URL
+        setSelectedSessionId(lastSessionId);
+        return sessions[sessions.length - 1];
+      } else {
+        try {
+          if (!userData) {
+            return;
+          } 
+          const res = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/session`, { userId: userData.id });
+          const newSession = res.data;
+          setSessions(prevSessions => [...prevSessions, newSession]);
+          setCurrentSessionId(newSession._id);
+          currentSessionIdRef.current = newSession._id;
+          setSelectedSessionId(newSession._id);
+          navigate(`/chat/${newSession._id}`); // Navigate to the new session URL
+          return newSession;
+        } catch (error) {
+          console.error('Error creating new session:', error);
+        }
       }
+  }, [userData, sessions, navigate]); // Add navigate as a dependency
+
+  useEffect(() => {
+    // Directly setting urlSessionId obtained from useParams
+    if (urlSessionId) {
+      setCurrentSessionId(urlSessionId); // This might be redundant if you do not need to track currentSessionId separately from selectedSessionId
+      setSelectedSessionId(urlSessionId);
     }
-  }, [userData, sessions]);
+    else {
+      setCurrentSessionId(null); // This might be redundant if you do not need to track currentSessionId separately from selectedSessionId
+      setSelectedSessionId(null);
+      currentSessionIdRef.current = null;
+    }
+  }, [urlSessionId]); 
 
   useEffect(() => {
     const handleNewMessageSaved = (data) => {
@@ -624,9 +635,11 @@ function Chat() {
       setCurrentSessionId(prevCurrentSessionId => {
         if (prevCurrentSessionId === sessionId) {
           // If the deleted session was the current one, switch to another session (e.g., the last one) or set to null if no sessions are left
-          const newSessionId = sessions.length > 1 ? sessions[sessions.length - 1]._id : null;
-          currentSessionIdRef.current = newSessionId; // Also update the ref synchronously
-          return newSessionId;
+          // const newSessionId = sessions.length > 1 ? sessions[sessions.length - 1]._id : null;
+          // currentSessionIdRef.current = newSessionId; // Also update the ref synchronously
+          // return newSessionId;
+          navigate(`/chat`);
+          return null;
         }
         return prevCurrentSessionId; // Keep the current session ID unchanged if the deleted session was not the current one
       });
@@ -869,7 +882,7 @@ function Chat() {
       />
       <Header isPaneOpen={isPaneOpen} onNewSession={handleNewSession} togglePane={togglePane} />
       <div className="chat-area" ref={chatAreaRef}>
-        {sessions.find(session => session._id === selectedSessionId) && sessions.find(session => session._id === selectedSessionId).messages.length === 0 && (
+        {location.pathname === "/chat" && (
           <div className="chat-heading">
             Discover Your Next Great Read!
           </div>
@@ -900,7 +913,7 @@ function Chat() {
           );
         })}
       </div>
-      { (sessions.length === 0 || (sessions.find(session => session._id === selectedSessionId) && sessions.find(session => session._id === selectedSessionId).messages.length === 0)) && (
+      {location.pathname === "/chat" && (
           <SampleQueries
             onSubmit={handleQuerySubmit}
             inputBoxHeight={inputBoxHeight} // And here you pass the inputBoxHeight state down to SampleQueries
