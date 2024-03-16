@@ -21,18 +21,6 @@ function Chat() {
   const [isPaneOpen, setIsPaneOpen] = useState(window.innerWidth >= 760 ? true : false);
   let { sessionId: urlSessionId } = useParams();
   let location = useLocation(); 
-  // const [currentSessionId, setCurrentSessionId] = useState(() => {
-  //   const savedSessionId = localStorage.getItem('currentSessionId');
-  
-  //   // Check if savedSessionId is the string "null" and log if it is
-  //   if (savedSessionId === "null") {
-  //     console.log("Converting 'null' string to null");
-  //     return null;
-  //   } 
-  
-  //   // Return the savedSessionId if it's not null, otherwise return null
-  //   return savedSessionId !== null ? savedSessionId : null;
-  // });
   const [currentSessionId, setCurrentSessionId] = useState(urlSessionId || null);
   const [selectedSessionId, setSelectedSessionId] = useState(null);
 
@@ -234,40 +222,6 @@ function Chat() {
       }
     }
   }, [currentSessionId, shouldAutoScroll, sessions]);
-  
-  useEffect(() => {
-    const savedSessionId = localStorage.getItem('currentSessionId');
-    // Check if savedSessionId is neither null nor the string "null"
-    if (savedSessionId && savedSessionId !== "null") {
-      setCurrentSessionId(savedSessionId);
-    } else if (sessions.length > 0) {
-      // If there is no valid saved session ID, load the latest session's ID
-      setCurrentSessionId(sessions[sessions.length - 1]._id);
-    } else {
-      // If there are no sessions, set to null
-      setCurrentSessionId(null);
-    }
-  }, [sessions]);  
-  
-  const handleSavedQueryParams = useCallback(() => {
-    const savedQueryParams = localStorage.getItem('queryParams');
-    if (savedQueryParams) {
-      const queryParams = new URLSearchParams(savedQueryParams);
-      const bookTitle = queryParams.get('bookTitle');
-      const author = queryParams.get('author');
-  
-      if (bookTitle) {
-        let query = `Explain the book - ${bookTitle}`;
-        if (author) {
-          query += ` by ${author}`;
-        }
-        setInitialQuery(query); 
-      }
-      // After handling, remove them from local storage
-      localStorage.removeItem('queryParams');
-    }
-  }, []); // Add dependencies here if any
-  
 
   const updateSessionName = useCallback(({ sessionId, sessionName }) => {
     setSessions(prevSessions => prevSessions.map(session => 
@@ -437,7 +391,6 @@ function Chat() {
         moreBooks: moreBooks,
         isEdit: isEdit
       });
-      console.log("page refreshed");
       // Reset lastUserMessage to avoid duplicate emissions
       setLastUserMessage(null);
     }
@@ -607,19 +560,16 @@ function Chat() {
           setUserData(currentUserData);
   
           loadSessions(currentUserData);
-          handleSavedQueryParams();
         }
       } else {
         console.log("Authentication failed, redirecting to login page");
-        localStorage.setItem('queryParams', window.location.search);
         window.location.href = `${process.env.REACT_APP_FRONTEND_URL}/auth/login`;
       }
     } catch (error) {
       console.error('Error checking authentication status:', error);
-      localStorage.setItem('queryParams', window.location.search);
       window.location.href = `${process.env.REACT_APP_FRONTEND_URL}/auth/login`;
     }
-  }, [loadSessions, setUserData, handleSavedQueryParams]);
+  }, [loadSessions, setUserData]);
   
   useEffect(() => {
     checkAuthStatus();
