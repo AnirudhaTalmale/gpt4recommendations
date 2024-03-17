@@ -12,7 +12,7 @@ import ConfirmationDialog from './ConfirmationDialog'; // Import ConfirmationDia
 function BookDetails() {
   const { bookId } = useParams();
   const [book, setBook] = useState(null);
-
+  const [isStreaming, setIsStreaming] = useState(false);
   const [isBookPreviewLightboxOpen, setIsBookPreviewLightboxOpen] = useState(false);
   const [bookIdForPreview, setBookIdForPreview] = useState('');
   const [isViewerLoaded, setIsViewerLoaded] = useState(false);
@@ -25,6 +25,38 @@ function BookDetails() {
   const [userData, setUserData] = useState(null);
   const [isConfirmationDialogOpen, setIsConfirmationDialogOpen] = useState(false);
   const [confirmationMessage, setConfirmationMessage] = useState('');
+
+  const [isQuotesClicked, setIsQuotesClicked] = useState(false);
+  const [isAnecdotesClicked, setIsAnecdotesClicked] = useState(false);
+  const [isKeyInsightsClicked, setIsKeyInsightsClicked] = useState(false);
+  const [isMoreDetailsClicked, setIsMoreDetailsClicked] = useState(false);
+
+  const handleStopStreaming = useCallback(async () => {
+    try {
+      await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/stop-stream`);
+      setIsStreaming(false);
+      console.log("stream stopped true");
+      
+    } catch (error) {
+      console.error('Error stopping the stream:', error);
+    }
+  }, []);
+
+  useEffect(() => {
+    // Listen for the 'streamEnd' event from the socket
+    const handleStreamEnd = ({ message, sessionId }) => {
+      if (userData && sessionId === userData.id) {
+        setIsStreaming(false);
+      }
+    };
+  
+    socket.on('streamEnd', handleStreamEnd);
+  
+    return () => {
+      // Cleanup: remove the listener when the component unmounts
+      socket.off('streamEnd', handleStreamEnd);
+    };
+  }, [userData]);
 
   useEffect(() => {
     const handleMessageLimitReached = ({ userId: reachedUserId, limitMessage }) => {
@@ -155,7 +187,6 @@ function BookDetails() {
     }
   };
 
-
   useEffect(() => {
     const handleStreamChunk = ({ content }) => {
         setLightboxContent(prevContent => prevContent + content);
@@ -168,6 +199,33 @@ function BookDetails() {
       socket.off('chunk', handleStreamChunk);
     };
   }, []);
+
+  useEffect(() => {
+    let streamTimeout;
+  
+    const handleStreamChunk = ({ content, sessionId, isMoreDetails, isKeyInsights, isAnecdotes, isQuotes, moreBooks }) => {
+
+      if (userData && sessionId === userData.id) {
+        if (isMoreDetails || isKeyInsights || isAnecdotes || isQuotes) {
+          setLightboxContent(prevContent => prevContent + content);
+          setIsStreaming(true);
+          setIsLightboxOpen(true);
+        }
+    
+        clearTimeout(streamTimeout);
+        streamTimeout = setTimeout(() => {
+          handleStopStreaming();
+        }, 7000); 
+      }
+    };
+  
+    socket.on('chunk', handleStreamChunk);
+  
+    return () => {
+      socket.off('chunk', handleStreamChunk);
+      clearTimeout(streamTimeout); 
+    };
+  }, [handleStopStreaming, userData]);
   
 
   const handleQuerySubmit = async (query, isMoreDetails = false, isbn = null, bookTitle = null, author = null, moreBooks = false, isKeyInsights = false, isAnecdotes = false, isQuotes = false, isEdit = false) => {
@@ -224,50 +282,73 @@ function BookDetails() {
     setIsLightboxOpen(true);
   };
 
+  const wrappedHandleQuotesRequest = () => {
+    
+    if (!isQuotesClicked) {
+        setIsQuotesClicked(true);
+        
+        handleQuotesRequest(
+            book.isbn,
+            book.title,
+            book.author,
+            handleQuerySubmit,
+            setIsLightboxOpen,
+            setLightboxContent
+        );
 
+        setTimeout(() => setIsQuotesClicked(false), 3500);
+    }
+  };
 
   const wrappedHandleAnecdotesRequest = () => {
-    handleAnecdotesRequest(
-        book.isbn,
-      book.title,
-      book.author,
-      handleQuerySubmit,
-      setIsLightboxOpen,
-      setLightboxContent
-    );
-  };
-
-  const wrappedHandleQuotesRequest = () => {
-    handleQuotesRequest(
-        book.isbn,
-      book.title,
-      book.author,
-      handleQuerySubmit,
-      setIsLightboxOpen,
-      setLightboxContent
-    );
-  };
-
-  const wrappedHandleKeyInsightsRequest = () => {
-    handleKeyInsightsRequest(
-      book.isbn,
-      book.title,
-      book.author,
-      handleQuerySubmit,
-      setIsLightboxOpen,
-      setLightboxContent
-    );
-  };
-
-  const wrappedHandleMoreDetailsRequest = () => {
-    handleMoreDetailsRequest(
+    if (!isAnecdotesClicked) {
+      setIsAnecdotesClicked(true);
+      
+      handleAnecdotesRequest(
         book.isbn,
         book.title,
         book.author,
-      handleQuerySubmit,
-      setIsLightboxOpen,
-      setLightboxContent
-    );
+        handleQuerySubmit,
+        setIsLightboxOpen,
+        setLightboxContent
+      );
+
+      setTimeout(() => setIsAnecdotesClicked(false), 3500);
+    }
+  };
+
+  const wrappedHandleKeyInsightsRequest = () => {
+    if (!isKeyInsightsClicked) {
+      setIsKeyInsightsClicked(true);
+      
+      handleKeyInsightsRequest(
+        book.isbn,
+        book.title,
+        book.author,
+        handleQuerySubmit,
+        setIsLightboxOpen,
+        setLightboxContent
+      );
+
+      setTimeout(() => setIsKeyInsightsClicked(false), 3500);
+    }
+  };
+
+  const wrappedHandleMoreDetailsRequest = () => {
+    if (!isMoreDetailsClicked) {
+      setIsMoreDetailsClicked(true);
+      
+      handleMoreDetailsRequest(
+        book.isbn,
+        book.title,
+        book.author,
+        handleQuerySubmit,
+        setIsLightboxOpen,
+        setLightboxContent
+      );
+    
+      setTimeout(() => setIsMoreDetailsClicked(false), 3500);
+    }
   };
 
   const renderStarRating = (rating) => {
@@ -280,7 +361,6 @@ function BookDetails() {
     }
     return <div style={{display: 'flex', alignItems: 'center', marginRight: '10px'}}>{stars}</div>;
   };
-  
 
   return (
     <>
@@ -289,7 +369,10 @@ function BookDetails() {
         content={lightboxContent}
         onClose={() => {
           setIsLightboxOpen(false);
-          setLightboxContent(''); // Clear the content when Lightbox is closed
+          setLightboxContent('');
+          if (isStreaming) {
+            handleStopStreaming();
+          }
         }}
         contentRef={lightboxContentRef}
       />

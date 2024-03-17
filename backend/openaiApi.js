@@ -8,6 +8,9 @@ const axios = require('axios');
 const BookData = require('./models/models-chat/BookData'); 
 const redisClient = require('./redisClient');
 
+const jsdom = require("jsdom");
+const { JSDOM } = jsdom;
+
 const parseBookTitle = (bookTitleWithAuthor) => {
   // Remove any occurrences of opening or closing quotes
   const cleanedTitle = bookTitleWithAuthor.replace(/"/g, '');
@@ -21,25 +24,185 @@ const parseBookTitle = (bookTitleWithAuthor) => {
 };
 
 function checkFormatMoreDetails(content) {
-  const pattern = /<div class="book-info">\s*<h3 class="book-title">[^<]+<\/h3>\s*<span class="book-author">[^<]+<\/span>\s*<\/div>\s*<div>\s*<img src="[^"]+" alt="[^"]*">\s*<\/div>\s*<div>\s*<a href="[^"]+" target="_blank">\s*<button class="buy-now-button">[^<]+<\/button>\s*<\/a>\s*<\/div>\s*<h3>Book Summary<\/h3>\s*<p>[^<]+<\/p>\s*<h3>Author's Credibility<\/h3>\s*<p>[^<]+<\/p>\s*<h3>Endorsements and Praise<\/h3>\s*<p>[^<]+<\/p>/;
-  return pattern.test(content);
+  const dom = new JSDOM(content);
+  const document = dom.window.document;
+  const bodyChildren = Array.from(document.body.children);
+
+  // Adjusting for the new expected structure size
+  if (bodyChildren.length !== 9) return false;
+
+  // Reusing the initial checks for book info, image, and buy button from the reference function
+  const bookInfo = bodyChildren[0];
+  if (!bookInfo.classList.contains("book-info")) return false;
+  const bookTitle = bookInfo.querySelector("h3.book-title");
+  const bookAuthor = bookInfo.querySelector("span.book-author");
+  const ratingsAndReview = bookInfo.querySelector("div.ratings-and-review");
+
+  const validBookInfoChildren = Array.from(bookInfo.children).filter(child => 
+    child.matches("h3.book-title, span.book-author") || 
+    (child.matches("div.ratings-and-review") && !ratingsAndReview.nextSibling)
+  );
+  if (validBookInfoChildren.length < 2 || validBookInfoChildren.length > 3) return false;
+
+  const imgContainer = bodyChildren[1];
+  if (imgContainer.tagName !== "DIV" || imgContainer.children.length !== 1 || imgContainer.children[0].tagName !== "IMG") return false;
+
+  const buyNowContainer = bodyChildren[2];
+  if (buyNowContainer.tagName !== "DIV" || buyNowContainer.children.length !== 1 || buyNowContainer.children[0].tagName !== "A") return false;
+  const buyNowButton = buyNowContainer.querySelector("button.buy-now-button");
+  if (!buyNowButton) return false;
+
+  // Adjusting checks for the additional sections: Book Summary, Author's Credibility, and Endorsements
+  // Check for Book Summary
+  const bookSummaryH3 = bodyChildren[3];
+  const bookSummaryP = bodyChildren[4];
+  if (bookSummaryH3.tagName !== "H3" || bookSummaryP.tagName !== "P") return false;
+
+  // Check for Author's Credibility
+  const authorCredibilityH3 = bodyChildren[5];
+  const authorCredibilityP = bodyChildren[6];
+  if (authorCredibilityH3.tagName !== "H3" || authorCredibilityP.tagName !== "P") return false;
+
+  // Check for Endorsements and Praise
+  const endorsementsH3 = bodyChildren[7];
+  const endorsementsP = bodyChildren[8];
+  if (endorsementsH3.tagName !== "H3" || endorsementsP.tagName !== "P") return false;
+
+  return true; // All checks passed
 }
 
 function checkFormatKeyInsights(content) {
-  const pattern = /<div class="book-info">\s*<h3 class="book-title">[^<]+<\/h3>\s*<span class="book-author">[^<]+<\/span>\s*<\/div>\s*<div>\s*<img src="[^"]+" alt="[^"]*">\s*<\/div>\s*<div>\s*<a href="[^"]+" target="_blank">\s*<button class="buy-now-button">[^<]+<\/button>\s*<\/a>\s*<\/div>\s*<h3>Key Insights<\/h3>\s*<ol>(?:\s*<li><strong>[^<]+<\/strong>:\s*[^<]+<\/li>\s*)+<\/ol>/;
-  return pattern.test(content);                                                                                                                                                                                                                                                                       
+  const dom = new JSDOM(content);
+  const document = dom.window.document;
+  const bodyChildren = Array.from(document.body.children);
+
+  if (bodyChildren.length !== 5) return false; // Ensuring there are exactly 5 elements at this level
+
+  // Check 1: div.book-info with specific children
+  const bookInfo = bodyChildren[0];
+  if (!bookInfo.classList.contains("book-info")) return false;
+  const bookTitle = bookInfo.querySelector("h3.book-title");
+  const bookAuthor = bookInfo.querySelector("span.book-author");
+  const ratingsAndReview = bookInfo.querySelector("div.ratings-and-review");
+
+  // Allow for the optional presence of exactly one ratings-and-review div
+  const validBookInfoChildren = Array.from(bookInfo.children).filter(child => 
+    child.matches("h3.book-title, span.book-author") || 
+    (child.matches("div.ratings-and-review") && !ratingsAndReview.nextSibling) // Ensure there's only one ratings-and-review div and it's the last child if present
+  );
+
+  if (validBookInfoChildren.length < 2 || validBookInfoChildren.length > 3) return false;
+
+  // Check 2: div > img
+  const imgContainer = bodyChildren[1];
+  if (imgContainer.tagName !== "DIV" || imgContainer.children.length !== 1 || imgContainer.children[0].tagName !== "IMG") return false;
+
+  // Check 3: div > a > button.buy-now-button
+  const buyNowContainer = bodyChildren[2];
+  if (buyNowContainer.tagName !== "DIV" || buyNowContainer.children.length !== 1 || buyNowContainer.children[0].tagName !== "A") return false;
+  const buyNowButton = buyNowContainer.querySelector("button.buy-now-button");
+  if (!buyNowButton) return false;
+
+  // Check 4: h3 with "Key Insights"
+  const keyInsightsH3 = bodyChildren[3];
+  if (keyInsightsH3.tagName !== "H3" || !keyInsightsH3.textContent.includes("Key Insights")) return false;
+
+  // Check 5: ol > li
+  const insightsList = bodyChildren[4];
+  if (insightsList.tagName !== "OL" || insightsList.children.length === 0) return false;
+  for (const item of insightsList.children) {
+    if (item.tagName !== "LI") return false; // Ensuring every child of the list is a list item
+  }
+
+  return true; // All checks passed
 }
 
 function checkFormatAnecdotes(content) {
-  const pattern = /<div class="book-info">\s*<h3 class="book-title">[^<]+<\/h3>\s*<span class="book-author">[^<]+<\/span>\s*<\/div>\s*<div>\s*<img src="[^"]+" alt="[^"]*">\s*<\/div>\s*<div>\s*<a href="[^"]+" target="_blank">\s*<button class="buy-now-button">[^<]+<\/button>\s*<\/a>\s*<\/div>\s*<h3>Key Anecdotes<\/h3>\s*<ol>(\s*<li>\s*<strong>[^<]+<\/strong>:\s*[^<]+\s*<\/li>)+\s*<\/ol>/;
-  return pattern.test(content);
+  const { JSDOM } = require('jsdom');
+  const dom = new JSDOM(content);
+  const document = dom.window.document;
+  const bodyChildren = Array.from(document.body.children);
+
+  if (bodyChildren.length !== 5) return false; // Ensuring there are exactly 5 elements at this level
+
+  // Check 1: div.book-info with specific children
+  const bookInfo = bodyChildren[0];
+  if (!bookInfo.classList.contains("book-info")) return false;
+  const bookTitle = bookInfo.querySelector("h3.book-title");
+  const bookAuthor = bookInfo.querySelector("span.book-author");
+  const ratingsAndReview = bookInfo.querySelector("div.ratings-and-review");
+
+  const validBookInfoChildren = Array.from(bookInfo.children).filter(child => 
+    child.matches("h3.book-title, span.book-author") || 
+    (child.matches("div.ratings-and-review") && !ratingsAndReview.nextSibling)
+  );
+
+  if (validBookInfoChildren.length < 2 || validBookInfoChildren.length > 3) return false;
+
+  // Check 2: div > img
+  const imgContainer = bodyChildren[1];
+  if (imgContainer.tagName !== "DIV" || imgContainer.children.length !== 1 || imgContainer.children[0].tagName !== "IMG") return false;
+
+  // Check 3: div > a > button.buy-now-button
+  const buyNowContainer = bodyChildren[2];
+  if (buyNowContainer.tagName !== "DIV" || buyNowContainer.children.length !== 1 || buyNowContainer.children[0].tagName !== "A") return false;
+  const buyNowButton = buyNowContainer.querySelector("button.buy-now-button");
+  if (!buyNowButton) return false;
+
+  // Check 4: h3 with "Key Anecdotes" text
+  const keyAnecdotesH3 = bodyChildren[3];
+  if (keyAnecdotesH3.tagName !== "H3" || !keyAnecdotesH3.textContent.includes("Key Anecdotes")) return false;
+
+  // Check 5: ol > li, ensuring at least one li is present
+  const listItems = bodyChildren[4];
+  if (listItems.tagName !== "OL" || listItems.children.length === 0) return false;
+
+  return true; // All checks passed
 }
+
 
 function checkFormatQuotes(content) {
-  const pattern = /<div class="book-info">\s*<h3 class="book-title">[^<]+<\/h3>\s*<span class="book-author">[^<]+<\/span>\s*<\/div>\s*<div>\s*<img src="[^"]+" alt="[^"]*">\s*<\/div>\s*<div>\s*<a href="[^"]+" target="_blank">\s*<button class="buy-now-button">[^<]+<\/button>\s*<\/a>\s*<\/div>\s*<h3>Key Quotes<\/h3>\s*<ol>(\s*<li>[^<]+<\/li>)+\s*<\/ol>/;
-  return pattern.test(content);
-}
+  const dom = new JSDOM(content);
+  const document = dom.window.document;
+  const bodyChildren = Array.from(document.body.children);
 
+  if (bodyChildren.length !== 5) return false; // Ensuring there are exactly 5 elements at this level
+
+  // Check 1: div.book-info with specific children
+  const bookInfo = bodyChildren[0];
+  if (!bookInfo.classList.contains("book-info")) return false;
+  const bookTitle = bookInfo.querySelector("h3.book-title");
+  const bookAuthor = bookInfo.querySelector("span.book-author");
+  const ratingsAndReview = bookInfo.querySelector("div.ratings-and-review");
+
+  // Allow for the optional presence of exactly one ratings-and-review div
+  const validBookInfoChildren = Array.from(bookInfo.children).filter(child => 
+    child.matches("h3.book-title, span.book-author") || 
+    (child.matches("div.ratings-and-review") && !ratingsAndReview.nextSibling) // Ensure there's only one ratings-and-review div and it's the last child if present
+  );
+
+  if (validBookInfoChildren.length < 2 || validBookInfoChildren.length > 3) return false;
+
+  // Check 2: div > img
+  const imgContainer = bodyChildren[1];
+  if (imgContainer.tagName !== "DIV" || imgContainer.children.length !== 1 || imgContainer.children[0].tagName !== "IMG") return false;
+
+  // Check 3: div > a > button.buy-now-button
+  const buyNowContainer = bodyChildren[2];
+  if (buyNowContainer.tagName !== "DIV" || buyNowContainer.children.length !== 1 || buyNowContainer.children[0].tagName !== "A") return false;
+  const buyNowButton = buyNowContainer.querySelector("button.buy-now-button");
+  if (!buyNowButton) return false;
+
+  // Check 4: h3
+  const keyQuotesH3 = bodyChildren[3];
+  if (keyQuotesH3.tagName !== "H3") return false;
+
+  // Check 5: ol > li
+  const listItems = bodyChildren[4];
+  if (listItems.tagName !== "OL" || listItems.children.length === 0) return false;
+
+  return true; // All checks passed
+}
 
 function createPreviewButtonHtml(isbn, isEmbeddable) {
   const disabledStyles = `style="cursor: not-allowed; opacity: 0.5; pointer-events: none;"`;
@@ -424,7 +587,7 @@ const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, is
             bookTitle,
             detailedDescription: completeResponse // Save complete response here
           });
-          if (checkFormatMoreDetails) {
+          if ( checkFormatMoreDetails(completeResponse) ) {
             await newDetail.save();
           }
         }
@@ -435,7 +598,7 @@ const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, is
             bookTitle,
             keyInsights: completeResponse // Save complete response here
           });
-          if (checkFormatKeyInsights) {
+          if ( checkFormatKeyInsights(completeResponse) ) {
             await newDetail.save();
           }
         } else if (isAnecdotes) {
@@ -445,7 +608,7 @@ const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, is
             bookTitle,
             anecdotes: completeResponse // Save complete response here
           });
-          if (checkFormatAnecdotes) {
+          if ( checkFormatAnecdotes(completeResponse) ) {
             await newDetail.save();
           }
         } else if (isQuotes) {
@@ -455,7 +618,7 @@ const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, is
             bookTitle,
             quotes: completeResponse // Save complete response here
           });
-          if (checkFormatQuotes) {
+          if ( checkFormatQuotes(completeResponse) ) {
             await newDetail.save();
           }
         }
