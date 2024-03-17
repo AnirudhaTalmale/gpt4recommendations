@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams, useLocation } from 'react-router-dom';
 import axios from 'axios';
+import { handleAnecdotesRequest, handleKeyInsightsRequest, handleMoreDetailsRequest, handleQuotesRequest } from './CommonFunctions';
 import InputBox from './InputBox';
 import SampleQueries from './SampleQueries';
 import AnswerDisplay from './AnswerDisplay';
@@ -8,7 +9,6 @@ import HistoryPane from './HistoryPane';
 import Lightbox from './Lightbox';
 import LightboxForImage from './LightboxForImage';
 import LightboxForBookPreview from './LightboxForBookPreview';
-import { handleAnecdotesRequest, handleKeyInsightsRequest, handleMoreDetailsRequest, handleQuotesRequest } from './CommonFunctions';
 import '../App.css';
 import socket from './socket';
 import Header from './Header';

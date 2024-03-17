@@ -188,19 +188,6 @@ function BookDetails() {
   };
 
   useEffect(() => {
-    const handleStreamChunk = ({ content }) => {
-        setLightboxContent(prevContent => prevContent + content);
-        setIsLightboxOpen(true);
-    };
-  
-    socket.on('chunk', handleStreamChunk);
-  
-    return () => {
-      socket.off('chunk', handleStreamChunk);
-    };
-  }, []);
-
-  useEffect(() => {
     let streamTimeout;
   
     const handleStreamChunk = ({ content, sessionId, isMoreDetails, isKeyInsights, isAnecdotes, isQuotes, moreBooks }) => {
@@ -226,6 +213,20 @@ function BookDetails() {
       clearTimeout(streamTimeout); 
     };
   }, [handleStopStreaming, userData]);
+
+  useEffect(() => {
+    const handleBeforeUnload = (event) => {
+      if (isStreaming) {
+        handleStopStreaming();
+      }
+    };
+  
+    window.addEventListener('beforeunload', handleBeforeUnload);
+  
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, [isStreaming, handleStopStreaming]);
   
 
   const handleQuerySubmit = async (query, isMoreDetails = false, isbn = null, bookTitle = null, author = null, moreBooks = false, isKeyInsights = false, isAnecdotes = false, isQuotes = false, isEdit = false) => {
