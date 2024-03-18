@@ -25,6 +25,7 @@ const HistoryPane = forwardRef(({
 
   const navigate = useNavigate(); 
   const onBookGalleryClick = () => navigate('/book-gallery');
+  const onShortsClick = () => navigate('/shorts');
 
   const handleMouseEnter = () => {
     if (lineRef.current) {
@@ -236,13 +237,11 @@ const HistoryPane = forwardRef(({
         </div>
 
         <div className="header-container shorts">
-
-          <button className="new-session-button">
-            Shorts
+          <button className="new-session-button" onClick={onShortsClick}>
+            Shorts 
           </button>
         </div>
         
-
         <div className="history-content">
           {categorizedSessions.today.length > 0 && (
             <div>

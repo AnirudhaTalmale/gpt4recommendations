@@ -809,13 +809,13 @@ app.get('/api/more-details', async (req, res) => {
 app.get('/api/key-insights', async (req, res) => {
   try {
     const { isbn, bookTitle } = req.query;
-    // let cacheKey = `key-insights:${isbn || bookTitle}`;
+    let cacheKey = `key-insights:${isbn || bookTitle}`;
 
-    // // Try fetching the result from Redis first
-    // let cachedData = await redisClient.get(cacheKey);
-    // if (cachedData) {
-    //   return res.json(JSON.parse(cachedData));
-    // }
+    // Try fetching the result from Redis first
+    let cachedData = await redisClient.get(cacheKey);
+    if (cachedData) {
+      return res.json(JSON.parse(cachedData));
+    }
 
     let query = {};
     if (isbn) {
@@ -832,7 +832,7 @@ app.get('/api/key-insights', async (req, res) => {
     }
 
     // Save the result in Redis without an expiration time
-    // await redisClient.set(cacheKey, JSON.stringify(keyInsightsResult));
+    await redisClient.set(cacheKey, JSON.stringify(keyInsightsResult));
 
     res.json(keyInsightsResult);
   } catch (error) {

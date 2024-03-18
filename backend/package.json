@@ -38,6 +38,7 @@
     "passport-google-oauth20": "^2.0.0",
     "passport-local": "^1.0.0",
     "react-bootstrap": "^2.9.2",
+    "react-player": "^2.15.1",
     "react-quill": "^2.0.0",
     "react-router-dom": "^6.21.1",
     "react-spring": "^9.7.3",
