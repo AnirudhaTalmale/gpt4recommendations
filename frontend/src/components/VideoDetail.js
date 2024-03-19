@@ -1,6 +1,6 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import '../App.css';
+import React, { useEffect, useRef } from 'react';
+import {  useNavigate } from 'react-router-dom';
+import { debounce } from 'lodash';
 
 const videos = [
   { id: '5d6f8da0c9f1c76a627d3671e74cf86c', title: 'Cloudflare Stream Video 1' },
@@ -9,73 +9,92 @@ const videos = [
 ];
 
 const VideoDetail = () => {
-  const { videoId } = useParams();
   const navigate = useNavigate();
-  const [currentVideo, setCurrentVideo] = useState(videoId);
   const containerRef = useRef(null);
+  const playerInstances = useRef({});
 
   useEffect(() => {
-    const findVideoIndex = () => videos.findIndex(video => video.id === videoId);
-    const scrollToVideo = () => {
-      const videoIndex = findVideoIndex();
-      if (videoIndex >= 0) {
-        // Temporarily disable smooth scrolling
-        const originalScrollBehavior = containerRef.current.style.scrollBehavior;
-        containerRef.current.style.scrollBehavior = 'auto';
+    const script = document.createElement('script');
+    script.src = "https://embed.cloudflarestream.com/embed/sdk.latest.js";
+    script.async = true;
+    script.onload = () => initializePlayers();
+    document.body.appendChild(script);
   
-        const scrollPosition = videoIndex * window.innerHeight;
-        containerRef.current.scrollTo(0, scrollPosition);
-  
-        // Re-enable smooth scrolling
-        containerRef.current.style.scrollBehavior = originalScrollBehavior;
-      }
-    };
-  
-    scrollToVideo();
-  }, [videoId]);
-  
-
-  const debounce = (func, wait) => {
-    let timeout;
-    return function executedFunction(...args) {
-      const later = () => {
-        clearTimeout(timeout);
-        func(...args);
-      };
-      clearTimeout(timeout);
-      timeout = setTimeout(later, wait);
-    };
-  };
-  
-  useEffect(() => {
-    const handleScroll = () => {
-      const index = Math.round(containerRef.current.scrollTop / window.innerHeight);
-      const newVideoId = videos[index] ? videos[index].id : currentVideo;
-      if (newVideoId !== currentVideo) {
-        setCurrentVideo(newVideoId);
-        navigate(`/shorts/${newVideoId}`, { replace: true });
-      }
-    };
-  
-    const debouncedHandleScroll = debounce(handleScroll, 100);
-  
-    const container = containerRef.current;
-    container.addEventListener('scroll', debouncedHandleScroll);
+    // Capture the current state of playerInstances.current for use in cleanup
+    const currentPlayerInstances = { ...playerInstances.current };
   
     return () => {
-      container.removeEventListener('scroll', debouncedHandleScroll);
+      // Use captured state for cleanup
+      Object.values(currentPlayerInstances).forEach(player => {
+        if (player && player.destroy) {
+          player.destroy();
+        }
+      });
+      document.querySelectorAll('script[src="https://embed.cloudflarestream.com/embed/sdk.latest.js"]').forEach(script => script.remove());
     };
-  }, [currentVideo, navigate]);
+  }, []);
+
+  const initializePlayers = () => {
+    videos.forEach(video => {
+      const elementId = `stream-player-${video.id}`;
+      const iframe = document.getElementById(elementId);
+      if (iframe && !playerInstances.current[video.id]) {
+        const player = window.Stream(iframe);
+        playerInstances.current[video.id] = player;
+      }
+    });
+  };
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const videoId = entry.target.dataset.videoId;
+          playerInstances.current[videoId]?.play().catch(err => console.error("Playback failed:", err));
+          Object.entries(playerInstances.current).forEach(([id, player]) => {
+            if (id !== videoId) {
+              player.pause();
+            }
+          });
+        }
+      });
+    }, { root: null, rootMargin: '0px', threshold: 0.75 });
+
+    const videoElements = document.querySelectorAll('.video-details-video-container');
+    videoElements.forEach(el => observer.observe(el));
+
+    return () => observer.disconnect();
+  }, [playerInstances]);
+
+  const handleScroll = debounce(() => {
+    const index = Math.round(containerRef.current.scrollTop / window.innerHeight);
+    const newVideoId = videos[index] ? videos[index].id : undefined;
+    if (newVideoId) {
+      navigate(`/shorts/${newVideoId}`, { replace: true });
+    }
+  }, 100);
+
+  useEffect(() => {
+    const container = containerRef.current;
+    container.addEventListener('scroll', handleScroll);
+    return () => {
+      container.removeEventListener('scroll', handleScroll);
+      handleScroll.cancel();
+    };
+  }, [handleScroll]);
+
 
   return (
     <div className="video-details-container" ref={containerRef}>
-      {videos.map((video, index) => (
-        <div key={video.id} className="video-details-video-container">
+      {videos.map(video => (
+        <div key={video.id} className="video-details-video-container" data-video-id={video.id}>
           <iframe
+            id={`stream-player-${video.id}`}
             className="video-details-iframe"
             title={`Video ${video.id}`}
-            src={`https://customer-0k9lje40lp7rnz83.cloudflarestream.com/${video.id}/iframe`}
+            src={`https://customer-0k9lje40lp7rnz83.cloudflarestream.com/${video.id}/iframe?preload=true&loop=true&autoplay=false&poster=https%3A%2F%2Fcustomer-0k9lje40lp7rnz83.cloudflarestream.com%2F${video.id}%2Fthumbnails%2Fthumbnail.jpg`}
             loading="lazy"
+            allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture;"
             allowFullScreen={true}
           ></iframe>
         </div>
