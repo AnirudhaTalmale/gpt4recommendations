@@ -109,7 +109,7 @@ function BookGallery({ onCloseHistoryPane }) {
         <div className="search-bar">
             <input
             type="text"
-            placeholder="Search by title or author"
+            placeholder="Search by title, author, or genre"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             />

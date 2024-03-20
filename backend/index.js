@@ -1038,7 +1038,8 @@ app.get('/api/books', async (req, res) => {
     if (req.query.search) {
       query.$or = [
         { title: { $regex: req.query.search, $options: 'i' } },
-        { author: { $regex: req.query.search, $options: 'i' } }
+        { author: { $regex: req.query.search, $options: 'i' } },
+        { genres: { $regex: searchRegex } },
       ];
     }
 
