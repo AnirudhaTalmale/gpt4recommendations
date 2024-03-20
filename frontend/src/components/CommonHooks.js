@@ -78,3 +78,49 @@ export const useStreamChunkHandler = (
     socket,
   ]);
 };
+
+export const useHandleMessageLimitReached = (
+  socket,
+  getSessionId, // Function to get the session ID or User ID
+  onMessageLimitReached // Callback function to handle the event
+) => {
+  useEffect(() => {
+    const handleMessageLimitReached = (data) => {
+      const sessionIdOrUserId = getSessionId();
+
+      // The callback function decides how to compare IDs and what to do when they match
+      onMessageLimitReached(data, sessionIdOrUserId);
+    };
+
+    socket.on('messageLimitReached', handleMessageLimitReached);
+
+    return () => {
+      socket.off('messageLimitReached', handleMessageLimitReached);
+    };
+  }, [getSessionId, onMessageLimitReached, socket]);
+};
+
+export const useHandleStreamEnd = (
+  socket,
+  getSessionId, // Function to get the session ID or User ID
+  onStreamEnd // Callback function to execute when the stream ends
+) => {
+  useEffect(() => {
+    const handleStreamEnd = ({ sessionId }) => {
+      const sessionIdOrUserId = getSessionId();
+
+      // Check if the current session or user ID matches the one from the event
+      if (sessionIdOrUserId === sessionId) {
+        onStreamEnd();
+      }
+    };
+
+    // Listen for the 'streamEnd' event
+    socket.on('streamEnd', handleStreamEnd);
+
+    // Cleanup: remove the listener when the component unmounts
+    return () => {
+      socket.off('streamEnd', handleStreamEnd);
+    };
+  }, [getSessionId, onStreamEnd, socket]);
+};

@@ -7,7 +7,7 @@ import Lightbox from './Lightbox';
 import { renderStarRating, handleBookPreviewRequest, handleAnecdotesRequest, handleKeyInsightsRequest, handleMoreDetailsRequest, handleQuotesRequest, checkAuthStatus } from './CommonFunctions';
 import axios from 'axios';
 import ConfirmationDialog from './ConfirmationDialog'; 
-import { useGoogleBooksViewer, useStreamChunkHandler } from './CommonHooks'; 
+import { useHandleStreamEnd, useHandleMessageLimitReached, useGoogleBooksViewer, useStreamChunkHandler } from './CommonHooks'; 
 
 
 function BookDetails() {
@@ -43,38 +43,24 @@ function BookDetails() {
     }
   }, []);
 
-  useEffect(() => {
-    // Listen for the 'streamEnd' event from the socket
-    const handleStreamEnd = ({ message, sessionId }) => {
-      if (userData && sessionId === userData.id) {
-        setIsStreaming(false);
-      }
-    };
+  useHandleStreamEnd(
+    socket,
+    () => userData?.id, // Safely getting the current user's ID
+    () => setIsStreaming(false) // Callback to execute when the stream ends
+  );
   
-    socket.on('streamEnd', handleStreamEnd);
-  
-    return () => {
-      // Cleanup: remove the listener when the component unmounts
-      socket.off('streamEnd', handleStreamEnd);
-    };
-  }, [userData]);
 
-  useEffect(() => {
-    const handleMessageLimitReached = ({ userId: reachedUserId, limitMessage }) => {
-      // Check if the message is for the current user
-      if (userData && reachedUserId === userData.id) {
+  useHandleMessageLimitReached(
+    socket,
+    () => userData?.id, // Safely getting the current user's ID
+    ({ userId: reachedUserId, limitMessage }, currentUserId) => {
+      if (currentUserId === reachedUserId) {
         setConfirmationMessage(limitMessage);
         setIsConfirmationDialogOpen(true);
       }
-    };
-
-    socket.on('messageLimitReached', handleMessageLimitReached);
-
-    return () => {
-      socket.off('messageLimitReached', handleMessageLimitReached);
-    };
-  }, [userData]); 
-
+    }
+  );
+  
   useEffect(() => {
     checkAuthStatus().then((userData) => {
       if (userData) {

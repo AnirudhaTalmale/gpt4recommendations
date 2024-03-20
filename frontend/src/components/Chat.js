@@ -13,7 +13,7 @@ import '../App.css';
 import socket from './socket';
 import Header from './Header';
 import { useNavigate } from 'react-router-dom';
-import { useGoogleBooksViewer, useStreamChunkHandler } from './CommonHooks'; 
+import { useHandleStreamEnd, useHandleMessageLimitReached, useGoogleBooksViewer, useStreamChunkHandler } from './CommonHooks'; 
 
 
 function Chat() {
@@ -240,24 +240,12 @@ function Chat() {
     }
   }, []);
 
-  useEffect(() => {
-    // Listen for the 'streamEnd' event from the socket
-    const handleStreamEnd = ({ message, sessionId }) => {
-      // Get the current session's ID
-      const currentSessionId = currentSessionIdRef.current;
-
-      if (currentSessionId === sessionId) {
-        setIsStreaming(false);
-      }
-    };
+  useHandleStreamEnd(
+    socket,
+    () => currentSessionIdRef.current, // Getting the current session ID
+    () => setIsStreaming(false) // Callback to execute when the stream ends
+  );
   
-    socket.on('streamEnd', handleStreamEnd);
-  
-    return () => {
-      // Cleanup: remove the listener when the component unmounts
-      socket.off('streamEnd', handleStreamEnd);
-    };
-  }, [currentSessionIdRef]); // Update dependencies
 
   useStreamChunkHandler(
     socket,
@@ -271,24 +259,16 @@ function Chat() {
       setIsStreaming(true);
     } 
   );
-  
-  useEffect(() => {
 
-    const handleMessageLimitReached = ({ content, sessionId }) => {
-      // Get the current session's ID
-      const currentSessionId = currentSessionIdRef.current;
-
+  useHandleMessageLimitReached(
+    socket,
+    () => currentSessionIdRef.current, // Getting the current session ID
+    ({ content, sessionId }, currentSessionId) => {
       if (currentSessionId === sessionId) {
-        updateSessionMessages(content, 'streamed', false, null); 
+        updateSessionMessages(content, 'streamed', false, null);
       }
-    };
-
-    socket.on('messageLimitReached', handleMessageLimitReached);
-
-    return () => {
-      socket.off('messageLimitReached', handleMessageLimitReached);
-    };
-  }, [updateSessionMessages, currentSessionIdRef]); 
+    }
+  );
   
   useEffect(() => {
     // Find the current session by its ID
