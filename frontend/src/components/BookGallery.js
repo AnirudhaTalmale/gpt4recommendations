@@ -119,4 +119,4 @@
 // }
 
 
-// export default BookGallery;
+// export default BookGallery; 
