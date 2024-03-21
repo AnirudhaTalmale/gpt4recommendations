@@ -111,7 +111,7 @@ function HomePage() {
         </div>
         <div className="footer-links">
           <Link to="/blog" className="footer-link">Blog</Link>
-          <Link to="/contact-us" className="footer-link">Contact us</Link>
+          <a href="mailto:getbooksai@gmail.com" className="footer-link">Mail us</a>
         </div>
       </div>
     </div>
