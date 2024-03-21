@@ -2162,11 +2162,9 @@ b div img {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 100vh;
+  height: 90vh;
   text-align: center;
-  font-family: 'Arial', sans-serif; /* or any other font-family you prefer */
   color: #333;
-  background: #f4f4f4; /* a light background color for better contrast */
 }
 
 .contact-container h1 {
@@ -2203,6 +2201,9 @@ b div img {
   margin-right: 0.75rem; /* space between icon and text */
 }
 
+.contact-container button {
+  background: none;
+}
 
 .contact-container a:hover, .contact-container button:hover {
   background-color: lightgrey; /* darker shade for hover state */
