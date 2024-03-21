@@ -1143,3 +1143,23 @@ if (process.env.NODE_ENV === 'local') {
   });
 }
 
+
+if (process.env.NODE_ENV === 'local') {
+  app.get('/api/clear-redis-data', async (req, res) => {
+    try {
+      // Fetch all keys
+      const keys = await redisClient.keys('*');
+
+      // Delete all keys
+      for (const key of keys) {
+        await redisClient.del(key);
+      }
+
+      res.json({ message: 'All cache data has been deleted' });
+    } catch (error) {
+      console.error('Server error:', error);
+      res.status(500).json({ message: 'Server error occurred while deleting Redis data' });
+    }
+  });
+}
+

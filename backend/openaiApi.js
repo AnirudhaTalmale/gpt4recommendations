@@ -330,6 +330,7 @@ function convertStarRating(starString) {
 
 const getGoogleBookData = async (title) => {
   try {
+    const [mainTitle] = title.split(": ");
     let query = `intitle:${encodeURIComponent(title)}`;
     const response = await axios.get(`https://www.googleapis.com/books/v1/volumes?q=${query}&key=${process.env.REACT_APP_GOOGLE_BOOKS_API_KEY}`);
 
@@ -338,15 +339,19 @@ const getGoogleBookData = async (title) => {
     let embeddable = false;
 
     if (response.data.items?.length) {
-      const englishBooks = response.data.items.filter(item => item.volumeInfo.language === 'en');
+      const filteredBooks = response.data.items.filter(item => item.volumeInfo.title.toLowerCase().includes(mainTitle.toLowerCase()));
+
+      const englishBooks = filteredBooks.filter(item => item.volumeInfo.language === 'en');
       const book = englishBooks.find(item => item.accessInfo.embeddable) || englishBooks[0];
-      embeddable = book.accessInfo.embeddable;
+      if (book) {
+        embeddable = book.accessInfo.embeddable;
     
-      const { volumeInfo } = book;
-      const foundIsbn = volumeInfo.industryIdentifiers?.find(id => id.type === 'ISBN_13' || id.type === 'ISBN_10')?.identifier;
-      if (foundIsbn) isbn = foundIsbn;
-      if (volumeInfo.imageLinks?.thumbnail) {
-        googleImage = volumeInfo.imageLinks.thumbnail.replace("&edge=curl", "");
+        const { volumeInfo } = book;
+        const foundIsbn = volumeInfo.industryIdentifiers?.find(id => id.type === 'ISBN_13' || id.type === 'ISBN_10')?.identifier;
+        if (foundIsbn) isbn = foundIsbn;
+        if (volumeInfo.imageLinks?.thumbnail) {
+          googleImage = volumeInfo.imageLinks.thumbnail.replace("&edge=curl", "");
+        }
       }
     }
     return { googleImage, isbn, embeddable};
@@ -356,6 +361,7 @@ const getGoogleBookData = async (title) => {
     return { googleImage: '', isbn: '', embeddable: false };
   }
 };
+
 
 const getGenreData = async (title) => {
   try {
@@ -368,6 +374,7 @@ const getGenreData = async (title) => {
     });
 
     let genresText = response.choices[0]?.message?.content.trim();
+    // console.log("genresText is: ", genresText);
 
     // Simple regex to match an array format like ["Genre 1", "Genre 2"]
     const arrayRegex = /\["[^"]+"(, "[^"]+")*\]/;
