@@ -174,7 +174,7 @@ const HistoryPane = forwardRef(({
                 </a>
               </li>
               <li onClick={handleChatWithUs}>
-                <i class="fa-solid fa-comments"></i> GetBooks
+                <i class="fa-solid fa-book"></i> GetBooks
               </li>
               <li onClick={handleLogout}>
                 <i class="fa-solid fa-arrow-right-from-bracket"></i> Log out

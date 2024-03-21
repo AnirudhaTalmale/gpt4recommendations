@@ -70,10 +70,6 @@ const HistoryPane = forwardRef(({
   const dropdownRef = useRef(null);
   const userEntryRef = useRef(null);
 
-  const handleChatWithUs = () => {
-    // Redirect to the Chat with Us page or handle the action
-    window.location.href = '/chat-with-us';
-  };
 
   useEffect(() => {
     // Function to check if the click is outside the dropdown
@@ -334,7 +330,7 @@ const HistoryPane = forwardRef(({
                 <i className="fa-solid fa-trash"></i> Delete account
               </li>
               <li>
-                <a href="/blog/65dc9c25cab0d98889d7c352" target="_blank" rel="noopener noreferrer" className="dropdown-link" style={{ display: 'block', width: '100%', height: '100%' }}>
+                <a href="/blog/blog3" target="_blank" rel="noopener noreferrer" className="dropdown-link" style={{ display: 'block', width: '100%', height: '100%' }}>
                   <i class="fa-solid fa-file"></i> Sample Prompts
                 </a>
               </li>
@@ -344,12 +340,9 @@ const HistoryPane = forwardRef(({
                 </a>
               </li>
               <li>
-                <a href="mailto:getbooksai@gmail.com" className="dropdown-link" style={{ display: 'block', width: '100%', height: '100%' }}>
-                  <i className="fa-solid fa-envelope"></i> Mail us
+                <a href="/contact" className="dropdown-link" style={{ display: 'block', width: '100%', height: '100%' }}>
+                  <i className="fa-solid fa-address-book"></i> Contact Us
                 </a>
-              </li>
-              <li onClick={handleChatWithUs}>
-                <i class="fa-solid fa-comments"></i> Chat with us
               </li>
               <li onClick={handleLogout}>
                 <i class="fa-solid fa-arrow-right-from-bracket"></i> Log out

@@ -10,8 +10,7 @@ import HomePage from './components/HomePage';
 import EmailVerificationPage from './components/EmailVerificationPage'; 
 import BookGallery from './components/BookGallery'; 
 import BookDetails from './components/BookDetails';
-// import Shorts from './components/Shorts';
-import VideoDetail from './components/VideoDetail';
+import Contact from './components/Contact'; 
 import './App.css';
 
 function App() {
@@ -31,8 +30,7 @@ function App() {
           <Route path="/new-blog-post" element={<NewBlogPost />} />
           <Route path="/book-gallery" element={<BookGallery />} />
           <Route path="/book-gallery/:bookId" element={<BookDetails />} />
-          {/* <Route path="/shorts" element={<Shorts />} /> */}
-          <Route path="/shorts/:videoId" element={<VideoDetail />} />
+          <Route path="/contact" element={<Contact />} />
         </Routes>
       </div>
     </Router>
