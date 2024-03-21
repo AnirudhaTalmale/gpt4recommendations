@@ -449,7 +449,7 @@ const getBookData = async (title, author, isbn = '') => {
     
     const amazonData = await getAmazonBookData(title);
     const googleData = await getGoogleBookData(title);
-    const genreData = await getGenreData(title); 
+    // const genreData = await getGenreData(title); 
 
     const amazonLink = amazonData.amazonLink || `https://www.amazon.in/s?k=${encodeURIComponent(title.trim())}`;
 
@@ -463,7 +463,7 @@ const getBookData = async (title, author, isbn = '') => {
       amazonLink: amazonLink,
       amazonStarRating: amazonData.amazonStarRating,
       amazonReviewCount: amazonData.amazonReviewCount,
-      genres: genreData,
+      // genres: genreData,
     };
 
     // Save merged data
