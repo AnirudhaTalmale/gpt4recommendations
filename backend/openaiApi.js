@@ -349,8 +349,17 @@ const getGoogleBookData = async (title) => {
         const { volumeInfo } = book;
         const foundIsbn = volumeInfo.industryIdentifiers?.find(id => id.type === 'ISBN_13' || id.type === 'ISBN_10')?.identifier;
         if (foundIsbn) isbn = foundIsbn;
-        if (volumeInfo.imageLinks?.thumbnail) {
-          googleImage = volumeInfo.imageLinks.thumbnail.replace("&edge=curl", "");
+
+        // To get the largest available image
+        const imageLinks = volumeInfo.imageLinks;
+        if (imageLinks) {
+          const imageSizeKeys = ['extraLarge', 'large', 'medium', 'small', 'thumbnail', 'smallThumbnail'];
+          for (const sizeKey of imageSizeKeys) {
+            if (imageLinks[sizeKey]) {
+              googleImage = imageLinks[sizeKey].replace("&edge=curl", "");
+              break; // Stop once the largest available image is found
+            }
+          }
         }
       }
     }
