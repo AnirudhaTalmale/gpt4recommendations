@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 export const useGoogleBooksViewer = (bookPreviewRef) => {
     const [isViewerLoaded, setIsViewerLoaded] = useState(false);
@@ -123,4 +123,45 @@ export const useHandleStreamEnd = (
       socket.off('streamEnd', handleStreamEnd);
     };
   }, [getSessionId, onStreamEnd, socket]);
+};
+
+export const useLightboxScroll = (lightboxContentRef, isLightboxOpen) => {
+  const [isAtBottomLightbox, setIsAtBottomLightbox] = useState(false);
+
+  const isUserAtBottomLightbox = useCallback(() => {
+    if (!lightboxContentRef.current) return false;
+    const { scrollTop, scrollHeight, clientHeight } = lightboxContentRef.current;
+    const isAtBottom = scrollTop + clientHeight >= scrollHeight - 20;
+    return isAtBottom;
+  }, [lightboxContentRef]);
+
+  const scrollToBottomLightbox = useCallback(() => {
+    if (lightboxContentRef.current) {
+      lightboxContentRef.current.scrollTop = lightboxContentRef.current.scrollHeight;
+    }
+  }, [lightboxContentRef]);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsAtBottomLightbox(isUserAtBottomLightbox());
+    };
+
+    const lightboxContentElement = lightboxContentRef.current;
+
+    if (isLightboxOpen && lightboxContentElement) {
+      lightboxContentElement.addEventListener('scroll', handleScroll);
+
+      return () => {
+        lightboxContentElement.removeEventListener('scroll', handleScroll);
+      };
+    }
+  }, [isLightboxOpen, lightboxContentRef, isUserAtBottomLightbox]);
+
+  useEffect(() => {
+    if (isAtBottomLightbox) {
+      scrollToBottomLightbox();
+    }
+  }, [isAtBottomLightbox, scrollToBottomLightbox]);
+
+  return { scrollToBottomLightbox, isUserAtBottomLightbox, isAtBottomLightbox };
 };

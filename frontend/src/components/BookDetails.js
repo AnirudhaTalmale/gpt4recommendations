@@ -7,7 +7,7 @@ import Lightbox from './Lightbox';
 import { renderStarRating, handleBookPreviewRequest, handleAnecdotesRequest, handleKeyInsightsRequest, handleMoreDetailsRequest, handleQuotesRequest, checkAuthStatus } from './CommonFunctions';
 import axios from 'axios';
 import ConfirmationDialog from './ConfirmationDialog'; 
-import { useHandleStreamEnd, useHandleMessageLimitReached, useGoogleBooksViewer, useStreamChunkHandler } from './CommonHooks'; 
+import { useLightboxScroll, useHandleStreamEnd, useHandleMessageLimitReached, useGoogleBooksViewer, useStreamChunkHandler } from './CommonHooks'; 
 
 
 function BookDetails() {
@@ -22,7 +22,6 @@ function BookDetails() {
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const [lightboxContent, setLightboxContent] = useState('');
   const lightboxContentRef = useRef(null);
-  const [isAtBottomLightbox, setIsAtBottomLightbox] = useState(false);
   const [userData, setUserData] = useState(null);
   const [isConfirmationDialogOpen, setIsConfirmationDialogOpen] = useState(false);
   const [confirmationMessage, setConfirmationMessage] = useState('');
@@ -69,40 +68,7 @@ function BookDetails() {
     });
   }, []);
 
-  const isUserAtBottomLightbox = useCallback(() => {
-    if (!lightboxContentRef.current) return false;
-    const { scrollTop, scrollHeight, clientHeight } = lightboxContentRef.current;
-    const isAtBottom = scrollTop + clientHeight >= scrollHeight - 20;
-    return isAtBottom;
-  }, []);
-  
-  const scrollToBottomLightbox = () => {
-    if (lightboxContentRef.current) {
-      lightboxContentRef.current.scrollTop = lightboxContentRef.current.scrollHeight;
-    }
-  };
-
-  useEffect(() => {
-    if (isAtBottomLightbox) {
-      scrollToBottomLightbox();
-    }
-  }, [lightboxContent, isAtBottomLightbox]);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsAtBottomLightbox(isUserAtBottomLightbox());
-    };
-  
-    const lightboxContentElement = lightboxContentRef.current;
-  
-    if (isLightboxOpen && lightboxContentElement) {
-      lightboxContentElement.addEventListener('scroll', handleScroll);
-  
-      return () => {
-        lightboxContentElement.removeEventListener('scroll', handleScroll);
-      };
-    }
-  }, [isLightboxOpen, isUserAtBottomLightbox]);
+  useLightboxScroll(lightboxContentRef, isLightboxOpen);
 
   useEffect(() => {
     if (isBookPreviewLightboxOpen && bookIdForPreview && isViewerLoaded) {
