@@ -222,14 +222,15 @@ body:not(.history-pane-open) .input-area {
   display: flex;
   align-items: center;
   background-color: rgb(253, 253, 253);
-  max-width: 45rem;
+  max-width: 40rem;
   margin-left: auto;
   margin-right: auto;
+  border: 1px solid pink;
 }
 
 
 .input-box {
-  width: 82%; /* Full width of the parent container */
+  width: 100%; /* Full width of the parent container */
   margin: auto;
   margin-bottom: 1.3rem;
   border-radius: 1rem;
@@ -242,7 +243,7 @@ body:not(.history-pane-open) .input-area {
   line-height: 1.5; /* Line height for text */
   color: #333; /* Text color */
   background-color: #fff; /* Background color */
-  padding: 0.8rem 3rem 0.8rem 1.3rem;
+  padding: 0.6rem 3rem 0.6rem 1.2rem;
   max-height: 10rem;
   overflow-y: auto;
 
@@ -271,17 +272,17 @@ body:not(.history-pane-open) .input-area {
 .send-button, .stop-button {
   position: absolute;
   right: 2.7rem; /* Adjust as needed */
-  bottom: 2.05rem; /* Adjust as needed */
-  font-size: 1rem;
-  width: 1.9rem;
-  height: 1.9rem;
+  bottom: 1.95rem; /* Adjust as needed */
+  font-size: 0.9rem;
+  width: 1.7rem;
+  height: 1.7rem;
 }
 
 .stop-button {
   border: none;
   background: none;
   cursor: pointer;
-  font-size: 1.15rem;
+  font-size: 1.05rem;
   bottom: 1.99rem;
 }
 
@@ -2593,7 +2594,7 @@ body:not(.history-pane-open-chat-with-us) .chat-area-chat-with-us {
   }
 
   .input-area {
-    width: 95%;
+    width: 96%;
     bottom: 0vh !important;
     left: 0 !important;
   }

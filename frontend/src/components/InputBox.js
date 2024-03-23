@@ -5,8 +5,8 @@ function InputBox({ onSubmit, isStreaming, onStopStreaming, onHeightChange }) {
   const [input, setInput] = useState('');
   const [isInputNotEmpty, setIsInputNotEmpty] = useState(false);
   const [rows, setRows] = useState(1);
-  const [sendButtonRight, setSendButtonRight] = useState('2.7rem');
-  const [stopButtonRight, setStopButtonRight] = useState('2.7rem');
+  const [sendButtonRight, setSendButtonRight] = useState('2.3rem');
+  const [stopButtonRight, setStopButtonRight] = useState('2.3rem');
 
   const updateButtonPositions = () => {
     const parentWidth = document.querySelector('.input-area').clientWidth;
