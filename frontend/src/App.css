@@ -25,7 +25,6 @@ body:not(.history-pane-open) .chat-area {
 
 .header {
   width: 100%;
-  height: 50px;
   /* border: 1px solid red; */
   padding-top: 1rem;
   padding-bottom: 0.5rem;
@@ -225,7 +224,7 @@ body:not(.history-pane-open) .input-area {
   max-width: 40rem;
   margin-left: auto;
   margin-right: auto;
-  border: 1px solid pink;
+  padding: 0 0.5rem;
 }
 
 
@@ -399,26 +398,27 @@ body:not(.history-pane-open) .input-area {
 }
 
 .pane-line path {
-  transition: d 1s ease, stroke-width 1s ease;
+  transition: d 2s ease, stroke-width 2s ease;
   stroke-linecap: round; /* Ensure this is consistent with the JSX */
 }
 
 .history-pane {
   background-color: rgba(0, 0, 0, 0.923);
   color: #fff;
-  width: 244px; /* Adjust width as needed */
+  width: 244px; 
   padding: 0.5rem;
-  position: fixed; /* Make it stay on the left */
+  position: fixed;
   left: 0;
   top: 0;
   bottom: 0;
-  z-index: 10000; /* Ensure pane is below the toggle button */
+  z-index: 10000; 
   display: flex;
   flex-direction: column;
+  transition: transform 0.2s ease;
 }
 
 .history-pane.closed {
-  transform: translateX(-100%); /* Slide the pane out of view */
+  transform: translateX(-100%); 
 }
 
 .header-container {
@@ -2539,8 +2539,8 @@ body:not(.history-pane-open-chat-with-us) .chat-area-chat-with-us {
 
   .header {
     display: flex;
-    width: 96.95vw;
-    height: 60px;
+    width: 97.5vw;
+    height: 2.3rem;
     justify-content: space-between; /* Aligns items on opposite ends */
     padding: 0 10px; /* Add some padding on the sides */
     border-bottom: 1px solid rgb(213, 211, 211);

@@ -200,8 +200,6 @@ const HistoryPane = forwardRef(({
     }
   };
 
-  
-
   return (
     <div ref={ref}>
       <div className={`history-pane ${isPaneOpen ? '' : 'closed'}`}>
@@ -224,18 +222,6 @@ const HistoryPane = forwardRef(({
             <i className="fa-regular fa-pen-to-square"></i>
           </button>
         </div>
-
-        {/* <div className="header-container book-gallery">
-          <button className="new-session-button" onClick={onBookGalleryClick}>
-            Gallery 
-          </button>
-        </div> */}
-
-        {/* <div className="header-container shorts">
-          <button className="new-session-button" onClick={onShortsClick}>
-            Shorts 
-          </button>
-        </div> */}
         
         <div className="history-content">
           {categorizedSessions.today.length > 0 && (
