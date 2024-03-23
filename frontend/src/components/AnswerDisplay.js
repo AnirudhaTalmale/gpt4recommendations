@@ -243,7 +243,7 @@ function AnswerDisplay({
               )}
               {isEditing && (
                 <div className="button-container">
-                  <button onClick={handleSave} className="save-button">Save & Submit</button>
+                  <button onClick={handleSave} className="save-button">Save</button>
                   <button onClick={handleCancel} className="cancel-button">Cancel</button>
                 </div>
               )}

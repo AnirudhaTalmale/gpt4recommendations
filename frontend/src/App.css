@@ -55,14 +55,6 @@ body:not(.history-pane-open) .chat-area {
   cursor: pointer;
 }
 
-.header-title {
-  display: inline-block;
-  font-size: 1rem; /* Adjust size as needed */
-  margin-top: 1.05vh;
-  margin-bottom: 1.05vh;
-  font-weight: bold;
-}
-
 .header-content {
   display: flex; /* Use flexbox to align items side by side */
   align-items: center; /* Center items vertically */
@@ -1311,7 +1303,6 @@ body:not(.history-pane-open) .input-area {
   font-size: 1.1rem;
 }
 
-
 /* Custom scrollbar for lightbox-content */
 .lightbox-content::-webkit-scrollbar {
   width: 12px; /* width of the entire scrollbar */
@@ -1364,12 +1355,12 @@ body:not(.history-pane-open) .input-area {
 
 .fa-pen {
   display: none;
-  color: rgb(89, 89, 89);
+  color: rgb(191, 189, 189);
   cursor: pointer;
   padding: 6px;
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   position: absolute;
-  left: -5px; /* Align with the start of the text */
+  left: -0.35rem; /* Align with the start of the text */
   bottom: 14px; /* Position it within the container */
 }
 
@@ -1380,44 +1371,6 @@ body:not(.history-pane-open) .input-area {
 .message-question-container:hover .fa-pen {
   display: block;
 }
-
-/* Styles for Save button */
-button.save-button {
-  background-color: #10A37F; /* Green background */
-  border: none;
-  color: white;
-  padding: 10px 12px;
-  text-align: center;
-  text-decoration: none;
-  font-size: 0.85rem;
-  margin: 4px 4.5px;
-  cursor: pointer;
-  border-radius: 6px; /* Rounded corners */
-  font-weight: bold;
-}
-
-/* Styles for Cancel button */
-button.cancel-button {
-  font-weight: bold;
-  padding: 10px 12px;
-  text-align: center;
-  text-decoration: none;
-  font-size: 0.85rem;
-  margin: 4px 4.5px;
-  cursor: pointer;
-  border-radius: 6px; /* Rounded corners */
-  border: 1px solid lightgrey;
-  background-color: inherit;
-}
-
-button.save-button:hover {
-  background-color: #0d7f62;
-}
-
-button.cancel-button:hover {
-  background-color: rgba(0, 0, 0, 0.06); /* Slightly darker overlay */
-}
-
 
 /* AnswerDisplay component */
 
@@ -1470,9 +1423,9 @@ button.cancel-button:hover {
 }
 
 .display-image {
-  margin-top: 0rem;
-  width: 1.5rem;
-  height: 1.5rem;
+  margin-top: 0.15rem;
+  width: 1.2rem;
+  height: 1.2rem;
   border-radius: 50%;
   border: none;
 }
@@ -1568,6 +1521,35 @@ button.cancel-button:hover {
 .buy-now-button:focus, .key-insights-btn:focus, .anecdotes-btn:focus, .quotes-btn:focus, .preview-btn:focus, .more-details-btn:focus, .continue-generating-btn:focus {
   outline: none;
   box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
+}
+
+.save-button, .cancel-button {
+  padding: 0.25rem 0.6rem;
+  text-align: center;
+  text-decoration: none;
+  font-size: 0.82rem;
+  margin: 0.4rem 0.3rem;
+  cursor: pointer;
+  border-radius: 0.35rem;
+}
+
+.save-button {
+  background-color: #10A37F; 
+  border: none;
+  color: white;
+}
+
+.cancel-button {
+  border: 1px solid lightgrey;
+  background-color: inherit;
+}
+
+.save-button:hover {
+  background-color: #0d7f62;
+}
+
+.cancel-button:hover { 
+  background-color: rgba(0, 0, 0, 0.06); 
 }
 
 .button-container-continue-generating-btn {
@@ -2540,12 +2522,15 @@ body:not(.history-pane-open-chat-with-us) .chat-area-chat-with-us {
   margin-top: -1.5rem;
 }
 
-@media (max-width: 480px) {
+@media (max-width: 759px) {
 
   .App {
     overflow: hidden;
   }
 
+  .fa-pen {
+    display: block;
+  }
 
   .sample-queries-container {
     left: 0 !important;
@@ -2553,12 +2538,23 @@ body:not(.history-pane-open-chat-with-us) .chat-area-chat-with-us {
 
   .header {
     display: flex;
-    /* border: 1px solid red; */
-    width: 94.1%;
-    height: 5vh;
+    width: 96.95vw;
+    height: 60px;
     justify-content: space-between; /* Aligns items on opposite ends */
     padding: 0 10px; /* Add some padding on the sides */
     border-bottom: 1px solid rgb(213, 211, 211);
+  }
+
+  .header-title {
+    display: inline-block;
+    font-size: 1rem; /* Adjust size as needed */
+    margin-top: auto;
+    margin-bottom: auto;
+    font-weight: bold;
+  }
+
+  .new-session-button-small-screen {
+    margin-right: 0.39rem;
   }
 
   .sample-query {
@@ -2589,7 +2585,8 @@ body:not(.history-pane-open-chat-with-us) .chat-area-chat-with-us {
 
   .chat-area {
     margin: 0;
-    padding-left: 0vw;
+    margin-left: -0.27rem !important;
+    padding-left: 0rem;
     padding-top: 2.5vh;
     padding-right: 4vw;
     /* border: 1px solid blue; */
@@ -2597,6 +2594,7 @@ body:not(.history-pane-open-chat-with-us) .chat-area-chat-with-us {
 
   .input-area {
     width: 95%;
+    bottom: 0vh !important;
     left: 0 !important;
   }
 
