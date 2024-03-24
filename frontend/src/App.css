@@ -1926,12 +1926,12 @@ body:not(.history-pane-open) .input-area {
 .contact-container a, .contact-container button {
   display: inline-flex; /* Use inline-flex to align items within buttons */
   align-items: center; /* Center the items vertically */
-  width: 185px; /* Set a fixed width */
+  width: 6rem; /* Set a fixed width */
   font-size: 1rem; /* Set a fixed font size */
   margin: 5px 0; /* Margin for spacing between buttons */
-  border: 0.5px solid black;
+  border: 0.5px solid lightgrey;
   color: black;
-  padding: 0.75rem 1.5rem; /* Set a uniform padding */
+  padding: 0.65rem 0.95rem; /* Set a uniform padding */
   text-decoration: none;
   border-radius: 6px;
   cursor: pointer;
@@ -1963,7 +1963,6 @@ body:not(.history-pane-open) .input-area {
 
 .contact-buttons-container {
   text-align: left;
-  width: 100%; /* Takes full width of the parent container */
   max-width: 185px; /* Maximum width of the buttons to align text */
   margin: 0 auto; /* Centers the buttons container */
 }
