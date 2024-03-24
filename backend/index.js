@@ -314,7 +314,7 @@ io.on('connection', (socket) => {
     // Find the session and update it with the new message and response
     const session = await Session.findById(sessionId).populate('user');
     if (!session) {
-      return res.status(404).json({ message: 'Session not found' });
+      return res.status(404).json({ message: 'Session not found' }); 
     }
 
     if (!isMoreDetails && !moreBooks && !isKeyInsights && !isAnecdotes && !isQuotes && !isEdit) {
@@ -326,7 +326,7 @@ io.on('connection', (socket) => {
       };
       session.messages.push(newMessage);
 
-      // Save the session
+      // Save the session 
       await session.save();
 
       // The newly added message will be the last in the array
