@@ -1,0 +1,2035 @@
+
+.App {
+  display: flex;
+  flex-direction: column; /* Keep the main direction as column for stacking */
+  height: 100vh;
+  background-color: rgb(253, 253, 253);
+}
+
+/* chat-area header */
+
+ol {
+  padding-inline-start: 0px;  /* Adjusts the starting padding of the list to reduce indentation */
+}
+
+ol li::marker {
+  color: #777777;
+  font-size: 0.93rem;
+  
+}
+
+
+body:not(.history-pane-open) .chat-area {
+  margin-left: 0;
+}
+
+.header {
+  width: 100%;
+  /* border: 1px solid red; */
+  padding-top: 1rem;
+  padding-bottom: 0.5rem;
+}
+
+.header-new-session-button {
+  border: 1px solid rgb(209, 208, 208);
+  cursor: pointer;
+  background: none;
+  font-size: 0.95rem;
+  padding: 0.5rem 0.6rem;
+  margin-left: 1rem;
+  border-radius: 0.5rem;
+  margin-top: -0.5rem;
+}
+
+.new-session-button-small-screen {
+  border: none;
+  background: none;
+  font-size: 1.1rem;
+  cursor: pointer;
+}
+
+.menu-button-small-screen {
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 1.03rem;
+}
+
+.header-content {
+  display: flex; /* Use flexbox to align items side by side */
+  align-items: center; /* Center items vertically */
+  justify-content: flex-start; /* Align items to the left */
+}
+
+.header-title-large {
+  font-size: 1.15rem; /* Adjust size as needed */
+  font-weight: bold;
+  margin-left: 1.2rem;
+  margin-top: -0.5rem;
+}
+
+.header-title-pane-open {
+  font-size: 1.15rem; /* Adjust size as needed */
+  font-weight: bold;
+  margin-left: 280px;
+  /* margin-top: 0.8rem; */
+  margin-bottom: 0.35rem;
+}
+
+/* chat area */
+
+.book-author {
+  font-size: 0.84rem; /* Smaller font size for the author's name */
+  color: rgb(104, 103, 103); /* Different color for the author's name */
+}
+
+/* --------------- */
+
+.fa-star-half-stroke {
+  color: orange;
+  font-size: 0.9rem;
+}
+
+.fa-star {
+  color: orange;
+  font-size: 0.9rem;
+}
+
+.review-count {
+  font-size: 0.85rem;
+}
+
+.ratings-and-review {
+  display: flex;
+  align-items: center;
+}
+
+.star-rating {
+  margin-right: 10px; /* Adjust as needed */
+}
+
+
+/* --------------- */
+
+
+.chat-area-wrapper {
+  display: flex;
+  justify-content: center; /* Center the child horizontally */
+  
+}
+
+.chat-area {
+  /* border: 1px solid green; */
+  /* background-color: black; */
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  margin-left: 260px; /* Keep your existing left margin */
+  padding-bottom: 5rem; /* Added padding at the bottom */
+  /* background-color: red; */
+  overflow-y: auto; 
+  flex-grow: 1;
+  padding-right: 3rem;
+  /* background-color: red; */
+}
+
+/* Style the scrollbar itself (light grey) */
+.chat-area::-webkit-scrollbar {
+  width: 0.5rem; /* Width of the scrollbar */
+  
+}
+
+/* Style the scrollbar track */
+.chat-area::-webkit-scrollbar-track {
+}
+
+/* Handle */
+.chat-area::-webkit-scrollbar-thumb {
+  background: #dcdcdc; /* Slightly darker grey for the handle */
+  border-radius: 10rem;
+}
+
+/* Handle on hover */
+.chat-area::-webkit-scrollbar-thumb:hover {
+  background: #b0b0b0; /* Even darker grey for the handle on hover */
+}
+
+.chat-heading {
+  text-align: center; /* Center the text */
+  font-size: 1.3rem; /* Set the desired font size */
+  font-weight: bold; /* Make the text bold */
+  margin-top: 5vh;
+}
+
+/* Sample Queries */
+
+body:not(.history-pane-open) .sample-queries-container {
+  left: 0;
+}
+
+.sample-queries-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  padding: 1rem;
+  position: fixed;
+  left: 260px;
+  right: 0px;
+  max-width: 41.5rem; /* Same as input-area */
+  margin-left: auto; /* Centering with auto margins */
+  margin-right: auto; /* Centering with auto margins */
+  border-radius: 8px;
+  margin-bottom: 0.5rem;
+}
+
+
+.sample-queries-row {
+  display: flex;
+  justify-content: space-evenly; /* Evenly space the buttons */
+  margin-bottom: 0.5rem; /* Space between the rows */
+  
+}
+
+.sample-query {
+  /* Existing styles */
+  flex: 1;
+  margin: 0.1rem 0.4rem;
+  border-radius: 0.6rem;
+  height: 3.7rem; /* Adjusted to a single height value */
+  background: none;
+  border: 1.4px solid rgba(169, 169, 169, 0.416);
+  font-size: 0.9rem;
+  text-align: start;
+  padding: 0.9rem;
+  cursor: pointer;
+}
+
+.sample-query:hover {
+  background-color: rgba(0, 0, 0, 0.05); /* Light grey color on hover */
+}
+
+
+/* input area */
+body:not(.history-pane-open) .input-area {
+  margin-left: 0;
+}
+
+.input-area {
+  display: flex;
+  flex-direction: column;
+  margin-left: 260px;
+  align-items: center;
+  background-color: rgb(253, 253, 253);
+  padding: 0 0.5rem;
+  /* flex-grow: 1; */
+  /* border: 1px solid pink; */
+}
+
+
+.input-box {
+  width: 80%; /* Full width of the parent container */
+  max-width: 40rem;
+  margin: auto;
+  margin-bottom: 1.3rem;
+  border-radius: 0.8rem;
+  height: auto; /* Adjust height automatically based on content */
+  border: 0.093rem solid #D3D3D3; /* Border color and width */
+  outline: none; /* Removes the default focus outline */
+  resize: none; /* Disables the resize handle */
+  font-family: 'Arial', sans-serif; /* Font style */
+  font-size: 1rem; /* Font size */
+  line-height: 1.5; /* Line height for text */
+  color: #333; /* Text color */
+  background-color: #fff; /* Background color */
+  padding: 0.6rem 3rem 0.6rem 1.2rem;
+  max-height: 10rem;
+  overflow-y: auto;
+
+  /* Placeholder styling */
+  ::placeholder {
+      color: #888; /* Color of the placeholder text */
+  }
+
+  /* Scrollbar styling (for webkit browsers) */
+  ::-webkit-scrollbar {
+      width: 6px; /* Width of the scrollbar */
+  }
+
+  ::-webkit-scrollbar-thumb {
+      background-color: #e6e4e4; /* Color of the scrollbar thumb */
+      border-radius: 3px; /* Rounded corners for the scrollbar thumb */
+  }
+
+  /* Styling for when the textarea is focused by the user */
+  :focus {
+      border-color: #007BFF; /* Highlight color when focused */
+      box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25); /* A subtle shadow around the textarea */
+  }
+}
+
+.send-button, .stop-button {
+  position: absolute;
+  right: 3.7rem; /* Adjust as needed */
+  bottom: 1.95rem; /* Adjust as needed */
+  font-size: 0.9rem;
+  width: 1.7rem;
+  height: 1.7rem;
+}
+
+.stop-button {
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 1.05rem;
+  bottom: 1.85rem;
+}
+
+.send-button {
+  background-color: #ddd;
+  border: 1px solid #D3D3D3;
+  border-radius: 0.5rem;
+  color: white;
+  cursor: pointer;
+}
+
+
+.send-button.active {
+  background-color: black;
+}
+
+.attachment-button {
+  position: absolute;
+  left: 0.6rem; /* Position it to the left */
+  bottom: 0.35rem; /* Align with the send button */
+  background: none; /* Background color similar to send button */
+  border: none;
+  width: 1.85rem; /* Width similar to send button */
+  height: 1.85rem; /* Height similar to send button */
+  font-size: 1rem; /* Icon size */
+  cursor: pointer; /* Cursor as pointer to indicate clickable */
+}
+
+.attachment-button i {
+  line-height: 1.85rem; /* Center the icon vertically */
+  text-align: center; /* Center the icon horizontally */
+  display: block;
+}
+
+.attachment-preview {
+  position: relative;
+  /* ...existing styles... */
+}
+
+.remove-attachment-button {
+  position: absolute;
+  top: -0.07rem;
+  right: 0.35rem;
+  background: grey; /* Ensure this is the color you want for the background */
+  border: none;
+  cursor: pointer;
+  color: white; /* Or any color that makes the icon visible */
+  font-size: 1.3rem; /* Adjust size as needed */
+  border-radius: 50%; /* This will make the button round */
+  width: 1.3rem; /* Adjust the width as needed */
+  height: 1.3rem; /* Adjust the height to match the width */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden; /* This ensures that nothing extends outside the circular boundary */
+}
+
+
+.attachment-preview:hover {
+  display: block; /* Show the button on hover */
+}
+
+.attachment-preview img {
+  width: 3.3rem; /* Or any size you see fit */
+  height: 3.3rem; /* Or any size you see fit */
+  object-fit: cover;
+  margin-right: 1.2rem; /* Spacing between multiple attachments */
+  vertical-align: middle; /* Align inline with text */
+  border-radius: 0.3rem; /* Optional: if you want rounded corners */
+}
+
+.attachment-previews-header {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  padding-left: 0.5rem;
+}
+
+/* History pane css */
+
+.close-pane-button {
+  position: absolute;
+  top: 50%; /* Center vertically */
+  left: 107%; /* Center horizontally */
+  transform: translate(-50%, -50%);
+  cursor: pointer; 
+  color: rgb(200, 200, 200);
+  font-size: 1.3rem;
+  background: none;
+  border: none;
+}
+
+.close-pane-button:hover {
+  color: black; /* Color changes to black on hover */
+}
+
+.pane-line path {
+  transition: d 2s ease, stroke-width 2s ease;
+  stroke-linecap: round; /* Ensure this is consistent with the JSX */
+}
+
+.history-pane {
+  background-color: rgba(0, 0, 0, 0.923);
+  color: #fff;
+  width: 244px; 
+  padding: 0.5rem;
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  z-index: 10000; 
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s ease;
+}
+
+.history-pane.closed {
+  transform: translateX(-100%); 
+}
+
+.header-container {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem 0.4rem;
+  align-items: center; /* Align buttons vertically */
+  position: relative; 
+  &:hover {
+    background-color: hsla(0,0%,100%,.1);
+    border-radius: 0.34rem;
+  }
+  cursor: pointer;
+}
+
+.new-session-button {
+  color: #d9d9e3;
+  border: none;
+  cursor: pointer;
+  background: none;
+  font-size: 1rem;
+  font-weight: bold;
+}
+
+
+/* Styles for the main content area */
+.history-content {
+  position: relative;
+  
+  overflow-y: auto;
+  flex-grow: 1; /* Take available space */
+  margin-bottom: 3.7rem;
+}
+
+.history-content::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 27%;
+  background: linear-gradient(to left, rgba(0, 0, 0, 1), transparent);
+  pointer-events: none; /* Allow mouse events to pass through */
+}
+
+
+.history-entry {
+  /* Add styles for individual history entries here */
+  overflow: hidden; /* Hide overflow */
+  white-space: nowrap;
+  padding: 0.6rem 0.4rem;
+  margin-left: 0.2rem;
+  margin-right: 0.1rem;
+  cursor: pointer; 
+  display: flex; /* Use Flexbox */
+  justify-content: space-between; /* Space between items */
+  align-items: center; /* Align items vertically */
+  z-index: 1;
+}
+
+.history-entry:hover {
+  position: relative;
+  z-index: 2; /* Ensure it's above the gradient */
+  background-color: hsla(0, 0%, 100%, 0.097); /* Your hover background color */
+  border-radius: 0.5rem;
+  /* ... other existing styles ... */
+}
+
+.history-entry-text {
+  overflow: hidden;
+  white-space: nowrap;
+  flex-grow: 1;
+  /* background-color: yellow; */
+  margin-left: 0.1rem;
+  margin-right: 0.1rem;
+  /* border: 1px solid green; */
+  margin-right: 1rem !important;
+  font-size: 0.86rem !important;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.delete-session-button {
+  display: none;
+  cursor: pointer;
+  color: #d9d9e3;
+  background: none;
+  border: none;
+  font-size: 0.8rem;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 3;
+  padding: 0rem;
+  margin-right: 0.3rem;
+  margin-left: 0;
+}
+
+.history-entry:hover .delete-session-button,
+.history-entry.active .delete-session-button {
+  display: inline-block;
+}
+
+
+.history-entry:hover .delete-session-button,
+.history-entry.active .delete-session-button {
+  display: inline-block;
+}
+
+.user-info-container {
+  
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  margin-bottom: 0.7rem;
+  position: relative;
+  /* background-color: orange; */
+  height: 3rem;
+  width: 91%;
+  margin-left: 4%;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+}
+
+.user-entry {
+  /* border: 1px solid pink; */
+  padding: 0.5rem;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 0.9rem;
+  &:hover, &.active { /* Apply the same style for hover and active state */
+      background-color: hsla(0,0%,100%,.1);
+      border-radius: 0.5rem;
+  }
+  user-select: none;
+  /* border: 1px solid green; */
+}
+
+.history-pane-image {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  margin-left: 0.33rem;
+  margin-right: 0.8rem;
+  user-select: none;
+}
+
+.dropdown-menu {
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  width: 82%;
+  margin-left: 0.6%;
+  margin-bottom: 0.3rem;
+  z-index: 3;
+  background-color: hsla(0, 0%, 19%, 1);
+  border-radius: 0.5rem;
+  overflow: hidden; /* Optional: In case of very long item names */
+  font-size: 0.97rem;
+}
+
+.dropdown-menu li {
+  /* border: 1px solid red; */
+  list-style-type: none;
+  margin-left: -2.45rem;
+  padding: 0.6rem 1rem;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  &:hover {
+    background-color: hsla(240, 51%, 79%, 0.213);
+  }
+  height: 1.7rem;
+}
+
+.dropdown-menu .fa-arrow-right-from-bracket {
+  margin-right: 1.15rem;
+  margin-left: 0.27rem;
+}
+
+.dropdown-menu .fa-comments {
+  margin-right: 1.07rem;
+  margin-left: 0.08rem;
+}
+
+
+
+.dropdown-menu .fa-book {
+  margin-right: 1.31rem;
+  margin-left: 0.23rem;
+}
+
+.dropdown-menu .fa-address-book {
+  margin-right: 0.93rem;
+  margin-left: 0.265rem;
+}
+
+
+
+.dropdown-menu .fa-file {
+  margin-right: 1.08rem;
+  margin-left: 0.355rem;
+}
+
+.dropdown-menu .fa-blog {
+  margin-right: 0.93rem;
+  margin-left: 0.31rem;
+}
+
+.dropdown-menu .fa-trash {
+  margin-right: 1.34rem;
+  margin-left: 0.31rem;
+}
+
+.dropdown-menu .fa-envelope {
+  margin-right: 1.03rem;
+  margin-left: 0.19rem;
+}
+
+.dropdown-link {
+  color: inherit; /* Or a specific color that matches your design */
+  text-decoration: none; /* Removes the underline from links */
+  display: flex;
+  align-items: center;
+  padding-top: 0.45rem;
+}
+
+/* Update styles for the unseen message count indicator */
+.unseen-messages-count {
+  margin-left: 8px;
+  background-color: green; /* Background color for the count indicator */
+  color: white; /* Text color for the count indicator */
+  border-radius: 50%; /* Make it a circle */
+  padding: 2.5px 7px; /* Adjust padding to fit your design */
+  font-size: 0.65rem; /* Smaller font size for the count */
+  vertical-align: middle; /* Align it with the session name text */
+  font-weight: bold;
+}
+
+.history-entry.active {
+  background-color: hsla(240, 51%, 79%, 0.213);
+  border-radius: 0.5rem;
+  position: relative;
+  z-index: 2;
+}
+
+.category-title {
+  margin: 0.52rem 0.67rem;
+  font-size: 0.73rem;
+  color: rgb(152, 152, 152);
+  font-family: Arial, Helvetica, sans-serif;
+  margin-top: 2rem;
+  font-weight: bold;
+}
+
+.confirmation-dialog-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+  z-index: 10000; /* Ensure it's above other content */
+}
+
+.confirmation-dialog {
+  background-color: white;
+  padding: 20px;
+  border-radius: 5px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  text-align: center;
+  font-size: 0.9rem;
+}
+
+.confirmation-dialog p {
+  margin-bottom: 20px;
+}
+
+.confirmation-dialog button {
+  margin: 0 10px;
+  padding: 0.5rem 15px;
+  border: none;
+  border-radius: 0.5rem;
+  width: 6rem;
+  background-color: #007bff;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.confirmation-dialog button:hover {
+  background-color: #0056b3;
+}
+
+.confirmation-dialog button:nth-child(2) {
+  background-color: #dc3545;
+}
+
+.confirmation-dialog button:nth-child(2):hover {
+  background-color: #c82333;
+}
+
+
+/* Home page components */
+
+.footer-links {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  bottom: 0;
+}
+
+.footer-link {
+  margin: 2rem 0.3rem;
+  color: rgb(143, 143, 143);
+  font-size: 0.9rem;
+  font-weight: 400;
+}
+
+.footer-link:not(:last-child)::after {
+  content: '|';
+  color: rgb(143, 143, 143);
+  margin-left: 0.7rem; /* Spacing to the right of the link */
+}
+
+.footer-link:hover {
+  text-decoration: underline;
+}
+
+.home-page-wrapper {
+  display: flex;
+  flex-direction: column; /* Stack the children vertically on small screens */
+  height: 100vh;
+}
+
+.chatgpt-text {
+  position: absolute; /* Position it relative to the home-page-wrapper */
+  top: 25px; /* Adjust the distance from the top as needed */
+  font-weight: bold; /* Make the font bold */
+  font-size: 22px; /* Adjust the font size as needed */
+  left: 25px;
+}
+
+
+.sample-prompts-container {
+  display: none; /* Hide the prompts container on small screens */
+  background-color: #f7f2cb; /* Yellow background color */
+  padding: 2.5%; /* Adjust padding as needed */
+  align-items: center; /* Aligns the prompt vertically */
+  justify-content: center; /* Center the prompt horizontally */
+  text-align: center; /* Align text to the center */
+}
+
+.home-page-container {
+  flex-grow: 1; /* Allows the container to fill the space on small screens */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #FFFFFF; /* White background color */
+}
+
+/* Adjustments for medium screens */
+@media (min-width: 650px) {
+  .home-page-wrapper {
+    flex-direction: column; /* Keep it stacked vertically for medium screens */
+  }
+
+  .sample-prompts-container {
+    display: none; /* Keep the prompts container hidden */
+  }
+
+  .home-page-container {
+    flex-grow: 1; /* Fill the entire area */
+    background-color: #FFFFFF; /* Ensure white background */
+  }
+
+  .login-signup-container {
+    flex-direction: row !important; /* Display buttons side by side */
+    justify-content: center; /* Center the buttons horizontally */
+    gap: 10px; /* Optional: add some space between buttons */
+    width: 70% !important;
+  }
+
+  .login-signup-button {
+    width: auto; /* Allow buttons to adjust their width automatically */
+  }
+}
+
+/* Large screens */
+@media (min-width: 770px) {
+  .home-page-wrapper {
+    flex-direction: row; /* Side by side for medium screens and up */
+  }
+
+  .sample-prompts-container {
+    display: flex; /* Show the prompts container */
+    flex: 1; /* Take up half the space */
+  }
+
+  .home-page-container {
+    flex: 1; /* Take up the other half */
+  }
+
+  .login-signup-container {
+    flex-direction: row !important; /* Side by side for medium screens and up */
+    justify-content: center; /* Center buttons horizontally */
+  }
+
+  .login-signup-button {
+    min-width: 60% !important;
+  }
+
+  .home-page-container  h1 {
+    font-size: 32.5px !important; /* Large font size for the heading */
+  }
+  .chatgpt-text {
+    color: rgb(255, 111, 0);
+    padding-left: 2.5%;
+    left: 0px;
+  } 
+}
+
+/* Extra large screens */
+@media (min-width: 1023px) {
+  .sample-prompts-container {
+    flex: 0 0 60%; /* Take up 60% of the space */
+  }
+
+  .home-page-container {
+    flex: 0 0 40%; /* Take up the remaining 40% */
+  }
+
+  .login-signup-button {
+    min-width: 50% !important;
+    max-width: 5px !important;
+  }
+
+  .home-page-container  h1 {
+    font-size: 32.5px !important; /* Large font size for the heading */
+    margin-right: 10% !important;
+  }
+
+  .login-signup-container {
+    margin-right: 10% !important;
+  }
+
+  .login-container {
+    margin-right: 3.3rem;
+  }
+}
+
+.home-page-container  h1 {
+  font-size: 20px; /* Large font size for the heading */
+  margin-bottom: 14px; /* Spacing between the logo and the buttons */
+}
+
+/* Base styles for small screens */
+.login-signup-container {
+  display: flex;
+  flex-direction: column; /* Stack buttons vertically */
+  align-items: center; /* Center buttons horizontally */
+  gap: 14px; /* Space between buttons */
+  width: 550px; /* Take full width of its parent */
+}
+
+.login-signup-button {
+  padding: 15px 0; /* Padding inside the buttons */
+  font-size: 16px; /* Text size inside the buttons */
+  font-weight: bold; /* Make the text bold */
+  color: white; /* Text color */
+  background-color: rgb(62, 62, 255); /* Background color for the buttons */
+  border: none; /* No border */
+  border-radius: 7px; /* Rounded corners for the buttons */
+  cursor: pointer; /* Pointer cursor on hover */
+  transition: background-color 0.1s; /* Smooth transition for hover effect */
+  width: 80%; /* Percentage width for smaller screens */
+  margin-bottom: -7.5px;
+}
+
+.login-signup-button:hover {
+  background-color: rgb(42, 42, 205);
+}
+
+.animated-prompt {
+  font-size: 40px; /* Adjust size as needed */
+  color: #FE7600;
+  opacity: 1; /* Make fully visible */
+  text-align: left; /* Left-aligns the text */
+  width: 100%; /* Ensures the prompt takes up the full width of its container */
+}
+
+.animated-prompt.visible {
+  opacity: 1; /* Make visible */
+}
+
+/* login page components */
+
+/* Default state styling for the resend email button */
+.resend-email-button {
+  background-color: transparent; /* No background by default */
+  color: #4CAF50; /* Green text */
+  cursor: pointer; /* Pointer cursor on hover */
+  transition: background-color 0.2s, color 0.2s; /* Smooth transition for hover effect */
+  padding: 9px 11px; /* Padding around the text */
+  font-size: 0.85rem; /* Text size */
+  font-weight: bold;
+  margin-bottom: 0px !important;
+  border: none;
+  margin-top: 0.15rem;
+}
+
+/* Hover state styling for the resend email button */
+.resend-email-button:hover {
+  background-color: #e0f2f1; /* Light green background on hover */
+  border-radius: 0.5rem;
+}
+
+.email-sent-confirmation {
+  font-size: 0.85rem;
+  margin-top: 1.4rem;
+}
+
+.login-container h2 {
+  font-size: 1.6rem; /* Adjust the size as needed */
+  margin-bottom: 1.4rem; /* Space between the header and form */
+}
+
+.email-input, .continue-button {
+  background-color: #ffffff; /* For the input, set a white background */
+  padding: 10px 15px; /* Match padding */
+  font-size: 1rem; /* Match font size */
+  border-radius: 0.5rem; /* Match border radius */
+  border: 0.5px solid grey; /* Match border style */
+  width: 239px; /* Match width */
+  height: 1.8rem; /* Match height */
+  margin-bottom: 15px; /* Space between input and button */
+  display: block; /* Ensure it takes the full width */
+}
+
+.continue-button {
+  background-color: #4CAF50; /* Green background */
+  color: white; /* White text */
+  display: flex; /* Flex display to center content */
+  align-items: center; /* Center items vertically */
+  justify-content: center; /* Center items horizontally */
+  cursor: pointer; /* Pointer cursor on hover */
+  transition: background-color 0.3s, color 0.3s; /* Smooth transition for hover effect */
+  width: 305px !important;
+  height: 3.2rem !important;
+  margin-bottom: 0px !important;
+}
+
+/* Adjust the hover effect for the continue button */
+.continue-button:hover {
+  background-color: #367c39; /* Darker green on hover */
+}
+
+.login-link {
+  text-decoration: none; /* No underline by default */
+  color: #4CAF50; /* Color to match the expected design */
+}
+
+.login-container {
+  display: flex;
+  flex-direction: column; /* Stack children vertically */
+  justify-content: center;
+  align-items: center;
+  height: 100vh; /* Use full viewport height */
+  gap: 10px; /* Space between stacked buttons */
+}
+
+.login-button {
+  background-color: #ffffff; /* white background */
+  padding: 10px 15px; /* Adjust padding */
+  font-size: 1rem;
+  border-radius: 0.5rem; /* Border radius to match the image */
+  border: 1px solid #f5f5f5;
+  cursor: pointer;
+  font-family: Arial, Helvetica, sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start; /* Align items to the left */
+  width: 300px; /* Fixed width for buttons */
+  transition: background-color 0.3s, color 0.3s;
+  border: 0.5px solid grey;
+  height: 3.2rem;
+}
+
+.login-button:hover {
+  background-color: rgb(238, 237, 237);
+}
+
+.login-button:focus {
+  outline: none;
+  border-color: #4285f4; /* Border color on focus */
+}
+
+.google-logo, .microsoft-logo, .apple-logo {
+  height: 1.6rem;
+  width: 1.6rem;
+  margin-right: 1.2rem; /* Set margin to the right of the logo */
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  margin-bottom: 0.7rem;
+  margin-top: 0.7rem;
+  font-size: 0.75rem;
+}
+
+.divider .line {
+  flex-grow: 1;
+  height: 1px;
+  background-color: #a9a9a9;
+  margin: 0 8px;
+  min-width: 132px;
+}
+
+.login-prompt {
+  font-size: 0.85rem;
+  margin-top: 10px;
+}
+
+.password-criteria {
+  border: 0.5px solid grey;
+  margin-bottom: 20px;
+  padding-left: 10px;
+  padding-top: 12px;
+  font-size: 0.8rem;
+  border-radius: 4px;
+}
+
+.invalid-password {
+  border: 1px solid red; /* Red border for invalid password */
+}
+
+.centered-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh; /* Use 100vh to take the full viewport height */
+  text-align: center;
+}
+
+.verification-message {
+  max-width: 250px; /* Adjust as needed */
+}
+
+.verification-message h2 {
+  font-size: 2rem;
+}
+
+.verification-message p {
+  font-size: 1rem;
+  line-height: 1.5rem;
+}
+
+.login-container .error-message {
+  margin-bottom: 0.5rem;
+  margin-top: -0.83rem;
+  color: red; 
+  font-size: 0.8rem;
+  margin-left: 0.45rem;
+  overflow-wrap: break-word; /* Ensures the words break and wrap to the next line */
+  word-break: break-word; /* Use this for older browsers */
+  white-space: normal; /* Allows the text to wrap to the next line */
+  line-height: 1.2; /* Adjust line height for better readability */
+  max-width: 250px; /* Set a max-width or use 100% if you want it to fill its container */
+}
+
+.error-message {
+  margin-bottom: 1rem !important;
+}
+
+
+.email-input-group {
+  position: relative;
+  display: flex;
+}
+
+.email-input-group input {
+  height: 1.6rem;
+}
+
+.edit-email-button {
+  position: absolute;
+  right: 6.5px; /* Adjust as needed */
+  top: 39%;
+  transform: translateY(-50%);
+  background: none; /* Remove any background */
+  border: none; /* Remove the border */
+  color: green; /* Use the green color as in the design */
+  cursor: pointer; /* Cursor to indicate clickable button */
+  font-size: 0.78rem;
+}
+
+.password-input-group {
+  position: relative;
+  display: flex;
+}
+
+.toggle-password {
+  position: absolute;
+  right: 6.5px; /* Adjust as needed */
+  top: 39%;
+  transform: translateY(-50%);
+  background: none; /* Remove any background */
+  border: none; /* Remove the border */
+  color: green; /* Use the green color as in the design */
+  cursor: pointer; /* Cursor to indicate clickable button */
+  font-size: 0.78rem;
+}
+
+/* Ensure the password input does not overlap the toggle button */
+.email-input {
+  flex-grow: 1;
+  padding-right: 50px; /* Adjust padding to not overlap the toggle button */
+}
+
+.input-error {
+  border: 1px solid red;
+}
+
+.email-input:focus {
+  outline: none;
+}
+
+
+/* Onboarding Page */
+
+.onboarding-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  background-color: #FAFAFA; /* Assuming you want the same background color */
+}
+
+.onboarding-container form {
+  max-width: 280px; /* Adjust the width as necessary */
+  margin: 0 auto;
+  /* border: 1px solid red; */
+}
+
+.onboarding-container h1 {
+  font-size: 2rem; /* Adjust the font size as necessary */
+  margin-bottom: 20px; /* Adjust the spacing as necessary */
+  color: #333; /* Assuming a darker color for the heading */
+  text-align: center;
+}
+
+.onboarding-container input[type="text"] {
+  width: 89%;
+  padding: 15px;
+  margin-bottom: 10px; /* Space between the input fields */
+  border-radius: 8px;
+  border: 1px solid #ccc; /* Light grey border */
+  font-size: 1rem;
+}
+
+.onboarding-container button {
+  width: 100%;
+  padding: 15px;
+  font-size: 1rem;
+  color: white;
+  background-color: #4CAF50; /* Green background */
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.onboarding-container button:hover {
+  background-color: #45a049; /* Slightly darker green on hover */
+}
+
+
+.bold-text {
+  font-weight: bold;
+}
+
+/* lightbox for book preveiw */
+
+.lightbox-content-for-book-preview {
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  max-width: 720px; /* Keep the width as is */
+  max-height: 100%; /* Allows it to expand to full viewport height */
+  height: 100vh; /* Sets the height to the full viewport height */
+  overflow-y: auto; /* Keeps the scrollbar if content is longer */
+  color: rgba(0, 0, 0, 0.921);
+  border: 1px solid blue;
+}
+
+/* lightbox component */
+
+.lightbox-overlay {
+  position: fixed; /* Fixed position to cover the whole screen */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.823); /* Semi-transparent black background */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 100000; /* High z-index to make sure it's above other elements */
+}
+
+.lightbox-content {
+  background-color: white;
+  padding:  0% 6.7% 3% 6.7%;
+  border-radius: 5px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  max-width: 580px; /* Adjust as per your content's requirements */
+  max-height: 96%; /* Adjust based on content height */
+  overflow-y: auto; /* Adds a scrollbar if the content is too long */
+  position: relative; 
+  font-size: 1rem;
+  line-height: 1.7rem;
+  color: rgba(0, 0, 0, 0.921);
+}
+
+.lightbox-content-for-image img {
+  max-width: 630px;
+}
+
+.lightbox-content .buy-now-button {
+  margin-bottom: 0rem;
+}
+
+.lightbox-content h3 {
+  margin-bottom: -0.15rem !important;
+}
+
+.lightbox-close {
+  position: fixed; /* Changed from absolute to fixed */
+  top: 0.6rem;
+  right: 0.6rem;
+  font-size: 28px;
+  cursor: pointer;
+  z-index: 1001; /* Higher than the lightbox-overlay to ensure it's on top */
+  background-color: rgba(0, 0, 0, 0.848); /* Black background for the circle */
+  border-radius: 50%; /* Make it round */
+  width: 2rem; /* Set the width of the circle */
+  height: 2rem; /* Set the height of the circle */
+  display: flex; /* Use flexbox to center the icon */
+  align-items: center; /* Center vertically */
+  justify-content: center; /* Center horizontally */
+}
+
+.lightbox-close-for-book-preview {
+  position: fixed; /* Changed from absolute to fixed */
+  top: 0.6rem;
+  right: 0.6rem;
+  font-size: 28px;
+  cursor: pointer;
+  z-index: 1001; /* Higher than the lightbox-overlay to ensure it's on top */
+  background-color: rgba(0, 0, 0, 0.848); /* Black background for the circle */
+  border-radius: 50%; /* Make it round */
+  width: 2rem; /* Set the width of the circle */
+  height: 2rem; /* Set the height of the circle */
+  display: flex; /* Use flexbox to center the icon */
+  align-items: center; /* Center vertically */
+  justify-content: center; /* Center horizontally */
+}
+
+.fa-xmark {
+  color: white;
+  font-size: 1.1rem;
+}
+
+/* Custom scrollbar for lightbox-content */
+.lightbox-content::-webkit-scrollbar {
+  width: 12px; /* width of the entire scrollbar */
+}
+
+.lightbox-content::-webkit-scrollbar-track {
+  background: transparent; /* color of the tracking area */
+}
+
+.lightbox-content::-webkit-scrollbar-thumb {
+  background-color: #dcdcdc; /* very light grey color for the scroll thumb */
+  border-radius: 6px; /* roundness of the scroll thumb */
+  border: 3px solid #dcdcdc; /* Creates additional spacing from the scrollbar track */
+}
+
+/* For Firefox */
+.lightbox-content {
+  scrollbar-width: thin; /* "auto" or "thin" */
+  scrollbar-color: #dcdcdc transparent; /* thumb and track color */
+}
+
+/* AnswerDisplay Edit functionality */
+
+.answer-display-textarea {
+  width: 100%;
+  height: auto; /* Adjust height automatically */
+  font-size: inherit;
+  font-family: inherit;
+  line-height: inherit;
+  border: none;
+  resize: none; /* Disable manual resizing */
+  margin-left: 0.05rem;
+  margin-top: -0.12rem;
+  background-color: rgb(253, 253, 253);
+}
+
+.answer-display-textarea:focus {
+  outline: none; /* Removes the default focus outline */
+}
+
+/* Container for the buttons to center them horizontally */
+.button-container {
+  display: flex; /* Use flexbox */
+  justify-content: center !important; /* Center children horizontally */
+  align-items: center; /* Center children vertically */
+  /* border: 1px solid red; */
+  margin-top: -0.55rem !important;
+  margin-bottom: 0.4rem;
+}
+
+.fa-pen {
+  display: none;
+  color: rgb(191, 189, 189);
+  cursor: pointer;
+  padding: 6px;
+  font-size: 0.8rem;
+  position: absolute;
+  left: -0.35rem; /* Align with the start of the text */
+}
+
+.fa-pen:hover {
+  color: black;
+}
+
+.message-question-container:hover .fa-pen {
+  display: block;
+}
+
+/* AnswerDisplay component */
+
+.message {
+  display: flex;
+  align-items: flex-start; /* Aligns items at the start of the container */
+  max-width: 600px;
+  font-size: 0.98rem;
+  color: #0D0D0D;
+  line-height: 1.63rem;
+  width: 100%;
+  margin-left: 1rem;
+}
+
+.message-content img {
+  margin-top: 0.8rem;
+}
+
+.message-content h3 {
+  margin-bottom: -0.001rem;
+}
+
+.message-answer img {
+  width: 145.625px;
+  height: 208.33333333333334px;
+  cursor: pointer; 
+}
+
+
+.message-question-container {
+  position: relative;
+  margin-left: 0.18rem;
+  /* border: 1px solid black; */
+  padding-bottom: 1.9rem;
+}
+
+.message-answer {
+  padding-bottom: 2.9rem;
+}
+
+.message-question {
+  white-space: pre-wrap;
+  color: #0D0D0D;
+}
+
+
+
+.message-icon {
+  margin-right: 0.8rem; /* Adjust as needed */
+}
+
+.display-image {
+  margin-top: 0.15rem;
+  width: 1.2rem;
+  height: 1.2rem;
+  border-radius: 50%;
+  border: none;
+}
+
+.message-content {
+  flex-grow: 1;
+}
+
+.message-sender {
+  font-weight: bold; /* Make the icon text bold */
+  margin-bottom: -1.4rem;
+  user-select: none;
+  display: block;
+}
+
+.content-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start; /* or 'center' depending on your design */
+  /* border: 0.4px solid rgb(250, 250, 250);
+  border-radius: 0.3rem;
+  background-color: rgb(250, 250, 250); */
+  width: 16.7rem;
+  /* border: 1px solid pink; */
+}
+
+.image-container {
+  /* background-color: rgb(239, 239, 239); */
+  width: 220px;
+}
+
+.buttons-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.63rem;
+  /* border: 1px solid green; */
+  margin: auto;
+  padding-top: 0.1rem;
+}
+
+.buttons-container.no-image {
+  margin: 0;
+}
+
+/* Common styles for all buttons */
+.buy-now-button, .key-insights-btn, .anecdotes-btn, .quotes-btn, .preview-btn, .more-details-btn, .continue-generating-btn {
+  background: none;
+  border: 0.5px solid lightgrey;
+  font-size: 0.82rem;
+  padding: 0.25rem 0.6rem;
+  border-radius: 0.35rem;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+  width: 6rem;
+  color: #0D0D0D;
+}
+
+.continue-generating-btn {
+  width: 7.5rem;
+  margin-top: 0.1rem;
+  margin-bottom: 1.5rem;
+  margin-right: 1.15rem;
+}
+
+.fa-forward {
+  margin-right: 0.3rem;
+  font-size: 0.82rem !important;
+}
+
+/* Hover styles for all buttons */
+.buy-now-button:hover, .key-insights-btn:hover, .anecdotes-btn:hover, .quotes-btn:hover, .preview-btn:hover, .more-details-btn:hover, .continue-generating-btn:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+/* Active styles for all buttons */
+.buy-now-button:active, .key-insights-btn:active, .anecdotes-btn:active, .quotes-btn:active, .preview-btn:active, .more-details-btn:active, .continue-generating-btn:active {
+  background-color: rgba(0, 0, 0, 0.2);
+}
+
+/* Focus styles for all buttons */
+.buy-now-button:focus, .key-insights-btn:focus, .anecdotes-btn:focus, .quotes-btn:focus, .preview-btn:focus, .more-details-btn:focus, .continue-generating-btn:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
+}
+
+.save-button, .cancel-button {
+  padding: 0.25rem 0.6rem;
+  text-align: center;
+  text-decoration: none;
+  font-size: 0.82rem;
+  margin: 0.4rem 0.3rem;
+  cursor: pointer;
+  border-radius: 0.35rem;
+}
+
+.save-button {
+  background-color: #10A37F; 
+  border: none;
+  color: white;
+}
+
+.cancel-button {
+  border: 1px solid lightgrey;
+  background-color: inherit;
+}
+
+.save-button:hover {
+  background-color: #0d7f62;
+}
+
+.cancel-button:hover { 
+  background-color: rgba(0, 0, 0, 0.06); 
+}
+
+.button-container-continue-generating-btn {
+  flex: 1;
+  display: flex;
+  justify-content: flex-end; /* Aligns the button to the right horizontally */
+  align-items: center; /* Keeps the button centered vertically if needed */
+  width: 100%; /* Take the full width of the parent to allow right alignment */
+  margin-top: -1.5rem; /* Adjust the margin as needed */
+}
+
+.single-button {
+  margin-bottom: 1.5rem;
+}
+
+/* Active Streaming */
+ 
+.streaming .more-details-btn {
+  cursor: not-allowed;
+  opacity: 0.5;
+  pointer-events: none; /* Prevents clicking */
+}
+
+.streaming .key-insights-btn {
+  cursor: not-allowed;
+  opacity: 0.5;
+  pointer-events: none; /* Prevents clicking */
+}
+
+.streaming .anecdotes-btn {
+  cursor: not-allowed;
+  opacity: 0.5;
+  pointer-events: none; /* Prevents clicking */
+}
+
+.streaming .quotes-btn {
+  cursor: not-allowed;
+  opacity: 0.5;
+  pointer-events: none; /* Prevents clicking */
+}
+
+.streaming .preview-btn {
+  cursor: not-allowed;
+  opacity: 0.5;
+  pointer-events: none; 
+}
+
+.streaming a {
+  cursor: not-allowed;
+  opacity: 0.5;
+  pointer-events: none; 
+}
+
+.streaming img {
+  cursor: not-allowed;
+  pointer-events: none; 
+}
+
+.message-attachments {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); /* Creates a responsive grid */
+  grid-gap: 25px; /* Adjusts space between grid items */
+}
+
+.attachment img {
+  width: 100%; /* Makes image fill the grid cell */
+  height: auto; /* Maintains aspect ratio */
+  cursor: pointer;
+  display: block; /* Fixes issue with extra space under images */
+  margin-bottom: 0.5rem;
+}
+
+.modal {
+  /* ... other styles ... */
+  position: fixed; /* Fixed position */
+  top: 0;
+  left: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  background-color: rgba(0, 0, 0, 0.9); /* Semi-transparent background */
+  display: flex; /* Use flexbox for centering */
+  align-items: center; /* Vertical centering */
+  justify-content: center; /* Horizontal centering */
+  z-index: 1000; /* Ensure it's above other content */
+}
+
+.modal-content {
+  position: relative;
+  max-width: 90vw; 
+  max-height: 90vh; 
+  overflow: hidden;
+  background: white;
+  border-radius: 8px; /* Optional: for rounded corners */
+}
+
+.lightbox-content img {
+  margin-top: 0.8rem;
+  width: 135.625px;
+  height: 208.33333333333334px;
+  margin-bottom: 0.6rem;
+}
+
+.lightbox-content button {
+  width: 139px;
+}
+
+.lightbox-content  h3 {
+  margin-bottom: -0.001rem;
+}
+
+.lightbox-content  button {
+  margin-bottom: 1.2rem;
+}
+  
+.close-button {
+  position: fixed;
+  top: 8px;
+  right: 8px;
+  background: transparent; /* Optional: make the background transparent */
+  color: white; /* Set icon color to white */
+  border: none;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  text-align: center;
+  line-height: 30px; /* Center the icon vertically */
+  cursor: pointer;
+}
+
+.close-button i {
+  font-size: 0.8rem; /* Adjust the size of the icon as needed */
+}
+
+.message-timestamp {
+  color: grey;
+  font-size: 0.6rem;
+  margin-top: -0.1rem;
+  margin-left: 0.25rem;
+}
+
+.combined-message-block {
+  margin-top: -1.5rem;
+}
+
+/* NewBlogPost page CSS */
+
+.new-blog-post-container {
+  max-width: 800px;
+  margin: auto;
+  padding: 20px;
+}
+
+.new-blog-post-title {
+  text-align: center;
+}
+
+.new-blog-post-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.new-blog-post-input,
+.new-blog-post-textarea {
+  padding: 10px;
+  font-size: 16px;
+  width: 100%;
+}
+
+.new-blog-post-button {
+  padding: 10px 15px;
+  font-size: 18px;
+  cursor: pointer;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+}
+
+.new-blog-post-button:hover {
+  background-color: #0056b3;
+}
+
+/* BlogPostPage.css */
+
+.blogPostContainer {
+  max-width: 40rem;
+  margin: auto;
+  padding: 2rem;
+}
+
+.blogPostContainer h1 {
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.blogPostContainer img {
+  max-width: 100%;
+  height: auto;
+  margin-bottom: 20px;
+  border-radius: 0.8rem;
+}
+
+.blogPostContainer div {
+  margin-bottom: 20px;
+  line-height: 1.8rem;
+  font-size: 1rem;
+}
+
+.blogPostContainer button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  margin-right: 10px;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+  margin-top: 3rem;
+}
+
+.blogPostContainer button:hover {
+  background-color: #0056b3;
+}
+
+.blogPostContainer form {
+  margin-bottom: 20px;
+}
+
+.blogPostContainer label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.blogPostContainer input[type="text"],
+.blogPostContainer textarea {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 20px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
+
+.loading {
+  text-align: center;
+  font-size: 20px;
+}
+
+/* BlogPage.css */
+
+.blog-page {
+  padding: 0rem 2.5rem;
+  padding-top: 4rem;
+  padding-bottom: 3rem;
+}
+
+.blog-page-heading {
+  text-align: left; /* Changed to left align */
+  font-size: 3.5rem;
+  line-height: 110%;
+  letter-spacing: -.01em;
+  font-weight: bold;
+}
+
+/* Add a style for the horizontal line */
+.blog-page hr {
+  border: 0;
+  height: 0.7px;
+  background-color: rgba(0, 0, 0, 0.127);
+  margin-top: 4rem;
+  margin-bottom: 2.5rem;
+}
+
+
+.new-post-button {
+  display: block;
+  margin: 20rem auto 20px;
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.new-post-button:hover {
+  background-color: #0056b3;
+}
+
+.blog-posts-container {
+  display: grid;
+  gap: 20px;
+}
+
+/* Large screens: 3 per row */
+@media (min-width: 992px) {
+  .blog-posts-container {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Medium screens: 2 per row */
+@media (min-width: 768px) and (max-width: 991px) {
+  .blog-posts-container {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.blog-post-preview {
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 20px;
+  background: #fff; 
+}
+
+.blog-post-preview img {
+  width: 100%;
+  height: auto; 
+  display: block; 
+  object-fit: cover;
+  border-radius: 8px;
+  transition: transform 0.2s ease; 
+}
+
+.blog-post-preview .blog-title {
+  padding: 0.5rem;
+  font-size: 1.4rem;
+  line-height: 1.8rem;
+  margin-top: 0.5rem;
+  font-weight: bold;
+}
+
+.blog-post-preview:hover img {
+  transform: scale(1.04);
+}
+
+.blog-post-link {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* Contact.css */
+.contact-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 90vh;
+  text-align: center;
+  color: #333;
+}
+
+.contact-container h1 {
+  margin-bottom: 0.5rem;
+}
+
+.contact-container p {
+  margin: 10px 0;
+}
+
+.contact-container a, .contact-container button {
+  display: inline-flex; /* Use inline-flex to align items within buttons */
+  align-items: center; /* Center the items vertically */
+  width: 6rem; /* Set a fixed width */
+  font-size: 1rem; /* Set a fixed font size */
+  margin: 5px 0; /* Margin for spacing between buttons */
+  border: 0.5px solid lightgrey;
+  color: black;
+  padding: 0.5rem 0.95rem; /* Set a uniform padding */
+  text-decoration: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  outline: none; /* Removes the focus outline */
+  transition: background-color 0.3s, transform 0.1s;
+  text-align: left;
+  box-sizing: border-box; /* Ensures padding is included in the width */
+}
+
+.contact-container a i {
+  margin-right: 0.94rem; /* space between icon and text */
+}
+
+.contact-container button i {
+  margin-right: 0.7rem; /* space between icon and text */
+}
+
+.contact-container button {
+  background: none;
+}
+
+.contact-container a:hover, .contact-container button:hover {
+  background-color: lightgrey; /* darker shade for hover state */
+}
+
+.contact-container i {
+  margin-right: 8px; /* space between icon and text */
+}
+
+.contact-buttons-container {
+  text-align: left;
+  max-width: 185px; /* Maximum width of the buttons to align text */
+  margin: 0 auto; /* Centers the buttons container */
+}
+
+@media (max-width: 759px) {
+
+  .App {
+    overflow: hidden;
+  }
+
+  .fa-pen {
+    display: block;
+  }
+
+  .sample-queries-container {
+    left: 0 !important;
+  }
+
+  .header {
+    display: flex;
+    width: 97.5vw;
+    height: 2.5rem;
+    justify-content: space-between; /* Aligns items on opposite ends */
+    padding: 0 10px; /* Add some padding on the sides */
+    border-bottom: 1px solid rgb(213, 211, 211);
+  }
+
+  .header-title {
+    display: inline-block;
+    font-size: 1.2rem; /* Adjust size as needed */
+    margin-top: auto;
+    margin-bottom: auto;
+    font-weight: bold;
+  }
+
+  .new-session-button-small-screen {
+    margin-right: 0.39rem;
+  }
+
+  .sample-query {
+    height: 6rem;
+  }
+
+  .contact-container {
+    height: auto;
+    min-height: 100vh;
+    padding: 20px;
+  }
+
+  .blog-posts-container {
+    grid-template-columns: 1fr;
+  }
+
+  .close-pane-button {
+    display: none;
+  }
+
+  .fa-angle-left {
+    display: none;
+  }
+  
+  .fa-angle-right {
+    display: none;
+  }
+
+  .chat-area {
+    margin: 0;
+    margin-left: -0.27rem !important;
+    padding-left: 0rem;
+    padding-top: 2.5vh;
+    padding-right: 4vw;
+    /* border: 1px solid blue; */
+  }
+
+
+  .lightbox-content {
+    max-width: 75%;
+  }
+
+  .lightbox-content-for-book-preview {
+    max-width: 100vw !important;
+  }
+
+  .lightbox-content {
+    max-width: 100vw !important;
+  }
+
+  .lightbox-close-for-book-preview {
+    top: 0.35rem !important;
+    left: 0.5rem;
+    width: 1.6rem !important;
+    height: 1.6rem !important;
+  }
+
+  .lightbox-close-for-book-preview .fa-xmark {
+    font-size: 1rem;
+  }
+
+  .lightbox-close {
+    top: 1.5rem !important;
+  }
+
+  .lightbox-content-for-image img {
+    width: 80vw;
+  }
+
+}
