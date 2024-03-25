@@ -629,7 +629,7 @@ function Chat() {
     setIsLightboxForImageOpen(true);
   };
 
-  const [inputBoxHeight, setInputBoxHeight] = useState(0);
+  // const [inputBoxHeight, setInputBoxHeight] = useState(0);
 
   // Message-question edit functionality
 
@@ -740,7 +740,6 @@ function Chat() {
         isLoading={isLoading}
         isStreaming={isStreaming}
         onStopStreaming={handleStopStreaming}
-        onHeightChange={setInputBoxHeight} // Here you pass the setInputBoxHeight function to the InputBox
       />
     </div>
   );

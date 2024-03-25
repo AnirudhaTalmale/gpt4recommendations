@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import '../App.css';
 
-function InputBox({ onSubmit, isStreaming, onStopStreaming, onHeightChange }) {
+function InputBox({ onSubmit, isStreaming, onStopStreaming }) {
   const [input, setInput] = useState('');
   const [isInputNotEmpty, setIsInputNotEmpty] = useState(false);
   const [rows, setRows] = useState(1);
@@ -85,17 +85,6 @@ function InputBox({ onSubmit, isStreaming, onStopStreaming, onHeightChange }) {
     return context.measureText(text).width;
   }
   
-  const handleHeightChange = useCallback((newHeight) => {
-    onHeightChange(newHeight);
-  }, [onHeightChange]); // onHeightChange is the dependency
-  
-
-  useEffect(() => {
-    if (textareaRef.current) {
-      const newHeight = textareaRef.current.scrollHeight;
-      handleHeightChange(newHeight);
-    }
-  }, [rows, handleHeightChange]); 
 
   return (
     <form onSubmit={handleSubmit} className="input-area">
