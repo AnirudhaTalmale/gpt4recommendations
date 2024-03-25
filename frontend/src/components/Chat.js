@@ -11,7 +11,7 @@ import LightboxForImage from './LightboxForImage';
 import LightboxForBookPreview from './LightboxForBookPreview';
 import '../App.css';
 import socket from './socket';
-// import Header from './Header';
+import Header from './Header';
 import { useNavigate } from 'react-router-dom';
 import { useHandleStreamEnd, useHandleMessageLimitReached, useGoogleBooksViewer, useStreamChunkHandler } from './CommonHooks'; 
 
@@ -701,7 +701,7 @@ function Chat() {
         selectedSessionId={selectedSessionId}
         setSelectedSessionId={setSelectedSessionId}
       />
-    
+      <Header isPaneOpen={isPaneOpen} togglePane={togglePane} />
       <div className="chat-area" ref={chatAreaRef}>
         {location.pathname === "/chat" && (
           <div className="chat-heading">

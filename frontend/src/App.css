@@ -1,8 +1,12 @@
+html, body {
+  height: 100%; /* Make sure parent elements are full height */
+  margin: 0; /* Reset default margin */
+}
 
 .App {
   display: flex;
-  flex-direction: column; /* Keep the main direction as column for stacking */
-  height: 100vh;
+  flex-direction: column;
+  height: 100dvh; /* Use 100% height instead of 100vh */
   background-color: rgb(253, 253, 253);
 }
 
@@ -105,50 +109,39 @@ body:not(.history-pane-open) .chat-area {
   margin-right: 10px; /* Adjust as needed */
 }
 
-/* --------------- */
-
-.chat-area-wrapper {
-  display: flex;
-  justify-content: center; /* Center the child horizontally */
-  
-}
-
 .chat-area {
-  /* border: 1px solid green; */
-  /* background-color: black; */
   display: flex;
   flex-direction: column;
   padding: 20px;
   margin-left: 260px; /* Keep your existing left margin */
   padding-bottom: 5rem; /* Added padding at the bottom */
-  /* background-color: red; */
   overflow-y: auto; 
-  
+  flex: 1;
   padding-right: 3rem;
-  /* background-color: red; */
 }
 
-/* Style the scrollbar itself (light grey) */
+.chat-area-wrapper {
+  display: flex;
+  justify-content: center; /* Center the child horizontally */
+}
+
 .chat-area::-webkit-scrollbar {
-  width: 0.5rem; /* Width of the scrollbar */
-  
+  width: 0.5rem; 
 }
 
-/* Handle */
 .chat-area::-webkit-scrollbar-thumb {
-  background: #dcdcdc; /* Slightly darker grey for the handle */
+  background: #dcdcdc; 
   border-radius: 10rem;
 }
 
-/* Handle on hover */
 .chat-area::-webkit-scrollbar-thumb:hover {
-  background: #b0b0b0; /* Even darker grey for the handle on hover */
+  background: #b0b0b0; 
 }
 
 .chat-heading {
-  text-align: center; /* Center the text */
-  font-size: 1.3rem; /* Set the desired font size */
-  font-weight: bold; /* Make the text bold */
+  text-align: center; 
+  font-size: 1.3rem;
+  font-weight: bold;
   margin-top: 5vh;
 }
 
@@ -197,7 +190,6 @@ body:not(.history-pane-open) .sample-queries-container {
   background-color: rgba(0, 0, 0, 0.05); /* Light grey color on hover */
 }
 
-
 /* input area */
 body:not(.history-pane-open) .input-area {
   margin-left: 0;
@@ -210,8 +202,7 @@ body:not(.history-pane-open) .input-area {
   align-items: center;
   background-color: rgb(253, 253, 253);
   padding: 0 0.5rem;
-  flex-grow: 1;
-  /* border: 1px solid pink; */
+  border: 1px solid pink;
 }
 
 .input-box {
@@ -238,27 +229,25 @@ body:not(.history-pane-open) .input-area {
       color: #888; /* Color of the placeholder text */
   }
 
-  /* Scrollbar styling (for webkit browsers) */
   ::-webkit-scrollbar {
-      width: 6px; /* Width of the scrollbar */
+      width: 6px; 
   }
 
   ::-webkit-scrollbar-thumb {
-      background-color: #e6e4e4; /* Color of the scrollbar thumb */
-      border-radius: 3px; /* Rounded corners for the scrollbar thumb */
+      background-color: #e6e4e4;
+      border-radius: 3px; 
   }
 
-  /* Styling for when the textarea is focused by the user */
   :focus {
-      border-color: #007BFF; /* Highlight color when focused */
-      box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25); /* A subtle shadow around the textarea */
+      border-color: #007BFF; 
+      box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25); 
   }
 }
 
 .send-button, .stop-button {
   position: absolute;
-  right: 3.7rem; /* Adjust as needed */
-  bottom: 1.95rem; /* Adjust as needed */
+  right: 3.7rem;
+  bottom: 1.95rem;
   font-size: 0.9rem;
   width: 1.7rem;
   height: 1.7rem;
@@ -277,19 +266,20 @@ body:not(.history-pane-open) .input-area {
   border: 1px solid #D3D3D3;
   border-radius: 0.5rem;
   color: white;
-  cursor: pointer;
+  
 }
 
 .send-button.active {
   background-color: black;
+  cursor: pointer;
 }
 
 /* History pane css */
 
 .close-pane-button {
   position: absolute;
-  top: 50%; /* Center vertically */
-  left: 107%; /* Center horizontally */
+  top: 50%; 
+  left: 107%; 
   transform: translate(-50%, -50%);
   cursor: pointer; 
   color: rgb(200, 200, 200);
@@ -299,12 +289,12 @@ body:not(.history-pane-open) .input-area {
 }
 
 .close-pane-button:hover {
-  color: black; /* Color changes to black on hover */
+  color: black; 
 }
 
 .pane-line path {
   transition: d 2s ease, stroke-width 2s ease;
-  stroke-linecap: round; /* Ensure this is consistent with the JSX */
+  stroke-linecap: round;
 }
 
 .history-pane {
@@ -321,8 +311,6 @@ body:not(.history-pane-open) .input-area {
   flex-direction: column;
   transition: transform 0.2s ease;
 }
-
-
 
 .history-pane.closed {
   transform: translateX(-100%); 
@@ -350,13 +338,11 @@ body:not(.history-pane-open) .input-area {
   font-weight: bold;
 }
 
-
-/* Styles for the main content area */
 .history-content {
   position: relative;
   
   overflow-y: auto;
-  flex-grow: 1; /* Take available space */
+  flex-grow: 1; 
   margin-bottom: 3.7rem;
 }
 
@@ -368,40 +354,35 @@ body:not(.history-pane-open) .input-area {
   bottom: 0;
   width: 27%;
   background: linear-gradient(to left, rgba(0, 0, 0, 1), transparent);
-  pointer-events: none; /* Allow mouse events to pass through */
+  pointer-events: none; 
 }
 
-
 .history-entry {
-  /* Add styles for individual history entries here */
-  overflow: hidden; /* Hide overflow */
+  overflow: hidden; 
   white-space: nowrap;
   padding: 0.6rem 0.4rem;
   margin-left: 0.2rem;
   margin-right: 0.73rem;
   cursor: pointer; 
-  display: flex; /* Use Flexbox */
-  justify-content: space-between; /* Space between items */
-  align-items: center; /* Align items vertically */
+  display: flex; 
+  justify-content: space-between; 
+  align-items: center; 
   z-index: 1;
 }
 
 .history-entry:hover {
   position: relative;
-  z-index: 2; /* Ensure it's above the gradient */
-  background-color: hsla(0, 0%, 100%, 0.097); /* Your hover background color */
+  z-index: 2; 
+  background-color: hsla(0, 0%, 100%, 0.097); 
   border-radius: 0.5rem;
-  /* ... other existing styles ... */
 }
 
 .history-entry-text {
   overflow: hidden;
   white-space: nowrap;
   flex-grow: 1;
-  /* background-color: yellow; */
   margin-left: 0.1rem;
   margin-right: 0.1rem;
-  /* border: 1px solid green; */
   margin-right: 1rem !important;
   font-size: 0.86rem !important;
   font-family: Arial, Helvetica, sans-serif;
@@ -440,7 +421,6 @@ body:not(.history-pane-open) .input-area {
   justify-content: flex-end;
   margin-bottom: 0.7rem;
   position: relative;
-  /* background-color: orange; */
   height: 3rem;
   width: 91%;
   margin-left: 4%;
@@ -450,19 +430,17 @@ body:not(.history-pane-open) .input-area {
 }
 
 .user-entry {
-  /* border: 1px solid pink; */
   padding: 0.5rem;
   display: flex;
   align-items: center;
   cursor: pointer;
   font-weight: bold;
   font-size: 0.9rem;
-  &:hover, &.active { /* Apply the same style for hover and active state */
+  &:hover, &.active { 
       background-color: hsla(0,0%,100%,.1);
       border-radius: 0.5rem;
   }
   user-select: none;
-  /* border: 1px solid green; */
 }
 
 .history-pane-image {
@@ -489,7 +467,6 @@ body:not(.history-pane-open) .input-area {
 }
 
 .dropdown-menu li {
-  /* border: 1px solid red; */
   list-style-type: none;
   margin-left: -2.45rem;
   padding: 0.6rem 1rem;
@@ -548,22 +525,21 @@ body:not(.history-pane-open) .input-area {
 }
 
 .dropdown-link {
-  color: inherit; /* Or a specific color that matches your design */
-  text-decoration: none; /* Removes the underline from links */
+  color: inherit; 
+  text-decoration: none;
   display: flex;
   align-items: center;
   padding-top: 0.45rem;
 }
 
-/* Update styles for the unseen message count indicator */
 .unseen-messages-count {
   margin-left: 8px;
-  background-color: green; /* Background color for the count indicator */
-  color: white; /* Text color for the count indicator */
-  border-radius: 50%; /* Make it a circle */
-  padding: 2.5px 7px; /* Adjust padding to fit your design */
-  font-size: 0.65rem; /* Smaller font size for the count */
-  vertical-align: middle; /* Align it with the session name text */
+  background-color: green; 
+  color: white;
+  border-radius: 50%; 
+  padding: 2.5px 7px; 
+  font-size: 0.65rem; 
+  vertical-align: middle; 
   font-weight: bold;
 }
 
@@ -592,8 +568,8 @@ body:not(.history-pane-open) .input-area {
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
-  z-index: 10000; /* Ensure it's above other content */
+  background-color: rgba(0, 0, 0, 0.5); 
+  z-index: 10000;
 }
 
 .confirmation-dialog {
@@ -633,7 +609,6 @@ body:not(.history-pane-open) .input-area {
   background-color: #c82333;
 }
 
-
 /* Home page components */
 
 .footer-links {
@@ -655,7 +630,7 @@ body:not(.history-pane-open) .input-area {
 .footer-link:not(:last-child)::after {
   content: '|';
   color: rgb(143, 143, 143);
-  margin-left: 0.7rem; /* Spacing to the right of the link */
+  margin-left: 0.7rem; 
 }
 
 .footer-link:hover {
@@ -664,35 +639,35 @@ body:not(.history-pane-open) .input-area {
 
 .home-page-wrapper {
   display: flex;
-  flex-direction: column; /* Stack the children vertically on small screens */
+  flex-direction: column;
   height: 100vh;
 }
 
 .chatgpt-text {
-  position: absolute; /* Position it relative to the home-page-wrapper */
-  top: 25px; /* Adjust the distance from the top as needed */
-  font-weight: bold; /* Make the font bold */
-  font-size: 22px; /* Adjust the font size as needed */
+  position: absolute; 
+  top: 25px;
+  font-weight: bold; 
+  font-size: 22px; 
   left: 25px;
 }
 
 
 .sample-prompts-container {
-  display: none; /* Hide the prompts container on small screens */
-  background-color: #f7f2cb; /* Yellow background color */
-  padding: 2.5%; /* Adjust padding as needed */
-  align-items: center; /* Aligns the prompt vertically */
-  justify-content: center; /* Center the prompt horizontally */
-  text-align: center; /* Align text to the center */
+  display: none;
+  background-color: #f7f2cb; 
+  padding: 2.5%;
+  align-items: center; 
+  justify-content: center; 
+  text-align: center; 
 }
 
 .home-page-container {
-  flex-grow: 1; /* Allows the container to fill the space on small screens */
+  flex-grow: 1; 
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background-color: #FFFFFF; /* White background color */
+  background-color: #FFFFFF; 
 }
 
 /* Adjustments for medium screens */
@@ -1125,10 +1100,10 @@ body:not(.history-pane-open) .input-area {
   background-color: white;
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  max-width: 720px; /* Keep the width as is */
-  max-height: 100%; /* Allows it to expand to full viewport height */
-  height: 100vh; /* Sets the height to the full viewport height */
-  overflow-y: auto; /* Keeps the scrollbar if content is longer */
+  max-width: 720px; 
+  max-height: 100%; 
+  height: 100vh; 
+  overflow-y: auto; 
   color: rgba(0, 0, 0, 0.921);
   border: 1px solid blue;
 }
@@ -1136,16 +1111,16 @@ body:not(.history-pane-open) .input-area {
 /* lightbox component */
 
 .lightbox-overlay {
-  position: fixed; /* Fixed position to cover the whole screen */
+  position: fixed; 
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.823); /* Semi-transparent black background */
+  background-color: rgba(0, 0, 0, 0.823);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 100000; /* High z-index to make sure it's above other elements */
+  z-index: 100000; 
 }
 
 .lightbox-content {
@@ -1153,9 +1128,9 @@ body:not(.history-pane-open) .input-area {
   padding:  0% 6.7% 3% 6.7%;
   border-radius: 5px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  max-width: 580px; /* Adjust as per your content's requirements */
-  max-height: 96%; /* Adjust based on content height */
-  overflow-y: auto; /* Adds a scrollbar if the content is too long */
+  max-width: 580px;
+  max-height: 96%; 
+  overflow-y: auto; 
   position: relative; 
   font-size: 1rem;
   line-height: 1.7rem;
@@ -1228,35 +1203,33 @@ body:not(.history-pane-open) .input-area {
 
 /* For Firefox */
 .lightbox-content {
-  scrollbar-width: thin; /* "auto" or "thin" */
-  scrollbar-color: #dcdcdc transparent; /* thumb and track color */
+  scrollbar-width: thin; 
+  scrollbar-color: #dcdcdc transparent; 
 }
 
 /* AnswerDisplay Edit functionality */
 
 .answer-display-textarea {
   width: 100%;
-  height: auto; /* Adjust height automatically */
+  height: auto; 
   font-size: inherit;
   font-family: inherit;
   line-height: inherit;
   border: none;
-  resize: none; /* Disable manual resizing */
+  resize: none;
   margin-left: 0.05rem;
   margin-top: -0.12rem;
   background-color: rgb(253, 253, 253);
 }
 
 .answer-display-textarea:focus {
-  outline: none; /* Removes the default focus outline */
+  outline: none; 
 }
 
-/* Container for the buttons to center them horizontally */
 .button-container {
-  display: flex; /* Use flexbox */
-  justify-content: center !important; /* Center children horizontally */
-  align-items: center; /* Center children vertically */
-  /* border: 1px solid red; */
+  display: flex; 
+  justify-content: center !important; 
+  align-items: center; 
   margin-top: -0.55rem !important;
   margin-bottom: 0.4rem;
 }
@@ -1268,7 +1241,7 @@ body:not(.history-pane-open) .input-area {
   padding: 6px;
   font-size: 0.8rem;
   position: absolute;
-  left: -0.35rem; /* Align with the start of the text */
+  left: -0.35rem; 
 }
 
 .fa-pen:hover {
@@ -1283,7 +1256,7 @@ body:not(.history-pane-open) .input-area {
 
 .message {
   display: flex;
-  align-items: flex-start; /* Aligns items at the start of the container */
+  align-items: flex-start; 
   max-width: 600px;
   font-size: 0.98rem;
   color: #0D0D0D;
@@ -1310,7 +1283,6 @@ body:not(.history-pane-open) .input-area {
 .message-question-container {
   position: relative;
   margin-left: 0.18rem;
-  /* border: 1px solid black; */
   padding-bottom: 1.9rem;
 }
 
@@ -1326,7 +1298,7 @@ body:not(.history-pane-open) .input-area {
 
 
 .message-icon {
-  margin-right: 0.8rem; /* Adjust as needed */
+  margin-right: 0.8rem; 
 }
 
 .display-image {
@@ -1342,7 +1314,7 @@ body:not(.history-pane-open) .input-area {
 }
 
 .message-sender {
-  font-weight: bold; /* Make the icon text bold */
+  font-weight: bold; 
   margin-bottom: -1.4rem;
   user-select: none;
   display: block;
@@ -1351,16 +1323,11 @@ body:not(.history-pane-open) .input-area {
 .content-container {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start; /* or 'center' depending on your design */
-  /* border: 0.4px solid rgb(250, 250, 250);
-  border-radius: 0.3rem;
-  background-color: rgb(250, 250, 250); */
+  align-items: flex-start; 
   width: 16.7rem;
-  /* border: 1px solid pink; */
 }
 
 .image-container {
-  /* background-color: rgb(239, 239, 239); */
   width: 220px;
 }
 
@@ -1368,7 +1335,6 @@ body:not(.history-pane-open) .input-area {
   display: flex;
   flex-direction: column;
   gap: 0.63rem;
-  /* border: 1px solid green; */
   margin: auto;
   padding-top: 0.1rem;
 }
@@ -1377,7 +1343,6 @@ body:not(.history-pane-open) .input-area {
   margin: 0;
 }
 
-/* Common styles for all buttons */
 .buy-now-button, .key-insights-btn, .anecdotes-btn, .quotes-btn, .preview-btn, .more-details-btn, .continue-generating-btn {
   background: none;
   border: 0.5px solid lightgrey;
@@ -1405,17 +1370,14 @@ body:not(.history-pane-open) .input-area {
   font-size: 0.82rem !important;
 }
 
-/* Hover styles for all buttons */
 .buy-now-button:hover, .key-insights-btn:hover, .anecdotes-btn:hover, .quotes-btn:hover, .preview-btn:hover, .more-details-btn:hover, .continue-generating-btn:hover {
   background-color: rgba(0, 0, 0, 0.1);
 }
 
-/* Active styles for all buttons */
 .buy-now-button:active, .key-insights-btn:active, .anecdotes-btn:active, .quotes-btn:active, .preview-btn:active, .more-details-btn:active, .continue-generating-btn:active {
   background-color: rgba(0, 0, 0, 0.2);
 }
 
-/* Focus styles for all buttons */
 .buy-now-button:focus, .key-insights-btn:focus, .anecdotes-btn:focus, .quotes-btn:focus, .preview-btn:focus, .more-details-btn:focus, .continue-generating-btn:focus {
   outline: none;
   box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
@@ -1453,10 +1415,10 @@ body:not(.history-pane-open) .input-area {
 .button-container-continue-generating-btn {
   flex: 1;
   display: flex;
-  justify-content: flex-end; /* Aligns the button to the right horizontally */
-  align-items: center; /* Keeps the button centered vertically if needed */
-  width: 100%; /* Take the full width of the parent to allow right alignment */
-  margin-top: -1.5rem; /* Adjust the margin as needed */
+  justify-content: flex-end; 
+  align-items: center; 
+  width: 100%; 
+  margin-top: -1.5rem;
 }
 
 .single-button {
@@ -1728,29 +1690,29 @@ body:not(.history-pane-open) .input-area {
 }
 
 .contact-container a, .contact-container button {
-  display: inline-flex; /* Use inline-flex to align items within buttons */
-  align-items: center; /* Center the items vertically */
-  width: 6rem; /* Set a fixed width */
-  font-size: 1rem; /* Set a fixed font size */
-  margin: 5px 0; /* Margin for spacing between buttons */
+  display: inline-flex; 
+  align-items: center; 
+  width: 6rem;
+  font-size: 1rem;
+  margin: 5px 0;
   border: 0.5px solid lightgrey;
   color: black;
-  padding: 0.5rem 0.95rem; /* Set a uniform padding */
+  padding: 0.5rem 0.95rem; 
   text-decoration: none;
   border-radius: 0.5rem;
   cursor: pointer;
-  outline: none; /* Removes the focus outline */
+  outline: none;
   transition: background-color 0.3s, transform 0.1s;
   text-align: left;
-  box-sizing: border-box; /* Ensures padding is included in the width */
+  box-sizing: border-box;
 }
 
 .contact-container a i {
-  margin-right: 0.94rem; /* space between icon and text */
+  margin-right: 0.94rem;
 }
 
 .contact-container button i {
-  margin-right: 0.7rem; /* space between icon and text */
+  margin-right: 0.7rem;
 }
 
 .contact-container button {
@@ -1758,17 +1720,17 @@ body:not(.history-pane-open) .input-area {
 }
 
 .contact-container a:hover, .contact-container button:hover {
-  background-color: lightgrey; /* darker shade for hover state */
+  background-color: lightgrey;
 }
 
 .contact-container i {
-  margin-right: 8px; /* space between icon and text */
+  margin-right: 8px; 
 }
 
 .contact-buttons-container {
   text-align: left;
-  max-width: 185px; /* Maximum width of the buttons to align text */
-  margin: 0 auto; /* Centers the buttons container */
+  max-width: 185px;
+  margin: 0 auto; 
 }
 
 @media (max-width: 759px) {
@@ -1789,14 +1751,14 @@ body:not(.history-pane-open) .input-area {
     display: flex;
     width: 97.5vw;
     height: 2.5rem;
-    justify-content: space-between; /* Aligns items on opposite ends */
-    padding: 0 10px; /* Add some padding on the sides */
+    justify-content: space-between; 
+    padding: 0 10px;
     border-bottom: 1px solid rgb(213, 211, 211);
   }
 
   .header-title {
     display: inline-block;
-    font-size: 1.2rem; /* Adjust size as needed */
+    font-size: 1.2rem; 
     margin-top: auto;
     margin-bottom: auto;
     font-weight: bold;

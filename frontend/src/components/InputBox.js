@@ -112,7 +112,7 @@ function InputBox({ onSubmit, isStreaming, onStopStreaming, onHeightChange }) {
           <i className="fa-regular fa-circle-stop"></i>
         </button>
       ) : (
-        <button type="submit" className={`send-button ${isInputNotEmpty ? 'active' : ''}`} style={{ right: sendButtonRight }}>
+        <button type="submit" className={`send-button ${isInputNotEmpty ? 'active' : ''}`} disabled={!isInputNotEmpty} style={{ right: sendButtonRight }}>
           <i className="fa-solid fa-arrow-up"></i>
         </button>
       )}
