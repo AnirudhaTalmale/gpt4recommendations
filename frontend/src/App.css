@@ -6,7 +6,7 @@
   background-color: rgb(253, 253, 253);
 }
 
-/* chat-area header */
+/* Header page */
 
 ol {
   padding-inline-start: 0px;  /* Adjusts the starting padding of the list to reduce indentation */
@@ -17,7 +17,6 @@ ol li::marker {
   font-size: 0.93rem;
   
 }
-
 
 body:not(.history-pane-open) .chat-area {
   margin-left: 0;
@@ -83,8 +82,6 @@ body:not(.history-pane-open) .chat-area {
   color: rgb(104, 103, 103); /* Different color for the author's name */
 }
 
-/* --------------- */
-
 .fa-star-half-stroke {
   color: orange;
   font-size: 0.9rem;
@@ -108,9 +105,7 @@ body:not(.history-pane-open) .chat-area {
   margin-right: 10px; /* Adjust as needed */
 }
 
-
 /* --------------- */
-
 
 .chat-area-wrapper {
   display: flex;
@@ -137,10 +132,6 @@ body:not(.history-pane-open) .chat-area {
 .chat-area::-webkit-scrollbar {
   width: 0.5rem; /* Width of the scrollbar */
   
-}
-
-/* Style the scrollbar track */
-.chat-area::-webkit-scrollbar-track {
 }
 
 /* Handle */
@@ -182,12 +173,10 @@ body:not(.history-pane-open) .sample-queries-container {
   margin-bottom: 0.5rem;
 }
 
-
 .sample-queries-row {
   display: flex;
   justify-content: space-evenly; /* Evenly space the buttons */
   margin-bottom: 0.5rem; /* Space between the rows */
-  
 }
 
 .sample-query {
@@ -224,7 +213,6 @@ body:not(.history-pane-open) .input-area {
   flex-grow: 1;
   /* border: 1px solid pink; */
 }
-
 
 .input-box {
   width: 80%; /* Full width of the parent container */
@@ -292,74 +280,8 @@ body:not(.history-pane-open) .input-area {
   cursor: pointer;
 }
 
-
 .send-button.active {
   background-color: black;
-}
-
-.attachment-button {
-  position: absolute;
-  left: 0.6rem; /* Position it to the left */
-  bottom: 0.35rem; /* Align with the send button */
-  background: none; /* Background color similar to send button */
-  border: none;
-  width: 1.85rem; /* Width similar to send button */
-  height: 1.85rem; /* Height similar to send button */
-  font-size: 1rem; /* Icon size */
-  cursor: pointer; /* Cursor as pointer to indicate clickable */
-}
-
-.attachment-button i {
-  line-height: 1.85rem; /* Center the icon vertically */
-  text-align: center; /* Center the icon horizontally */
-  display: block;
-}
-
-.attachment-preview {
-  position: relative;
-  /* ...existing styles... */
-}
-
-.remove-attachment-button {
-  position: absolute;
-  top: -0.07rem;
-  right: 0.35rem;
-  background: grey; /* Ensure this is the color you want for the background */
-  border: none;
-  cursor: pointer;
-  color: white; /* Or any color that makes the icon visible */
-  font-size: 1.3rem; /* Adjust size as needed */
-  border-radius: 50%; /* This will make the button round */
-  width: 1.3rem; /* Adjust the width as needed */
-  height: 1.3rem; /* Adjust the height to match the width */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  overflow: hidden; /* This ensures that nothing extends outside the circular boundary */
-}
-
-
-.attachment-preview:hover {
-  display: block; /* Show the button on hover */
-}
-
-.attachment-preview img {
-  width: 3.3rem; /* Or any size you see fit */
-  height: 3.3rem; /* Or any size you see fit */
-  object-fit: cover;
-  margin-right: 1.2rem; /* Spacing between multiple attachments */
-  vertical-align: middle; /* Align inline with text */
-  border-radius: 0.3rem; /* Optional: if you want rounded corners */
-}
-
-.attachment-previews-header {
-  position: absolute;
-  top: 0;
-  right: 0;
-  left: 0;
-  display: flex;
-  align-items: center;
-  padding-left: 0.5rem;
 }
 
 /* History pane css */
@@ -1584,20 +1506,6 @@ body:not(.history-pane-open) .input-area {
   pointer-events: none; 
 }
 
-.message-attachments {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); /* Creates a responsive grid */
-  grid-gap: 25px; /* Adjusts space between grid items */
-}
-
-.attachment img {
-  width: 100%; /* Makes image fill the grid cell */
-  height: auto; /* Maintains aspect ratio */
-  cursor: pointer;
-  display: block; /* Fixes issue with extra space under images */
-  margin-bottom: 0.5rem;
-}
-
 .modal {
   /* ... other styles ... */
   position: fixed; /* Fixed position */
@@ -1638,75 +1546,6 @@ body:not(.history-pane-open) .input-area {
 
 .lightbox-content  button {
   margin-bottom: 1.2rem;
-}
-  
-.close-button {
-  position: fixed;
-  top: 8px;
-  right: 8px;
-  background: transparent; /* Optional: make the background transparent */
-  color: white; /* Set icon color to white */
-  border: none;
-  border-radius: 50%;
-  width: 30px;
-  height: 30px;
-  text-align: center;
-  line-height: 30px; /* Center the icon vertically */
-  cursor: pointer;
-}
-
-.close-button i {
-  font-size: 0.8rem; /* Adjust the size of the icon as needed */
-}
-
-.message-timestamp {
-  color: grey;
-  font-size: 0.6rem;
-  margin-top: -0.1rem;
-  margin-left: 0.25rem;
-}
-
-.combined-message-block {
-  margin-top: -1.5rem;
-}
-
-/* NewBlogPost page CSS */
-
-.new-blog-post-container {
-  max-width: 800px;
-  margin: auto;
-  padding: 20px;
-}
-
-.new-blog-post-title {
-  text-align: center;
-}
-
-.new-blog-post-form {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.new-blog-post-input,
-.new-blog-post-textarea {
-  padding: 10px;
-  font-size: 16px;
-  width: 100%;
-}
-
-.new-blog-post-button {
-  padding: 10px 15px;
-  font-size: 18px;
-  cursor: pointer;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 5px;
-}
-
-.new-blog-post-button:hover {
-  background-color: #0056b3;
 }
 
 /* BlogPostPage.css */
@@ -1800,7 +1639,6 @@ body:not(.history-pane-open) .input-area {
   margin-bottom: 2.5rem;
 }
 
-
 .new-post-button {
   display: block;
   margin: 20rem auto 20px;
@@ -1869,7 +1707,8 @@ body:not(.history-pane-open) .input-area {
   color: inherit;
 }
 
-/* Contact.css */
+/* Contact us page */
+
 .contact-container {
   display: flex;
   flex-direction: column;

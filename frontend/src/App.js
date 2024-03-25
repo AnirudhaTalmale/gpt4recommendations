@@ -4,7 +4,6 @@ import Chat from './components/Chat';
 import OnboardingPage from './components/OnboardingPage'; 
 import BlogPage from './components/BlogPage';
 import BlogPostPage from './components/BlogPostPage';
-import NewBlogPost from './components/NewBlogPost';
 import HomePage from './components/HomePage';
 import EmailVerificationPage from './components/EmailVerificationPage'; 
 import Contact from './components/Contact'; 
@@ -23,7 +22,6 @@ function App() {
           <Route path="/" element={<HomePage />} />
           <Route path="/blog" element={<BlogPage />} />
           <Route path="/blog/:postId" element={<BlogPostPage />} />
-          <Route path="/new-blog-post" element={<NewBlogPost />} />
           <Route path="/contact-us" element={<Contact />} />
         </Routes>
       </div>

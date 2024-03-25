@@ -3,7 +3,7 @@ import { useParams, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import { handleBookPreviewRequest, handleAnecdotesRequest, handleKeyInsightsRequest, handleMoreDetailsRequest, handleQuotesRequest, checkAuthStatus } from './CommonFunctions';
 import InputBox from './InputBox';
-// import SampleQueries from './SampleQueries';
+import SampleQueries from './SampleQueries';
 import AnswerDisplay from './AnswerDisplay';
 import HistoryPane from './HistoryPane';
 import Lightbox from './Lightbox';
@@ -11,7 +11,7 @@ import LightboxForImage from './LightboxForImage';
 import LightboxForBookPreview from './LightboxForBookPreview';
 import '../App.css';
 import socket from './socket';
-import Header from './Header';
+// import Header from './Header';
 import { useNavigate } from 'react-router-dom';
 import { useHandleStreamEnd, useHandleMessageLimitReached, useGoogleBooksViewer, useStreamChunkHandler } from './CommonHooks'; 
 
@@ -629,7 +629,7 @@ function Chat() {
     setIsLightboxForImageOpen(true);
   };
 
-  // const [inputBoxHeight, setInputBoxHeight] = useState(0);
+  const [inputBoxHeight, setInputBoxHeight] = useState(0);
 
   // Message-question edit functionality
 
@@ -701,7 +701,7 @@ function Chat() {
         selectedSessionId={selectedSessionId}
         setSelectedSessionId={setSelectedSessionId}
       />
-      <Header isPaneOpen={isPaneOpen} togglePane={togglePane} />
+    
       <div className="chat-area" ref={chatAreaRef}>
         {location.pathname === "/chat" && (
           <div className="chat-heading">
@@ -734,12 +734,18 @@ function Chat() {
           );
         })}
       </div>
-      
+      {location.pathname === "/chat" && (
+          <SampleQueries
+            onSubmit={handleQuerySubmit}
+            inputBoxHeight={inputBoxHeight} // And here you pass the inputBoxHeight state down to SampleQueries
+          />
+      )}
       <InputBox
         onSubmit={handleQuerySubmit}
         isLoading={isLoading}
         isStreaming={isStreaming}
         onStopStreaming={handleStopStreaming}
+        onHeightChange={setInputBoxHeight} // Here you pass the setInputBoxHeight function to the InputBox
       />
     </div>
   );
