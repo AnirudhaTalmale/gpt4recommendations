@@ -3,7 +3,7 @@ import { useParams, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import { handleBookPreviewRequest, handleAnecdotesRequest, handleKeyInsightsRequest, handleMoreDetailsRequest, handleQuotesRequest, checkAuthStatus } from './CommonFunctions';
 import InputBox from './InputBox';
-import SampleQueries from './SampleQueries';
+// import SampleQueries from './SampleQueries';
 import AnswerDisplay from './AnswerDisplay';
 import HistoryPane from './HistoryPane';
 import Lightbox from './Lightbox';
@@ -734,12 +734,7 @@ function Chat() {
           );
         })}
       </div>
-      {location.pathname === "/chat" && (
-          <SampleQueries
-            onSubmit={handleQuerySubmit}
-            inputBoxHeight={inputBoxHeight} // And here you pass the inputBoxHeight state down to SampleQueries
-          />
-      )}
+      
       <InputBox
         onSubmit={handleQuerySubmit}
         isLoading={isLoading}
