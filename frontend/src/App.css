@@ -1130,36 +1130,20 @@ body:not(.history-pane-open) .input-area {
   margin-bottom: -0.15rem !important;
 }
 
-.lightbox-close {
-  position: fixed; /* Changed from absolute to fixed */
+.lightbox-close, .lightbox-close-for-book-preview {
+  position: fixed;
   top: 0.6rem;
   right: 0.6rem;
   font-size: 28px;
   cursor: pointer;
-  z-index: 1001; /* Higher than the lightbox-overlay to ensure it's on top */
-  background-color: rgba(0, 0, 0, 0.848); /* Black background for the circle */
-  border-radius: 50%; /* Make it round */
-  width: 2rem; /* Set the width of the circle */
-  height: 2rem; /* Set the height of the circle */
-  display: flex; /* Use flexbox to center the icon */
-  align-items: center; /* Center vertically */
-  justify-content: center; /* Center horizontally */
-}
-
-.lightbox-close-for-book-preview {
-  position: fixed; /* Changed from absolute to fixed */
-  top: 0.6rem;
-  right: 0.6rem;
-  font-size: 28px;
-  cursor: pointer;
-  z-index: 1001; /* Higher than the lightbox-overlay to ensure it's on top */
-  background-color: rgba(0, 0, 0, 0.848); /* Black background for the circle */
-  border-radius: 50%; /* Make it round */
-  width: 2rem; /* Set the width of the circle */
-  height: 2rem; /* Set the height of the circle */
-  display: flex; /* Use flexbox to center the icon */
-  align-items: center; /* Center vertically */
-  justify-content: center; /* Center horizontally */
+  z-index: 1001;
+  background-color: rgba(0, 0, 0, 0.848);
+  border-radius: 50%;
+  width: 2rem;
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .fa-xmark {
