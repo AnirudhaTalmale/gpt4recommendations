@@ -34,8 +34,6 @@ function checkFormatMoreDetails(content) {
   // Reusing the initial checks for book info, image, and buy button from the reference function
   const bookInfo = bodyChildren[0];
   if (!bookInfo.classList.contains("book-info")) return false;
-  const bookTitle = bookInfo.querySelector("h3.book-title");
-  const bookAuthor = bookInfo.querySelector("span.book-author");
   const ratingsAndReview = bookInfo.querySelector("div.ratings-and-review");
 
   const validBookInfoChildren = Array.from(bookInfo.children).filter(child => 
@@ -81,8 +79,6 @@ function checkFormatKeyInsights(content) {
   // Check 1: div.book-info with specific children
   const bookInfo = bodyChildren[0];
   if (!bookInfo.classList.contains("book-info")) return false;
-  const bookTitle = bookInfo.querySelector("h3.book-title");
-  const bookAuthor = bookInfo.querySelector("span.book-author");
   const ratingsAndReview = bookInfo.querySelector("div.ratings-and-review");
 
   // Allow for the optional presence of exactly one ratings-and-review div
@@ -127,8 +123,6 @@ function checkFormatAnecdotes(content) {
   // Check 1: div.book-info with specific children
   const bookInfo = bodyChildren[0];
   if (!bookInfo.classList.contains("book-info")) return false;
-  const bookTitle = bookInfo.querySelector("h3.book-title");
-  const bookAuthor = bookInfo.querySelector("span.book-author");
   const ratingsAndReview = bookInfo.querySelector("div.ratings-and-review");
 
   const validBookInfoChildren = Array.from(bookInfo.children).filter(child => 
@@ -170,8 +164,6 @@ function checkFormatQuotes(content) {
   // Check 1: div.book-info with specific children
   const bookInfo = bodyChildren[0];
   if (!bookInfo.classList.contains("book-info")) return false;
-  const bookTitle = bookInfo.querySelector("h3.book-title");
-  const bookAuthor = bookInfo.querySelector("span.book-author");
   const ratingsAndReview = bookInfo.querySelector("div.ratings-and-review");
 
   // Allow for the optional presence of exactly one ratings-and-review div
@@ -208,7 +200,7 @@ function createPreviewButtonHtml(isbn, isEmbeddable) {
   const buttonStyles = isEmbeddable ? "" : disabledStyles;
 
   return `<div><button type="button" class="preview-btn" data-isbn="${isbn}" ${buttonStyles}>Preview</button></div>`;
-};
+}
 
 function createBookInfoHtml(bookTitle, author, amazonStarRating, amazonReviewCount) {
 
@@ -293,14 +285,14 @@ async function getAmazonBookData(title, author) {
       // Validate the title
       const itemTitleLower = item.title.toLowerCase();
       const searchTitleLower = title.toLowerCase();
-      console.log(itemTitleLower);
-      console.log(searchTitleLower);
 
       const longestCommonSubstringLength = getLongestCommonSubstringLength(itemTitleLower, searchTitleLower);
       const matchPercentage = longestCommonSubstringLength / searchTitleLower.length;
 
       if (matchPercentage < 0.5) {
         console.log('Title does not match the search');
+        console.log(itemTitleLower);
+        console.log(searchTitleLower);
         return { amazonLink: '', amazonStarRating: '', amazonReviewCount: '', amazonImage: '' };
       }
 
@@ -552,7 +544,7 @@ const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, is
 
           const bookInfoHtml = createBookInfoHtml(bookTitle, author, amazonStarRating, amazonReviewCount);
           pausedEmit = pausedEmit.replace(bookTitleMatch[0], bookInfoHtml);
-          pausedEmit = pausedEmit.replace(/\#/g, '');
+          pausedEmit = pausedEmit.replace(/#/g, '');
                     
           // Emit pausedEmit and reset
           completeResponse += pausedEmit;

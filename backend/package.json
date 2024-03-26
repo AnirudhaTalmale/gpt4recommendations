@@ -5,8 +5,10 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon index.js"
-  },
+    "lint-watch": "nodemon --exec 'eslint .' --watch . --ext .js",
+    "start": "nodemon index.js",
+    "start-dev": "npm-run-all --parallel start lint-watch"
+  },  
   "author": "",
   "license": "ISC",
   "dependencies": {
@@ -48,6 +50,7 @@
     "ws": "^8.14.2"
   },
   "devDependencies": {
+    "eslint": "^8.57.0",
     "nodemon": "^3.0.1"
   }
 }

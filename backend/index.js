@@ -7,7 +7,6 @@ const User = require('./models/models-chat/User');
 const KeyInsightsModel = require('./models/models-chat/KeyInsights'); 
 const AnecdotesModel = require('./models/models-chat/Anecdotes'); 
 const QuotesModel = require('./models/models-chat/Quotes'); 
-const BookData = require('./models/models-chat/BookData'); 
 const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
@@ -19,7 +18,6 @@ const anecdotesPrompt = require('./prompts/promptAnecdotes');
 const quotesPrompt = require('./prompts/promptQuotes');
 const passportSetup = require('./passport-setup'); // Import the setup function
 const axios = require('axios');
-const multer = require('multer');
 const nodemailer = require('nodemailer');
 const jwt = require('jsonwebtoken'); 
 const redisClient = require('./redisClient'); 
@@ -30,8 +28,6 @@ const app = express();
 app.set('trust proxy', 1)
 const server = http.createServer(app);
 
-const storage = multer.memoryStorage();
-const upload = multer({ storage: storage });
 
 const cors = require('cors');
 
@@ -162,6 +158,7 @@ app.get('/auth/logout', (req, res, next) => {
     }).then(() => {
       console.log('Google token revoked');
     }).catch(err => {
+      console.error('Error revoking Google token:', err); 
     });
 
     req.session.destroy(function(err) {
@@ -314,7 +311,8 @@ io.on('connection', (socket) => {
     // Find the session and update it with the new message and response
     const session = await Session.findById(sessionId).populate('user');
     if (!session) {
-      return res.status(404).json({ message: 'Session not found' });  
+      console.log('Session not found');
+      return; 
     }
 
     if (!isMoreDetails && !moreBooks && !isKeyInsights && !isAnecdotes && !isQuotes && !isEdit) {
