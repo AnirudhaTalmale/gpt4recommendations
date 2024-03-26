@@ -314,13 +314,13 @@ io.on('connection', (socket) => {
     // Find the session and update it with the new message and response
     const session = await Session.findById(sessionId).populate('user');
     if (!session) {
-      return res.status(404).json({ message: 'Session not found' }); 
+      return res.status(404).json({ message: 'Session not found' });  
     }
 
     if (!isMoreDetails && !moreBooks && !isKeyInsights && !isAnecdotes && !isQuotes && !isEdit) {
       // Add the user message to the session
       const newMessage = {
-        role: 'user',
+        role: 'user', 
         contentType: 'simple',
         content: message.content
       };
@@ -577,7 +577,7 @@ app.get('/api/key-insights', async (req, res) => {
   } catch (error) {
     console.error('Server error:', error);
     res.status(500).json({ message: 'Server error occurred while fetching book details' });
-  }
+  } 
 });
 
 app.get('/api/quotes', async (req, res) => {

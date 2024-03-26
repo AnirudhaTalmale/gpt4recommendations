@@ -322,7 +322,7 @@ const HistoryPane = forwardRef(({
               </li>
               <li>
                 <a href="/contact-us" className="dropdown-link" style={{ display: 'block', width: '100%', height: '100%' }}>
-                  <i className="fa-solid fa-address-book"></i> Contact Us
+                  <i className="fa-solid fa-address-book"></i> Contact us
                 </a>
               </li>
               <li onClick={handleLogout}>

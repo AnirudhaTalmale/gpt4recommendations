@@ -1106,11 +1106,11 @@ body:not(.history-pane-open) .input-area {
 
 .lightbox-content {
   background-color: white;
-  padding:  0% 6.7% 3% 6.7%;
+  padding:  2% 6.7% 3% 6.7%;
   border-radius: 5px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   max-width: 580px;
-  max-height: 96%; 
+  max-height: 94dvh; 
   overflow-y: auto; 
   position: relative; 
   font-size: 1rem;
@@ -1122,14 +1122,6 @@ body:not(.history-pane-open) .input-area {
   max-width: 630px;
 }
 
-.lightbox-content .buy-now-button {
-  margin-bottom: 0rem;
-}
-
-.lightbox-content h3 {
-  margin-bottom: -0.15rem !important;
-}
-
 .lightbox-close, .lightbox-close-for-book-preview {
   position: fixed;
   top: 0.6rem;
@@ -1139,16 +1131,20 @@ body:not(.history-pane-open) .input-area {
   z-index: 1001;
   background-color: rgba(0, 0, 0, 0.848);
   border-radius: 50%;
-  width: 2rem;
-  height: 2rem;
+  width: 1.7rem;
+  height: 1.7rem;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
+.lightbox-close {
+  top: 1.4rem;
+}
+
 .fa-xmark {
   color: white;
-  font-size: 1.1rem;
+  font-size: 0.99rem;
 }
 
 /* Custom scrollbar for lightbox-content */
@@ -1442,14 +1438,7 @@ body:not(.history-pane-open) .input-area {
 
 .lightbox-content button {
   width: 139px;
-}
-
-.lightbox-content  h3 {
-  margin-bottom: -0.001rem;
-}
-
-.lightbox-content  button {
-  margin-bottom: 1.2rem;
+  margin-bottom: 1.4rem !important;
 }
 
 /* BlogPostPage.css */
@@ -1772,15 +1761,11 @@ body:not(.history-pane-open) .input-area {
     font-size: 1rem;
   }
 
-  .lightbox-close {
-    top: 1.5rem !important;
-  }
-
   .lightbox-content-for-image img {
     width: 80dvw;
   }
 
   .history-pane {
-    width: 63%;
+    width: 16rem;
   }
 }

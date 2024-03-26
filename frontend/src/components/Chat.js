@@ -303,6 +303,7 @@ function Chat() {
   
   const handleQuerySubmit = async (query, isMoreDetails = false, isbn = null, bookTitle = null, author = null, moreBooks = false, isKeyInsights = false, isAnecdotes = false, isQuotes = false, isEdit = false) => {
     setIsLoading(true);
+    console.log("currentSessionIdRef.current is: ", currentSessionIdRef.current);
   
     // Get the current session's ID
     const currentSessionId = currentSessionIdRef.current;
@@ -388,11 +389,14 @@ function Chat() {
     if (urlSessionId) {
       setCurrentSessionId(urlSessionId); // This might be redundant if you do not need to track currentSessionId separately from selectedSessionId
       setSelectedSessionId(urlSessionId);
+      currentSessionIdRef.current = urlSessionId;
+      console.log("inside useEffect if, currentSessionIdRef.current is: ", currentSessionIdRef.current);
     }
     else {
       setCurrentSessionId(null); // This might be redundant if you do not need to track currentSessionId separately from selectedSessionId
       setSelectedSessionId(null);
       currentSessionIdRef.current = null;
+      console.log("inside useEffect else, currentSessionIdRef.current is: ", currentSessionIdRef.current);
     }
   }, [urlSessionId]); 
 
@@ -457,10 +461,6 @@ function Chat() {
       // Update the current session ID after deletion
       setCurrentSessionId(prevCurrentSessionId => {
         if (prevCurrentSessionId === sessionId) {
-          // If the deleted session was the current one, switch to another session (e.g., the last one) or set to null if no sessions are left
-          // const newSessionId = sessions.length > 1 ? sessions[sessions.length - 1]._id : null;
-          // currentSessionIdRef.current = newSessionId; // Also update the ref synchronously
-          // return newSessionId;
           navigate(`/chat`);
           return null;
         }

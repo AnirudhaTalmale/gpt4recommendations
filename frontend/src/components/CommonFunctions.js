@@ -108,7 +108,7 @@ export const handleMoreDetailsRequest = async (isbn, bookTitle, author, handleQu
       setIsLightboxOpen(true);
     }
   } catch (error) {
-    const userQuery = `Explain the book - ${bookTitle}`;
+    const userQuery = `Explain the book - ${bookTitle} by ${author}`;
     handleQuerySubmit(userQuery, true, isbn, bookTitle, author);
   }
 };

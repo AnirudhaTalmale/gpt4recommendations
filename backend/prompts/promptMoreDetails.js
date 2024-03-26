@@ -1,8 +1,8 @@
 const moreDetailsPrompt = (userQuery) => {
-    return `${userQuery} strictly in following format:
- <h3>Book Summary</h3><p>Brief</p>
- <h3>Author's Credibility</h3><p>Brief</p>
- <h3>Endorsements and Praise</h3><p>Brief</p>`
+    return `${userQuery} strictly with following html tags:
+ <b>Book Summary</b><p>Brief</p>
+ <b>Author's Credibility</b><p>Brief</p>
+ <b>Endorsements and Praise</b><p>Brief</p>`
 };
 
 module.exports = moreDetailsPrompt;

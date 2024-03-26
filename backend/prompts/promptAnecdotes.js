@@ -1,7 +1,7 @@
 const anecdotesPrompt = (userQuery) => {
     return `Book name is "${userQuery}"
- Provide Key Anecdotes strictly in following format:
- <h3>Key Anecdotes</h3><ol><li><strong>Anecdote Name: </strong>Anecdote Story</li></ol>`
+ Provide Key Anecdotes strictly with following html tags:
+ <ol><li><b>Anecdote Name</b>: Anecdote Story</li></ol>`
 };
 
 module.exports = anecdotesPrompt;
