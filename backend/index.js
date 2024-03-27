@@ -62,7 +62,7 @@ const sessionConfig = {
   }),
   cookie: {
     secure: process.env.NODE_ENV === "production",
-    sameSite: 'Lax',
+    sameSite: process.env.NODE_ENV === "production" ? 'None' : 'Lax',
     httpOnly: false,
   }
 }; 
