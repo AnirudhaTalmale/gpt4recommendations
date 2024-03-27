@@ -222,13 +222,8 @@ const HistoryPane = forwardRef(({
           </svg>
         </button>
 
-        <div onClick={handleNewSessionCreation} className="header-container">
-          <button className="new-session-button">
-            GetBooks 
-          </button>
-          <button  className="new-session-button">
-            <i className="fa-regular fa-pen-to-square"></i>
-          </button>
+        <div onClick={handleNewSessionCreation} className="history-entry new-session-button">
+          <span>GetBooks</span> <i className="fa-regular fa-pen-to-square"></i>
         </div>
         
         <div className="history-content">

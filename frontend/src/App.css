@@ -163,6 +163,7 @@ body:not(.history-pane-open) .sample-queries-container {
   margin-right: auto; /* Centering with auto margins */
   border-radius: 8px;
   margin-bottom: 0.5rem;
+  
 }
 
 .sample-queries-row {
@@ -183,6 +184,7 @@ body:not(.history-pane-open) .sample-queries-container {
   text-align: start;
   padding: 0.9rem;
   cursor: pointer;
+  color: black;
 }
 
 .sample-query:hover {
@@ -307,7 +309,7 @@ body:not(.history-pane-open) .input-area {
   background-color: black;
   color: #fff;
   width: 244px; 
-  padding: 0.5rem 0rem 0.5rem 0.5rem;
+  padding: 0.8rem 0rem 0.5rem 0.5rem;
   position: fixed;
   left: 0;
   top: 0;
@@ -325,7 +327,6 @@ body:not(.history-pane-open) .input-area {
 .header-container {
   display: flex;
   justify-content: space-between;
-  padding: 0.5rem 0.2rem 0.5rem 0rem;
   align-items: center; /* Align buttons vertically */
   position: relative; 
   &:hover {
@@ -333,7 +334,6 @@ body:not(.history-pane-open) .input-area {
     border-radius: 0.34rem;
   }
   cursor: pointer;
-  margin: 0 0.6rem 0.5rem 0.43rem;
 }
 
 .fa-arrow-up {
@@ -347,6 +347,8 @@ body:not(.history-pane-open) .input-area {
   background: none;
   font-size: 1rem;
   font-weight: bold;
+  padding: 0.64rem !important;
+  /* border: 1px solid blue; */
 }
 
 .history-content {
@@ -905,6 +907,7 @@ body:not(.history-pane-open) .input-area {
   transition: background-color 0.3s, color 0.3s;
   border: 0.5px solid grey;
   height: 3.2rem;
+  color: black;
 }
 
 .login-button:hover {
