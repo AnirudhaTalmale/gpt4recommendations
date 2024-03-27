@@ -1080,8 +1080,7 @@ body:not(.history-pane-open) .input-area {
   background-color: white;
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  max-width: 720px; 
-  max-height: 100%; 
+  max-width: 720px;
   height: 100dvh; 
   overflow-y: auto; 
   color: rgba(0, 0, 0, 0.921);
@@ -1742,8 +1741,8 @@ body:not(.history-pane-open) .input-area {
   }
 
   .lightbox-content-for-book-preview {
-    max-width: 100dvw !important;
-    max-height: 100dvh !important;
+    max-width: 95dvw !important;
+    max-height: 95dvh !important;
   }
 
   .lightbox-content {
