@@ -265,7 +265,9 @@ body:not(.history-pane-open) .input-area {
   border: 1px solid #D3D3D3;
   border-radius: 0.5rem;
   color: white;
-  
+  padding: 0;
+  /* background-color: green; */
+  margin: 0;
 }
 
 .send-button.active {
@@ -274,7 +276,8 @@ body:not(.history-pane-open) .input-area {
 }
 
 .fa-arrow-up {
-  margin: auto;
+  margin: 0;
+  /* background-color: yellow; */
 }
 
 /* History pane css */
@@ -331,6 +334,10 @@ body:not(.history-pane-open) .input-area {
   }
   cursor: pointer;
   margin: 0 0.6rem 0.5rem 0.43rem;
+}
+
+.fa-arrow-up {
+  margin: auto;
 }
 
 .new-session-button {
