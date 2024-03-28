@@ -62,8 +62,8 @@ const sessionConfig = {
   }),
   cookie: {
     secure: process.env.NODE_ENV === "production",
-    sameSite: process.env.NODE_ENV === "production" ? 'None' : 'Lax',
-    httpOnly: false,
+    sameSite: 'Lax', 
+    httpOnly: true,
   }
 }; 
 

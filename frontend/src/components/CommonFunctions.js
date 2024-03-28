@@ -113,7 +113,7 @@ export const handleMoreDetailsRequest = async (isbn, bookTitle, author, handleQu
   }
 };
 
-export const checkAuthStatus = async () => {
+  export const checkAuthStatus = async () => {
     try {
       const authResponse = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/check-auth`, { withCredentials: true });
   

@@ -6,7 +6,7 @@ const PrivacyPolicy = () => {
     <div className="privacyPolicy">
       <header-privacy-policy>
         GetBooks
-        <h1>Privacy Policy</h1>
+        <h2>Privacy Policy</h2>
       </header-privacy-policy>
       <section-privacy-policy>
         <h2>SCOPE AND PURPOSE</h2>

@@ -1,7 +1,7 @@
 // Blogs.js
 const blogs = {
     blog1: {
-        title: "Billionaires and Their Favorite Books",
+        title: "Billionaires and their favorite Books",
         imagePath: "/GreenBookShelf.webp",
         content: `<h3>Introduction</h3>
         <p>In the world of business and innovation, inspiration plays a key role. For many successful billionaires, certain books have been instrumental in shaping their strategies, philosophies, and business principles. Let’s explore some of these influential books and how they impacted the lives of these renowned billionaires.</p>

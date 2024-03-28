@@ -110,8 +110,9 @@ function HomePage() {
             </form>
         </div>
         <div className="footer-links">
-          <Link to="/blog" className="footer-link">Blog</Link>
+          <Link to="/privacy-policy" className="footer-link">Privacy Policy</Link> 
           <a href="/contact-us" className="footer-link">Contact us</a>
+          <Link to="/blog" className="footer-link">Blog</Link>
         </div>
       </div>
     </div>
