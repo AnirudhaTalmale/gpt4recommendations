@@ -5,16 +5,16 @@
     {
       "src": "GetBooks.png",
       "sizes": "64x64 32x32 24x24 16x16",
-      "type": "image/webp"
+      "type": "image/png"
     },
     {
       "src": "GetBooks.png",
-      "type": "image/webp",
+      "type": "image/png",
       "sizes": "192x192"
     },
     {
       "src": "GetBooks.png",
-      "type": "image/webp",
+      "type": "image/png",
       "sizes": "512x512"
     }
   ],
