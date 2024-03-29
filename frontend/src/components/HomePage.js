@@ -114,6 +114,12 @@ function HomePage() {
           <a href="/contact-us" className="footer-link">Contact us</a>
           <Link to="/blog" className="footer-link">Blog</Link>
         </div>
+
+        <div className="footer-links">
+          <a href={`${process.env.REACT_APP_FRONTEND_URL}/privacy-policy`} target="_blank" rel="noopener noreferrer" className="footer-link">Privacy Policy</a> 
+          <a href="/contact-us" target="_blank" rel="noopener noreferrer" className="footer-link">Contact us</a>
+          <a href={`${process.env.REACT_APP_FRONTEND_URL}/blog`} target="_blank" rel="noopener noreferrer" className="footer-link">Blog</a>
+        </div>
       </div>
     </div>
   );
