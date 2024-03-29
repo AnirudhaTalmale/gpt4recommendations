@@ -21,7 +21,6 @@ const HistoryPane = forwardRef(({
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isEntryActive, setIsEntryActive] = useState(false);
   const [wasClosedManually, setWasClosedManually] = useState(false);
-  const [lastSelectTime, setLastSelectTime] = useState(0);
   const lineRef = useRef(null);
 
   const navigate = useNavigate(); 
@@ -133,12 +132,6 @@ const HistoryPane = forwardRef(({
   }, [wasClosedManually, isPaneOpen, togglePane]);
   
   const handleSessionSelect = (sessionId) => {
-    const now = Date.now();
-    if (now - lastSelectTime < 300) {
-      return;
-    }
-    setLastSelectTime(now);
-  
     onSelectSession(sessionId); 
     setSelectedSessionId(sessionId); 
     navigate(`/chat/${sessionId}`);
@@ -147,7 +140,6 @@ const HistoryPane = forwardRef(({
       togglePane();
     }
   };
-  
   
   const categorizeSessions = (sessions) => {
     const today = new Date();
@@ -235,7 +227,6 @@ const HistoryPane = forwardRef(({
                   key={session._id} 
                   className={`history-entry ${selectedSessionId === session._id ? 'active' : ''}`} 
                   onClick={() => handleSessionSelect(session._id)}
-                  onTouchStart={() => handleSessionSelect(session._id)}
                 >
                   <div className="history-entry-text">
                     {session.sessionName}
@@ -256,7 +247,6 @@ const HistoryPane = forwardRef(({
                   key={session._id} 
                   className={`history-entry ${selectedSessionId === session._id ? 'active' : ''}`} 
                   onClick={() => handleSessionSelect(session._id)}
-                  onTouchStart={() => handleSessionSelect(session._id)}
                 >
                   <div className="history-entry-text">
                     {session.sessionName}
@@ -277,7 +267,6 @@ const HistoryPane = forwardRef(({
                   key={session._id} 
                   className={`history-entry ${selectedSessionId === session._id ? 'active' : ''}`} 
                   onClick={() => handleSessionSelect(session._id)}
-                  onTouchStart={() => handleSessionSelect(session._id)}
                 >
                   <div className="history-entry-text">
                     {session.sessionName}
@@ -298,7 +287,6 @@ const HistoryPane = forwardRef(({
                   key={session._id} 
                   className={`history-entry ${selectedSessionId === session._id ? 'active' : ''}`} 
                   onClick={() => handleSessionSelect(session._id)}
-                  onTouchStart={() => handleSessionSelect(session._id)}
                 >
                   <div className="history-entry-text">
                     {session.sessionName}
