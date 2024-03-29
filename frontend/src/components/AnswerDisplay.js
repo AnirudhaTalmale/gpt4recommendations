@@ -135,9 +135,6 @@ function AnswerDisplay({
     adjustHeight(e.target);
   };
   
-  
-  
-  
   const sanitizeIdForClass = (id) => {
     if (typeof id === 'string') {
       return `msg-${id.replace(/[^a-zA-Z0-9]/g, '-')}`;
@@ -145,7 +142,6 @@ function AnswerDisplay({
       return ''; // or some default string value
     }
   };
-  
   
   const [messageQuestionHeight, setMessageQuestionHeight] = useState(null);
 
@@ -160,7 +156,6 @@ function AnswerDisplay({
       }
     }
   }, [isEditing, messageId]);
-  
 
   const adjustHeight = useCallback(() => {
     if (isEditing && messageQuestionHeight !== null) {
@@ -173,7 +168,6 @@ function AnswerDisplay({
       }
     }
   }, [isEditing, messageQuestionHeight, messageId]);
-  
   
   useEffect(() => {
     if (isEditing) {

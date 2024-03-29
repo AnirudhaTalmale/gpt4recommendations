@@ -41,6 +41,7 @@ body:not(.history-pane-open) .chat-area {
   margin-left: 1rem;
   border-radius: 0.5rem;
   margin-top: -0.5rem;
+  color: black;
 }
 
 .new-session-button-small-screen {
@@ -48,6 +49,7 @@ body:not(.history-pane-open) .chat-area {
   background: none;
   font-size: 1.1rem;
   cursor: pointer;
+  color: black;
 }
 
 .menu-button-small-screen {
@@ -55,6 +57,7 @@ body:not(.history-pane-open) .chat-area {
   background: none;
   cursor: pointer;
   font-size: 1.03rem;
+  color: black;
 }
 
 .header-content {
@@ -1101,6 +1104,8 @@ body:not(.history-pane-open) .input-area {
   overflow-y: auto; 
   color: rgba(0, 0, 0, 0.921);
   border: 1px solid blue;
+  -webkit-overflow-scrolling: touch;
+  overflow-y: scroll;
 }
 
 /* lightbox component */
