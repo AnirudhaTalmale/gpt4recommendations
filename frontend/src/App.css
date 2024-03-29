@@ -1582,7 +1582,6 @@ body:not(.history-pane-open) .input-area {
 
 .blog-post-preview {
   border-radius: 8px;
-  overflow: hidden;
   margin-bottom: 20px;
   background: #fff; 
 }
