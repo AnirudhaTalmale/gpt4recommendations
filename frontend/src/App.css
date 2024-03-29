@@ -1088,7 +1088,6 @@ body:not(.history-pane-open) .input-area {
   background-color: #45a049; /* Slightly darker green on hover */
 }
 
-
 .bold-text {
   font-weight: bold;
 }
@@ -1104,8 +1103,6 @@ body:not(.history-pane-open) .input-area {
   overflow-y: auto; 
   color: rgba(0, 0, 0, 0.921);
   border: 1px solid blue;
-  -webkit-overflow-scrolling: touch;
-  overflow-y: scroll;
 }
 
 /* lightbox component */
