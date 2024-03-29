@@ -1,4 +1,5 @@
 import React, {useEffect} from 'react';
+import HeaderWithBackButton from './HeaderWithBackButton'; 
 import '../App.css';
 
 const Contact = () => {
@@ -20,7 +21,11 @@ const Contact = () => {
   }, []);
 
   return (
+    <>
+     <HeaderWithBackButton />
+    
     <div className="contact-container">
+      
       <h1>Contact us</h1>
       <div className="contact-buttons-container">
         <p>
@@ -39,6 +44,7 @@ const Contact = () => {
         </p>
       </div>
     </div>
+    </>
   );
 };
 

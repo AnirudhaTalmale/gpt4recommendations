@@ -2,8 +2,9 @@
 
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import importedBlogs from './Blogs.js'; // Import the Blogs data
-import '../App.css'; // Import the CSS file
+import importedBlogs from './Blogs.js'; 
+import HeaderWithBackButton from './HeaderWithBackButton'; 
+import '../App.css'; 
 
 const BlogPostPreview = ({ title, imagePath }) => (
   <div className="blog-post-preview">
@@ -22,22 +23,24 @@ const BlogPage = () => {
   const isAdmin = location.state?.isAdmin; 
 
   return (
-    <div className="blog-page">
-      <div className='blog-page-heading'>Blog</div>
-      <hr /> 
-      <div className="blog-posts-container">
-        {posts.length > 0 ? (
-          posts.map(post => (
-            <Link to={`/blog/${post._id}`} state={{ isAdmin }} className="blog-post-link" key={post._id}>
-              <BlogPostPreview title={post.title} imagePath={post.imagePath} />
-            </Link>
-          ))
-        ) : (
-          <p>Loading Posts</p>
-        )}
+    <div>
+      <HeaderWithBackButton />
+      <div className="blog-page">
+        
+        <div className='blog-page-heading'>Blog</div>
+        <hr /> 
+        <div className="blog-posts-container">
+          {posts.length > 0 ? (
+            posts.map(post => (
+              <Link to={`/blog/${post._id}`} state={{ isAdmin }} className="blog-post-link" key={post._id}>
+                <BlogPostPreview title={post.title} imagePath={post.imagePath} />
+              </Link>
+            ))
+          ) : (
+            <p>Loading Posts</p>
+          )}
+        </div>
       </div>
-      
-      {/* Admin button for creating new posts can be re-enabled if needed */}
     </div>
   );
 };

@@ -1462,7 +1462,7 @@ body:not(.history-pane-open) .input-area {
 .blogPostContainer {
   max-width: 40rem;
   margin: auto;
-  padding: 2rem;
+  padding: 4rem 2rem;
 }
 
 .blogPostContainer h1 {
@@ -1526,14 +1526,12 @@ body:not(.history-pane-open) .input-area {
 /* BlogPage.css */
 
 .blog-page {
-  padding: 0rem 2.5rem;
-  padding-top: 4rem;
-  padding-bottom: 3rem;
+  padding: 5.5rem 2.5rem 5.5rem 2.5rem;
 }
 
 .blog-page-heading {
   text-align: left; /* Changed to left align */
-  font-size: 3.5rem;
+  font-size: 3rem;
   line-height: 110%;
   letter-spacing: -.01em;
   font-weight: bold;
@@ -1544,7 +1542,7 @@ body:not(.history-pane-open) .input-area {
   border: 0;
   height: 0.7px;
   background-color: rgba(0, 0, 0, 0.127);
-  margin-top: 4rem;
+  margin-top: 2rem;
   margin-bottom: 2.5rem;
 }
 
@@ -1722,6 +1720,28 @@ section-privacy-policy ul {
 
 section-privacy-policy li strong {
   color: #000;
+}
+
+/* universal css */
+
+.back-button {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  color: black;
+  padding: 0.7rem 1rem 0.7rem 1.05rem;
+  cursor: pointer;
+}
+
+.header-with-back-button {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background-color: white;
+  border-bottom: 0.8px solid lightgrey;
+  padding: 0rem;
+  z-index: 100;
 }
 
 

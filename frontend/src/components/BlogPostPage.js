@@ -2,7 +2,8 @@
 import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import DOMPurify from 'dompurify';
-import importedBlogs from './Blogs.js'; // Import the Blogs data
+import importedBlogs from './Blogs.js'; 
+import HeaderWithBackButton from './HeaderWithBackButton'; 
 import '../App.css';
 
 const BlogPostPage = () => {
@@ -18,12 +19,14 @@ const BlogPostPage = () => {
   };
 
   return (
-    <div className="blogPostContainer">
-      <>
+    <div>
+      <HeaderWithBackButton />
+      <div className="blogPostContainer">
+        
         <h1>{post.title}</h1>
         {post.imagePath && <img src={post.imagePath} alt={post.title} style={{ maxWidth: '100%' }} />}
         <div dangerouslySetInnerHTML={createMarkup(post.content)} />
-      </>
+      </div>
     </div>
   );
 };
