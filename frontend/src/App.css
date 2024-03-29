@@ -3,7 +3,7 @@ html, body {
   margin: 0; /* Reset default margin */
 }
 
-.App {
+.chat-page {
   display: flex;
   flex-direction: column;
   height: 100dvh;
@@ -260,6 +260,7 @@ body:not(.history-pane-open) .input-area {
   cursor: pointer;
   font-size: 1.05rem;
   bottom: 1.85rem;
+  color: black;
 }
 
 .send-button {
@@ -1584,6 +1585,7 @@ body:not(.history-pane-open) .input-area {
   border-radius: 8px;
   margin-bottom: 20px;
   background: #fff; 
+  overflow: hidden;
 }
 
 .blog-post-preview img {
@@ -1686,7 +1688,7 @@ body:not(.history-pane-open) .input-area {
 
 header-privacy-policy {
   font-weight: bold;
-  font-size: 1.5rem;
+  font-size: 1.3rem;
   text-align: center;
 }
 
@@ -1723,7 +1725,7 @@ section-privacy-policy li strong {
 
 @media (max-width: 759px) {
 
-  .App {
+  .chat-page {
     overflow: hidden;
   }
 
@@ -1788,11 +1790,13 @@ section-privacy-policy li strong {
     padding-left: 0rem;
     padding-top: 2.5dvh;
     padding-right: 4dvw;
+    
     /* border: 1px solid blue; */
   }
 
   .input-area {
     margin: 0;
+    
   }
 
   .lightbox-content {

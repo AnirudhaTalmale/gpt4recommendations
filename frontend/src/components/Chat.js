@@ -657,95 +657,97 @@ function Chat() {
   
   return (
     <div className="App">
-      <Lightbox
-        isOpen={isLightboxOpen}
-        content={lightboxContent}
-        onClose={() => {
-          setIsLightboxOpen(false);
-          setLightboxContent(''); // Clear the content when Lightbox is closed
-          if (isStreaming) {
-            handleStopStreaming(); // Stop streaming if it's active
-          }
-        }}
-        contentRef={lightboxContentRef}
-      />
-      <LightboxForImage
-        isOpen={isLightboxForImageOpen}
-        onClose={() => {
-          setIsLightboxForImageOpen(false);
-          if (isStreaming) {
-            handleStopStreaming(); // Stop streaming if it's active
-          }
-        }}
-        imageUrl={lightboxImageUrl}
-      />
-      <LightboxForBookPreview
-        isOpen={isBookPreviewLightboxOpen}
-        onClose={() => {
-          setIsBookPreviewLightboxOpen(false);
-          setBookIdForPreview(''); // Reset book ID when closing lightbox
-        }}
-        contentRef={bookPreviewRef}
-      />
-      <HistoryPane
-        ref={historyPaneRef}
-        sessions={sessions}
-        onSelectSession={setCurrentSessionIdWithStreamCheck}
-        onDeleteSession={handleDeleteSession}
-        userName={userData?.name}
-        userImage={userData?.image}
-        isPaneOpen={isPaneOpen}
-        togglePane={togglePane}
-        selectedSessionId={selectedSessionId}
-        setSelectedSessionId={setSelectedSessionId}
-      />
-      <Header isPaneOpen={isPaneOpen} togglePane={togglePane} />
-      <div className="chat-area" ref={chatAreaRef}>
-        {location.pathname === "/chat" && (
-          <div className="chat-heading">
-            Discover Your Next Great Read!
-          </div>
-        )}
+      <div className="chat-page">
+        <Lightbox
+          isOpen={isLightboxOpen}
+          content={lightboxContent}
+          onClose={() => {
+            setIsLightboxOpen(false);
+            setLightboxContent(''); // Clear the content when Lightbox is closed
+            if (isStreaming) {
+              handleStopStreaming(); // Stop streaming if it's active
+            }
+          }}
+          contentRef={lightboxContentRef}
+        />
+        <LightboxForImage
+          isOpen={isLightboxForImageOpen}
+          onClose={() => {
+            setIsLightboxForImageOpen(false);
+            if (isStreaming) {
+              handleStopStreaming(); // Stop streaming if it's active
+            }
+          }}
+          imageUrl={lightboxImageUrl}
+        />
+        <LightboxForBookPreview
+          isOpen={isBookPreviewLightboxOpen}
+          onClose={() => {
+            setIsBookPreviewLightboxOpen(false);
+            setBookIdForPreview(''); // Reset book ID when closing lightbox
+          }}
+          contentRef={bookPreviewRef}
+        />
+        <HistoryPane
+          ref={historyPaneRef}
+          sessions={sessions}
+          onSelectSession={setCurrentSessionIdWithStreamCheck}
+          onDeleteSession={handleDeleteSession}
+          userName={userData?.name}
+          userImage={userData?.image}
+          isPaneOpen={isPaneOpen}
+          togglePane={togglePane}
+          selectedSessionId={selectedSessionId}
+          setSelectedSessionId={setSelectedSessionId}
+        />
+        <Header isPaneOpen={isPaneOpen} togglePane={togglePane} />
+        <div className="chat-area" ref={chatAreaRef}>
+          {location.pathname === "/chat" && (
+            <div className="chat-heading">
+              Discover Your Next Great Read!
+            </div>
+          )}
 
-        {sessions.find(session => session._id === selectedSessionId)?.messages.map((msg, index, messageArray) => {
-        const isLastMessage = index === messageArray.length - 1;
-        const isLastMessageFromAssistant = isLastMessage && msg.role === 'assistant';
-        return (
-          <AnswerDisplay
-            onPreviewClick={handlePreviewClick}
-            key={msg._id} // Assuming msg._id is a unique identifier
-            role={msg.role}
-            content={msg.content}
-            userImage={userData?.image}
-            isStreaming={isStreaming}
-            onMoreDetailsClick={wrappedHandleMoreDetailsRequest}
-            onKeyInsightsClick={wrappedHandleKeyInsightsRequest}
-            onAnecdotesClick={wrappedHandleAnecdotesRequest}
-            onQuotesClick={wrappedHandleQuotesRequest}
-            showContinueButton={showContinueButton && isLastMessageFromAssistant}
-            onContinueGenerating={onContinueGenerating}
-            onImageClick={handleImageClick}
-            sessionId={currentSessionId} // You need to pass the current session ID
-            messageId={msg._id} // Assuming each message has a unique ID
-            onEditMessage={handleEditMessage}
-          />
-          );
-        })}
+          {sessions.find(session => session._id === selectedSessionId)?.messages.map((msg, index, messageArray) => {
+          const isLastMessage = index === messageArray.length - 1;
+          const isLastMessageFromAssistant = isLastMessage && msg.role === 'assistant';
+          return (
+            <AnswerDisplay
+              onPreviewClick={handlePreviewClick}
+              key={msg._id} // Assuming msg._id is a unique identifier
+              role={msg.role}
+              content={msg.content}
+              userImage={userData?.image}
+              isStreaming={isStreaming}
+              onMoreDetailsClick={wrappedHandleMoreDetailsRequest}
+              onKeyInsightsClick={wrappedHandleKeyInsightsRequest}
+              onAnecdotesClick={wrappedHandleAnecdotesRequest}
+              onQuotesClick={wrappedHandleQuotesRequest}
+              showContinueButton={showContinueButton && isLastMessageFromAssistant}
+              onContinueGenerating={onContinueGenerating}
+              onImageClick={handleImageClick}
+              sessionId={currentSessionId} // You need to pass the current session ID
+              messageId={msg._id} // Assuming each message has a unique ID
+              onEditMessage={handleEditMessage}
+            />
+            );
+          })}
+        </div>
+        {location.pathname === "/chat" && (
+            <SampleQueries
+              onSubmit={handleQuerySubmit}
+              inputBoxHeight={inputBoxHeight} // And here you pass the inputBoxHeight state down to SampleQueries
+            />
+        )}
+        <InputBox
+          onSubmit={handleQuerySubmit}
+          isLoading={isLoading}
+          isStreaming={isStreaming}
+          onStopStreaming={handleStopStreaming}
+          onHeightChange={setInputBoxHeight} 
+          isPaneOpen={isPaneOpen} 
+        />
       </div>
-      {location.pathname === "/chat" && (
-          <SampleQueries
-            onSubmit={handleQuerySubmit}
-            inputBoxHeight={inputBoxHeight} // And here you pass the inputBoxHeight state down to SampleQueries
-          />
-      )}
-      <InputBox
-        onSubmit={handleQuerySubmit}
-        isLoading={isLoading}
-        isStreaming={isStreaming}
-        onStopStreaming={handleStopStreaming}
-        onHeightChange={setInputBoxHeight} 
-        isPaneOpen={isPaneOpen} 
-      />
     </div>
   );
 }
