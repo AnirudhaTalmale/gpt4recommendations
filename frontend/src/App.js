@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Chat from './components/Chat';
 import OnboardingPage from './components/OnboardingPage'; 
@@ -10,7 +11,20 @@ import Contact from './components/Contact';
 import PrivacyPolicy from './components/PrivacyPolicy';
 import './App.css';
 
+function usePageViews() {
+  let location = useLocation();
+
+  useEffect(() => {
+    if (window.gtag) {
+      window.gtag('config', 'YOUR_TRACKING_ID', {
+        'page_path': location.pathname + location.search,
+      });
+    }
+  }, [location]);
+}
+
 function App() {
+  usePageViews();
   return (
     <Router>
       <div className="App">
