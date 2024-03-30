@@ -78,7 +78,7 @@ function HomePage() {
       <div className="home-page-container">
       
         <div className="login-container">
-            <strong className="login-prompt">Get started with GPT-4 powered book recommendation app</strong>
+            <strong className="login-prompt">GPT-4 Powered Book Recommendation App</strong>
 
             <button onClick={handleSignupGoogle} className="login-button">
                 <img src="/icons8-google-logo.svg" alt="" className="google-logo" />
