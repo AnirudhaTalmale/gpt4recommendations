@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Chat from './components/Chat';
 import OnboardingPage from './components/OnboardingPage'; 
 import BlogPage from './components/BlogPage';
@@ -11,16 +11,6 @@ import PrivacyPolicy from './components/PrivacyPolicy';
 import './App.css';
 
 function App() {
-  let location = useLocation();
-
-  useEffect(() => {
-    if (window.gtag) {
-      window.gtag('config', 'G-PTER84YF0', {
-        'page_path': location.pathname + location.search,
-      });
-    }
-  }, [location]);
-
   return (
     <Router>
       <div className="App">
