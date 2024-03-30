@@ -628,7 +628,6 @@ body:not(.history-pane-open) .input-area {
 /* Home page components */
 
 .footer-links {
-  width: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -653,10 +652,18 @@ body:not(.history-pane-open) .input-area {
   text-decoration: underline;
 }
 
+.login-prompt {
+  font-size: 1.5rem;
+  text-align: center;
+  margin-bottom: 2vh;
+  line-height: 2rem;
+}
+
 .home-page-wrapper {
   display: flex;
   flex-direction: column;
   height: 100dvh;
+  width: 100dvw;
 }
 
 .chatgpt-text {
@@ -686,32 +693,6 @@ body:not(.history-pane-open) .input-area {
   background-color: #FFFFFF; 
 }
 
-/* Adjustments for medium screens */
-@media (min-width: 650px) {
-  .home-page-wrapper {
-    flex-direction: column; /* Keep it stacked vertically for medium screens */
-  }
-
-  .sample-prompts-container {
-    display: none; /* Keep the prompts container hidden */
-  }
-
-  .home-page-container {
-    flex-grow: 1; /* Fill the entire area */
-    background-color: #FFFFFF; /* Ensure white background */
-  }
-
-  .login-signup-container {
-    flex-direction: row !important; /* Display buttons side by side */
-    justify-content: center; /* Center the buttons horizontally */
-    gap: 10px; /* Optional: add some space between buttons */
-    width: 70% !important;
-  }
-
-  .login-signup-button {
-    width: auto; /* Allow buttons to adjust their width automatically */
-  }
-}
 
 /* Large screens */
 @media (min-width: 770px) {
@@ -747,34 +728,6 @@ body:not(.history-pane-open) .input-area {
   } 
 }
 
-/* Extra large screens */
-@media (min-width: 1023px) {
-  .sample-prompts-container {
-    flex: 0 0 60%; /* Take up 60% of the space */
-  }
-
-  .home-page-container {
-    flex: 0 0 40%; /* Take up the remaining 40% */
-  }
-
-  .login-signup-button {
-    min-width: 50% !important;
-    max-width: 5px !important;
-  }
-
-  .home-page-container  h1 {
-    font-size: 32.5px !important; /* Large font size for the heading */
-    margin-right: 10% !important;
-  }
-
-  .login-signup-container {
-    margin-right: 10% !important;
-  }
-
-  .login-container {
-    margin-right: 3.3rem;
-  }
-}
 
 .home-page-container  h1 {
   font-size: 20px; /* Large font size for the heading */
@@ -847,11 +800,6 @@ body:not(.history-pane-open) .input-area {
   margin-top: 1.4rem;
 }
 
-.login-container h2 {
-  font-size: 1.6rem; /* Adjust the size as needed */
-  margin-bottom: 1.4rem; /* Space between the header and form */
-}
-
 .email-input, .continue-button {
   background-color: #ffffff; /* For the input, set a white background */
   padding: 10px 15px; /* Match padding */
@@ -894,6 +842,8 @@ body:not(.history-pane-open) .input-area {
   align-items: center;
   height: 100dvh; /* Use full viewport height */
   gap: 10px; /* Space between stacked buttons */
+  width: 300px;
+  /* border: 1px solid blue; */
 }
 
 .login-button {

@@ -393,7 +393,10 @@ io.on('connection', (socket) => {
     const currentMessageTokenThreshold = 400; 
 
     if (currentMessageTokenCount > currentMessageTokenThreshold) {
-      const errorMessage = 'Input message too large';
+      const errorMessage = `
+      <div style="border:0.5px solid red; background-color:#fff0f0; padding:10px; margin:10px 0; border-radius:8px; color:#444444; font-size: 0.9rem">
+        Input message is too large.
+      </div>`;
     
       // Emit a warning message to the client and update session name if it's the first query
       socket.emit('chunk', { content: errorMessage, sessionId: currentSessionId, isMoreDetails, isKeyInsights });

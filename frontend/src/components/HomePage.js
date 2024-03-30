@@ -68,15 +68,17 @@ function HomePage() {
 
   return (
     <div className="home-page-wrapper">
-        <div className="chatgpt-text">GetBooks</div>
+      <div className="chatgpt-text">GetBooks</div>
+      
       <div className="sample-prompts-container">
         <div className="animated-prompt">{sampleQueries[activePrompt]}</div> 
         {/* Use sampleQueries here */}
       </div>
       
       <div className="home-page-container">
+      
         <div className="login-container">
-            <h2>Welcome back</h2>
+            <strong className="login-prompt">Get started with GPT-4 powered book recommendation app</strong>
 
             <button onClick={handleSignupGoogle} className="login-button">
                 <img src="/icons8-google-logo.svg" alt="" className="google-logo" />
@@ -108,12 +110,14 @@ function HomePage() {
                     Continue with Email
                 </button>
             </form>
+
+            <div className="footer-links">
+              <Link to="/privacy-policy" className="footer-link">Privacy Policy</Link> 
+              <a href="/contact-us" className="footer-link">Contact us</a>
+              <Link to="/blog" className="footer-link">Blog</Link>
+            </div>
         </div>
-        <div className="footer-links">
-          <Link to="/privacy-policy" className="footer-link">Privacy Policy</Link> 
-          <a href="/contact-us" className="footer-link">Contact us</a>
-          <Link to="/blog" className="footer-link">Blog</Link>
-        </div>
+        
       </div>
     </div>
   );
