@@ -10,7 +10,7 @@ import Contact from './components/Contact';
 import PrivacyPolicy from './components/PrivacyPolicy';
 import './App.css';
 
-function usePageViews() {
+function App() {
   let location = useLocation();
 
   useEffect(() => {
@@ -20,10 +20,6 @@ function usePageViews() {
       });
     }
   }, [location]);
-}
-
-function App() {
-  usePageViews();
 
   return (
     <Router>
