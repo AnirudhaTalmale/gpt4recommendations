@@ -15,7 +15,7 @@ function usePageViews() {
 
   useEffect(() => {
     if (window.gtag) {
-      window.gtag('config', 'YOUR_TRACKING_ID', {
+      window.gtag('config', 'G-PTER84YF0', {
         'page_path': location.pathname + location.search,
       });
     }
@@ -24,7 +24,7 @@ function usePageViews() {
 
 function App() {
   usePageViews();
-  
+
   return (
     <Router>
       <div className="App">
