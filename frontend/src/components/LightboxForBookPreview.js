@@ -1,26 +1,9 @@
 // LightboxForBookPreview.js
 
-import React, { useEffect } from 'react';
+import React from 'react';
 import '../App.css';
 
 function LightboxForBookPreview({ isOpen, onClose, contentRef }) {
-    useEffect(() => {
-        const handleTouchMove = (e) => {
-            e.preventDefault();
-        };
-
-        const contentElement = contentRef.current;
-        if (contentElement) {
-            contentElement.addEventListener('touchmove', handleTouchMove, { passive: false });
-        }
-
-        return () => {
-            if (contentElement) {
-                contentElement.removeEventListener('touchmove', handleTouchMove);
-            }
-        };
-    }, [isOpen, contentRef]);
-
     if (!isOpen) return null;
 
     return (

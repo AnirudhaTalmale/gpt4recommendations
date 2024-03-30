@@ -1050,7 +1050,8 @@ body:not(.history-pane-open) .input-area {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   max-width: 720px;
   height: 100dvh; 
-  overflow-y: auto; 
+  overflow-y: scroll; /* has to be scroll, not auto */
+  -webkit-overflow-scrolling: touch;
   color: rgba(0, 0, 0, 0.921);
   border: 1px solid blue;
 }
