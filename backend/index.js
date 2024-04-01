@@ -30,16 +30,15 @@ const server = http.createServer(app);
 
 const cors = require('cors');
 
-// Update CORS configuration to allow specific origin and credentials
 const corsOptions = {
-  origin: `${process.env.FRONTEND_URL}`, // Your frontend's URL
-  credentials: true, // Enable credentials
+  origin: `${process.env.FRONTEND_URL}`, 
+  credentials: true, 
 };
 
-app.use(cors(corsOptions)); // Apply updated CORS options
+app.use(cors(corsOptions));
 
 const io = new Server(server, {
-  cors: corsOptions, // Use the same CORS options for Socket.io
+  cors: corsOptions, 
   maxHttpBufferSize: 1e8 // sets the limit to 100 MB
 });
  
@@ -64,6 +63,7 @@ const sessionConfig = {
     secure: process.env.NODE_ENV === "production",
     sameSite: 'Lax', 
     httpOnly: true,
+    maxAge: 30 * 24 * 60 * 60 * 1000 // 30 days in milliseconds
   }
 }; 
 
