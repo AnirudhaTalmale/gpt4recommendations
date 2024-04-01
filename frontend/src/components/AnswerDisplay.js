@@ -1,6 +1,8 @@
 import React, { useCallback, useState, useEffect, useRef } from 'react';
 import DOMPurify from 'dompurify';
 import '../App.css';
+/* global gtag */
+
 
 function AnswerDisplay({ 
   onPreviewClick, role, content, userImage, isStreaming, 
@@ -11,6 +13,7 @@ function AnswerDisplay({
   const [isMoreDetailsClicked, setIsMoreDetailsClicked] = useState(false);
   const [isAnecdotesClicked, setIsAnecdotesClicked] = useState(false);
   const [isQuotesClicked, setIsQuotesClicked] = useState(false);
+  const [isPreviewClicked, setIsPreviewClicked] = useState(false);
   const [isContinueGeneratingClicked, setIsContinueGeneratingClicked] = useState(false);
 
   const createMarkup = () => {
@@ -34,6 +37,11 @@ function AnswerDisplay({
     if (!isKeyInsightsClicked && onKeyInsightsClick) {
       setIsKeyInsightsClicked(true);
       onKeyInsightsClick(isbn, bookTitle, author);
+
+      gtag('event', 'click', {
+        'event_category': 'Button Clicks',
+        'event_label': 'Key Insights'
+      });
   
       // Reset the state after a delay
       setTimeout(() => {
@@ -46,6 +54,11 @@ function AnswerDisplay({
     if (!isMoreDetailsClicked && onMoreDetailsClick) {
       setIsMoreDetailsClicked(true);
       onMoreDetailsClick(isbn, bookTitle, author);
+
+      gtag('event', 'click', {
+        'event_category': 'Button Clicks',
+        'event_label': 'More Details'
+      });
   
       setTimeout(() => {
         setIsMoreDetailsClicked(false);
@@ -57,6 +70,11 @@ function AnswerDisplay({
     if (!isAnecdotesClicked && onAnecdotesClick) {
       setIsAnecdotesClicked(true);
       onAnecdotesClick(isbn, bookTitle, author);
+
+      gtag('event', 'click', {
+        'event_category': 'Button Clicks',
+        'event_label': 'Anecdotes'
+      });
   
       setTimeout(() => {
         setIsAnecdotesClicked(false);
@@ -68,11 +86,39 @@ function AnswerDisplay({
     if (!isQuotesClicked && onQuotesClick) {
       setIsQuotesClicked(true);
       onQuotesClick(isbn, bookTitle, author);
+
+      gtag('event', 'click', {
+        'event_category': 'Button Clicks',
+        'event_label': 'Quotes'
+      });
   
       setTimeout(() => {
         setIsQuotesClicked(false);
       }, 3500); // Adjust the delay as needed
     }
+  };
+
+  const handlePreviewClick = (isbn) => {
+    if (!isPreviewClicked && onPreviewClick) {
+      setIsPreviewClicked(true);
+      onPreviewClick(isbn);
+
+      gtag('event', 'click', {
+        'event_category': 'Button Clicks',
+        'event_label': 'Preview'
+      });
+  
+      setTimeout(() => {
+        setIsPreviewClicked(false);
+      }, 3500); // Adjust the delay as needed
+    }
+  };
+
+  const handleBuyNowClick = () => {
+    gtag('event', 'click', {
+      'event_category': 'Button Clicks',
+      'event_label': 'Buy Now'
+    });
   };
   
   const handleContinueGenerating = () => {
@@ -212,7 +258,9 @@ function AnswerDisplay({
             handleQuotesClick(isbn, bookTitle, author);
           } else if (e.target.classList.contains('preview-btn')) {
             const isbn = e.target.getAttribute('data-isbn');
-            onPreviewClick(isbn);
+            handlePreviewClick(isbn);
+          } else if (e.target.classList.contains('buy-now-button')) {
+            handleBuyNowClick();
           }
         }}>
           {role === 'user' && (

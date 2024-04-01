@@ -1050,8 +1050,7 @@ body:not(.history-pane-open) .input-area {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   max-width: 720px;
   height: 100dvh; 
-  overflow-y: scroll; /* has to be scroll, not auto */
-  -webkit-overflow-scrolling: touch;
+  overflow-y: auto; 
   color: rgba(0, 0, 0, 0.921);
   border: 1px solid blue;
 }
@@ -1287,10 +1286,10 @@ body:not(.history-pane-open) .input-area {
 }
 
 .continue-generating-btn {
-  width: 7.5rem;
-  margin-top: 0.1rem;
-  margin-bottom: 1.5rem;
+  width: 6.8rem;
+  padding: 0.45rem 0.5rem;
   margin-right: 1.15rem;
+  border: 0.5px solid grey;
 }
 
 .fa-forward {

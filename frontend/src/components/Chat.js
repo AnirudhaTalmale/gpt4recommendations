@@ -559,25 +559,26 @@ function Chat() {
     const bookDetails = [];
   
     // Regex to match each book section in the content
-    const bookInfoMatches = content.match(/<div class="book-info">[\s\S]*?<\/div>(?=<div)/g) || [];
+    const bookInfoMatches = content.match(/<div class="book-info">[\s\S]*?<\/div><div class="content-container">/g) || [];
     bookInfoMatches.forEach((bookInfo, index) => {
       // Extract the book title
-      const titleMatch = bookInfo.match(/<h3 class="book-title">(.*?)<\/h3>/);
+      const titleMatch = bookInfo.match(/<strong class="book-title">(.*?)<\/strong>/);
       const title = titleMatch ? titleMatch[1].trim() : '';
   
       // Extract the book author
-      const authorMatch = bookInfo.match(/<span class="book-author">(.*?)<\/span>/);
-      const author = authorMatch ? authorMatch[1].trim() : '';
+      const authorMatch = bookInfo.match(/<div class="book-author">(.*?)<\/div>/);
+      // Since the author name is prefixed with 'by ', we use .substring(3) to remove it
+      const author = authorMatch ? authorMatch[1].trim().substring(3) : '';
   
       // Combine title and author with numbering
       if (title && author) {
-        bookDetails.push(`${index + 1}. ${title} ${author}`);
+        bookDetails.push(`${index + 1}. ${title} - ${author}`);
       }
     });
   
     // Return the extracted book titles and authors
     return bookDetails.join('\n'); // Joining with newline character
-  }
+  }  
 
   const onContinueGenerating = () => {
     // Find the current session by its ID
