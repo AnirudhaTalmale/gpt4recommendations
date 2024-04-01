@@ -1286,7 +1286,7 @@ body:not(.history-pane-open) .input-area {
 }
 
 .continue-generating-btn {
-  width: 6.8rem;
+  width: 7rem;
   padding: 0.45rem 0.5rem;
   margin-right: 1.15rem;
   border: 0.5px solid grey;

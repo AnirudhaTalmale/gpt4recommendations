@@ -137,7 +137,6 @@ export const handleMoreDetailsRequest = async (isbn, bookTitle, author, handleQu
       window.location.href = `${process.env.REACT_APP_FRONTEND_URL}/auth/login`;
     }
   };
-  
 
   export const handleBookPreviewRequest = async (bookId, setIsLightboxOpen, setBookIdForPreview, isViewerLoaded) => {
     try {
