@@ -22,7 +22,8 @@ const userSchema = new Schema({
   accessToken: { type: String },
   verificationToken: { type: String },
   firstMessageTimestamp: { type: Date },
-  messageCount: { type: Number, default: 0 }
+  messageCount: { type: Number, default: 0 },
+  country: { type: String }
 });
 
 module.exports = mongoose.model('User', userSchema);

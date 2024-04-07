@@ -4,11 +4,21 @@ const { Schema } = mongoose;
 const bookSchema = new Schema({
   title: { type: String, required: true, index: true, unique: true },
   author: { type: String, required: true, index: true},
-  bookImage: { type: String, required: true },
   previewLink: { type: String, required: true },
-  amazonLink: { type: String, required: true },
-  amazonStarRating: { type: Number, default: null },
-  amazonReviewCount: { type: String, default: null }
+  countrySpecific: {
+    IN: {
+      bookImage: String,
+      amazonLink: String,
+      amazonStarRating: Number,
+      amazonReviewCount: String
+    },
+    US: {
+      bookImage: String,
+      amazonLink: String,
+      amazonStarRating: Number,
+      amazonReviewCount: String
+    }
+  }
 });
 
 module.exports = mongoose.model('BookData', bookSchema);

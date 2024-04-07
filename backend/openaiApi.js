@@ -110,15 +110,16 @@ function getTitleBeforeDelimiter(title) {
   return minIndex !== -1 ? title.substring(0, minIndex).trim() : title;
 }
 
-async function getAmazonBookData(title, author) {
+async function getAmazonBookData(title, author, country) {
   try {
     const titleBeforeDelimiter = getTitleBeforeDelimiter(title)
+    const amazonDomain = country === 'India' ? 'amazon.in' : 'amazon.com';
 
     const response = await axios.get(`https://www.googleapis.com/customsearch/v1`, {
       params: {
         key: process.env.REACT_APP_GOOGLE_CUSTOM_SEARCH_API_KEY,
         cx: process.env.GOOGLE_CSE_ID,
-        q: `site:amazon.in ${titleBeforeDelimiter} by ${author}`,
+        q: `site:${amazonDomain} ${titleBeforeDelimiter} by ${author}`,
         num: 1
       }
     });
@@ -126,9 +127,8 @@ async function getAmazonBookData(title, author) {
     if (response.data.items && response.data.items.length > 0) {
       const item = response.data.items[0];
 
-      // Check if the result's domain ends with 'amazon.in'
-      if (!item.displayLink.endsWith('amazon.in')) {
-        console.log('Result is not from a valid Amazon India domain');
+      if (!item.displayLink.endsWith(amazonDomain)) {
+        console.log(`Result is not from a valid Amazon ${country} domain`);
         return { amazonLink: '', amazonStarRating: '', amazonReviewCount: '', amazonImage: '' };
       }
 
@@ -160,7 +160,7 @@ async function getAmazonBookData(title, author) {
       let amazonImage = imageIdMatch ? `${imageIdMatch[1]}._AC_UF1000,1000_QL80_.jpg` : '';
 
       let url = new URL(amazonLink);
-      url.hostname = 'www.amazon.in'; 
+      url.hostname = `www.${amazonDomain}`;
       amazonLink = url.href.split('/ref')[0];
 
       return { amazonLink, amazonStarRating, amazonReviewCount, amazonImage };
@@ -243,9 +243,63 @@ const getGoogleBookData = async (title) => {
   }
 };
 
-const getBookData = async (title, author, bookDataObjectId = '') => {
+function createBookDetails(book, countrySpecificData) {
+  return {
+    bookDataObjectId: book._id.toString(),
+    title: book.title,
+    author: book.author,
+    bookImage: countrySpecificData.bookImage,
+    previewLink: book.previewLink,
+    amazonLink: countrySpecificData.amazonLink,
+    amazonStarRating: countrySpecificData.amazonStarRating,
+    amazonReviewCount: countrySpecificData.amazonReviewCount
+  };
+}
+
+function updateBookWithAmazonData(book, amazonData, countryKey, title, author) {
+  const fallbackAmazonLink = `https://www.amazon.${countryKey === 'IN' ? 'in' : 'com'}/s?k=${encodeURIComponent(`${title.trim()} by ${author.trim()}`)}`;
+  
+  if (!book.countrySpecific) {
+    book.countrySpecific = {};
+  }
+
+  // Initialize the country specific structure without the bookImage
+  const countrySpecificData = {
+    amazonLink: amazonData.amazonLink || fallbackAmazonLink,
+    amazonStarRating: amazonData.amazonStarRating,
+    amazonReviewCount: amazonData.amazonReviewCount
+  };
+
+  // Only add bookImage if amazonImage is not a blank string
+  if (amazonData.amazonImage !== '') {
+    countrySpecificData.bookImage = amazonData.amazonImage;
+  }
+
+  // Assign the possibly updated country specific data to the book
+  book.countrySpecific[countryKey] = countrySpecificData;
+}
+
+function createNewBook(title, author, amazonData, googleData, countryKey) {
+  const fallbackAmazonLink = `https://www.amazon.${countryKey === 'IN' ? 'in' : 'com'}/s?k=${encodeURIComponent(`${title.trim()} by ${author.trim()}`)}`;
+  return new BookData({
+    title,
+    author,
+    previewLink: googleData.previewLink,
+    countrySpecific: {
+      [countryKey]: {
+        bookImage: amazonData.amazonImage || googleData.googleImage,
+        amazonLink: amazonData.amazonLink || fallbackAmazonLink,
+        amazonStarRating: amazonData.amazonStarRating,
+        amazonReviewCount: amazonData.amazonReviewCount
+      }
+    }
+  });
+}
+
+const getBookData = async (title, author, userCountry, bookDataObjectId = '') => {
   try {
-    let cacheKey = `book-data:${bookDataObjectId || title}`;
+    const countryKey = userCountry === 'India' ? 'IN' : 'US';
+    let cacheKey = `book-data:${bookDataObjectId || title.toLowerCase()}:${countryKey}`;
 
     // Check if the data is available in Redis cache
     let cachedData = await redisClient.get(cacheKey);
@@ -253,50 +307,35 @@ const getBookData = async (title, author, bookDataObjectId = '') => {
       return JSON.parse(cachedData);
     }
 
-    let query = {};
-    if (bookDataObjectId) {
-      query._id = new ObjectId(bookDataObjectId);
-    } else {
-      query.title = title; 
-    }
+    let query = bookDataObjectId ? { _id: new ObjectId(bookDataObjectId) } : { title: { $regex: new RegExp('^' + title + '$', 'i') } };
     let existingBook = await BookData.findOne(query);
 
-    if (existingBook) {
-      let bookDetails = {
-        bookDataObjectId: existingBook._id.toString(),
-        title: existingBook.title,
-        author: existingBook.author,
-        bookImage: existingBook.bookImage,
-        previewLink: existingBook.previewLink,
-        amazonLink: existingBook.amazonLink,
-        amazonStarRating: existingBook.amazonStarRating,
-        amazonReviewCount: existingBook.amazonReviewCount
-      };
-
+    if (existingBook && existingBook.countrySpecific && existingBook.countrySpecific[countryKey] && existingBook.countrySpecific[countryKey].amazonLink && existingBook.countrySpecific[countryKey].amazonLink.trim() !== '') {
+      console.log("i am here 1");
+      console.log("existingBook is: ", existingBook);
+      const countrySpecificData = existingBook.countrySpecific[countryKey];
+      let bookDetails = createBookDetails(existingBook, countrySpecificData);
       await redisClient.set(cacheKey, JSON.stringify(bookDetails));
-
       return bookDetails;
+    } else if (existingBook) {
+
+      console.log("i am here 2");
+      
+      const amazonData = await getAmazonBookData(title, author, userCountry);
+      updateBookWithAmazonData(existingBook, amazonData, countryKey, title, author);
+    } else {
+
+      console.log("i am here 3");
+      
+      const amazonData = await getAmazonBookData(title, author, userCountry);
+      const googleData = await getGoogleBookData(title);
+      existingBook = createNewBook(title, author, amazonData, googleData, countryKey);
+      console.log("existingBook is: ", existingBook);
     }
-    
-    const amazonData = await getAmazonBookData(title, author);
-    const googleData = await getGoogleBookData(title);
 
-    const amazonLink = amazonData.amazonLink || `https://www.amazon.in/s?k=${encodeURIComponent(`${title.trim()} by ${author.trim()}`)}`;
+    await existingBook.save();
 
-    let bookData = {
-      title: title,
-      author: author,
-      bookImage: amazonData.amazonImage || googleData.googleImage,
-      previewLink: googleData.previewLink,
-      amazonLink: amazonLink,
-      amazonStarRating: amazonData.amazonStarRating,
-      amazonReviewCount: amazonData.amazonReviewCount,
-    };
-
-    const newBookData = new BookData(bookData);
-    await newBookData.save();
-
-    bookData.bookDataObjectId = newBookData._id;
+    let bookData = createBookDetails(existingBook, existingBook.countrySpecific[countryKey]);
     await redisClient.set(cacheKey, JSON.stringify(bookData));
 
     return bookData;
@@ -318,6 +357,8 @@ const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, is
 
   const filteredMessages = messages.map(({ role, content }) => ({ role, content }));
   try {
+    const userCountry = session.user.country;
+
     const stream = await openai.chat.completions.create({
       model: "gpt-4-0125-preview",
       messages: filteredMessages,
@@ -346,7 +387,7 @@ const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, is
     let isPaused = false; // Flag to check if emitting is paused
 
     if (isKeyInsights || isAnecdotes || isQuotes || isMoreDetails) {
-      const { bookImage, amazonLink, amazonStarRating, amazonReviewCount } = await getBookData(bookTitle, author, bookDataObjectId);
+      const { bookImage, amazonLink, amazonStarRating, amazonReviewCount } = await getBookData(bookTitle, author, userCountry, bookDataObjectId);
       const bookInfoHtml = createBookInfoHtml(bookTitle, author, amazonStarRating, amazonReviewCount);
       let imageDiv = '';
       if (bookImage) {
@@ -371,7 +412,7 @@ const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, is
           let bookTitleMatch = pausedEmit.match(/#(?:\d+\.\s)?(.*?)#/);
           const bookTitleWithAuthor = bookTitleMatch ? bookTitleMatch[1] : "";
           const { bookTitle, author } = parseBookTitle(bookTitleWithAuthor);
-          const { bookDataObjectId, bookImage, previewLink, amazonLink, amazonStarRating, amazonReviewCount } = await getBookData(bookTitle, author);
+          const { bookDataObjectId, bookImage, previewLink, amazonLink, amazonStarRating, amazonReviewCount } = await getBookData(bookTitle, author, userCountry);
           const buyNowButtonHtml = createBuyNowButtonHtml(amazonLink);
 
           let imageSource = bookImage;

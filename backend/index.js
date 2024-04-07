@@ -99,15 +99,36 @@ server.listen(PORT, () => {
 
 // Authentication Code: 
 
-app.get('/api/check-auth', (req, res) => {
+app.get('/api/check-auth', async (req, res) => {
 
   if (req.isAuthenticated()) {
 
     // Check if onboarding is complete based on the displayName being set
-    if (req.user.displayName) {
+    if (req.user.displayName && req.user.country) {
       res.json({ isAuthenticated: true, onboardingComplete: true, user: req.user });
     } else {
-      res.json({ isAuthenticated: true, onboardingComplete: false, user: req.user });
+      const newVerificationToken = jwt.sign(
+        { email: req.user.local.email },
+        process.env.JWT_SECRET,
+        { expiresIn: '15m' }
+      );
+
+      // Update the existing user with the new verification token
+      req.user.verificationToken = newVerificationToken;
+      await req.user.save();
+      
+      const hasDisplayName = !!req.user.displayName;
+      const hasCountry = !!req.user.country;
+
+      res.json({
+        isAuthenticated: true,
+        onboardingComplete: false,
+        user: req.user,
+        displayName: req.user.displayName || null,
+        verificationToken: newVerificationToken,
+        hasDisplayName, 
+        hasCountry
+      });
     }
   } else {
     console.log('User is not authenticated');
@@ -205,7 +226,8 @@ app.post('/send-verification-email', async (req, res) => {
     );
 
     const hasDisplayName = user && user.displayName ? 'true' : 'false';
-    const verificationUrl = `${process.env.FRONTEND_URL}/onboarding?token=${newVerificationToken}&hasDisplayName=${hasDisplayName}`;
+    const hasCountry = user && user.country ? 'true' : 'false';
+    const verificationUrl = `${process.env.FRONTEND_URL}/onboarding?token=${newVerificationToken}&hasDisplayName=${hasDisplayName}&hasCountry=${hasCountry}`;
       
     // Send verification email
     transporter.sendMail({
@@ -242,7 +264,7 @@ app.post('/send-verification-email', async (req, res) => {
 });
 
 app.post('/api/onboarding', async (req, res) => {
-  const { token, displayName } = req.body;
+  const { token, displayName, country } = req.body;
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
@@ -252,8 +274,9 @@ app.post('/api/onboarding', async (req, res) => {
       return res.status(400).send('Invalid token');
     }
 
-    if (displayName) {
+    if (displayName && country) {
       user.displayName = displayName;
+      user.country = country;
       if (!user.image) {
           user.image = getDefaultImage(displayName);
       }

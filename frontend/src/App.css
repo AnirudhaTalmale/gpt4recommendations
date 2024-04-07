@@ -1042,6 +1042,48 @@ body:not(.history-pane-open) .input-area {
   font-weight: bold;
 }
 
+.onboarding-container select {
+  width: 100%;
+  padding: 15px;
+  margin-bottom: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+  background-color: white;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  position: relative;
+  background-repeat: no-repeat;
+  background-position: right 15px center;
+  cursor: pointer;
+}
+
+.onboarding-container select:focus {
+  border-color: #4CAF50;
+  outline: none;
+}
+
+.onboarding-container select:hover {
+  border-color: #45a049;
+}
+
+.onboarding-container select:active {
+  background-color: #f2f2f2;
+}
+
+/* Style for disabled options */
+.onboarding-container select option[disabled] {
+  color: grey;
+}
+
+/* Add a box-shadow on focus for better visibility */
+.onboarding-container select:focus {
+  box-shadow: 0 0 5px rgba(76,175,80, .5);
+}
+
+
+
 /* lightbox for book preveiw */
 
 .lightbox-content-for-book-preview {

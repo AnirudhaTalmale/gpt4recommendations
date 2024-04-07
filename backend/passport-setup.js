@@ -48,7 +48,6 @@ passport.use(new GoogleStrategy({
         });
 
         await user.save();
-        console.log('New user created:', user);
       }
 
       user.accessToken = accessToken;

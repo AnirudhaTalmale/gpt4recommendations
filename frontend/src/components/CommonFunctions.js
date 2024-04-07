@@ -119,14 +119,35 @@ export const handleMoreDetailsRequest = async (bookDataObjectId, bookTitle, auth
   
       if (authResponse.status === 200 && authResponse.data.isAuthenticated) {
         if (!authResponse.data.onboardingComplete) {
-          window.location.href = `${process.env.REACT_APP_FRONTEND_URL}/onboarding`;
+          const onboardingUrl = new URL(`${process.env.REACT_APP_FRONTEND_URL}/onboarding`);
+          
+          // Append the verification token to the URL
+          if (authResponse.data.verificationToken) {
+            onboardingUrl.searchParams.append('token', authResponse.data.verificationToken);
+          }
+          
+          // Append the display name to the URL if it exists
+          if (authResponse.data.displayName) {
+            onboardingUrl.searchParams.append('displayName', authResponse.data.displayName);
+          }
+        
+          // You could also append the flags for hasDisplayName and hasCountry if needed
+          if (authResponse.data.hasDisplayName) {
+            onboardingUrl.searchParams.append('hasDisplayName', authResponse.data.hasDisplayName);
+          }
+          if (authResponse.data.hasCountry) {
+            onboardingUrl.searchParams.append('hasCountry', authResponse.data.hasCountry);
+          }
+        
+          // Redirect to the onboarding page with the appended parameters
+          window.location.href = onboardingUrl.href;
           return;
-        }
+        }        
   
         const userInfoResponse = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/user-info`, { withCredentials: true });
   
         if (userInfoResponse.status === 200) {
-          return userInfoResponse.data.user; // You might want to return the user data for further use
+          return userInfoResponse.data.user; 
         }
       } else {
         console.log("Authentication failed, redirecting to login page");
