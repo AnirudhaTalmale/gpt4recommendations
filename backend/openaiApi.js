@@ -4,6 +4,8 @@ require('dotenv').config();
 const openai = new OpenAI(process.env.OPENAI_API_KEY);
 const axios = require('axios');
 const BookData = require('./models/models-chat/BookData'); 
+const BookDataErrorLog = require('./models/models-chat/BookDataErrorLog');
+const SearchMismatchLog = require('./models/models-chat/SearchMismatchLog');
 const redisClient = require('./redisClient');
 const mongoose = require('mongoose');
 const { Types } = mongoose;
@@ -141,6 +143,19 @@ async function getAmazonBookData(title, author, country) {
         console.log('Title does not match the search');
         console.log(itemTitleNormalized);
         console.log(searchTitleNormalized);
+
+        // Create and save a log entry
+        const logEntry = new SearchMismatchLog({
+          title,
+          author,
+          country,
+          searchedTitle: searchTitleNormalized,
+          returnedTitle: itemTitleNormalized
+        });
+        
+        // Save the log entry asynchronously
+        logEntry.save().catch(logError => console.error('Error logging search mismatch:', logError));
+        
         // Return or handle the non-matching item as needed
         return { amazonLink: '', amazonStarRating: '', amazonReviewCount: '', amazonImage: '' };
       }
@@ -199,17 +214,18 @@ const getGoogleBookData = async (title) => {
     let googleImage = '';
     let previewLink = '';
 
+    const titleBeforeDelimiter = getTitleBeforeDelimiter(title);
+    const searchTitleNormalized = normalizeTitle(titleBeforeDelimiter);
+
     if (response.data.items?.length) {
       // console.log("response.data.items is: ", response.data.items);
+
       const filteredBooks = response.data.items.filter(item => {
         const itemTitleNormalized = normalizeTitle(item.volumeInfo.title);
-        const searchTitleNormalized = normalizeTitle(title);
-        
         return (itemTitleNormalized.includes(searchTitleNormalized) || searchTitleNormalized.includes(itemTitleNormalized))
             && item.volumeInfo.language === 'en';
     });
     
-      
       const bookWithPreview = filteredBooks.find(item => 
         item.accessInfo.viewability !== 'NO_PAGES' &&
         item.accessInfo.viewability !== 'UNKNOWN' &&
@@ -341,6 +357,19 @@ const getBookData = async (title, author, userCountry, bookDataObjectId = '') =>
     return bookData;
   } catch (error) {
     console.error('Error during book data aggregation:', error);
+
+    // Log the error in the BookDataErrorLog collection
+    const errorLogEntry = new BookDataErrorLog({
+      bookDataObjectId,
+      title,
+      author,
+      userCountry,
+      error: JSON.stringify(error, Object.getOwnPropertyNames(error))
+    });
+
+    // Save the error log asynchronously without waiting for it to finish
+    errorLogEntry.save().catch(logError => console.error('Error logging to BookDataErrorLog:', logError));
+
     return { bookDataObjectId: '', title: '', author: '', bookImage: '', previewLink: '', amazonLink: '', amazonStarRating: 'Unknown', amazonReviewCount: 'Unknown' };
   }
 };
