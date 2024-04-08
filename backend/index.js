@@ -177,7 +177,7 @@ app.get('/auth/logout', (req, res, next) => {
     }).then(() => {
       console.log('Google token revoked');
     }).catch(err => {
-      console.error('Error revoking Google token:', err); 
+      console.log('Error revoking Google token:', err); 
     });
 
     req.session.destroy(function(err) {

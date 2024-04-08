@@ -91,6 +91,7 @@ const normalizeTitle = (title) => {
     .replace(/—/g, '-') // Replace em dashes with hyphens
     .replace(/\b(the|a|an)\b/g, '')
     .replace(/\s+/g, ' ') // Replace multiple spaces with a single space
+    .replace(/s\b/g, '')
     .trim(); // Trim whitespace from the start and end of the string
 };
 
@@ -296,8 +297,14 @@ function createNewBook(title, author, amazonData, googleData, countryKey) {
   });
 }
 
+function escapeRegExp(string) {
+  // This function adds a backslash before special characters for RegExp
+  return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
 const getBookData = async (title, author, userCountry, bookDataObjectId = '') => {
   try {
+    const escapedTitle = escapeRegExp(title);
     const countryKey = userCountry === 'India' ? 'IN' : 'US';
     let cacheKey = `book-data:${bookDataObjectId || title.toLowerCase()}:${countryKey}`;
 
@@ -307,30 +314,23 @@ const getBookData = async (title, author, userCountry, bookDataObjectId = '') =>
       return JSON.parse(cachedData);
     }
 
-    let query = bookDataObjectId ? { _id: new ObjectId(bookDataObjectId) } : { title: { $regex: new RegExp('^' + title + '$', 'i') } };
+    let query = bookDataObjectId ? { _id: new ObjectId(bookDataObjectId) } : { title: { $regex: new RegExp('^' + escapedTitle + '$', 'i') } };
     let existingBook = await BookData.findOne(query);
 
     if (existingBook && existingBook.countrySpecific && existingBook.countrySpecific[countryKey] && existingBook.countrySpecific[countryKey].amazonLink && existingBook.countrySpecific[countryKey].amazonLink.trim() !== '') {
-      console.log("i am here 1");
-      console.log("existingBook is: ", existingBook);
       const countrySpecificData = existingBook.countrySpecific[countryKey];
       let bookDetails = createBookDetails(existingBook, countrySpecificData);
       await redisClient.set(cacheKey, JSON.stringify(bookDetails));
       return bookDetails;
     } else if (existingBook) {
 
-      console.log("i am here 2");
-      
       const amazonData = await getAmazonBookData(title, author, userCountry);
       updateBookWithAmazonData(existingBook, amazonData, countryKey, title, author);
     } else {
-
-      console.log("i am here 3");
       
       const amazonData = await getAmazonBookData(title, author, userCountry);
       const googleData = await getGoogleBookData(title);
       existingBook = createNewBook(title, author, amazonData, googleData, countryKey);
-      console.log("existingBook is: ", existingBook);
     }
 
     await existingBook.save();
