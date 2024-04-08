@@ -147,7 +147,9 @@ export const handleMoreDetailsRequest = async (bookDataObjectId, bookTitle, auth
         const userInfoResponse = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/user-info`, { withCredentials: true });
   
         if (userInfoResponse.status === 200) {
-          return userInfoResponse.data.user; 
+          const userData = userInfoResponse.data.user;
+          window.gtag('config', process.env.REACT_APP_GA_MEASUREMENT_ID, {'user_id': userData.id.toString()});
+          return userData;
         }
       } else {
         console.log("Authentication failed, redirecting to login page");
