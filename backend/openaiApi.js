@@ -122,7 +122,7 @@ async function getAmazonBookData(title, author, country) {
       params: {
         key: process.env.REACT_APP_GOOGLE_CUSTOM_SEARCH_API_KEY,
         cx: process.env.GOOGLE_CSE_ID,
-        q: `site:${amazonDomain} ${titleBeforeDelimiter} by ${author}`,
+        q: `site:${amazonDomain} ${title} by ${author}`,
         num: 1
       }
     });

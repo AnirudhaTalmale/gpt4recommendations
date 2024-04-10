@@ -9,6 +9,22 @@ function HomePage() {
   const [activePrompt, setActivePrompt] = useState(0);
 
   useEffect(() => {
+    // Create the script element
+    const tawkScript = document.createElement('script');
+    tawkScript.async = true;
+    tawkScript.src = 'https://embed.tawk.to/65fed84aa0c6737bd123ec54/1hplr9hi9';
+    tawkScript.setAttribute('crossorigin', '*');
+
+    // Insert script in the document
+    document.body.appendChild(tawkScript);
+
+    // Remove the script when component unmounts
+    return () => {
+      document.body.removeChild(tawkScript);
+    };
+  }, []);
+
+  useEffect(() => {
     const updatePrompt = () => {
       setActivePrompt(prev => (prev + 1) % sampleQueries.length);
     };
