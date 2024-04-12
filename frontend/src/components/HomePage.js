@@ -84,7 +84,7 @@ function HomePage() {
 
   return (
     <div className="home-page-wrapper">
-      <div className="chatgpt-text">GetBooks</div>
+      <div className="chatgpt-text">GetBooks.ai</div>
       
       <div className="sample-prompts-container">
         <div className="animated-prompt">{sampleQueries[activePrompt]}</div> 

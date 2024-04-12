@@ -165,7 +165,6 @@ app.get('/api/user-info', (req, res) => {
   }
 });
 
-
 app.get('/auth/logout', (req, res, next) => {
   const accessToken = req.user.accessToken; // Retrieve the stored access token
   req.logout(function(err) {

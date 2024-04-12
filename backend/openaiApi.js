@@ -389,7 +389,7 @@ const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, is
     const userCountry = session.user.country;
 
     const stream = await openai.chat.completions.create({
-      model: "gpt-4-0125-preview",
+      model: "gpt-4-turbo-preview", 
       messages: filteredMessages,
       max_tokens: 4096,
       stream: true,
@@ -561,7 +561,7 @@ openaiApi.getSummary = async (text) => {
     const prompt = `Summarize the following text in 4 words:\n\n"${text}"\n\nSummary:`;
 
     const response = await openai.chat.completions.create({
-      model: "gpt-4-1106-preview",
+      model: "gpt-3.5-turbo-0125",
       messages: [{ role: 'system', content: prompt }],
       max_tokens: 10, // Adjust as needed to ensure brevity
     });
