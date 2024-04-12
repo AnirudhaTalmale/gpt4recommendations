@@ -84,7 +84,7 @@ function HomePage() {
 
   return (
     <div className="home-page-wrapper">
-      <div className="chatgpt-text">GetBooks.ai</div>
+      <div className="chatgpt-text">GetBooks AI</div>
       
       <div className="sample-prompts-container">
         <div className="animated-prompt">{sampleQueries[activePrompt]}</div> 
@@ -94,7 +94,7 @@ function HomePage() {
       <div className="home-page-container">
       
         <div className="login-container">
-            <strong className="login-prompt">GPT-4 Powered Book Recommendation App</strong>
+            <strong className="login-prompt">GPT-4 Powered Book Recommendations</strong>
 
             <button onClick={handleSignupGoogle} className="login-button">
                 <img src="/icons8-google-logo.svg" alt="" className="google-logo" />

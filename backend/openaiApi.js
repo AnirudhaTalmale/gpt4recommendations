@@ -113,16 +113,21 @@ function getTitleBeforeDelimiter(title) {
   return minIndex !== -1 ? title.substring(0, minIndex).trim() : title;
 }
 
+function getAuthorBeforeAnd(author) {
+  return author.includes(' and ') ? author.split(' and ')[0] : author;
+}
+
 async function getAmazonBookData(title, author, country) {
   try {
     const titleBeforeDelimiter = getTitleBeforeDelimiter(title)
+    const authorBeforeAnd = getAuthorBeforeAnd(author);
     const amazonDomain = country === 'India' ? 'amazon.in' : 'amazon.com';
 
     const response = await axios.get(`https://www.googleapis.com/customsearch/v1`, {
       params: {
         key: process.env.REACT_APP_GOOGLE_CUSTOM_SEARCH_API_KEY,
         cx: process.env.GOOGLE_CSE_ID,
-        q: `site:${amazonDomain} ${title} by ${author}`,
+        q: `site:${amazonDomain} ${title} by ${authorBeforeAnd}`,
         num: 1
       }
     });
@@ -206,9 +211,10 @@ function convertStarRating(starString) {
   return starRatingMap[starString] || starString;
 }
 
-const getGoogleBookData = async (title) => {
+const getGoogleBookData = async (title, author) => {
   try {
-    let query = `intitle:${encodeURIComponent(title)}`;
+    const authorBeforeAnd = getAuthorBeforeAnd(author);
+    const query = `intitle:${encodeURIComponent(title)}+inauthor:${encodeURIComponent(authorBeforeAnd)}`;
     const response = await axios.get(`https://www.googleapis.com/books/v1/volumes?q=${query}&key=${process.env.REACT_APP_GOOGLE_BOOKS_API_KEY}`);
 
     let googleImage = '';
@@ -345,7 +351,7 @@ const getBookData = async (title, author, userCountry, bookDataObjectId = '') =>
     } else {
       
       const amazonData = await getAmazonBookData(title, author, userCountry);
-      const googleData = await getGoogleBookData(title);
+      const googleData = await getGoogleBookData(title, author);
       existingBook = createNewBook(title, author, amazonData, googleData, countryKey);
     }
 
