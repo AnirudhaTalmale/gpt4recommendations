@@ -242,8 +242,8 @@ const getGoogleBookData = async (title, author) => {
       const book = bookWithPreview || filteredBooks[0];
     
       if (book) {
-        const { volumeInfo } = book;
-        previewLink = volumeInfo.previewLink || '';
+        const { volumeInfo, id } = book;
+        previewLink = `https://books.google.co.in/books?id=${id}&printsec=frontcover&gbpv=1`;
 
         // To get the largest available image
         const imageLinks = volumeInfo.imageLinks;

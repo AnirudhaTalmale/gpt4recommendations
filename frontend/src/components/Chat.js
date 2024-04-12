@@ -287,7 +287,6 @@ function Chat() {
   
   const handleQuerySubmit = async (query, isMoreDetails = false, bookDataObjectId = null, bookTitle = null, author = null, moreBooks = false, isKeyInsights = false, isAnecdotes = false, isQuotes = false, isEdit = false) => {
     setIsLoading(true);
-    console.log("currentSessionIdRef.current is: ", currentSessionIdRef.current);
   
     // Get the current session's ID
     const currentSessionId = currentSessionIdRef.current;
