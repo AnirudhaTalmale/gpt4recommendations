@@ -746,26 +746,34 @@ body:not(.history-pane-open) .input-area {
 .footer {
   background-color: rgb(242, 242, 242);
   text-align: center;
-  padding: 1.1rem;
+  padding: 1.1rem 0rem;
   position: relative;
-  font-size: 0.95rem;
+  font-size: 0.8rem;
 }
 
 .footer nav a {
-  margin-left: 2rem;
+  margin-left: 0.8rem;
   text-decoration: none;
   color: #333;
+}
+
+.footer nav a:first-child {
+  margin-left: 0; /* Remove left margin for the first link */
+}
+
+.footer nav span {
+  margin-left: 1rem; /* Spacing before the bar */
+  color: #333; /* Same color as the links for consistency */
 }
 
 .comparison {
   margin: 6.1rem auto 6.1rem auto;
   padding: 0.1rem 1.5rem 1.5rem 1.5rem;
-  
   border-radius: 8px;
   width: 90dvw;
   max-width: 800px;
   line-height: 1.65rem;
-  font-size: 0.95didirem;
+  font-size: 0.95rem;
 }
 
 .comparison h2 {
@@ -839,28 +847,6 @@ body:not(.history-pane-open) .input-area {
   top: 50%;
   left: 8%;
   transform: translate(-50%, -50%);
-}
-
-/* Media query for small screens */
-@media (max-width: 660px) {
-  .home-page-left-arrow {
-    left: 88%;  /* Adjust the left property as needed for small screens */
-  }
-
-  .home-page-right-arrow {
-    left: 12%; 
-  }
-}
-
-/* Separate media query for even smaller screens (up to 400px) */
-@media (max-width: 600px) {
-  .home-page-left-arrow {
-    left: 81%;  /* Adjust the left property as needed for small screens */
-  }
-
-  .home-page-right-arrow {
-    left: 19%; 
-  }
 }
 
 /* login page components */
@@ -1871,8 +1857,25 @@ section-privacy-policy li strong {
   z-index: 100;
 }
 
+@media (max-width: 578px) {
+  .home-page-left-arrow {
+    left: 75%;
+  }
+  .home-page-right-arrow {
+    left: 25%;
+  }
+}
+
 
 @media (max-width: 759px) {
+
+  
+
+  .comparison td {
+    hyphens: auto;
+    word-break: break-word; /* Allows word breaking */
+    text-align: left;
+  }
 
   .about-container {
     margin-left: 1.2rem;
