@@ -627,150 +627,240 @@ body:not(.history-pane-open) .input-area {
 
 /* Home page components */
 
-.footer-links {
+.home-page-header {
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
-  position: absolute;
-  bottom: 0;
 }
 
-.footer-link {
-  margin: 2rem 0.3rem;
-  color: rgb(143, 143, 143);
-  font-size: 0.8rem;
-  font-weight: 400;
+.home-page-header span {
+  font-size: 1.3rem;
+  margin: 1rem;
+  font-weight: bold;
 }
 
-.footer-link:not(:last-child)::after {
-  content: '|';
-  color: rgb(143, 143, 143);
-  margin-left: 0.7rem; 
-}
-
-.footer-link:hover {
-  text-decoration: underline;
-}
-
-.login-prompt {
-  font-size: 1.5rem;
+.hero {
   text-align: center;
-  margin-bottom: 2vh;
-  line-height: 2rem;
+  padding: 0.2rem  0rem 3.1rem  0rem;
+  width: 93dvw;
+  max-width: 640px;
+  margin: auto; 
+  margin-top: 4rem;
+  background-color: rgb(242, 242, 242);
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); 
 }
 
-.home-page-wrapper {
-  display: flex;
-  flex-direction: column;
-  height: 100dvh;
-  width: 100dvw;
+.hero h2 {
+  
+  margin-left: 1rem;
+  margin-right: 1rem;
+  margin-bottom: 2rem;
+  line-height: 2.15rem;
 }
 
-.chatgpt-text {
-  position: absolute; 
-  top: 25px;
-  font-weight: bold; 
-  font-size: 22px; 
-  left: 25px;
+.carousel {
+  width: 93dvw;
+  max-width: 640px;
+  max-height: 92.5dvh;
+  overflow: hidden; 
+  background-color: rgb(242, 242, 242);
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); 
+  padding: 0rem 0rem 1.5rem 0rem;
+  margin: 6rem auto 2.8rem auto;
+}
+
+.carousel img {
+  max-width: 88%; /* You already have this, but ensuring it's mentioned */
+  margin: 0.5rem auto;
+  height: auto; /* Maintains aspect ratio */
+  display: block; /* Removes bottom space/gap under images */
+}
+
+.features-div {
+  width: 93dvw;
+  max-width: 640px;
+  margin: auto;
+  line-height: 2.2rem;
+}
+
+.features-carousel {
+  width: 93dvw;
+  max-width: 640px;
+  max-height: 95dvh;
+  margin: 0rem auto 2rem auto;
+  overflow: hidden; 
+  margin-bottom: 8rem;
+  background-color: rgb(242, 242, 242);
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); 
+  padding: 0rem 0rem 2rem 0rem;
+}
+
+.features-carousel img {
+  max-width: 88%; /* You already have this, but ensuring it's mentioned */
+  margin: auto;
+  height: auto; /* Maintains aspect ratio */
+  display: block; /* Removes bottom space/gap under images */
+}
+
+.feature {
+  text-align: center;
+}
+
+.feature-text {
+  margin-bottom: 1.5rem;
+  
+}
+
+.feature-text h3 {
+  margin-bottom: -0.3rem;
+}
+
+.feature-text p {
+  margin-bottom: -0.3rem;
+  margin-left: 1.8rem;
+  margin-right: 1.8rem;
+  text-align: center;
+  line-height: 1.4rem;
 }
 
 
-.sample-prompts-container {
-  display: none;
-  background-color: #f7f2cb; 
-  padding: 2.5%;
-  align-items: center; 
-  justify-content: center; 
-  text-align: center; 
+/* Hide the ::before pseudo-element for the default slick arrows only */
+.slick-next::before,
+.slick-prev::before {
+  content: none !important;
 }
 
-.home-page-container {
-  flex-grow: 1; 
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  background-color: #FFFFFF; 
+/* Make sure your custom arrows are visible */
+.sample-next-arrow, .sample-prev-arrow {
+  display: block !important;
+  /* Your other styling properties */
 }
 
+/* If your custom arrows have the slick-next and slick-prev classes, 
+   you might need to reset the ::before pseudo-element for them as well */
+.sample-next-arrow.slick-next::before,
+.sample-prev-arrow.slick-prev::before {
+  content: '' !important; /* Reset the content for your custom arrows if necessary */
+}
 
-/* Large screens */
-@media (min-width: 770px) {
-  .home-page-wrapper {
-    flex-direction: row; /* Side by side for medium screens and up */
+.footer {
+  background-color: rgb(242, 242, 242);
+  text-align: center;
+  padding: 1.1rem;
+  position: relative;
+  font-size: 0.95rem;
+}
+
+.footer nav a {
+  margin-left: 2rem;
+  text-decoration: none;
+  color: #333;
+}
+
+.comparison {
+  margin: 6.1rem auto 6.1rem auto;
+  padding: 0.1rem 1.5rem 1.5rem 1.5rem;
+  
+  border-radius: 8px;
+  width: 90dvw;
+  max-width: 800px;
+  line-height: 1.65rem;
+  font-size: 0.95didirem;
+}
+
+.comparison h2 {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.comparison table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  border: 0.8px solid lightgrey;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); 
+}
+
+.comparison th, .comparison td {
+  padding: 1rem 0.8rem;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+.comparison th {
+  background-color: #e8e8e8;
+}
+
+.comparison tbody tr:nth-child(odd) {
+  background-color: #fbfbfb;
+}
+
+.comparison tbody tr:nth-child(even) {
+  background-color: rgb(242, 242, 242); /* A different shade for even rows for contrast */
+}
+
+.comparison td:first-child {
+  font-weight: bold; /* This will apply bold styling only to the first cell in each row, which are the feature names */
+}
+
+/* Styles for the scrollbar */
+::-webkit-scrollbar {
+  width: 8px; /* Decreasing the width of the scrollbar */
+}
+
+::-webkit-scrollbar-track {
+  background: transparent; /* Making the scrollbar track invisible */
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: rgb(219, 219, 219);
+  border-radius: 4px; /* Optional: Adds rounded corners to the scrollbar thumb */
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #b0b0b0; /* Optional: Changes thumb color on hover for better user experience */
+}
+
+/* Styles for the right arrow on the home page */
+
+.home-page-left-arrow {
+  color: rgb(190, 190, 190);
+  font-size: 1.3rem;
+  position: absolute;
+  top: 50%;
+  left: 92%;
+  transform: translate(-50%, -50%);
+}
+
+.home-page-right-arrow {
+  color: rgb(190, 190, 190);
+  font-size: 1.3rem;
+  position: absolute;
+  top: 50%;
+  left: 8%;
+  transform: translate(-50%, -50%);
+}
+
+/* Media query for small screens */
+@media (max-width: 660px) {
+  .home-page-left-arrow {
+    left: 88%;  /* Adjust the left property as needed for small screens */
   }
 
-  .sample-prompts-container {
-    display: flex; /* Show the prompts container */
-    flex: 1; /* Take up half the space */
+  .home-page-right-arrow {
+    left: 12%; 
+  }
+}
+
+/* Separate media query for even smaller screens (up to 400px) */
+@media (max-width: 600px) {
+  .home-page-left-arrow {
+    left: 81%;  /* Adjust the left property as needed for small screens */
   }
 
-  .home-page-container {
-    flex: 1; /* Take up the other half */
+  .home-page-right-arrow {
+    left: 19%; 
   }
-
-  .login-signup-container {
-    flex-direction: row !important; /* Side by side for medium screens and up */
-    justify-content: center; /* Center buttons horizontally */
-  }
-
-  .login-signup-button {
-    min-width: 60% !important;
-  }
-
-  .home-page-container  h1 {
-    font-size: 32.5px !important; /* Large font size for the heading */
-  }
-  .chatgpt-text {
-    color: rgb(255, 111, 0);
-    padding-left: 2.5%;
-    left: 0px;
-  } 
-}
-
-
-.home-page-container  h1 {
-  font-size: 20px; /* Large font size for the heading */
-  margin-bottom: 14px; /* Spacing between the logo and the buttons */
-}
-
-/* Base styles for small screens */
-.login-signup-container {
-  display: flex;
-  flex-direction: column; /* Stack buttons vertically */
-  align-items: center; /* Center buttons horizontally */
-  gap: 14px; /* Space between buttons */
-  width: 550px; /* Take full width of its parent */
-}
-
-.login-signup-button {
-  padding: 15px 0; /* Padding inside the buttons */
-  font-size: 16px; /* Text size inside the buttons */
-  font-weight: bold; /* Make the text bold */
-  color: white; /* Text color */
-  background-color: rgb(62, 62, 255); /* Background color for the buttons */
-  border: none; /* No border */
-  border-radius: 7px; /* Rounded corners for the buttons */
-  cursor: pointer; /* Pointer cursor on hover */
-  transition: background-color 0.1s; /* Smooth transition for hover effect */
-  width: 80%; /* Percentage width for smaller screens */
-  margin-bottom: -7.5px;
-}
-
-.login-signup-button:hover {
-  background-color: rgb(42, 42, 205);
-}
-
-.animated-prompt {
-  font-size: 40px; /* Adjust size as needed */
-  color: #FE7600;
-  opacity: 1; /* Make fully visible */
-  text-align: left; /* Left-aligns the text */
-  width: 100%; /* Ensures the prompt takes up the full width of its container */
-}
-
-.animated-prompt.visible {
-  opacity: 1; /* Make visible */
 }
 
 /* login page components */
@@ -840,9 +930,10 @@ body:not(.history-pane-open) .input-area {
   flex-direction: column; /* Stack children vertically */
   justify-content: center;
   align-items: center;
-  height: 100dvh; /* Use full viewport height */
   gap: 10px; /* Space between stacked buttons */
   width: 300px;
+  margin: auto;
+  margin-bottom: -1rem;
   /* border: 1px solid blue; */
 }
 
@@ -1670,18 +1761,62 @@ body:not(.history-pane-open) .input-area {
   margin: 0 auto; 
 }
 
+/* About us page */
+
+.about-container {
+  
+  font-family: 'Arial', sans-serif;
+  color: #333;
+  line-height: 1.6;
+  padding: 20px;
+  padding-left: 30px;
+  padding-right: 30px;
+  max-width: 680px;
+  margin: auto;
+  margin-top: 6rem;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.about-container h1, .about-container h2 {
+  color: #333;  /* Darker gray to maintain readability and consistency */
+}
+
+.about-container p {
+  margin: 20px 0;
+}
+
+.mission-statement {
+  background-color: rgb(242, 242, 242);  /* Light gray to maintain theme uniformity */
+  border-left: 5px solid rgb(190, 190, 190); 
+  padding: 10px;
+  margin-top: 30px;
+}
+
+
 /* privacy policy */
 
 .privacyPolicy {
-  color: #333;
+  font-family: 'Arial', sans-serif;
+  color: #333;  /* Dark gray text for good readability */
+  line-height: 1.8rem;
   padding: 20px;
-  line-height: 1.6;
+  padding-top: 1rem;
+  background-color: rgb(248, 248, 248);  /* Consistent light gray background */
+  max-width: 800px;
+  margin: auto;
+  margin-top: 6rem;
+  margin-bottom: 4rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);  /* Consistent shadow for depth */
 }
 
 header-privacy-policy {
   font-weight: bold;
   font-size: 1.3rem;
   text-align: center;
+  color: #333; 
 }
 
 header-privacy-policy h1 {
@@ -1694,11 +1829,11 @@ section-privacy-policy {
 }
 
 section-privacy-policy h2 {
-  color: #4a90e2;
+  color: #333;
 }
 
 section-privacy-policy h3 {
-  color: #7b7b7b;
+  color: rgb(156, 156, 156);
 }
 
 section-privacy-policy p {
@@ -1711,16 +1846,16 @@ section-privacy-policy ul {
 }
 
 section-privacy-policy li strong {
-  color: #000;
+  color: #333;
 }
 
-/* universal css */
+/* header with back button */
 
 .back-button {
   background: none;
   border: none;
   font-size: 1.2rem;
-  color: black;
+  color: rgb(186, 186, 186);
   padding: 0.7rem 1rem 0.7rem 1.05rem;
   cursor: pointer;
 }
@@ -1739,7 +1874,16 @@ section-privacy-policy li strong {
 
 @media (max-width: 759px) {
 
+  .about-container {
+    margin-left: 1.2rem;
+    margin-right: 1.2rem;
+  }
+
   .chat-page {
+    overflow: hidden;
+  }
+
+  .homepage {
     overflow: hidden;
   }
 

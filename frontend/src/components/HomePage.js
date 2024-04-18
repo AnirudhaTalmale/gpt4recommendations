@@ -1,39 +1,99 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom'; 
-import { sampleQueries } from './queries'; 
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom'; 
 import axios from 'axios';
 import '../App.css';
+import Slider from "react-slick";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
 
-function HomePage() {
+function SampleNextArrow(props) {
+  const { className, style, onClick } = props;
+  return (
+    <div
+      className={`sample-next-arrow ${className}`} // Add unique class name
+      style={{ ...style, display: "block", borderRadius: "50%", zIndex: 25, width: "50px", height: "50px" }}
+      onClick={onClick}
+    >
+      <i className="fa-solid fa-chevron-right home-page-right-arrow"></i>
+    </div>
+  );
+}
+
+function SamplePrevArrow(props) {
+  const { className, style, onClick } = props;
+  return (
+    <div
+      className={`sample-prev-arrow ${className}`} // Add unique class name
+      style={{ ...style, display: "block", borderRadius: "50%", zIndex: 25, width: "50px", height: "50px" }}
+      onClick={onClick}
+    >
+      <i className="fa-solid fa-chevron-left home-page-left-arrow"></i>
+    </div>
+  );
+}
+
+const sliderSettings = {
+    dots: false,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    autoplay: true,
+    autoplaySpeed: 10000,
+    cssEase: "linear",
+    nextArrow: <SampleNextArrow />,
+    prevArrow: <SamplePrevArrow />,
+};
+
+const HomePage = () => {
   let navigate = useNavigate();
-  const [activePrompt, setActivePrompt] = useState(0);
+  const carouselImages = [
+    '/top_fiction_books.png',
+    '/most_romantic_book_of_all_times.png',
+    '/worlds_most_influential_people_biographies.png',
+    '/nail_biting_mystery_books.png',
+    '/the_most_inspirational_book_of_all_time.png',
+    '/the_subtle_art_of_not_giving.png'
+  ];
 
-  useEffect(() => {
-    // Create the script element
-    const tawkScript = document.createElement('script');
-    tawkScript.async = true;
-    tawkScript.src = 'https://embed.tawk.to/65fed84aa0c6737bd123ec54/1hplr9hi9';
-    tawkScript.setAttribute('crossorigin', '*');
-
-    // Insert script in the document
-    document.body.appendChild(tawkScript);
-
-    // Remove the script when component unmounts
-    return () => {
-      document.body.removeChild(tawkScript);
-    };
-  }, []);
-
-  useEffect(() => {
-    const updatePrompt = () => {
-      setActivePrompt(prev => (prev + 1) % sampleQueries.length);
-    };
-
-    const intervalId = setInterval(updatePrompt, 4000); 
-    return () => {
-      clearInterval(intervalId);
-    };
-  }, []); // Use sampleQueries.length here
+  const features = [
+    {
+      id: 'book-info',
+      title: 'Book Info',
+      description: 'Get detailed summaries, author backgrounds, and critical acclaim with a single click',
+      imgSrc: '/book_info_gone_girl.png'
+    },
+    {
+      id: 'key-insights',
+      title: 'Insights',
+      description: 'Discover the core concepts of each book with single-click access',
+      imgSrc: '/insights_you_are_a_badass.png'
+    },
+    {
+      id: 'anecdotes',
+      title: 'Anecdotes',
+      description: 'Explore captivating stories and moments from the book with just one click',
+      imgSrc: '/anecdotes_diary_of_a_young_girl.png'
+    },
+    {
+      id: 'quotes',
+      title: 'Quotes',
+      description: 'Find powerful, inspirational quotes from books at the click of a button',
+      imgSrc: '/quotes_man_search_for_meaning.png'
+    },
+    {
+      id: 'preview_on_google_books',
+      title: 'Preview',
+      description: 'Preview your next book instantly with Google Books through a single click',
+      imgSrc: '/google_preview_unfuck_yourself.png'
+    },
+    {
+      id: 'buy_now_on_amazon',
+      title: 'Buy Now',
+      description: 'Purchase your next read on Amazon instantly with just one click',
+      imgSrc: '/amazon_page_long_walk_to_freedom.png'
+    },
+  ]; 
 
   const [email, setEmail] = useState('');
     const [emailError, setEmailError] = useState('');
@@ -81,21 +141,16 @@ function HomePage() {
     const handleSignupGoogle = () => {
         window.location.href = `${process.env.REACT_APP_BACKEND_URL}/auth/google?prompt=select_account`;
     };
-
+  
   return (
-    <div className="home-page-wrapper">
-      <div className="chatgpt-text">GetBooks AI</div>
-      
-      <div className="sample-prompts-container">
-        <div className="animated-prompt">{sampleQueries[activePrompt]}</div> 
-        {/* Use sampleQueries here */}
-      </div>
-      
-      <div className="home-page-container">
-      
-        <div className="login-container">
-            <strong className="login-prompt">GPT-4 Powered Book Recommendations</strong>
+    <div className="homepage">
+      <header className="home-page-header">
+        <span>GetBooks.ai</span>
+      </header>
 
+      <section className="hero">
+        <h2>Discover Your Next Great Read with GPT-4's Advanced AI-Powered Book Recommendations</h2>
+          <div className="login-container">
             <button onClick={handleSignupGoogle} className="login-button">
                 <img src="/icons8-google-logo.svg" alt="" className="google-logo" />
                 Continue with Google
@@ -126,17 +181,111 @@ function HomePage() {
                     Continue with Email
                 </button>
             </form>
+          </div>
+      </section>
 
-            <div className="footer-links">
-              <Link to="/privacy-policy" className="footer-link">Privacy Policy</Link> 
-              <a href="/contact-us" className="footer-link">Contact us</a>
-              <Link to="/blog" className="footer-link">Blog</Link>
+      {/* Carousel Section */}
+      <section className="carousel">
+      <h2 style={{ textAlign: 'center', marginBottom: '-0.2rem' }}>See it in action</h2>
+        <p style={{ textAlign: 'center', marginBottom: '1.1rem', marginLeft: 'auto', marginRight: 'auto', lineHeight: '1.4rem'}}>Check out the following sample queries and their book recommendations</p>
+        <Slider {...sliderSettings}>
+          {carouselImages.map((img, index) => (
+            <div key={index}>
+              <img src={img} alt={`Slide ${index}`} style={{ width: '100%', height: 'auto' }} />
             </div>
-        </div>
-        
+          ))}
+        </Slider>
+      </section>
+
+      <section className="comparison">
+        <h2>Why Choose Us</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Features</th>
+              <th>GetBooks.ai</th>
+              <th>Other Apps</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>AI Model</td>
+              <td>Uses advanced GPT-4 for accurate recommendations</td>
+              <td>Uses simpler AI models for basic recommendations</td>
+            </tr>
+            <tr>
+            <td>Comprehensive Book Details</td>
+                <td>Single-click access to book summaries, author credibility, and endorsements</td>
+                <td>Additional queries required</td>
+            </tr>
+            <tr>
+              <td>Book Insights, Anecdotes & Quotes</td>
+              <td>Single-click access</td>
+              <td>Additional queries required</td>
+            </tr>
+            <tr>
+              <td>Amazon Star Ratings</td>
+              <td>Available</td>
+              <td>Not available</td>
+            </tr>
+            <tr>
+              <td>Direct Amazon Buy Now Links</td>
+              <td>Available for both Amazon India and US</td>
+              <td>Available only for Amazon US</td>
+            </tr>
+            <tr>
+              <td>Book Preview</td>
+              <td>Available</td>
+              <td>Not available</td>
+            </tr>
+            <tr>
+              <td>User Interface</td>
+              <td>Simple, intuitive chat interface</td>
+              <td>Generally more complex</td>
+            </tr>
+            <tr>
+              <td>Pricing</td>
+              <td>Free</td>
+              <td>Apps that use advanced AI models typically require payment</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <div className="features-div">
+        <h2 style={{ textAlign: 'center', marginBottom: '1.5rem', lineHeight: '2rem' }}>
+          Six Interactive Buttons for Each Recommendation
+        </h2>
       </div>
+      <section className="features-carousel">
+      
+        <Slider {...sliderSettings}>
+          {features.map((feature, index) => (
+            <div key={index} className="feature">
+              <div className="feature-text">
+                <h3>{feature.title}</h3>
+                <p>{feature.description}</p>
+              </div>
+              <img src={feature.imgSrc} alt={feature.title} style={{ width: '100%', height: 'auto' }} />
+            </div>
+          ))}
+        </Slider>
+      </section>
+
+
+      <footer className="footer">
+        <nav>
+          <a href="/about-us">About Us</a>
+          <a href="/blog">Blog</a>
+          <a href="/privacy-policy">Privacy Policy</a>
+          <a href="/contact-us">Contact Us</a>
+        </nav>
+      </footer>
     </div>
   );
-}
+};
 
 export default HomePage;
+
+
+    

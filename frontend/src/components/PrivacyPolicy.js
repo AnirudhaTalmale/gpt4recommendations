@@ -10,7 +10,6 @@ const PrivacyPolicy = () => {
         <div className="privacyPolicy">
         
         <header-privacy-policy>
-            GetBooks
             <h2>Privacy Policy</h2>
         </header-privacy-policy>
         <section-privacy-policy>
@@ -116,6 +115,9 @@ const PrivacyPolicy = () => {
             <p>If you have any issues with the way we process data or you need any clarification on our privacy practices you can always contact us at getbooksai@gmail.com. Your issues will be addressed by us as soon as possible and within a maximum period of one month. However, if you are still of the opinion that we are processing your personal data in violation of data protection laws and regulations you have the right to lodge a complaint with the supervisory authority.</p>
         </section-privacy-policy>
         </div>
+        <div style={{ height: '0.1rem' }}></div>
+
+
     </>
   );
 };

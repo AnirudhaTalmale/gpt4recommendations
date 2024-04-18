@@ -232,14 +232,14 @@ const getGoogleBookData = async (title, author) => {
             && item.volumeInfo.language === 'en';
     });
     
-      const bookWithPreview = filteredBooks.find(item => 
-        item.accessInfo.viewability !== 'NO_PAGES' &&
-        item.accessInfo.viewability !== 'UNKNOWN' &&
-        item.accessInfo.accessViewStatus !== 'NONE' &&
-        item.volumeInfo.previewLink 
-      );
+      // const bookWithPreview = filteredBooks.find(item => 
+      //   item.accessInfo.viewability !== 'NO_PAGES' &&
+      //   item.accessInfo.viewability !== 'UNKNOWN' &&
+      //   item.accessInfo.accessViewStatus !== 'NONE' &&
+      //   item.volumeInfo.previewLink 
+      // );
     
-      const book = bookWithPreview || filteredBooks[0];
+      const book =  filteredBooks[0];
     
       if (book) {
         const { volumeInfo, id } = book;

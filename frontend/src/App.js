@@ -7,6 +7,7 @@ import BlogPostPage from './components/BlogPostPage';
 import HomePage from './components/HomePage';
 import EmailVerificationPage from './components/EmailVerificationPage'; 
 import Contact from './components/Contact'; 
+import About from './components/About'; 
 import PrivacyPolicy from './components/PrivacyPolicy';
 import './App.css';
 
@@ -24,6 +25,7 @@ function App() {
           <Route path="/blog" element={<BlogPage />} />
           <Route path="/blog/:postId" element={<BlogPostPage />} />
           <Route path="/contact-us" element={<Contact />} />
+          <Route path="/about-us" element={<About />} />
           <Route path="/privacy-policy" element={<PrivacyPolicy />} /> 
         </Routes>
       </div>
