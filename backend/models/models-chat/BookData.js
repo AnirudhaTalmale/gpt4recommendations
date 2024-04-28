@@ -18,7 +18,8 @@ const bookSchema = new Schema({
       amazonStarRating: Number,
       amazonReviewCount: String
     }
-  }
+  },
+  genres: [{ type: String }],
 });
 
 module.exports = mongoose.model('BookData', bookSchema);

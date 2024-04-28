@@ -9,6 +9,7 @@ import EmailVerificationPage from './components/EmailVerificationPage';
 import Contact from './components/Contact'; 
 import About from './components/About'; 
 import PrivacyPolicy from './components/PrivacyPolicy';
+import BookDetail from './components/BookDetail';
 import './App.css';
 
 function App() {
@@ -26,7 +27,8 @@ function App() {
           <Route path="/blog/:postId" element={<BlogPostPage />} />
           <Route path="/contact-us" element={<Contact />} />
           <Route path="/about-us" element={<About />} />
-          <Route path="/privacy-policy" element={<PrivacyPolicy />} /> 
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+          <Route path="/books/:bookId/:countryCode" element={<BookDetail />} />
         </Routes>
       </div>
     </Router>

@@ -53,7 +53,7 @@ function createBookInfoHtml(bookTitle, author, amazonStarRating, amazonReviewCou
     bookInfoHtml += `<div class="ratings-and-review">`;
 
     // Add star rating
-    if (amazonStarRating && amazonStarRating !== 'Unknown') {
+    if (amazonStarRating && amazonStarRating !== 'Unknown') { 
       bookInfoHtml += `<div class="star-rating">`;
 
       // Add full stars
@@ -392,7 +392,7 @@ const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, is
 
   const filteredMessages = messages.map(({ role, content }) => ({ role, content }));
   try {
-    const userCountry = session.user.country;
+    const userCountry = session ? session.user.country : undefined;
 
     const stream = await openai.chat.completions.create({
       model: "gpt-4-turbo-preview", 
@@ -479,7 +479,7 @@ const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, is
                     
           // Emit pausedEmit and reset
           completeResponse += pausedEmit;
-          if (moreBooks || (!isMoreDetails && !isKeyInsights && !isAnecdotes) ) {
+          if (moreBooks || (!isMoreDetails && !isKeyInsights && !isAnecdotes && !isQuotes) ) {
             // Update the current message with the new chunk.
             session.messages[messageIndex].content += pausedEmit;
             await session.save();
@@ -582,6 +582,33 @@ openaiApi.getSummary = async (text) => {
     return "Brief Summary";
   }
 };
+
+openaiApi.getGenres = async (title, author) => {
+  try {
+    const prompt = `Provide the genres of the book - "${title}" by ${author}. The answer should just be a single array of strings and nothing else.`;
+
+    const response = await openai.chat.completions.create({
+      model: "gpt-4-turbo-preview",
+      messages: [{ role: 'system', content: prompt }]
+    });
+
+    let genresResponse = response.choices[0]?.message?.content || "[]";
+
+    // Parse the JSON string into an array
+    let genresArray = JSON.parse(genresResponse);
+
+    // Ensure that genresArray is actually an array, if not, default to an empty array
+    if (!Array.isArray(genresArray)) {
+      genresArray = [];
+    }
+
+    return genresArray;
+  } catch (error) {
+    console.error('Error getting genres:', error);
+    return [];
+  }
+};
+
 
 openaiApi.stopStream = () => {
   isStreamingActive = false; // Set the flag to false to stop the stream

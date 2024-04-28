@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import '../App.css';
 
-function InputBox({ onSubmit, isStreaming, onStopStreaming, onHeightChange, isPaneOpen }) {
+function InputBox({ onSubmit, isStreaming, onStopStreaming, isPaneOpen }) {
   const [input, setInput] = useState('');
   const [isInputNotEmpty, setIsInputNotEmpty] = useState(false);
   const [rows, setRows] = useState(1);
@@ -85,18 +85,6 @@ function InputBox({ onSubmit, isStreaming, onStopStreaming, onHeightChange, isPa
     context.font = font;
     return context.measureText(text).width;
   }
-  
-  const handleHeightChange = useCallback((newHeight) => {
-    onHeightChange(newHeight);
-  }, [onHeightChange]); // onHeightChange is the dependency
-  
-
-  useEffect(() => {
-    if (textareaRef.current) {
-      const newHeight = textareaRef.current.scrollHeight;
-      handleHeightChange(newHeight);
-    }
-  }, [rows, handleHeightChange]); 
 
   return (
     <form onSubmit={handleSubmit} className="input-area">
@@ -105,7 +93,7 @@ function InputBox({ onSubmit, isStreaming, onStopStreaming, onHeightChange, isPa
           value={input}
           onChange={handleInputChange}
           onKeyDown={handleKeyDown}
-          placeholder="Explain your query"
+          placeholder="GPT-4 powered search"
           rows={rows}
         />
         {isStreaming ? (

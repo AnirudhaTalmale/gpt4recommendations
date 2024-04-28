@@ -113,6 +113,22 @@ export const handleMoreDetailsRequest = async (bookDataObjectId, bookTitle, auth
   }
 };
 
+export const sortBooks = (books) => {
+  return books
+      .map(book => ({
+          ...book,
+          parsedReviewCount: parseInt((book.amazonReviewCount || '0').replace(/,/g, ''), 10)
+      }))
+      .sort((a, b) => {
+          if (a.parsedReviewCount > b.parsedReviewCount) return -1;
+          if (a.parsedReviewCount < b.parsedReviewCount) return 1;
+          if (a.amazonStarRating > b.amazonStarRating) return -1;
+          if (a.amazonStarRating < b.amazonStarRating) return 1;
+          return 0;
+      });
+};
+
+
   export const checkAuthStatus = async () => {
     try {
       const authResponse = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/check-auth`, { withCredentials: true });
@@ -171,3 +187,92 @@ export const handleMoreDetailsRequest = async (bookDataObjectId, bookTitle, auth
     }
     return <div style={{display: 'flex', alignItems: 'center', marginRight: '10px'}}>{stars}</div>;
   };
+
+
+// Button Components
+export const BuyNowButton = ({ link, buttonText = 'Buy Now' }) => {
+  return (
+    <div>
+      <a href={link} target="_blank" rel="noreferrer">
+        <button className="buy-now-button">{buttonText}</button>
+      </a>
+    </div>
+  );
+};
+
+export const PreviewButton = ({ previewLink, onClick }) => {
+  // Define styles for disabled state
+  const buttonStyles = previewLink ? {} : { cursor: 'not-allowed', opacity: 0.5, pointerEvents: 'none' };
+
+  return (
+    <div>
+      <button type="button" 
+              className="preview-btn" 
+              style={buttonStyles} 
+              disabled={!previewLink} 
+              data-preview-link={previewLink || undefined}
+              onClick={onClick}>
+        Preview
+      </button>
+    </div>
+  );
+};
+
+export const MoreDetailsButton = ({ bookDataObjectId, bookTitle, author, onClick }) => {
+  return (
+    <div>
+      <button type="button" className="more-details-btn" 
+              data-book-data-object-id={bookDataObjectId}
+              data-book-title={bookTitle} 
+              data-author={author}
+              onClick={onClick}>
+        Book Info
+      </button>
+    </div>
+  );
+};
+
+export const KeyInsightsButton = ({ bookDataObjectId, bookTitle, author, onClick }) => {
+  return (
+    <div>
+      <button type="button" className="key-insights-btn"
+              data-book-data-object-id={bookDataObjectId}
+              data-book-title={bookTitle}
+              data-author={author}
+              onClick={onClick}>
+        Insights
+      </button>
+    </div>
+  );
+};
+
+export const AnecdotesButton = ({ bookDataObjectId, bookTitle, author, onClick }) => {
+  return (
+    <div>
+      <button type="button" className="anecdotes-btn"
+              data-book-data-object-id={bookDataObjectId}
+              data-book-title={bookTitle}
+              data-author={author}
+              onClick={onClick}>
+        Anecdotes
+      </button>
+    </div>
+  );
+};
+
+export const QuotesButton = ({ bookDataObjectId, bookTitle, author, onClick }) => {
+  return (
+    <div>
+      <button type="button" className="quotes-btn"
+              data-book-data-object-id={bookDataObjectId}
+              data-book-title={bookTitle}
+              data-author={author}
+              onClick={onClick}>
+        Quotes
+      </button>
+    </div>
+  );
+};
+
+
+

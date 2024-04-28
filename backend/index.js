@@ -11,6 +11,9 @@ const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
 const bookRecommendationPrompt = require('./prompts/promptBook');
+const BookData = require('./models/models-chat/BookData'); 
+const Comment = require('./models/models-chat/Comment'); 
+const BookLike = require('./models/models-chat/BookLike'); 
 const moreBooksRecommendationPrompt = require('./prompts/promptMoreBooks');
 const moreDetailsPrompt = require('./prompts/promptMoreDetails');
 const keyInsightsPrompt = require('./prompts/promptKeyInsights');
@@ -69,7 +72,6 @@ const sessionConfig = {
 
 // Use the session middleware
 app.use(session(sessionConfig));
-
 
 passportSetup(app); // Set up passport with the app
 
@@ -152,7 +154,8 @@ app.get('/api/user-info', (req, res) => {
       name: req.user.displayName,
       email: email,
       image: image,
-      role: req.user.role
+      role: req.user.role,
+      country: req.user.country
     };
 
     res.json({
@@ -450,7 +453,75 @@ io.on('connection', (socket) => {
         socket.emit('error', 'Error processing your request');
       }
     }
-  });   
+  }); 
+  
+  socket.on('book-detail', async (data) => {
+    const { message, isMoreDetails, isKeyInsights, isAnecdotes, isQuotes, bookDataObjectId, bookTitle, author } = data;  
+    // // Check message limit
+    // const now = new Date();
+
+    // if (session.user.firstMessageTimestamp === undefined || session.user.messageCount === undefined) {
+    //   session.user.firstMessageTimestamp = now;
+    //   session.user.messageCount = 0;
+    // }
+
+    // if (!session.user.firstMessageTimestamp || now - session.user.firstMessageTimestamp.getTime() > WINDOW_DURATION) {
+    //   // Reset if more than 3 hours have passed
+    //   session.user.firstMessageTimestamp = now;
+    //   session.user.messageCount = 1;
+    // } else {
+    //   // Increment message count
+    //   session.user.messageCount += 1;
+    // }
+
+    // if (session.user.messageCount > MESSAGE_LIMIT) {
+    //   const timePassed = now - session.user.firstMessageTimestamp.getTime();
+    //   const timeRemaining = WINDOW_DURATION - timePassed;
+    //   const resetTime = new Date(now.getTime() + timeRemaining);
+    
+    //   // Formatting the reset time in HH:MM format
+    //   const resetTimeString = resetTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    //   const limitMessage = `
+    //     <div style="border:1.3px solid red; background-color:#fff0f0; padding:10px; margin:10px 0; border-radius:8px; color:#444444; font-size: 0.9rem">
+    //       You have reached the message limit of 30 messages per 6 hours. Please try again after ${resetTimeString}.
+    //     </div>`;
+    
+    //   // Emit a warning message to the client and set the limitMessage as the session name
+    //   socket.emit('messageLimitReached', { content: limitMessage, sessionId: currentSessionId, isMoreDetails, isKeyInsights, isAnecdotes, isQuotes });
+    
+    //   if(!isMoreDetails && message.isFirstQuery && !isKeyInsights && !isAnecdotes && !isQuotes) {
+    //     // Update the session name with the limitMessage and save the session
+    //     const newSessionName = 'Message limit reached';
+    //     session.sessionName = newSessionName;
+    //     await session.save();
+    //     socket.emit('updateSessionName', { sessionId: session._id, sessionName: newSessionName });
+    //   }
+    //   return;
+    // }    
+
+    let completePrompt;
+    if (isMoreDetails || message.content.startsWith("Explain the book - ")) {
+      completePrompt = moreDetailsPrompt(message.content);
+    } else if (isKeyInsights) {
+      completePrompt = keyInsightsPrompt(message.content);
+    } else if (isAnecdotes) {
+      completePrompt = anecdotesPrompt(message.content);
+    } else if (isQuotes) {
+      completePrompt = quotesPrompt(message.content);
+    } 
+  
+    const messagesForGPT4 = [{ role: 'user', content: completePrompt }];
+
+    try {
+      console.log("messagesForGPT4", messagesForGPT4);
+      await openaiApi(messagesForGPT4, socket, null, null, isMoreDetails, isKeyInsights, isAnecdotes, isQuotes, bookDataObjectId, bookTitle, author, null);
+      // await session.user.save();
+    } catch (error) {
+      console.error('Error processing query:', error);
+      socket.emit('error', 'Error processing your request');
+    }
+    
+  });
 
   socket.on('disconnect', () => {
     console.log('A user disconnected');
@@ -725,6 +796,413 @@ app.post('/api/session/:sessionId/edit-message/:messageId', async (req, res) => 
   }
 });
 
+app.get('/api/distinct-genres', async (req, res) => {
+  const countryCode = req.query.country;
+  if (!countryCode) {
+    return res.status(400).json({ message: 'Country code is required' });
+  }
+
+  try {
+    // Fetch genres where the specified country has a non-null book image
+    const booksWithImages = await BookData.find({
+      [`countrySpecific.${countryCode}.bookImage`]: { $ne: null }
+    }).select('genres -_id');
+
+    // Flatten the array of genres arrays and normalize the case
+    const genresNormalized = booksWithImages
+      .flatMap(doc => doc.genres)
+      .map(genre => genre.toLowerCase());
+
+    // Get distinct genres
+    const distinctGenres = [...new Set(genresNormalized)]
+      .map(genre => genre.charAt(0).toUpperCase() + genre.slice(1));
+
+    // Sort genres
+    const sortedGenres = sortGenres(distinctGenres);
+
+    res.json({
+      message: 'Distinct genres retrieved and sorted successfully',
+      genres: sortedGenres
+    });
+  } catch (error) {
+    console.error('Server error:', error);
+    res.status(500).json({ message: 'Server error occurred while retrieving distinct genres' });
+  }
+});
+
+function sortGenres(genres) {
+  // Define a priority order for the genres, in lowercase
+  const priorityGenres = ['self-help', 'personal development', 'business', 'psychology', 'biography', 'memoir'];
+
+  // Sort genres based on the presence and order in the priorityGenres array
+  return genres.sort((a, b) => {
+    let indexA = priorityGenres.indexOf(a.toLowerCase());
+    let indexB = priorityGenres.indexOf(b.toLowerCase());
+
+    if (indexA !== -1 && indexB !== -1) {
+      return indexA - indexB;
+    } else if (indexA !== -1) {
+      return -1;
+    } else if (indexB !== -1) {
+      return 1;
+    }
+    return a.localeCompare(b, undefined, { sensitivity: 'base' });
+  });
+}
+
+app.get('/api/books', async (req, res) => {
+  const { genre, country } = req.query;
+
+  try {
+    let query = {};
+    // If the genre is 'all', we don't filter by genres at all
+    if (genre.toLowerCase() === 'all') {
+      query = {};
+    } else {
+      // Split the genre string by commas and trim whitespace
+      const genres = genre.split(',').map(g => g.trim());
+      // Use regex to allow for case-insensitive matching
+      query.genres = { $in: genres.map(g => new RegExp(`^${g}$`, 'i')) };
+    }
+
+    const books = await BookData.find(query);
+    const imageSet = new Set(); // Use a Set to track unique images
+
+    const booksWithCountryData = books.reduce((filteredBooks, book) => {
+      const countryData = book.countrySpecific[country];
+      if (countryData && countryData.bookImage) {
+        if (!imageSet.has(countryData.bookImage)) {
+          imageSet.add(countryData.bookImage);
+          filteredBooks.push({
+            _id: book._id,
+            title: book.title,
+            author: book.author,
+            previewLink: book.previewLink,
+            ...countryData
+          });
+        }
+      }
+      return filteredBooks;
+    }, []);
+
+    res.json(booksWithCountryData);
+  } catch (error) {
+    console.error('Failed to fetch books:', error);
+    res.status(500).json({ message: 'Error fetching books' });
+  }
+});
+
+
+app.get('/api/books/:bookId/:country', async (req, res) => {
+  const { bookId, country } = req.params;
+  try {
+    const book = await BookData.findById(bookId);
+    if (!book) {
+      return res.status(404).send('Book not found');
+    }
+
+    const baseResponse = {
+      bookDataObjectId: book._id,
+      title: book.title,
+      author: book.author,
+      previewLink: book.previewLink,
+      genres: book.genres
+    };
+
+    if (country && book.countrySpecific && book.countrySpecific[country]) {
+      const countryData = book.countrySpecific[country];
+      const response = {
+        ...baseResponse,
+        countrySpecific: countryData
+      };
+      return res.json(response);
+    }
+
+    // If no country-specific data is found, return general book data with a note
+    res.json({
+      ...baseResponse,
+      message: "No country-specific data available."
+    });
+  } catch (error) {
+    res.status(500). send('Server error: ' + error.message);
+  }
+});
+
+
+// Comments section:  
+
+app.get('/api/comments', async (req, res) => {
+  const { bookId } = req.query;
+  try {
+    // Fetch comments and populate user details for both comments and their replies
+    const comments = await Comment.find({ book: bookId })
+      .populate('user', 'displayName')  // Populating user details for the comment
+      .populate({
+        path: 'replies',               // Specifying the path to populate
+        populate: { path: 'user', select: 'displayName' }  // Nested population for user details in replies
+      })
+      .exec();
+
+    res.json(comments);
+  } catch (error) {
+    console.error('Failed to fetch comments:', error);
+    res.status(500).json({ message: 'Error fetching comments' });
+  }
+});
+
+app.post('/api/comments', async (req, res) => {
+  const { text, bookId, userId } = req.body;
+  try {
+    const newComment = new Comment({
+      text,
+      book: bookId,
+      user: userId,
+      replies: [],
+      likes: [],
+      dislikes: []
+    });
+
+    await newComment.save();
+
+    // After saving, populate the user field to get the displayName
+    const populatedComment = await Comment.findById(newComment._id)
+      .populate('user', 'displayName');  // Ensure that 'displayName' is the correct field you want to send back
+
+    res.status(201).json(populatedComment);
+  } catch (error) {
+    console.error('Failed to create comment:', error);
+    res.status(500).json({ message: 'Error creating comment' });
+  }
+});
+
+app.post('/api/comments/:commentId/replies', async (req, res) => {
+  const { text, userId } = req.body;
+  const { commentId } = req.params;
+
+  try {
+    const comment = await Comment.findById(commentId);
+    if (!comment) {
+      return res.status(404).send('Comment not found');
+    }
+
+    const reply = {
+      text,
+      user: userId,
+      createdAt: new Date(),
+      likes: [],
+      dislikes: []
+    };
+    comment.replies.push(reply);
+    await comment.save();
+
+    // Repopulate the entire comment to update replies with user data
+    const updatedComment = await Comment.findById(commentId)
+      .populate('user', 'displayName')
+      .populate({
+        path: 'replies',
+        populate: { path: 'user', select: 'displayName' }
+      });
+
+    res.status(201).json(updatedComment); // Send back the updated comment with populated replies
+  } catch (error) {
+    console.error('Failed to add reply:', error);
+    res.status(500).json({ message: 'Failed to add reply' });
+  }
+});
+
+// Like endpoint
+app.patch('/api/comments/:commentId/like', async (req, res) => {
+  const { userId } = req.body;
+
+  if (!mongoose.Types.ObjectId.isValid(userId)) {
+    return res.status(400).json({ message: 'Invalid user ID format' });
+  }
+
+  try {
+    const comment = await Comment.findById(req.params.commentId);
+    if (!comment) {
+      return res.status(404).json({ message: 'Comment not found' });
+    }
+
+    // Toggle like
+    const likeIndex = comment.likes.indexOf(userId);
+    if (likeIndex === -1) {
+      // Remove from dislikes if exists
+      const dislikeIndex = comment.dislikes.indexOf(userId);
+      if (dislikeIndex !== -1) {
+        comment.dislikes.splice(dislikeIndex, 1);
+      }
+      // Add to likes
+      comment.likes.push(userId);
+    } else {
+      // Remove like if already exists
+      comment.likes.splice(likeIndex, 1);
+    }
+
+    await comment.save();
+    const updatedComment = await Comment.findById(req.params.commentId)
+      .populate('user', 'displayName')
+      .populate('replies.user', 'displayName');
+
+    res.json(updatedComment);
+  } catch (error) {
+    console.error('Failed to like comment:', error);
+    res.status(500).json({ message: 'Error updating like count' });
+  }
+});
+
+// Dislike endpoint
+app.patch('/api/comments/:commentId/dislike', async (req, res) => {
+  const { userId } = req.body;
+
+  if (!mongoose.Types.ObjectId.isValid(userId)) {
+    return res.status(400).json({ message: 'Invalid user ID format' });
+  }
+
+  try {
+    const comment = await Comment.findById(req.params.commentId);
+    if (!comment) {
+      return res.status(404).json({ message: 'Comment not found' });
+    }
+
+    // Toggle dislike
+    const dislikeIndex = comment.dislikes.indexOf(userId);
+    if (dislikeIndex === -1) {
+      // Remove from likes if exists
+      const likeIndex = comment.likes.indexOf(userId);
+      if (likeIndex !== -1) {
+        comment.likes.splice(likeIndex, 1);
+      }
+      // Add to dislikes
+      comment.dislikes.push(userId);
+    } else {
+      // Remove dislike if already exists
+      comment.dislikes.splice(dislikeIndex, 1);
+    }
+
+    await comment.save();
+    const updatedComment = await Comment.findById(req.params.commentId)
+      .populate('user', 'displayName')
+      .populate('replies.user', 'displayName');
+
+    res.json(updatedComment);
+  } catch (error) {
+    console.error('Failed to dislike comment:', error);
+    res.status(500).json({ message: 'Error updating dislike count' });
+  }
+});
+
+// Like a reply and remove dislike if it exists
+app.patch('/api/comments/replies/:replyId/like', async (req, res) => {
+  const userId = req.body.userId;
+  try {
+    const comment = await Comment.findOne({"replies._id": req.params.replyId});
+    const reply = comment.replies.id(req.params.replyId);
+    const alreadyLiked = reply.likes.includes(userId);
+    const currentlyDisliked = reply.dislikes.includes(userId);
+
+    if (!alreadyLiked) {
+      reply.likes.push(userId);
+      if (currentlyDisliked) {
+        reply.dislikes = reply.dislikes.filter(id => id.toString() !== userId.toString());
+      }
+    } else {
+      reply.likes = reply.likes.filter(id => id.toString() !== userId.toString());
+    }
+
+    await comment.save();
+    res.json(reply);
+  } catch (error) {
+    console.error('Failed to like reply:', error);
+    res.status(500).json({ message: 'Error updating like count for reply' });
+  }
+});
+
+// Dislike a reply and remove like if it exists
+app.patch('/api/comments/replies/:replyId/dislike', async (req, res) => {
+  const userId = req.body.userId;
+  try {
+    const comment = await Comment.findOne({"replies._id": req.params.replyId});
+    const reply = comment.replies.id(req.params.replyId);
+    const alreadyDisliked = reply.dislikes.includes(userId);
+    const currentlyLiked = reply.likes.includes(userId);
+
+    if (!alreadyDisliked) {
+      reply.dislikes.push(userId);
+      if (currentlyLiked) {
+        reply.likes = reply.likes.filter(id => id.toString() !== userId.toString());
+      }
+    } else {
+      reply.dislikes = reply.dislikes.filter(id => id.toString() !== userId.toString());
+    }
+
+    await comment.save();
+    res.json(reply);
+  } catch (error) {
+    console.error('Failed to dislike reply:', error);
+    res.status(500).json({ message: 'Error updating dislike count for reply' });
+  }
+});
+
+// like dislike specific to main-book
+
+app.post('/api/books/:bookId/like', async (req, res) => {
+  const { userId, like } = req.body;
+  const { bookId } = req.params;
+
+  if (!userId) {
+      return res.status(400).json({ message: "User ID must be provided" });
+  }
+
+  try {
+      if (like === null) {
+          // Directly delete the document without fetching
+          await BookLike.deleteOne({ user: userId, book: bookId });
+      } else {
+          const existingLike = await BookLike.findOne({ user: userId, book: bookId });
+          if (existingLike) {
+              existingLike.like = like;
+              await existingLike.save();
+          } else {
+              // Create a new document if it does not exist and like is not null
+              const newLike = new BookLike({ user: userId, book: bookId, like });
+              await newLike.save();
+          }
+      }
+      res.json({ message: 'Your preference has been recorded' });
+  } catch (error) {
+      console.error('Error updating like/dislike status:', error);
+      res.status(500).json({ message: 'Error processing your request', details: error.message });
+  }
+});
+
+
+// In your frontend fetching logic, adjust how userLiked and userDisliked are calculated
+app.post('/api/books/:bookId/likes-dislikes', async (req, res) => {
+  const { userId } = req.body;
+  const { bookId } = req.params;
+
+  try {
+      const likesCount = await BookLike.countDocuments({ book: bookId, like: true });
+      const dislikesCount = await BookLike.countDocuments({ book: bookId, like: false });
+      const userLike = userId ? await BookLike.findOne({ book: bookId, user: userId }) : null;
+
+      const userLiked = userLike ? userLike.like === true : false;
+      const userDisliked = userLike ? userLike.like === false : false;
+
+      res.json({
+          likes: likesCount,
+          dislikes: dislikesCount,
+          userLiked,
+          userDisliked
+      }); 
+  } catch (error) {
+      console.error('Failed to fetch likes/dislikes:', error);
+      res.status(500).json({ message: 'Error fetching likes/dislikes' });
+  }
+});
+
+
 // development routes: 
 
 if (process.env.NODE_ENV === 'local') {
@@ -767,4 +1245,133 @@ if (process.env.NODE_ENV === 'local') {
     }
   });
 }
+
+if (process.env.NODE_ENV === 'local') {
+  app.get('/api/update-genres', async (req, res) => {
+    try {
+      // Fetch books without genres
+      const booksToUpdate = await BookData.find({ genres: { $exists: false } });
+
+      let updateCount = 0;
+      
+      for (const book of booksToUpdate) {
+        // Use the title and author to fetch genres
+        const genres = await openaiApi.getGenres(book.title, book.author);
+
+        // Update the book document with new genres
+        const result = await BookData.updateOne(
+          { _id: book._id },
+          { $set: { genres: genres } }
+        );
+
+        if (result.nModified > 0) updateCount++;
+      }
+
+      res.json({
+        message: 'Updated records successfully',
+        updatedCount: updateCount
+      });
+    } catch (error) {
+      console.error('Server error:', error);
+      res.status(500).json({ message: 'Server error occurred while updating the records' });
+    }
+  });
+}
+
+if (process.env.NODE_ENV === 'local') {
+  app.get('/api/populate-genres', async (req, res) => {
+    try {
+      // Fetch all books that need their genres populated
+      const booksToUpdate = await BookData.find({ genres: { $exists: false } });
+
+      let updateCount = 0;
+      
+      for (const book of booksToUpdate) {
+        // Use the title and author to fetch genres
+        const genres = await openaiApi.getGenres(book.title, book.author);
+
+        // Ensure that genres is an array before updating the book document
+        if (Array.isArray(genres)) {
+          // Update the book document with new genres
+          const result = await BookData.updateOne(
+            { _id: book._id },
+            { $set: { genres: genres } }
+          );
+
+          if (result.nModified > 0) updateCount++;
+        }
+      }
+
+      res.json({
+        message: 'Genres repopulated successfully',
+        updatedCount: updateCount
+      });
+    } catch (error) {
+      console.error('Server error:', error);
+      res.status(500).json({ message: 'Server error occurred while repopulating genres' });
+    }
+  });
+}
+
+
+
+if (process.env.NODE_ENV === 'local') {
+  app.get('/api/fix-genres-format', async (req, res) => {
+    try {
+      // Fetch books with genres formatted as nested arrays
+      const booksToUpdate = await BookData.find({ 'genres.0': { $exists: true } });
+
+      let updateCount = 0;
+      
+      for (const book of booksToUpdate) {
+        // Check if the genres field is an array and the first element is also an array
+        if (Array.isArray(book.genres) && book.genres.length > 0 && Array.isArray(book.genres[0])) {
+          // Assuming the nested array at the first index of genres is the correct array
+          const correctedGenres = book.genres[0];
+
+          // Update the book document with the corrected genres
+          const result = await BookData.updateOne(
+            { _id: book._id },
+            { $set: { genres: correctedGenres } }
+          );
+
+          if (result.nModified > 0) updateCount++;
+        }
+      }
+
+      res.json({
+        message: 'Updated genres format successfully',
+        updatedCount: updateCount
+      });
+    } catch (error) {
+      console.error('Server error:', error);
+      res.status(500).json({ message: 'Server error occurred while updating the genres format' });
+    }
+  });
+}
+
+if (process.env.NODE_ENV === 'local') {
+  app.get('/api/delete-genres', async (req, res) => {
+    try {
+      // Unset the genres field for all documents in the collection
+      const result = await BookData.updateMany(
+        {}, // empty filter means "match all documents"
+        { $unset: { genres: "" } } // remove the genres field from all documents
+      );
+  
+      res.json({
+        message: 'Genres field removed from all documents',
+        affectedCount: result.nModified
+      });
+    } catch (error) {
+      console.error('Server error:', error);
+      res.status(500).json({ message: 'Server error occurred while deleting genres field' });
+    }
+  });
+}
+
+
+
+
+
 

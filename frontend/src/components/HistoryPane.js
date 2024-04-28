@@ -5,7 +5,7 @@ import ConfirmationDialog from './ConfirmationDialog';
 
 import '../App.css';
 
-const straightLinePath = 'M15,25 L15,5';
+// const straightLinePath = 'M15,25 L15,5';
 
 const HistoryPane = forwardRef(({
   sessions, 
@@ -20,51 +20,70 @@ const HistoryPane = forwardRef(({
 }, ref) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isEntryActive, setIsEntryActive] = useState(false);
-  const [wasClosedManually, setWasClosedManually] = useState(false);
-  const lineRef = useRef(null);
+  // const [wasClosedManually, setWasClosedManually] = useState(false);
+  // const lineRef = useRef(null);
 
   const navigate = useNavigate(); 
   // const onBookGalleryClick = () => navigate('/book-gallery');
 
-  const handleMouseEnter = () => {
-    if (lineRef.current) {
-      // If pane is open, bend towards the left from the center point (15, 15)
-      // If pane is closed, bend towards the right from the center point (15, 15)
-      const newPath = isPaneOpen ? 'M15,25 L10,15 L15,5' : 'M15,25 L20,15 L15,5';
-      lineRef.current.setAttribute('d', newPath);
+  // const handleMouseEnter = () => {
+  //   if (lineRef.current) {
+  //     // If pane is open, bend towards the left from the center point (15, 15)
+  //     // If pane is closed, bend towards the right from the center point (15, 15)
+  //     const newPath = isPaneOpen ? 'M15,25 L10,15 L15,5' : 'M15,25 L20,15 L15,5';
+  //     lineRef.current.setAttribute('d', newPath);
+  //   }
+  // };
+
+  const paneRef = useRef(null);
+
+  useEffect(() => {
+    // Handles all clicks on the page to close the pane if clicked outside
+    function handleOutsideClick(event) {
+      if (paneRef.current && !paneRef.current.contains(event.target) && isPaneOpen) {
+        togglePane(); // Close the pane
+      }
     }
-  };
+
+    // Attaching the event listener to the document
+    document.addEventListener('mousedown', handleOutsideClick);
+
+    // Cleanup the event listener on component unmount
+    return () => {
+      document.removeEventListener('mousedown', handleOutsideClick);
+    };
+  }, [isPaneOpen, togglePane]);
 
   const getUserImage = () => {
     return userImage;
   };
   
-  const handleMouseLeave = () => {
-    if (lineRef.current) {
-      // Always revert to the straight line when the mouse leaves
-      lineRef.current.setAttribute('d', straightLinePath);
-    }
-  };
+  // const handleMouseLeave = () => {
+  //   if (lineRef.current) {
+  //     // Always revert to the straight line when the mouse leaves
+  //     lineRef.current.setAttribute('d', straightLinePath);
+  //   }
+  // };
   
   // Modify the handleClosePane function to toggle the arrow direction
-  const handleClosePane = () => {
-    setWasClosedManually(true); // Set to true when pane is closed manually
-    togglePane();
-    // Change the direction of the arrow based on the new pane state
-    if (lineRef.current) {
-      const newPath = isPaneOpen ? straightLinePath : 'M15,25 L20,15 L15,5';
-      lineRef.current.setAttribute('d', newPath);
-    }
-  };
+  // const handleClosePane = () => {
+  //   setWasClosedManually(true); // Set to true when pane is closed manually
+  //   togglePane();
+  //   // Change the direction of the arrow based on the new pane state
+  //   if (lineRef.current) {
+  //     const newPath = isPaneOpen ? straightLinePath : 'M15,25 L20,15 L15,5';
+  //     lineRef.current.setAttribute('d', newPath);
+  //   }
+  // };
   
-  useEffect(() => {
-    document.body.classList.toggle('history-pane-open', isPaneOpen);
+  // useEffect(() => {
+  //   document.body.classList.toggle('history-pane-open', isPaneOpen);
     
-    // Reset wasClosedManually to false when the pane is opened
-    if (isPaneOpen) {
-      setWasClosedManually(false);
-    }
-  }, [isPaneOpen]);
+  //   // Reset wasClosedManually to false when the pane is opened
+  //   if (isPaneOpen) {
+  //     setWasClosedManually(false);
+  //   }
+  // }, [isPaneOpen]);
   
 
   const dropdownRef = useRef(null);
@@ -78,6 +97,7 @@ const HistoryPane = forwardRef(({
           userEntryRef.current && !userEntryRef.current.contains(event.target)) {
         setIsDropdownOpen(false);
         setIsEntryActive(false);
+        
       }
     }
 
@@ -114,31 +134,20 @@ const HistoryPane = forwardRef(({
 
   const handleNewSessionCreation = async () => {
     navigate(`/chat`);
-    if (window.innerWidth < 760) {
+    // if (window.innerWidth < 760) {
       togglePane(); // Close the pane on smaller screens
-    }
+    // }
   };
 
-  useEffect(() => {
-    const handleResize = () => {
-      if (!wasClosedManually && window.innerWidth >= 760 && !isPaneOpen) {
-        togglePane(); // Automatically open the pane if enough space is available
-      }
-    };
-
-    window.addEventListener('resize', handleResize);
-
-    return () => window.removeEventListener('resize', handleResize);
-  }, [wasClosedManually, isPaneOpen, togglePane]);
   
   const handleSessionSelect = (sessionId) => {
     onSelectSession(sessionId); 
     setSelectedSessionId(sessionId); 
     navigate(`/chat/${sessionId}`);
   
-    if (window.innerWidth < 760) {
+    // if (window.innerWidth < 760) {
       togglePane();
-    }
+    // }
   };
   
   const categorizeSessions = (sessions) => {
@@ -201,9 +210,9 @@ const HistoryPane = forwardRef(({
   };
 
   return (
-    <div ref={ref}>
+    <div ref={paneRef}>
       <div className={`history-pane ${isPaneOpen ? '' : 'closed'}`}>
-        <button 
+        {/* <button 
           onClick={handleClosePane} 
           className={`close-pane-button ${!isPaneOpen ? 'close-pane-button-closed' : ''}`}
           onMouseEnter={handleMouseEnter}
@@ -212,7 +221,7 @@ const HistoryPane = forwardRef(({
           <svg width="30" height="25" viewBox="0 0 30 30" className="pane-line">
             <path d="M15,25 L15,5" stroke="currentColor" strokeWidth="5" fill="none" strokeLinejoin="round" strokeLinecap="round" ref={lineRef}/>
           </svg>
-        </button>
+        </button> */}
 
         <div onClick={handleNewSessionCreation} className="history-entry new-session-button">
           <span>GetBooks</span> <i className="fa-regular fa-pen-to-square"></i>

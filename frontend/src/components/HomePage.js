@@ -49,10 +49,10 @@ const HomePage = () => {
   let navigate = useNavigate();
   const carouselImages = [
     '/top_fiction_books.png',
-    '/most_romantic_book_of_all_times.png',
     '/worlds_most_influential_people_biographies.png',
     '/nail_biting_mystery_books.png',
     '/the_most_inspirational_book_of_all_time.png',
+    '/most_romantic_book_of_all_times.png',
     '/the_subtle_art_of_not_giving.png'
   ];
 

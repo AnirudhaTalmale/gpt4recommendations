@@ -3,9 +3,9 @@ import { useParams, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import { handleAnecdotesRequest, handleKeyInsightsRequest, handleMoreDetailsRequest, handleQuotesRequest, checkAuthStatus } from './CommonFunctions';
 import InputBox from './InputBox';
-import SampleQueries from './SampleQueries';
 import AnswerDisplay from './AnswerDisplay';
 import HistoryPane from './HistoryPane';
+import Home from './Home';
 import Lightbox from './Lightbox';
 import LightboxForImage from './LightboxForImage';
 import '../App.css';
@@ -18,9 +18,10 @@ import { useHandleStreamEnd, useHandleMessageLimitReached, useStreamChunkHandler
 function Chat() {
   const navigate = useNavigate();
   const [sessions, setSessions] = useState([]);
-  const [isPaneOpen, setIsPaneOpen] = useState(window.innerWidth >= 760 ? true : false);
+  const [isPaneOpen, setIsPaneOpen] = useState(false);
   let { sessionId: urlSessionId } = useParams();
   let location = useLocation(); 
+  const isHome = location.pathname === '/chat';
   const [currentSessionId, setCurrentSessionId] = useState(urlSessionId || null);
   const [selectedSessionId, setSelectedSessionId] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -127,14 +128,17 @@ function Chat() {
     const handleScroll = () => {
       setShouldAutoScroll(isUserAtBottom());
     };
-
+  
     const chatArea = chatAreaRef.current;
-    chatArea.addEventListener('scroll', handleScroll);
-
-    return () => {
-      chatArea.removeEventListener('scroll', handleScroll);
-    };
-  }, []);
+    if (chatArea) {
+      chatArea.addEventListener('scroll', handleScroll);
+  
+      return () => {
+        chatArea.removeEventListener('scroll', handleScroll);
+      };
+    }
+  }, []); // Depend on `currentSessionId` if changes to it should re-attach the listener
+  
 
   useEffect(() => {
     // Find the current session by ID
@@ -611,7 +615,6 @@ function Chat() {
     setIsLightboxForImageOpen(true);
   };
 
-  const [inputBoxHeight, setInputBoxHeight] = useState(0);
 
   // Message-question edit functionality
 
@@ -677,49 +680,47 @@ function Chat() {
           setSelectedSessionId={setSelectedSessionId}
         />
         <Header isPaneOpen={isPaneOpen} togglePane={togglePane} />
-        <div className="chat-area" ref={chatAreaRef}>
-          {location.pathname === "/chat" && (
-            <div className="chat-heading">
-              Discover Your Next Great Read!
-            </div>
-          )}
 
-          {sessions.find(session => session._id === selectedSessionId)?.messages.map((msg, index, messageArray) => {
-          const isLastMessage = index === messageArray.length - 1;
-          const isLastMessageFromAssistant = isLastMessage && msg.role === 'assistant';
-          return (
-            <AnswerDisplay
-              key={msg._id} // Assuming msg._id is a unique identifier
-              role={msg.role}
-              content={msg.content}
-              userImage={userData?.image}
-              isStreaming={isStreaming}
-              onMoreDetailsClick={wrappedHandleMoreDetailsRequest}
-              onKeyInsightsClick={wrappedHandleKeyInsightsRequest}
-              onAnecdotesClick={wrappedHandleAnecdotesRequest}
-              onQuotesClick={wrappedHandleQuotesRequest}
-              showContinueButton={showContinueButton && isLastMessageFromAssistant}
-              onContinueGenerating={onContinueGenerating}
-              onImageClick={handleImageClick}
-              sessionId={currentSessionId} // You need to pass the current session ID
-              messageId={msg._id} // Assuming each message has a unique ID
-              onEditMessage={handleEditMessage}
-            />
-            );
-          })}
-        </div>
-        {location.pathname === "/chat" && (
-            <SampleQueries
-              onSubmit={handleQuerySubmit}
-              inputBoxHeight={inputBoxHeight} // And here you pass the inputBoxHeight state down to SampleQueries
-            />
+        {isHome && userData && userData.country ? (
+          <Home userData={userData} />
+        ) : (
+          <div className="chat-area" ref={chatAreaRef}>
+            {/* {location.pathname === "/chat" && (
+              <div className="chat-heading">
+                Discover Your Next Great Read!
+              </div>
+            )} */}
+
+            {sessions.find(session => session._id === selectedSessionId)?.messages.map((msg, index, messageArray) => {
+            const isLastMessage = index === messageArray.length - 1;
+            const isLastMessageFromAssistant = isLastMessage && msg.role === 'assistant';
+            return (
+              <AnswerDisplay
+                key={msg._id} // Assuming msg._id is a unique identifier
+                role={msg.role}
+                content={msg.content}
+                userImage={userData?.image}
+                isStreaming={isStreaming}
+                onMoreDetailsClick={wrappedHandleMoreDetailsRequest}
+                onKeyInsightsClick={wrappedHandleKeyInsightsRequest}
+                onAnecdotesClick={wrappedHandleAnecdotesRequest}
+                onQuotesClick={wrappedHandleQuotesRequest}
+                showContinueButton={showContinueButton && isLastMessageFromAssistant}
+                onContinueGenerating={onContinueGenerating}
+                onImageClick={handleImageClick}
+                sessionId={currentSessionId} // You need to pass the current session ID
+                messageId={msg._id} // Assuming each message has a unique ID
+                onEditMessage={handleEditMessage}
+              />
+              );
+            })}
+          </div>
         )}
         <InputBox
           onSubmit={handleQuerySubmit}
           isLoading={isLoading}
           isStreaming={isStreaming}
           onStopStreaming={handleStopStreaming}
-          onHeightChange={setInputBoxHeight} 
           isPaneOpen={isPaneOpen} 
         />
       </div>

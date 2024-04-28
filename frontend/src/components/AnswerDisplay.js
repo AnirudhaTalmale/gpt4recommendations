@@ -1,7 +1,6 @@
 import React, { useCallback, useState, useEffect, useRef } from 'react';
 import DOMPurify from 'dompurify';
 import '../App.css';
-/* global gtag */
 
 
 function AnswerDisplay({ 
@@ -37,11 +36,6 @@ function AnswerDisplay({
     if (!isKeyInsightsClicked && onKeyInsightsClick) {
       setIsKeyInsightsClicked(true);
       onKeyInsightsClick(bookDataObjectId, bookTitle, author);
-
-      gtag('event', 'click', {
-        'event_category': 'Button Clicks',
-        'event_label': 'Key Insights'
-      });
   
       // Reset the state after a delay
       setTimeout(() => {
@@ -54,11 +48,6 @@ function AnswerDisplay({
     if (!isMoreDetailsClicked && onMoreDetailsClick) {
       setIsMoreDetailsClicked(true);
       onMoreDetailsClick(bookDataObjectId, bookTitle, author);
-
-      gtag('event', 'click', {
-        'event_category': 'Button Clicks',
-        'event_label': 'More Details'
-      });
   
       setTimeout(() => {
         setIsMoreDetailsClicked(false);
@@ -70,11 +59,6 @@ function AnswerDisplay({
     if (!isAnecdotesClicked && onAnecdotesClick) {
       setIsAnecdotesClicked(true);
       onAnecdotesClick(bookDataObjectId, bookTitle, author);
-
-      gtag('event', 'click', {
-        'event_category': 'Button Clicks',
-        'event_label': 'Anecdotes'
-      });
   
       setTimeout(() => {
         setIsAnecdotesClicked(false);
@@ -86,11 +70,6 @@ function AnswerDisplay({
     if (!isQuotesClicked && onQuotesClick) {
       setIsQuotesClicked(true);
       onQuotesClick(bookDataObjectId, bookTitle, author);
-
-      gtag('event', 'click', {
-        'event_category': 'Button Clicks',
-        'event_label': 'Quotes'
-      });
   
       setTimeout(() => {
         setIsQuotesClicked(false);
@@ -104,23 +83,11 @@ function AnswerDisplay({
       if (previewLink) {
         window.open(previewLink, '_blank');
       }
-
-      gtag('event', 'click', {
-        'event_category': 'Button Clicks',
-        'event_label': 'Preview'
-      });
   
       setTimeout(() => {
         setIsPreviewClicked(false);
       }, 3500); // Adjust the delay as needed
     }
-  };
-
-  const handleBuyNowClick = () => {
-    gtag('event', 'click', {
-      'event_category': 'Button Clicks',
-      'event_label': 'Buy Now'
-    });
   };
   
   const handleContinueGenerating = () => {
@@ -261,8 +228,6 @@ function AnswerDisplay({
           } else if (e.target.classList.contains('preview-btn')) {
             const previewLink = e.target.getAttribute('data-preview-link');
             handlePreviewClick(previewLink);
-          } else if (e.target.classList.contains('buy-now-button')) {
-            handleBuyNowClick();
           }
         }}>
           {role === 'user' && (
