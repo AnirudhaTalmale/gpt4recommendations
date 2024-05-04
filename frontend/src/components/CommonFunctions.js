@@ -113,22 +113,6 @@ export const handleMoreDetailsRequest = async (bookDataObjectId, bookTitle, auth
   }
 };
 
-export const sortBooks = (books) => {
-  return books
-      .map(book => ({
-          ...book,
-          parsedReviewCount: parseInt((book.amazonReviewCount || '0').replace(/,/g, ''), 10)
-      }))
-      .sort((a, b) => {
-          if (a.parsedReviewCount > b.parsedReviewCount) return -1;
-          if (a.parsedReviewCount < b.parsedReviewCount) return 1;
-          if (a.amazonStarRating > b.amazonStarRating) return -1;
-          if (a.amazonStarRating < b.amazonStarRating) return 1;
-          return 0;
-      });
-};
-
-
   export const checkAuthStatus = async () => {
     try {
       const authResponse = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/check-auth`, { withCredentials: true });
@@ -274,5 +258,12 @@ export const QuotesButton = ({ bookDataObjectId, bookTitle, author, onClick }) =
   );
 };
 
+export const mapCountryNameToCode = (countryName) => {
+  const countryMapping = {
+      'India': 'IN',
+      'United States': 'US'
+  };
 
+  return countryMapping[countryName] || null; // returns null if no match found
+};
 

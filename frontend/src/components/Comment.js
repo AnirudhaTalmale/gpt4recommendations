@@ -191,30 +191,34 @@ const Comment = ({ comment, fetchComments }) => {
                     </div>
                 )}
                 {commentData.replies.map(reply => (
-                    <div key={reply._id} style={{ marginLeft: '20px' }}>
-                        <div className="comment-sender">
-                            {reply.user.displayName}
-                        </div>
-                        <div className="comment-text">{reply.text}</div>
-
-                        <div className="comment-reaction">
-                            <i className={`fa ${reply.likes.includes(userData?.id) ? 'fa-solid' : 'fa-regular'} fa-thumbs-up comment-like`} onClick={() => userData && handleLikeReply(reply._id)}></i> <span className="comment-like-count">{reply.likes.length}</span>
-                            <i className={`fa ${reply.dislikes.includes(userData?.id) ? 'fa-solid' : 'fa-regular'} fa-thumbs-down comment-dislike`} onClick={() => userData && handleDislikeReply(reply._id)}></i>
-                            <button className="comment-reply-button" onClick={() => setActiveReplyId(reply._id)}>Reply</button>
-                        </div>
-                        {activeReplyId === reply._id && (
-                            <div className="reply">
-                                <textarea
-                                    value={replyText}
-                                    onChange={handleReplyInputChange}
-                                    placeholder="Add a reply..."
-                                />
-                                <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '0.4rem', marginBottom: '1rem' }}>
-                                    <button type="button" onClick={() => setActiveReplyId(null)} className="cancel-button">Cancel</button>
-                                    <button onClick={submitReply} className="comment-button">Reply</button>
-                                </div>
+                    <div key={reply._id} className="reply-container">
+                        <img src={userData?.image} alt="" className="user-avatar"/>
+                        <div>
+                            
+                            <div className="comment-sender">
+                                {reply.user.displayName}
                             </div>
-                        )}
+                            <div className="comment-text">{reply.text}</div>
+
+                            <div className="comment-reaction">
+                                <i className={`fa ${reply.likes.includes(userData?.id) ? 'fa-solid' : 'fa-regular'} fa-thumbs-up comment-like`} onClick={() => userData && handleLikeReply(reply._id)}></i> <span className="comment-like-count">{reply.likes.length}</span>
+                                <i className={`fa ${reply.dislikes.includes(userData?.id) ? 'fa-solid' : 'fa-regular'} fa-thumbs-down comment-dislike`} onClick={() => userData && handleDislikeReply(reply._id)}></i>
+                                <button className="comment-reply-button" onClick={() => setActiveReplyId(reply._id)}>Reply</button>
+                            </div>
+                            {activeReplyId === reply._id && (
+                                <div className="reply">
+                                    <textarea
+                                        value={replyText}
+                                        onChange={handleReplyInputChange}
+                                        placeholder="Add a reply..."
+                                    />
+                                    <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '0.4rem', marginBottom: '1rem' }}>
+                                        <button type="button" onClick={() => setActiveReplyId(null)} className="cancel-button">Cancel</button>
+                                        <button onClick={submitReply} className="comment-button">Reply</button>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
                     </div>
                     ))}
                 </div>

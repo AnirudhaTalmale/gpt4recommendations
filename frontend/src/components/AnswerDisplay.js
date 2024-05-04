@@ -101,7 +101,7 @@ function AnswerDisplay({
     }
   };  
 
-  const messageAnswerRef = useRef(null);
+  const messageAnswerRef = useRef(null);  
 
   useEffect(() => {
     // Check the number of buttons inside the message-answer after each render
@@ -228,7 +228,7 @@ function AnswerDisplay({
           } else if (e.target.classList.contains('preview-btn')) {
             const previewLink = e.target.getAttribute('data-preview-link');
             handlePreviewClick(previewLink);
-          }
+          } 
         }}>
           {role === 'user' && (
             <>

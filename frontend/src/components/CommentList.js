@@ -73,7 +73,7 @@ const CommentList = ({ bookId, toggleComments }) => {
                 <span className="comments-count-heading">Comments</span>
                 <span className="comments-count">{comments.length}</span>
             </div>
-            <i class="fa-solid fa-x" onClick={handleToggleComments}></i>
+            <i className="fa-solid fa-x" onClick={handleToggleComments}></i>
         </div>
       <div className="comment-input-form-container" style={{ display: 'flex', alignItems: 'start' }}>
         <img src={userData?.image} alt="" className="user-avatar"/>

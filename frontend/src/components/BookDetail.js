@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { sortBooks } from './CommonFunctions';
 import { BuyNowButton, PreviewButton, MoreDetailsButton, KeyInsightsButton, AnecdotesButton, QuotesButton } from './CommonFunctions';
 import { handleAnecdotesRequest, handleKeyInsightsRequest, handleMoreDetailsRequest, handleQuotesRequest } from './CommonFunctions';
 import Lightbox from './Lightbox';
@@ -9,7 +8,7 @@ import axios from 'axios';
 import { useStreamChunkHandler } from './CommonHooks'; 
 import CommentList from './CommentList';
 import { checkAuthStatus } from './CommonFunctions';
-import HeaderWithBackButton from './HeaderWithBackButton'; 
+import HeaderWithHomeButton from './HeaderWithHomeButton'; 
 
 
 function BookDetail() {
@@ -66,6 +65,50 @@ function BookDetail() {
         }
       });
     }, [setUserData]);
+
+    const saveSearchHistory = useCallback(async () => {
+      if (!userData || !userData.id || !bookId) {
+        console.log('Missing user data or book ID');
+        return;
+      }
+    
+      try {
+        await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/saveSearchHistory`, {
+          userId: userData.id,
+          bookId: bookId
+        });
+        // console.log('Search history updated successfully');
+      } catch (error) {
+        console.error('Failed to update search history:', error);
+      }
+    }, [userData, bookId]);  // Make sure these dependencies are correct and necessary
+    
+
+    const saveHistoryCalled = useRef(false);
+
+    useEffect(() => {
+      // console.log("Effect check on bookId change");
+      // Reset the saveHistoryCalled flag whenever the bookId changes
+      saveHistoryCalled.current = false;
+    }, [bookId]); // Add bookId to dependency array
+    
+    useEffect(() => {
+      // console.log("Effect run check");
+      if (userData && userData.id && bookId && !saveHistoryCalled.current) {
+        // console.log("Saving search history");
+        saveSearchHistory(); // Call this function to save the history
+        saveHistoryCalled.current = true; // Set this flag here after calling saveSearchHistory
+      }
+    }, [userData, bookId, saveSearchHistory]); // Include bookId to monitor changes
+    
+    // Cleanup on component unmount or bookId change
+    useEffect(() => {
+      return () => {
+        // console.log("Cleaning up...");
+        saveHistoryCalled.current = false;
+      };
+    }, [bookId]); // Ensures that saveHistoryCalled is reset when the bookId changes
+    
     
     const handleStopStreaming = useCallback(async () => {
         try {
@@ -136,19 +179,25 @@ function BookDetail() {
     }
   }, [isLightboxOpen, isUserAtBottomLightbox]);
 
-    const fetchSimilarBooks = useCallback(async (genres, country) => {
-        try {
-            const url = `${process.env.REACT_APP_BACKEND_URL}/api/books?genre=${encodeURIComponent(genres)}&country=${encodeURIComponent(country)}`;
-            const response = await fetch(url);
-            const data = await response.json();
+  const fetchSimilarBooks = useCallback(async (genres, countryCode) => {
+    // Adding check for userData being null or undefined
+    if (!genres || !countryCode || !userData || !userData.id) {
+      return;
+    }
 
-            const filteredBooks = data.filter(book => book._id !== bookId);
-            const sortedSimilarBooks = sortBooks(filteredBooks); // Apply the sorting function
-            setSimilarBooks(sortedSimilarBooks);
-        } catch (error) {
-            console.error('Failed to fetch similar books', error);
-        }
-    }, [bookId]);
+    try {
+        const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/books`, {
+          genre: genres,  // Assuming genres is an array of strings
+          countryCode: countryCode,
+          userId: userData.id  // Passing the user ID for context or authorization
+        });
+        const filteredBooks = response.data.filter(book => book._id !== bookId);
+        setSimilarBooks(filteredBooks);
+    } catch (error) {
+        console.error('Failed to fetch similar books', error);
+    }
+  }, [bookId, userData]);  // Notice userData instead of userData.id to capture the whole object
+
 
     // Adjust fetchBookDetails to include fetchSimilarBooks as a stable dependency
     const fetchBookDetails = useCallback(async () => {
@@ -457,7 +506,7 @@ function BookDetail() {
 
     return (
       <div>
-        <HeaderWithBackButton />
+        <HeaderWithHomeButton />
       
         <div className="book-detail">
             <Lightbox
@@ -534,7 +583,7 @@ function BookDetail() {
                   <button className={`dislike-button ${userDisliked ? 'disliked' : ''}`} onClick={handleDislike}>
                       <i className={`fa ${userDisliked ? 'fa-solid' : 'fa-regular'} fa-thumbs-down`}></i>
                   </button>
-              </div>
+                </div>
               
               <button className="comment-preview-button" onClick={toggleComments} style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                 {/* Line 1: Comments Count */}

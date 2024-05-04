@@ -19,7 +19,7 @@ const bookSchema = new Schema({
       amazonReviewCount: String
     }
   },
-  genres: [{ type: String }],
+  genres: [{ type: String, required: true }]
 });
 
 module.exports = mongoose.model('BookData', bookSchema);

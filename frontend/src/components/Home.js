@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
-import { sortBooks } from './CommonFunctions'; // Adjust the path as necessary
+import { mapCountryNameToCode } from './CommonFunctions';
+import axios from 'axios';
 
 const GenreBar = ({ genres, onSelectGenre, selectedGenre }) => {
     return (
@@ -16,17 +17,6 @@ const GenreBar = ({ genres, onSelectGenre, selectedGenre }) => {
     );
 };
 
-
-export const mapCountryNameToCode = (countryName) => {
-    const countryMapping = {
-      'India': 'IN',
-      'United States': 'US'
-    };
-  
-    return countryMapping[countryName] || null; // returns null if no match found
-  };
-  
-
 const Home = ({ userData }) => {
     const [genres, setGenres] = useState([]);
     const [books, setBooks] = useState([]);
@@ -40,15 +30,18 @@ const Home = ({ userData }) => {
         }
         
         try {
-            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/distinct-genres?country=${encodeURIComponent(countryCode)}`);
-            const data = await response.json();
+            const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/distinct-genres`, {
+                userId: userData.id, 
+                country: countryCode
+            });
+            const data = response.data;
             setGenres(['All', ...data.genres]); // Prepend 'All' to the list of genres
         } catch (error) {
             console.error('Failed to fetch genres', error);
         }
-    }, [userData.country]);
+    }, [userData.id, userData.country]);
 
-    const fetchBooks = useCallback(async (genre) => {
+    const fetchBooks = useCallback(async (genre = 'All') => {
         setSelectedGenre(genre); // Update the selected genre
         const countryCode = mapCountryNameToCode(userData.country);
         if (!countryCode) {
@@ -57,27 +50,22 @@ const Home = ({ userData }) => {
         }
         
         try {
-            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/books?genre=${encodeURIComponent(genre)}&country=${encodeURIComponent(countryCode)}`);
-            const data = await response.json();
-            const sortedBooks = sortBooks(data); // Use the utility function to sort books
-            setBooks(sortedBooks);
+            console.log(genre, countryCode);
+            const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/books`, {
+                genre: genre,
+                countryCode: countryCode,
+                userId: userData.id  // Passing userId in the body
+            });
+            setBooks(response.data);
         } catch (error) {
             console.error('Failed to fetch books', error);
         }
-    }, [userData.country]);
+    }, [userData.id, userData.country]); 
 
-
-    // Fetch genres when the component mounts
     useEffect(() => {
         fetchGenres();
-    }, [fetchGenres]);
-
-    // Fetch books for 'All' when genres are set
-    useEffect(() => {
-        if (genres.length > 0) {
-            fetchBooks('All');
-        }
-    }, [genres, fetchBooks]);
+        fetchBooks(); // Fetch all books when component mounts
+    }, [fetchGenres, fetchBooks]);
 
     const renderStarRating = (rating) => {
         let stars = [];

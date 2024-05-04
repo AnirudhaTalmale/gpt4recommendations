@@ -12,6 +12,7 @@ const http = require('http');
 const { Server } = require('socket.io');
 const bookRecommendationPrompt = require('./prompts/promptBook');
 const BookData = require('./models/models-chat/BookData'); 
+const SearchHistory = require('./models/models-chat/SearchHistory'); 
 const Comment = require('./models/models-chat/Comment'); 
 const BookLike = require('./models/models-chat/BookLike'); 
 const moreBooksRecommendationPrompt = require('./prompts/promptMoreBooks');
@@ -796,29 +797,99 @@ app.post('/api/session/:sessionId/edit-message/:messageId', async (req, res) => 
   }
 });
 
-app.get('/api/distinct-genres', async (req, res) => {
-  const countryCode = req.query.country;
+// Book Details endpoints
+
+const getPriorityGenres = async (userId) => {
+  try {
+    // Validate userId format
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      throw new Error('Invalid userId format');
+    }
+
+    const oneMonthAgo = new Date();
+    oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
+
+    const preferredGenres = await SearchHistory.aggregate([
+      { $match: { user: new mongoose.Types.ObjectId(userId), timestamp: { $gte: oneMonthAgo } } },
+      { $addFields: { normalizedGenre: { $toLower: "$genre" } } },
+      { $group: { _id: "$normalizedGenre", count: { $sum: 1 } } },
+      { $match: { count: { $gte: 10 } } },
+      { $sort: { count: -1 } }
+    ]);
+
+    const userPreferredGenres = preferredGenres.map(item => item._id);
+
+    // Define a base priority order for genres
+    const basePriorityGenres = ['self-help', 'personal development', 'business', 'psychology', 'biography', 'memoir'];
+    const uniqueBasePriorityGenres = basePriorityGenres.filter(genre => !userPreferredGenres.includes(genre));
+
+    // Combine userPreferredGenres with the filtered basePriorityGenres
+    const priorityGenres = userPreferredGenres.concat(uniqueBasePriorityGenres);
+
+    return priorityGenres;
+  } catch (error) {
+    console.error('Error fetching preferred genres:', error);
+    throw error;
+  }
+};
+
+function getNonPriorityGenres(genres, priorityGenres) {
+  // Filter out non-priority genres and maintain their original order
+  return genres.filter(genre => !priorityGenres.includes(genre.toLowerCase()));
+}
+
+async function getDistinctGenres(countryCode) {
   if (!countryCode) {
-    return res.status(400).json({ message: 'Country code is required' });
+    throw new Error('Country code is required');
   }
 
+  // Fetch genres where the specified country has a non-null book image
+  const booksWithImages = await BookData.find({
+    [`countrySpecific.${countryCode}.bookImage`]: { $ne: null }
+  }).select('genres -_id');
+
+  // Flatten the array of genres arrays and normalize the case
+  const genresNormalized = booksWithImages
+    .flatMap(doc => doc.genres)
+    .map(genre => genre.toLowerCase());
+
+  // Get distinct genres and capitalize the first letter
+  return [...new Set(genresNormalized)]
+    .map(genre => genre.charAt(0).toUpperCase() + genre.slice(1));
+}
+
+function sortGenres(genres, priorityGenres) {
+  // Filter and sort only the priority genres
+  const sortedPriorityGenres = genres.filter(genre => priorityGenres.includes(genre.toLowerCase()))
+                                     .sort((a, b) => {
+                                       let indexA = priorityGenres.indexOf(a.toLowerCase());
+                                       let indexB = priorityGenres.indexOf(b.toLowerCase());
+                                       return indexA - indexB;
+                                     });
+
+  // Filter out non-priority genres and maintain their original order
+  const nonPriorityGenres = getNonPriorityGenres(genres, priorityGenres);
+
+  // Concatenate the sorted priority genres with the original order non-priority genres
+  return sortedPriorityGenres.concat(nonPriorityGenres);
+}
+
+// Genre feed creation logic:
+// 1. To consider last 1 month time frame
+// 2. Final order = preferred + non-preferred
+// 3. No ordering for non-preferred
+// 4. For preferred, we should order it by the number of entries in the history.
+//     1. Minimum number of entries should be 10
+
+app.post('/api/distinct-genres', async (req, res) => {
+  const userId = req.body.userId;
+  // console.log("userId is", userId); 
+  const countryCode = req.body.country;
+
   try {
-    // Fetch genres where the specified country has a non-null book image
-    const booksWithImages = await BookData.find({
-      [`countrySpecific.${countryCode}.bookImage`]: { $ne: null }
-    }).select('genres -_id');
-
-    // Flatten the array of genres arrays and normalize the case
-    const genresNormalized = booksWithImages
-      .flatMap(doc => doc.genres)
-      .map(genre => genre.toLowerCase());
-
-    // Get distinct genres
-    const distinctGenres = [...new Set(genresNormalized)]
-      .map(genre => genre.charAt(0).toUpperCase() + genre.slice(1));
-
-    // Sort genres
-    const sortedGenres = sortGenres(distinctGenres);
+    const distinctGenres = await getDistinctGenres(countryCode);
+    const priorityGenres = await getPriorityGenres(userId);
+    const sortedGenres = sortGenres(distinctGenres, priorityGenres);
 
     res.json({
       message: 'Distinct genres retrieved and sorted successfully',
@@ -830,68 +901,117 @@ app.get('/api/distinct-genres', async (req, res) => {
   }
 });
 
-function sortGenres(genres) {
-  // Define a priority order for the genres, in lowercase
-  const priorityGenres = ['self-help', 'personal development', 'business', 'psychology', 'biography', 'memoir'];
+async function fetchAndProcessBooks(query, countryCode) {
+  try {
+    query[`countrySpecific.${countryCode}.bookImage`] = { $exists: true };
+    const books = await BookData.find(query);
 
-  // Sort genres based on the presence and order in the priorityGenres array
-  return genres.sort((a, b) => {
-    let indexA = priorityGenres.indexOf(a.toLowerCase());
-    let indexB = priorityGenres.indexOf(b.toLowerCase());
+    const imageSet = new Set();
+    let allBooks = [];
 
-    if (indexA !== -1 && indexB !== -1) {
-      return indexA - indexB;
-    } else if (indexA !== -1) {
-      return -1;
-    } else if (indexB !== -1) {
-      return 1;
-    }
-    return a.localeCompare(b, undefined, { sensitivity: 'base' });
-  });
+    books.forEach(book => {
+      const countryData = book.countrySpecific[countryCode];
+      if (countryData && !imageSet.has(countryData.bookImage)) {
+        imageSet.add(countryData.bookImage);
+        const reviewCount = parseInt((countryData.amazonReviewCount || '0').replace(/,/g, ''), 10);
+        const bookData = {
+          _id: book._id,
+          title: book.title,
+          author: book.author,
+          previewLink: book.previewLink,
+          reviewCount: reviewCount,
+          bookImage: countryData.bookImage,
+          ...countryData
+        };
+        allBooks.push(bookData);
+      }
+    });
+
+    allBooks.sort((a, b) => b.reviewCount - a.reviewCount);
+    return allBooks;
+  } catch (error) {
+    console.error("Error processing books:", error);
+    throw error; // Optionally rethrow to handle further up, or handle differently here
+  }
 }
 
-app.get('/api/books', async (req, res) => {
-  const { genre, country } = req.query;
+// Feed creation logic for genre called 'All': 
+// 1. To consider last 1 month time frame
+// 2. To consider a genre as preferred genre only if it is searched at least 10 times in last 1 month
+// 3. Arrange the preferred genres in the decreasing order of searches
+// 4. For each genre, the corresponding books should be ordered in decreasing order of review count
+// 5. Then in round robin fashion, starting from most preferred genre, we will start picking up the books
+// 6. This way we will get preferred books
+// 7. For non-preferred books, we will simply sort them by decreasing order of review count
+// 8. Final order = preferred books followed by non-preferred books
+
+app.post('/api/books', async (req, res) => {
+  const { genre, countryCode, userId } = req.body;
+
+  // console.log("Received genre:", genre);  // Log the received genre
+
+  if (typeof genre !== 'string') {
+    console.error('Genre is not a string:', genre);
+    return res.status(400).json({ message: 'Genre must be a string' });
+  }
 
   try {
-    let query = {};
-    // If the genre is 'all', we don't filter by genres at all
     if (genre.toLowerCase() === 'all') {
-      query = {};
-    } else {
-      // Split the genre string by commas and trim whitespace
-      const genres = genre.split(',').map(g => g.trim());
-      // Use regex to allow for case-insensitive matching
-      query.genres = { $in: genres.map(g => new RegExp(`^${g}$`, 'i')) };
-    }
+      if (userId && mongoose.Types.ObjectId.isValid(userId)) {
+        const distinctGenres = await getDistinctGenres(countryCode);
+        const priorityGenres = await getPriorityGenres(userId);
+        const nonPriorityGenres = getNonPriorityGenres(distinctGenres, priorityGenres);
+        // console.log("nonPriorityGenres is ", nonPriorityGenres);
 
-    const books = await BookData.find(query);
-    const imageSet = new Set(); // Use a Set to track unique images
+        const imageSet = new Set();
+        let booksByGenre = [];
 
-    const booksWithCountryData = books.reduce((filteredBooks, book) => {
-      const countryData = book.countrySpecific[country];
-      if (countryData && countryData.bookImage) {
-        if (!imageSet.has(countryData.bookImage)) {
-          imageSet.add(countryData.bookImage);
-          filteredBooks.push({
-            _id: book._id,
-            title: book.title,
-            author: book.author,
-            previewLink: book.previewLink,
-            ...countryData
-          });
+        // Fetch books for each priority genre
+        for (const genre of priorityGenres) {
+          // console.log("Processing genre:", genre);
+          const regexGenre = new RegExp(`^${genre}$`, 'i');
+          const booksForGenre = await fetchAndProcessBooks({ genres: { $in: [regexGenre] } }, countryCode);
+          booksByGenre.push(booksForGenre.filter(book => !imageSet.has(book.bookImage)).map(book => {
+            imageSet.add(book.bookImage);
+            return book;
+          }));
         }
-      }
-      return filteredBooks;
-    }, []);
 
-    res.json(booksWithCountryData);
+        // Apply round-robin distribution to priority books
+        let allBooks = [];
+        let maxBooks = Math.max(...booksByGenre.map(books => books.length));
+        for (let i = 0; i < maxBooks; i++) {
+          for (let books of booksByGenre) {
+            if (i < books.length) {
+              allBooks.push(books[i]);
+            }
+          }
+        }
+
+        // Fetch and deduplicate non-priority books
+        const regexNonPriorityGenres = nonPriorityGenres.map(g => new RegExp(`^${g}$`, 'i'));
+        const nonPriorityBooks = await fetchAndProcessBooks({ genres: { $in: regexNonPriorityGenres } }, countryCode);
+        const filteredNonPriorityBooks = nonPriorityBooks.filter(book => !imageSet.has(book.bookImage));
+
+        // Combine priority and non-priority books
+        res.json([...allBooks, ...filteredNonPriorityBooks]);
+      } else {
+        res.json(await fetchAndProcessBooks({}, countryCode));
+      }
+    } else {
+      // Split the genre string by commas, trim whitespace and use regex for case-insensitive matching
+      const genres = genre.split(',').map(g => g.trim());
+      console.log("genres", genres);
+      const regexGenres = genres.map(g => new RegExp(`^${g}$`, 'i'));
+      console.log("regexGenres", regexGenres);
+      const booksWithCountryData = await fetchAndProcessBooks({ genres: { $in: regexGenres } }, countryCode, null, true);
+      res.json(booksWithCountryData);
+    }
   } catch (error) {
     console.error('Failed to fetch books:', error);
     res.status(500).json({ message: 'Error fetching books' });
   }
 });
-
 
 app.get('/api/books/:bookId/:country', async (req, res) => {
   const { bookId, country } = req.params;
@@ -927,7 +1047,6 @@ app.get('/api/books/:bookId/:country', async (req, res) => {
     res.status(500). send('Server error: ' + error.message);
   }
 });
-
 
 // Comments section:  
 
@@ -979,8 +1098,6 @@ app.get('/api/comments/preview', async (req, res) => {
     res.status(500).json({ message: 'Error fetching comment count' });
   }
 });
-
-
 
 app.post('/api/comments', async (req, res) => {
   const { text, bookId, userId } = req.body;
@@ -1233,6 +1350,38 @@ app.post('/api/books/:bookId/likes-dislikes', async (req, res) => {
   }
 });
 
+app.post('/api/saveSearchHistory', async (req, res) => {
+  const { userId, bookId } = req.body;
+
+  try {
+    // Find the user and book data
+    const user = await User.findById(userId);
+    const book = await BookData.findById(bookId);
+
+    if (!user || !book) {
+      return res.status(404).send('User or Book not found');
+    }
+
+    // Create a new SearchHistory document for each genre from the book
+    const promises = book.genres.map(genre => {
+      return new SearchHistory({
+        user: userId,
+        userName: user.displayName,
+        bookTitle: book.title,
+        genre: genre,
+        timestamp: new Date() // Adds the current timestamp
+      }).save();
+    });
+
+    // Wait for all SearchHistory documents to be saved
+    await Promise.all(promises);
+
+    res.status(200).send('Search history updated successfully');
+  } catch (error) {
+    console.error('Error updating search history:', error);
+    res.status(500).send('Internal server error');
+  }
+});
 
 // development routes: 
 

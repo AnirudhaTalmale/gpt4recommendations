@@ -4,6 +4,7 @@ require('dotenv').config();
 const openai = new OpenAI(process.env.OPENAI_API_KEY);
 const axios = require('axios');
 const BookData = require('./models/models-chat/BookData'); 
+const SearchHistory = require('./models/models-chat/SearchHistory'); 
 const BookDataErrorLog = require('./models/models-chat/BookDataErrorLog');
 const SearchMismatchLog = require('./models/models-chat/SearchMismatchLog');
 const redisClient = require('./redisClient');
@@ -38,9 +39,20 @@ function createPreviewButtonHtml(previewLink) {
   return `<div><button type="button" class="preview-btn" ${buttonStyles} ${dataAttribute}>Preview</button></div>`;
 }
 
-function createBookInfoHtml(bookTitle, author, amazonStarRating, amazonReviewCount) {
+function mapCountryNameToCode(countryName) {
+  const countryMapping = {
+      'India': 'IN',
+      'United States': 'US'
+  };
 
-  let bookInfoHtml = `<div class="book-info">
+  return countryMapping[countryName] || null; // returns null if no match found
+}
+
+function createBookInfoHtml(bookTitle, author, amazonStarRating, amazonReviewCount, userCountry, bookDataObjectId) {
+  const countryCode = mapCountryNameToCode(userCountry);
+  const link = `${process.env.FRONTEND_URL}/books/${bookDataObjectId}/${countryCode}`;
+
+  let bookInfoHtml = `<a href="${link}" style="text-decoration: none; color: inherit;"><div class="book-info">
       <strong class="book-title">${bookTitle}</strong>`;
 
   // If author exists, add author information
@@ -78,7 +90,7 @@ function createBookInfoHtml(bookTitle, author, amazonStarRating, amazonReviewCou
   }
 
   // Close the book-info div
-  bookInfoHtml += `</div>`;
+  bookInfoHtml += `</div></a>`;
 
   return bookInfoHtml;
 }
@@ -271,6 +283,7 @@ function createBookDetails(book, countrySpecificData) {
     bookDataObjectId: book._id.toString(),
     title: book.title,
     author: book.author,
+    genres: book.genres,
     bookImage: countrySpecificData.bookImage,
     previewLink: book.previewLink,
     amazonLink: countrySpecificData.amazonLink,
@@ -302,7 +315,7 @@ function updateBookWithAmazonData(book, amazonData, countryKey, title, author) {
   book.countrySpecific[countryKey] = countrySpecificData;
 }
 
-function createNewBook(title, author, amazonData, googleData, countryKey) {
+function createNewBook(title, author, amazonData, googleData, countryKey, genres) {
   const fallbackAmazonLink = `https://www.amazon.${countryKey === 'IN' ? 'in' : 'com'}/s?k=${encodeURIComponent(`${title.trim()} by ${author.trim()}`)}`;
   return new BookData({
     title,
@@ -315,7 +328,8 @@ function createNewBook(title, author, amazonData, googleData, countryKey) {
         amazonStarRating: amazonData.amazonStarRating,
         amazonReviewCount: amazonData.amazonReviewCount
       }
-    }
+    },
+    genres
   });
 }
 
@@ -352,7 +366,8 @@ const getBookData = async (title, author, userCountry, bookDataObjectId = '') =>
       
       const amazonData = await getAmazonBookData(title, author, userCountry);
       const googleData = await getGoogleBookData(title, author);
-      existingBook = createNewBook(title, author, amazonData, googleData, countryKey);
+      const genres = await openaiApi.getGenres(title, author);
+      existingBook = createNewBook(title, author, amazonData, googleData, countryKey, genres);
     }
 
     await existingBook.save();
@@ -376,9 +391,36 @@ const getBookData = async (title, author, userCountry, bookDataObjectId = '') =>
     // Save the error log asynchronously without waiting for it to finish
     errorLogEntry.save().catch(logError => console.error('Error logging to BookDataErrorLog:', logError));
 
-    return { bookDataObjectId: '', title: '', author: '', bookImage: '', previewLink: '', amazonLink: '', amazonStarRating: 'Unknown', amazonReviewCount: 'Unknown' };
+    return {
+      bookDataObjectId: '',
+      title: '',
+      author: '',
+      bookImage: '',
+      previewLink: '',
+      amazonLink: '',
+      amazonStarRating: 'Unknown',
+      amazonReviewCount: 'Unknown',
+      genres: []  // Ensuring genres is included even in error scenarios
+    };    
   }
 };
+
+async function saveSearchHistory(session, genres, bookTitle) {
+  try {
+    for (const genre of genres) {
+      const newSearchHistory = new SearchHistory({
+        user: session.user,
+        userName: session.user.displayName,
+        bookTitle,  
+        genre: genre,
+        timestamp: new Date()  // Adds the current timestamp
+      });
+      await newSearchHistory.save();
+    }
+  } catch (error) {
+    console.error("Failed to save search history:", error);
+  }
+}
 
 function createBuyNowButtonHtml(link, buttonText = 'Buy Now') {
   return `<div><a href="${link}" target="_blank"><button class="buy-now-button">${buttonText}</button></a></div>`;
@@ -423,7 +465,7 @@ const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, is
 
     if (isKeyInsights || isAnecdotes || isQuotes || isMoreDetails) {
       const { bookImage, amazonLink, amazonStarRating, amazonReviewCount } = await getBookData(bookTitle, author, userCountry, bookDataObjectId);
-      const bookInfoHtml = createBookInfoHtml(bookTitle, author, amazonStarRating, amazonReviewCount);
+      const bookInfoHtml = createBookInfoHtml(bookTitle, author, amazonStarRating, amazonReviewCount, userCountry, bookDataObjectId);
       let imageDiv = '';
       if (bookImage) {
         imageDiv = `<div><img src="${bookImage}" alt=""></div>`;
@@ -447,7 +489,9 @@ const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, is
           let bookTitleMatch = pausedEmit.match(/#(?:\d+\.\s)?(.*?)#/);
           const bookTitleWithAuthor = bookTitleMatch ? bookTitleMatch[1] : "";
           const { bookTitle, author } = parseBookTitle(bookTitleWithAuthor);
-          const { bookDataObjectId, bookImage, previewLink, amazonLink, amazonStarRating, amazonReviewCount } = await getBookData(bookTitle, author, userCountry);
+          const { bookDataObjectId, bookImage, previewLink, amazonLink, amazonStarRating, amazonReviewCount, genres } = await getBookData(bookTitle, author, userCountry);
+          
+          saveSearchHistory(session, genres, bookTitle);
           const buyNowButtonHtml = createBuyNowButtonHtml(amazonLink);
 
           let imageSource = bookImage;
@@ -473,7 +517,7 @@ const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, is
             pausedEmit = pausedEmit.replace(bookTitleMatch[0], bookTitleMatch[0] + contentDiv);
           }
 
-          const bookInfoHtml = createBookInfoHtml(bookTitle, author, amazonStarRating, amazonReviewCount);
+          const bookInfoHtml = createBookInfoHtml(bookTitle, author, amazonStarRating, amazonReviewCount, userCountry, bookDataObjectId);
           pausedEmit = pausedEmit.replace(bookTitleMatch[0], bookInfoHtml);
           pausedEmit = pausedEmit.replace(/#/g, '');
                     
@@ -581,7 +625,7 @@ openaiApi.getSummary = async (text) => {
     console.error('Error getting summary:', error);
     return "Brief Summary";
   }
-};
+};      
 
 openaiApi.getGenres = async (title, author) => {
   try {

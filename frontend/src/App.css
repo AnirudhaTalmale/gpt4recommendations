@@ -218,6 +218,10 @@ body:not(.history-pane-open) .chat-area {
   border-radius: 50%;
 }
 
+.reply-container {
+  display: flex; /* Activates Flexbox */
+  align-items: flex-start; /* Aligns items at the top of the container */
+}
 
 .comment-reaction {
   margin-bottom: 1.5rem;
@@ -300,6 +304,9 @@ body:not(.history-pane-open) .chat-area {
   }
 }
 
+.main-book {
+  /* border: 1px solid green; */
+}
 
 .main-book-container {
   margin-left: 0;      /* Aligns the container to the left */
@@ -307,6 +314,7 @@ body:not(.history-pane-open) .chat-area {
   width: 22rem;        /* Fixed width as before */
   height: auto;        /* Height automatically adjusts */
   margin-top: 1rem;    /* Keeps top margin */
+  /* border: 1px solid green; */
 }
 
 .book-buttons {
@@ -327,7 +335,7 @@ body:not(.history-pane-open) .chat-area {
   background-color: rgb(246, 246, 246);
   border-radius: 2rem; /* rounded corners for the container */
   padding: 0.4rem;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
 }
 
 .like-dislike-buttons button {
@@ -398,7 +406,7 @@ body:not(.history-pane-open) .chat-area {
   flex: none;
   overflow-x: auto;
   white-space: nowrap;
-  padding: 15px 10px 10px 10px;
+  padding: 15px 10px 15px 10px;
   position: sticky;
   top: 0;
   background-color: white;
@@ -437,9 +445,10 @@ body:not(.history-pane-open) .chat-area {
 .book-list {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(11.5rem, 1fr)); /* Creates a responsive grid with each column minimum 200px wide */
-  gap: 2.8rem; /* Space between books */
-  padding: 20px 0;
+  gap: 2.05rem; /* Space between books */
+  padding: 10px 0 10px 0;
   flex: 1;
+  /* border: 1px solid red; */
 }
 
 .book-item {
@@ -447,18 +456,24 @@ body:not(.history-pane-open) .chat-area {
   flex-direction: column;/* Center content horizontally */
   gap: 8px;
   padding: 0px;
-  padding-bottom: 3.5rem;
+  margin-bottom: 0rem;
   background-color: #fff;
   border-radius: 8px;
-  max-height: 20rem; 
+  max-height: 23rem; 
+  max-width: 12rem;
   /* border: 1px solid green; */
+}
+
+.main-book .book-item {
+  /* border: 1px solid green; */
+  margin-bottom: 1.5rem;
 }
 
 .book-item img {
   width: 100%; /* Make image fill the container */
   height: auto;
-  max-height: 17rem;
-  min-height: 17rem; /* Limit image height */
+  max-height: 15rem;
+  min-height: 15rem; /* Limit image height */
 }
 
 /* Additional styling for text content */
@@ -1736,7 +1751,10 @@ body:not(.history-pane-open) .input-area {
   color: #0D0D0D;
 }
 
-
+.book-info {
+  cursor: pointer; 
+  /* border: 1px solid green; */
+}
 
 .message-icon {
   margin-right: 0.8rem; 
@@ -2228,6 +2246,17 @@ section-privacy-policy ul {
 
 section-privacy-policy li strong {
   color: #333;
+}
+
+/* header with home button */
+
+.home-button {
+  background: none;
+  border: none;
+  font-size: 1.3rem;
+  color: rgb(62, 62, 62);
+  padding: 0.55rem 1rem 0.55rem 1.4rem;
+  cursor: pointer;
 }
 
 /* header with back button */
