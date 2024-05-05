@@ -354,26 +354,25 @@ function BookDetail() {
         return <div>No country-specific data available.</div>;
     }
 
-    
-
     const handleQuerySubmit = async (query, isMoreDetails = false, bookDataObjectId = null, bookTitle = null, author = null, moreBooks = false, isKeyInsights = false, isAnecdotes = false, isQuotes = false) => {
+      if (userData && userData.id) {
         socket.emit('book-detail', {
-        message: {
-            role: 'user',
-            content: query
-        },
-        isMoreDetails,
-        isKeyInsights,
-        isAnecdotes,
-        isQuotes,
-        bookDataObjectId,
-        bookTitle,
-        author,
-        moreBooks
+          message: {
+              role: 'user',
+              content: query
+          },
+          isMoreDetails,
+          isKeyInsights,
+          isAnecdotes,
+          isQuotes,
+          bookDataObjectId,
+          bookTitle,
+          author,
+          userId: userData.id,
+          moreBooks
         });
-      };
-
-     
+      } 
+    };
 
     const wrappedHandleKeyInsightsRequest = (bookDataObjectId, bookTitle, author) => {
         handleKeyInsightsRequest(

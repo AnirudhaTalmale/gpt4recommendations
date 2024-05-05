@@ -1127,6 +1127,12 @@ body:not(.history-pane-open) .input-area {
   text-align: center;
 }
 
+.feature:focus {
+  outline: none;  /* Removes the default outline */
+  border: none;   /* Removes any border if applied */
+}
+
+
 .feature-text {
   margin-bottom: 1.5rem;
   

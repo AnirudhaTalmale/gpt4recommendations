@@ -457,48 +457,43 @@ io.on('connection', (socket) => {
   }); 
   
   socket.on('book-detail', async (data) => {
-    const { message, isMoreDetails, isKeyInsights, isAnecdotes, isQuotes, bookDataObjectId, bookTitle, author } = data;  
-    // // Check message limit
-    // const now = new Date();
-
-    // if (session.user.firstMessageTimestamp === undefined || session.user.messageCount === undefined) {
-    //   session.user.firstMessageTimestamp = now;
-    //   session.user.messageCount = 0;
-    // }
-
-    // if (!session.user.firstMessageTimestamp || now - session.user.firstMessageTimestamp.getTime() > WINDOW_DURATION) {
-    //   // Reset if more than 3 hours have passed
-    //   session.user.firstMessageTimestamp = now;
-    //   session.user.messageCount = 1;
-    // } else {
-    //   // Increment message count
-    //   session.user.messageCount += 1;
-    // }
-
-    // if (session.user.messageCount > MESSAGE_LIMIT) {
-    //   const timePassed = now - session.user.firstMessageTimestamp.getTime();
-    //   const timeRemaining = WINDOW_DURATION - timePassed;
-    //   const resetTime = new Date(now.getTime() + timeRemaining);
+    const { message, isMoreDetails, isKeyInsights, isAnecdotes, isQuotes, bookDataObjectId, bookTitle, author, userId } = data;  
     
-    //   // Formatting the reset time in HH:MM format
-    //   const resetTimeString = resetTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    //   const limitMessage = `
-    //     <div style="border:1.3px solid red; background-color:#fff0f0; padding:10px; margin:10px 0; border-radius:8px; color:#444444; font-size: 0.9rem">
-    //       You have reached the message limit of 30 messages per 6 hours. Please try again after ${resetTimeString}.
-    //     </div>`;
+    // Check message limit
+    const now = new Date();
+
+    const user = await User.findById(userId);
+
+    if (user.firstMessageTimestamp === undefined || user.messageCount === undefined) {
+      user.firstMessageTimestamp = now;
+      user.messageCount = 0;
+    }
+
+    if (!user.firstMessageTimestamp || now - user.firstMessageTimestamp.getTime() > WINDOW_DURATION) {
+      // Reset if more than 3 hours have passed
+      user.firstMessageTimestamp = now;
+      user.messageCount = 1;
+    } else {
+      // Increment message count
+      user.messageCount += 1;
+    }
+
+    if (user.messageCount > MESSAGE_LIMIT) {
+      const timePassed = now - user.firstMessageTimestamp.getTime();
+      const timeRemaining = WINDOW_DURATION - timePassed;
+      const resetTime = new Date(now.getTime() + timeRemaining);
     
-    //   // Emit a warning message to the client and set the limitMessage as the session name
-    //   socket.emit('messageLimitReached', { content: limitMessage, sessionId: currentSessionId, isMoreDetails, isKeyInsights, isAnecdotes, isQuotes });
+      // Formatting the reset time in HH:MM format
+      const resetTimeString = resetTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      const limitMessage = `
+        <div style="border:1.3px solid red; background-color:#fff0f0; padding:10px; margin:10px 0; border-radius:8px; color:#444444; font-size: 0.9rem">
+          You have reached the message limit of 30 messages per 6 hours. Please try again after ${resetTimeString}.
+        </div>`;
     
-    //   if(!isMoreDetails && message.isFirstQuery && !isKeyInsights && !isAnecdotes && !isQuotes) {
-    //     // Update the session name with the limitMessage and save the session
-    //     const newSessionName = 'Message limit reached';
-    //     session.sessionName = newSessionName;
-    //     await session.save();
-    //     socket.emit('updateSessionName', { sessionId: session._id, sessionName: newSessionName });
-    //   }
-    //   return;
-    // }    
+      // Emit a warning message to the client and set the limitMessage as the session name
+      socket.emit('chunk', { content: limitMessage, sessionId: null, isMoreDetails, isKeyInsights, isAnecdotes, isQuotes, moreBooks: null });
+      return;
+    }    
 
     let completePrompt;
     if (isMoreDetails || message.content.startsWith("Explain the book - ")) {
