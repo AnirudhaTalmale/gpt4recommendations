@@ -1001,9 +1001,7 @@ app.post('/api/books', async (req, res) => {
     } else {
       // Split the genre string by commas, trim whitespace and use regex for case-insensitive matching
       const genres = genre.split(',').map(g => g.trim());
-      console.log("genres", genres);
       const regexGenres = genres.map(g => new RegExp(`^${g}$`, 'i'));
-      console.log("regexGenres", regexGenres);
       const booksWithCountryData = await fetchAndProcessBooks({ genres: { $in: regexGenres } }, countryCode, null, true);
       res.json(booksWithCountryData);
     }

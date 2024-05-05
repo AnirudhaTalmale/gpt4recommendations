@@ -606,7 +606,6 @@ function Chat() {
     }
 }, [sessions, currentSessionIdRef]); // Updated dependencies
 
-  
   const [lightboxImageUrl, setLightboxImageUrl] = useState(null);
   const [isLightboxForImageOpen, setIsLightboxForImageOpen] = useState(false);
 
@@ -614,7 +613,6 @@ function Chat() {
     setLightboxImageUrl(imageUrl);
     setIsLightboxForImageOpen(true);
   };
-
 
   // Message-question edit functionality
 

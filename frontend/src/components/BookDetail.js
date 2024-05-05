@@ -9,6 +9,7 @@ import { useStreamChunkHandler } from './CommonHooks';
 import CommentList from './CommentList';
 import { checkAuthStatus } from './CommonFunctions';
 import HeaderWithHomeButton from './HeaderWithHomeButton'; 
+import LightboxForImage from './LightboxForImage';
 
 
 function BookDetail() {
@@ -30,6 +31,8 @@ function BookDetail() {
     const [userDisliked, setUserDisliked] = useState(false);
     const [userData, setUserData] = useState(null);
     const [showComments, setShowComments] = useState(false); 
+    const [lightboxImageUrl, setLightboxImageUrl] = useState(null);
+    const [isLightboxForImageOpen, setIsLightboxForImageOpen] = useState(false);
     const [commentPreview, setCommentPreview] = useState({
       count: 0,
       mostRecentCommentText: '',
@@ -503,10 +506,26 @@ function BookDetail() {
         const lineCount = Math.ceil(title.length / lineChars);
         return lineCount > 1 ? '3rem' : '1.5rem'; // 3rem for multiline, 1.5rem for single line
       };
+    
+      const handleImageClick = (imageUrl) => {
+        setLightboxImageUrl(imageUrl);
+        setIsLightboxForImageOpen(true);
+      };
 
     return (
       <div>
         <HeaderWithHomeButton />
+
+        <LightboxForImage
+          isOpen={isLightboxForImageOpen}
+          onClose={() => {
+            setIsLightboxForImageOpen(false);
+            if (isStreaming) {
+              handleStopStreaming(); // Stop streaming if it's active
+            }
+          }}
+          imageUrl={lightboxImageUrl}
+        />
       
         <div className="book-detail">
             <Lightbox
@@ -524,7 +543,11 @@ function BookDetail() {
             <div className="main-book">
                 <div className="main-book-container" style={{ display: 'flex' }}>
                     <div className="book-item">
-                      <img src={countryData.bookImage} alt="" />
+                    <img 
+                      src={countryData.bookImage} 
+                      alt="" 
+                      onClick={() => handleImageClick(countryData.bookImage)} // Added onClick event here
+                    />
                       <div
                           className="title"
                           style={{ minHeight: getTitleMinHeight(title) }}
