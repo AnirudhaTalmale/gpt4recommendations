@@ -1088,7 +1088,7 @@ body:not(.history-pane-open) .input-area {
   background-color: rgb(242, 242, 242);
   box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); 
   padding: 0rem 0rem 1.5rem 0rem;
-  margin: 6rem auto 6rem auto;
+  margin: 6rem auto 5.7rem auto;
 }
 
 .carousel img {
@@ -1194,13 +1194,14 @@ body:not(.history-pane-open) .input-area {
 }
 
 .comparison {
-  margin: 5rem auto 6.1rem auto;
-  padding: 0.1rem 1.5rem 1.5rem 1.5rem;
+  margin: 5rem auto 6.3rem auto;
+  padding: 0.1rem 1.5rem 0.5rem 1.5rem;
   border-radius: 8px;
   width: 90dvw;
   max-width: 800px;
   line-height: 1.65rem;
   font-size: 0.95rem;
+  /* border: 1px solid red; */
 }
 
 .comparison h2 {

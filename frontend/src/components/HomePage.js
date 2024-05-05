@@ -187,7 +187,7 @@ const HomePage = () => {
       {/* Carousel Section */}
       <section className="carousel">
       <h2 style={{ textAlign: 'center', marginBottom: '-0.2rem' }}>See it in action</h2>
-        <p style={{ textAlign: 'center', marginBottom: '1.1rem', marginLeft: 'auto', marginRight: 'auto', lineHeight: '1.4rem'}}>Check out the following sample queries and their book recommendations</p>
+        <p style={{ textAlign: 'center', marginBottom: '1.1rem', marginLeft: 'auto', marginRight: 'auto', lineHeight: '1.4rem'}}>Check out the following sample queries and corresponding book recommendations</p>
         <Slider {...sliderSettings}>
           {carouselImages.map((img, index) => (
             <div key={index}>
