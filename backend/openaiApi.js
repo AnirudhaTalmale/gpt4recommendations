@@ -560,7 +560,9 @@ const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, is
             bookTitle,
             detailedDescription: completeResponse // Save complete response here
           });
+          console.log("i am here 2");
           if ( checkFormatMoreDetails(completeResponse) ) {
+            console.log("i am here 3");
             await newDetail.save();
           }
         }
