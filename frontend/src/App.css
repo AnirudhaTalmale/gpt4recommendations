@@ -4,7 +4,7 @@ html, body {
 }
 
 .App {
-  border: 1px solid green;
+  /* border: 1px solid green; */
   overflow: hidden;
   height: 100vh;
 }
