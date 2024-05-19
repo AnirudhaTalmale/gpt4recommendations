@@ -6,13 +6,13 @@ html, body {
 .App {
   /* border: 1px solid green; */
   overflow: hidden;
-  height: 100vh;
+  height: 100dvh;
 }
 
 .chat-page {
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  height: 100dvh;
   background-color: rgb(253, 253, 253);
   /* border: 1px solid green; */
   overflow: hidden;
