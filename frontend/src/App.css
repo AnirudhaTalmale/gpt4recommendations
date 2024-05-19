@@ -3,11 +3,17 @@ html, body {
   margin: 0; /* Reset default margin */
 }
 
+.App {
+  /* border: 1px solid green; */
+  overflow: hidden;
+}
+
 .chat-page {
   display: flex;
   flex-direction: column;
   height: 100dvh;
   background-color: rgb(253, 253, 253);
+  /* border: 1px solid green; */
   overflow: hidden;
 }
 

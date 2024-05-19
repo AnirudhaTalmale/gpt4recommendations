@@ -641,7 +641,6 @@ function Chat() {
   };
   
   return (
-    <div className="App">
       <div className="chat-page">
         <Lightbox
           isOpen={isLightboxOpen}
@@ -722,7 +721,6 @@ function Chat() {
           isPaneOpen={isPaneOpen} 
         />
       </div>
-    </div>
   );
 }
 
