@@ -12,7 +12,6 @@ function Header({ isPaneOpen, togglePane }) {
 
   return (
     <div className="header">
-      
         <>
           <button className="menu-button-small-screen" onClick={togglePane}>
             <i className="fa-solid fa-bars"></i>

@@ -407,6 +407,7 @@ const getBookData = async (title, author, userCountry, bookDataObjectId = '') =>
 
 async function saveSearchHistory(session, genres, bookTitle) {
   try {
+    // console.log(genres);
     for (const genre of genres) {
       const newSearchHistory = new SearchHistory({
         user: session.user,

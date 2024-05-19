@@ -8,6 +8,7 @@ html, body {
   flex-direction: column;
   height: 100dvh;
   background-color: rgb(253, 253, 253);
+  overflow: hidden;
 }
 
 /* Header page */
@@ -1802,6 +1803,7 @@ body:not(.history-pane-open) .input-area {
   justify-content: space-between;
   align-items: flex-start; 
   width: 16.7rem;
+  /* border: 1px solid green; */
 }
 
 .image-container {

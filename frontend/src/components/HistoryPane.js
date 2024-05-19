@@ -224,7 +224,7 @@ const HistoryPane = forwardRef(({
         </button> */}
 
         <div onClick={handleNewSessionCreation} className="history-entry new-session-button">
-          <span>GetBooks</span> <i className="fa-regular fa-pen-to-square"></i>
+          <span>GetBooks.ai</span> <i className="fa-regular fa-pen-to-square"></i>
         </div>
         
         <div className="history-content">

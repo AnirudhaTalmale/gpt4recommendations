@@ -546,7 +546,7 @@ function Chat() {
     const bookDetails = [];
   
     // Regex to match each book section in the content
-    const bookInfoMatches = content.match(/<div class="book-info">[\s\S]*?<\/div><div class="content-container">/g) || [];
+    const bookInfoMatches = content.match(/<div class="book-info">[\s\S]*?<\/div><\/a><div class="content-container">/g) || [];
     bookInfoMatches.forEach((bookInfo, index) => {
       // Extract the book title
       const titleMatch = bookInfo.match(/<strong class="book-title">(.*?)<\/strong>/);
@@ -554,8 +554,7 @@ function Chat() {
   
       // Extract the book author
       const authorMatch = bookInfo.match(/<div class="book-author">(.*?)<\/div>/);
-      // Since the author name is prefixed with 'by ', we use .substring(3) to remove it
-      const author = authorMatch ? authorMatch[1].trim().substring(3) : '';
+      const author = authorMatch ? authorMatch[1].trim().substring(3) : '';  // Remove 'by ' prefix from the author name
   
       // Combine title and author with numbering
       if (title && author) {
@@ -565,7 +564,7 @@ function Chat() {
   
     // Return the extracted book titles and authors
     return bookDetails.join('\n'); // Joining with newline character
-  }  
+  }
 
   const onContinueGenerating = () => {
     // Find the current session by its ID
@@ -597,6 +596,7 @@ function Chat() {
         const lastMessage = currentSession.messages[currentSession.messages.length - 1];
         if (lastMessage.role === 'assistant') {
             const bookCount = extractTags(lastMessage.content).split('\n').length;
+            // console.log(bookCount);
             setShowContinueButton(bookCount >= 5 && bookCount <= 20);
         } else {
             setShowContinueButton(false);
