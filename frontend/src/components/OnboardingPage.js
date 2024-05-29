@@ -11,6 +11,7 @@ function OnboardingPage() {
     const [displayName, setDisplayName] = useState(firstName);
     const [country, setCountry] = useState(''); 
     const [token, setToken] = useState('');
+    const [isOpen, setIsOpen] = useState(false);
     const navigate = useNavigate();
 
     const handleOnboardingSubmit = useCallback(async (event) => {
@@ -48,6 +49,21 @@ function OnboardingPage() {
         }
     }, [searchParams, navigate, handleOnboardingSubmit]); 
 
+    useEffect(() => {
+        function handleClickOutside(event) {
+            if (isOpen && !event.target.closest('.dropdown')) {
+                setIsOpen(false);
+            }
+        }
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [isOpen]);
+
+    const toggleDropdown = () => setIsOpen(!isOpen);
+
     
     return (
         <div className="onboarding-container">
@@ -60,15 +76,17 @@ function OnboardingPage() {
                     onChange={(e) => setDisplayName(e.target.value)}
                     required
                 />
-                <select
-                    value={country}
-                    onChange={(e) => setCountry(e.target.value)}
-                    required 
-                >
-                    <option value="" disabled>Select your country</option>
-                    <option value="India">India</option>
-                    <option value="United States">United States</option>
-                </select>
+                <div className="dropdown">
+                    <div className={`dropdown-button ${isOpen ? 'active' : ''}`} onClick={toggleDropdown} tabIndex="0">
+                        {country || "Select your country"}
+                    </div>
+                    {isOpen && (
+                        <ul className="dropdown-list">
+                            <li onClick={() => { setCountry('India'); setIsOpen(false); }}>India</li>
+                            <li onClick={() => { setCountry('United States'); setIsOpen(false); }}>United States</li>
+                        </ul>
+                    )}
+                </div>
                 <button type="submit">Continue</button>
             </form>
         </div>

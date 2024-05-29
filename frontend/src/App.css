@@ -1511,10 +1511,11 @@ body:not(.history-pane-open) .input-area {
   justify-content: center;
   height: 100dvh;
   background-color: #FAFAFA; /* Assuming you want the same background color */
+  /* border: 1px solid blue; */
 }
 
 .onboarding-container form {
-  max-width: 280px; /* Adjust the width as necessary */
+  min-width: 280px; /* Adjust the width as necessary */
   margin: 0 auto;
   /* border: 1px solid red; */
 }
@@ -1533,6 +1534,11 @@ body:not(.history-pane-open) .input-area {
   border-radius: 8px;
   border: 1px solid #ccc; /* Light grey border */
   font-size: 1rem;
+}
+
+.onboarding-container input[type="text"]:focus {
+  border-color: #4CAF50; /* Changes border color to green when focused */
+  outline: none; /* Optionally remove the outline */
 }
 
 .onboarding-container button {
@@ -1555,46 +1561,52 @@ body:not(.history-pane-open) .input-area {
   font-weight: bold;
 }
 
-.onboarding-container select {
+.dropdown {
   width: 100%;
-  padding: 15px;
-  margin-bottom: 10px;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-  font-size: 1rem;
-  background-color: white;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
   position: relative;
-  background-repeat: no-repeat;
-  background-position: right 15px center;
+  font-size: 1rem;
+  /* border: 1px solid red; */
+}
+
+.dropdown-button {
+  /* width: 100%; */
+  margin-bottom: 10px;
+  padding: 15px 15px 15px 15px;
+  background-color: white;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  cursor: pointer;
+  display: block;
+  text-align: left;
+  /* border: 1px solid red; */
+}
+
+.dropdown-button.active {
+  border-color: #4CAF50; /* Green border when active */
+}
+
+
+.dropdown-list {
+  position: absolute;
+  width: 100%;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  background-color: white;
+  z-index: 1000;
+}
+
+.dropdown-list li {
+  padding: 15px;
   cursor: pointer;
 }
 
-.onboarding-container select:focus {
-  border-color: #4CAF50;
-  outline: none;
+.dropdown-list li:hover {
+  background-color: #f0f0f0;
 }
-
-.onboarding-container select:hover {
-  border-color: #45a049;
-}
-
-.onboarding-container select:active {
-  background-color: #f2f2f2;
-}
-
-/* Style for disabled options */
-.onboarding-container select option[disabled] {
-  color: grey;
-}
-
-/* Add a box-shadow on focus for better visibility */
-.onboarding-container select:focus {
-  box-shadow: 0 0 5px rgba(76,175,80, .5);
-}
-
 
 
 /* lightbox for book preveiw */
