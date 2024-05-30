@@ -36,10 +36,11 @@ body:not(.history-pane-open) .chat-area {
 .header {
   display: flex;
   width: 97.5dvw;
-  height: 2.5rem;
+  height: 2.7rem;
   justify-content: space-between; 
   padding: 0 10px;
   border-bottom: 0.5px solid lightgrey;
+  margin-bottom: 0.5rem;
 }
 
 .header-title {
@@ -65,17 +66,19 @@ body:not(.history-pane-open) .chat-area {
 .new-session-button-small-screen {
   border: none;
   background: none;
-  font-size: 1.1rem;
+  font-size: 1.15rem;
   cursor: pointer;
   color: black;
+  margin-right: 0.7rem;
 }
 
 .menu-button-small-screen {
   border: none;
   background: none;
   cursor: pointer;
-  font-size: 1.03rem;
+  font-size: 1.1rem;
   color: black;
+  margin-left: 0.4rem;
 }
 
 .header-content {
@@ -274,7 +277,7 @@ body:not(.history-pane-open) .chat-area {
 
 @media (min-width: 768px) {
   .book-detail {
-    grid-template-columns: 1.5fr 1fr; /* Main book gets more space, similar books get less */
+    grid-template-columns: 1fr 1fr; /* Main book gets more space, similar books get less */
   }
 }
 
@@ -397,6 +400,20 @@ body:not(.history-pane-open) .chat-area {
   overflow-x: hidden;
   flex: 1;
 }
+
+.loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(255, 255, 255, 0.5); /* White background with 50% opacity */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; /* Ensure it covers other content */
+}
+
 
 .genre-bar {
   /* border: 1px solid green; */
@@ -2245,6 +2262,7 @@ section-privacy-policy {
 
 section-privacy-policy h2 {
   color: #333;
+  font-size: 1.3rem;
 }
 
 section-privacy-policy h3 {
@@ -2336,12 +2354,6 @@ section-privacy-policy li strong {
 
   .sample-queries-container {
     left: 0 !important;
-  }
-
-  
-
-  .new-session-button-small-screen {
-    margin-right: 0.39rem;
   }
 
   .sample-query {

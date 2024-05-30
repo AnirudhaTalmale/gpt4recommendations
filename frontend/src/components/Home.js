@@ -21,6 +21,7 @@ const Home = ({ userData }) => {
     const [genres, setGenres] = useState([]);
     const [books, setBooks] = useState([]);
     const [selectedGenre, setSelectedGenre] = useState('All');
+    const [loading, setLoading] = useState(false); 
 
     const fetchGenres = useCallback(async () => {
         const countryCode = mapCountryNameToCode(userData.country);
@@ -42,6 +43,7 @@ const Home = ({ userData }) => {
     }, [userData.id, userData.country]);
 
     const fetchBooks = useCallback(async (genre = 'All') => {
+        setLoading(true); // Start loading
         setSelectedGenre(genre); // Update the selected genre
         const countryCode = mapCountryNameToCode(userData.country);
         if (!countryCode) {
@@ -60,12 +62,20 @@ const Home = ({ userData }) => {
         } catch (error) {
             console.error('Failed to fetch books', error);
         }
+        setLoading(false); // End loading
     }, [userData.id, userData.country]); 
 
     useEffect(() => {
         fetchGenres();
         fetchBooks(); // Fetch all books when component mounts
     }, [fetchGenres, fetchBooks]);
+
+    useEffect(() => {
+        const homeElement = document.querySelector('.home');
+        if (homeElement) {
+            homeElement.scrollTop = 0;
+        }
+    }, [books]);
 
     const renderStarRating = (rating) => {
         let stars = [];
@@ -88,6 +98,10 @@ const Home = ({ userData }) => {
     return (
         <div className="home">
             <GenreBar genres={genres} selectedGenre={selectedGenre} onSelectGenre={fetchBooks} />
+            {loading && (
+                <div className="loading-overlay">
+                </div>
+            )}
             <div className="book-list">
                 {books.map(book => (
                     <Link to={`/books/${book._id}/${mapCountryNameToCode(userData.country)}`} key={book._id} className="book-item" style={{ textDecoration: 'none' }}>

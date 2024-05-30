@@ -30,6 +30,10 @@ function BookDetail() {
     const [isLightboxForImageOpen, setIsLightboxForImageOpen] = useState(false);
 
     useEffect(() => {
+      window.scrollTo(0, 0);
+    }, [bookId]);
+
+    useEffect(() => {
       checkAuthStatus().then((userData) => {
         if (userData) {
           setUserData(userData);
@@ -198,7 +202,10 @@ function BookDetail() {
 
 
     if (!book) {
-        return <div>Loading...</div>;
+        return (
+            <div className="loading-overlay">
+            </div>
+        );
     }
 
     const renderStarRating = (rating) => {
@@ -369,6 +376,8 @@ function BookDetail() {
           }, 3500); // Adjust the delay as needed
         }
       };
+
+      
 
 
       const getTitleMinHeight = (title) => {
