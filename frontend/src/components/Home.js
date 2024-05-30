@@ -79,14 +79,29 @@ const Home = ({ userData }) => {
 
     const renderStarRating = (rating) => {
         let stars = [];
-        for (let i = 0; i < Math.floor(rating); i++) {
+        const fullStars = Math.floor(rating);
+        const hasHalfStar = rating % 1 !== 0;
+        const maxStars = 5;
+    
+        // Add full stars
+        for (let i = 0; i < fullStars; i++) {
             stars.push(<i key={`star-${i}`} className="fa-solid fa-star"></i>);
         }
-        if (rating % 1 !== 0) {
+    
+        // Add half star if necessary
+        if (hasHalfStar) {
             stars.push(<i key="half-star" className="fa-solid fa-star-half-stroke"></i>);
         }
+    
+        // Calculate remaining stars needed to make total of 5
+        const totalStars = hasHalfStar ? fullStars + 1 : fullStars;
+        for (let i = totalStars; i < maxStars; i++) {
+            stars.push(<i key={`empty-star-${i}`} className="fa-regular fa-star"></i>);
+        }
+    
         return <div className="star-rating">{stars}</div>; 
     };
+    
 
     const getTitleMinHeight = (title) => {
         // Roughly estimate the number of lines in the title

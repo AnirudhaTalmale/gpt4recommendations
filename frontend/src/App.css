@@ -40,7 +40,7 @@ body:not(.history-pane-open) .chat-area {
   justify-content: space-between; 
   padding: 0 10px;
   border-bottom: 0.5px solid lightgrey;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.1rem;
 }
 
 .header-title {
@@ -114,7 +114,12 @@ body:not(.history-pane-open) .chat-area {
   font-size: 0.9rem;
 }
 
-.fa-star {
+.fa-solid.fa-star {
+  color: orange;
+  font-size: 0.9rem;
+}
+
+.fa-regular.fa-star {
   color: orange;
   font-size: 0.9rem;
 }
@@ -751,6 +756,17 @@ body:not(.history-pane-open) .input-area {
   display: flex;
   flex-direction: column;
   transition: transform 0.2s ease;
+}
+
+.history-pane::-webkit-scrollbar-thumb {
+  background-color: rgb(82, 82, 82);
+  border-radius: 5px;
+}
+
+/* Firefox */
+.history-pane {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(82, 82, 82) #f1f1f1;
 }
 
 .history-pane.closed {
