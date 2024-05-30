@@ -190,24 +190,6 @@ body:not(.history-pane-open) .chat-area {
   resize: none; /* Prevents resizing. You can change it to 'vertical' if you want to allow vertical resizing only */
 }
 
-.comment-button, .cancel-button {
-  width: 5rem !important;
-  height: 2rem !important;
-  border-radius: 2rem !important;
-  cursor: pointer;
-}
-
-.comment-button {
-  color: white;
-  background-color: #065fd4;
-  margin-top: 0.4rem;
-  border: none;
-}
-
-.cancel-button {
-  border: none !important;
-}
-
 /* Comment component */
 
 /* This will be the container for the avatar and the comment details */
@@ -1787,11 +1769,6 @@ body:not(.history-pane-open) .input-area {
 .message-question {
   white-space: pre-wrap;
   color: #0D0D0D;
-}
-
-.book-info {
-  cursor: pointer; 
-  /* border: 1px solid green; */
 }
 
 .message-icon {

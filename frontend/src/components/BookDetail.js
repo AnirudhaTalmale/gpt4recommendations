@@ -6,7 +6,6 @@ import Lightbox from './Lightbox';
 import socket from './socket';
 import axios from 'axios';
 import { useStreamChunkHandler } from './CommonHooks'; 
-import CommentList from './CommentList';
 import { checkAuthStatus } from './CommonFunctions';
 import HeaderWithHomeButton from './HeaderWithHomeButton'; 
 import LightboxForImage from './LightboxForImage';
@@ -26,40 +25,9 @@ function BookDetail() {
     const [isLightboxOpen, setIsLightboxOpen] = useState(false);
     const [isAtBottomLightbox, setIsAtBottomLightbox] = useState(false);
     const [isStreaming, setIsStreaming] = useState(false);
-    const [likes, setLikes] = useState(0);
-    const [userLiked, setUserLiked] = useState(false);
-    const [userDisliked, setUserDisliked] = useState(false);
     const [userData, setUserData] = useState(null);
-    const [showComments, setShowComments] = useState(false); 
     const [lightboxImageUrl, setLightboxImageUrl] = useState(null);
     const [isLightboxForImageOpen, setIsLightboxForImageOpen] = useState(false);
-    const [commentPreview, setCommentPreview] = useState({
-      count: 0,
-      mostRecentCommentText: '',
-      mostRecentCommentUserImage: ''
-    });
-
-  const fetchCommentPreview = useCallback(async () => {
-    try {
-      const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/comments/preview?bookId=${bookId}`);
-      // Update the state with the fetched data
-      setCommentPreview({
-        count: response.data.count,
-        mostRecentCommentText: response.data.mostRecentCommentText || '',
-        mostRecentCommentUserImage: response.data.mostRecentCommentUserImage || ''
-      });
-    } catch (error) {
-      console.error('Failed to fetch comment data:', error);
-    }
-  }, [bookId]);
-  
-  useEffect(() => {
-    fetchCommentPreview();
-}, [fetchCommentPreview]);
-
-    const toggleComments = () => {
-        setShowComments(!showComments);  // Toggle the visibility of comments
-    };
 
     useEffect(() => {
       checkAuthStatus().then((userData) => {
@@ -227,102 +195,6 @@ function BookDetail() {
     useEffect(() => {
       fetchBookDetails();
     }, [fetchBookDetails]);
-
-    // For fetching likes and dislikes
-    useEffect(() => {
-      if (userData && userData.id) { // Ensure user data is available
-          const fetchLikesDislikes = async () => {
-              try {
-                  const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/books/${bookId}/likes-dislikes`, {
-                      userId: userData.id  // Pass userId in the request body
-                  });
-                  const { likes, userLiked, userDisliked } = response.data;
-                  setLikes(likes);
-                  setUserLiked(userLiked);
-                  setUserDisliked(userDisliked);
-              } catch (error) {
-                  console.error('Failed to fetch like/dislike data:', error);
-              }
-          };
-          fetchLikesDislikes();
-      }
-    }, [bookId, userData]);
-
-    const updateLikeDislikeCounts = useCallback(async () => {
-      if (userData && userData.id) { // Check if userData and userData.id are valid
-          try {
-              const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/books/${bookId}/likes-dislikes`, {
-                  userId: userData.id
-              });
-              const { likes, userLiked, userDisliked } = response.data;
-              setLikes(likes);
-              setUserLiked(userLiked);
-              setUserDisliked(userDisliked);
-          } catch (error) {
-              console.error('Failed to fetch like/dislike data:', error);
-          }
-      }
-  }, [userData, bookId]); // Include userData in dependencies, as we are checking its existence
-  
-  
-
-  useEffect(() => {
-    if (userData && userData.id) {
-        updateLikeDislikeCounts();
-    }
-}, [userData, updateLikeDislikeCounts]);
-
-  
-
-    const handleLike = async () => {
-      if (userData && userData.id) {
-          let newLikeStatus;
-          if (userLiked) {
-              // If already liked, toggle to neutral
-              newLikeStatus = null;
-          } else {
-              // If not liked or neutral, set to liked
-              newLikeStatus = true;
-          }
-  
-          try {
-              await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/books/${bookId}/like`, {
-                  like: newLikeStatus,
-                  userId: userData.id
-              });
-              setUserLiked(newLikeStatus === true);
-              setUserDisliked(newLikeStatus === false);
-              updateLikeDislikeCounts(); // Refresh counts
-          } catch (error) {
-              console.error('Error updating like:', error);
-          }
-      }
-  };
-  
-  const handleDislike = async () => {
-    if (userData && userData.id) {
-        let newLikeStatus;
-        if (userDisliked) {
-            // If already disliked, toggle to neutral
-            newLikeStatus = null;
-        } else {
-            // If not disliked or neutral, set to disliked
-            newLikeStatus = false;
-        }
-
-        try {
-            await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/books/${bookId}/like`, {
-                like: newLikeStatus,
-                userId: userData.id
-            });
-            setUserLiked(newLikeStatus === true);
-            setUserDisliked(newLikeStatus === false);
-            updateLikeDislikeCounts(); // Refresh counts
-        } catch (error) {
-            console.error('Error updating dislike:', error);
-        }
-    }
-};
 
 
     if (!book) {
@@ -595,41 +467,8 @@ function BookDetail() {
                         />
                     </div>
                 </div>
-
-                <div className="like-dislike-buttons">
-                  <button className={`like-button ${userLiked ? 'liked' : ''}`} onClick={handleLike}>
-                      <i className={`fa ${userLiked ? 'fa-solid' : 'fa-regular'} fa-thumbs-up`}></i>
-                      <span className="like-count">{likes}</span>
-                  </button>
-                  <div className="like-dislike-buttons-divider"></div>
-                  <button className={`dislike-button ${userDisliked ? 'disliked' : ''}`} onClick={handleDislike}>
-                      <i className={`fa ${userDisliked ? 'fa-solid' : 'fa-regular'} fa-thumbs-down`}></i>
-                  </button>
-                </div>
-              
-              <button className="comment-preview-button" onClick={toggleComments} style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                {/* Line 1: Comments Count */}
-                <div><span className="comment-preview-heading">Comments</span> <span>{commentPreview.count}</span></div>
-
-                {/* Line 2: Most Recent Comment User's Image and Text */}
-                {commentPreview.mostRecentCommentText && (
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem' }}>
-                    <img 
-                      src={commentPreview.mostRecentCommentUserImage} 
-                      alt=""
-                      style={{ width: '30px', height: '30px', borderRadius: '50%' }}
-                    />
-                    <span className="comment-preview-text">{commentPreview.mostRecentCommentText}</span>
-                  </div>
-                )}
-              </button>
-
               </div>
-              {showComments ? (
-                <div className="comment-overlay">
-                    <CommentList bookId={bookId} toggleComments={toggleComments} />
-                </div>
-            ) : (
+             
               <div className="similar-books">
               {similarBooks.length > 0 && (
                 <div className="book-list">
@@ -657,7 +496,7 @@ function BookDetail() {
                     </div>
                     )}
                 </div>
-              )}
+              
         </div>
         </div>
     );

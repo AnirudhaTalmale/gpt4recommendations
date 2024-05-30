@@ -18,7 +18,7 @@ function Header({ isPaneOpen, togglePane }) {
           </button>
           <div className="header-title">GPT-4</div>
           <button className="new-session-button-small-screen" onClick={onNewSession}>
-            <i className="fa-regular fa-pen-to-square"></i>
+            <i class="fa-solid fa-house"></i>
           </button>
         </>
      

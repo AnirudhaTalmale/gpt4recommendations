@@ -39,20 +39,9 @@ function createPreviewButtonHtml(previewLink) {
   return `<div><button type="button" class="preview-btn" ${buttonStyles} ${dataAttribute}>Preview</button></div>`;
 }
 
-function mapCountryNameToCode(countryName) {
-  const countryMapping = {
-      'India': 'IN',
-      'United States': 'US'
-  };
+function createBookInfoHtml(bookTitle, author, amazonStarRating, amazonReviewCount) {
 
-  return countryMapping[countryName] || null; // returns null if no match found
-}
-
-function createBookInfoHtml(bookTitle, author, amazonStarRating, amazonReviewCount, userCountry, bookDataObjectId) {
-  const countryCode = mapCountryNameToCode(userCountry);
-  const link = `${process.env.FRONTEND_URL}/books/${bookDataObjectId}/${countryCode}`;
-
-  let bookInfoHtml = `<a href="${link}" style="text-decoration: none; color: inherit;"><div class="book-info">
+  let bookInfoHtml = `<div class="book-info">
       <strong class="book-title">${bookTitle}</strong>`;
 
   // If author exists, add author information
@@ -90,7 +79,7 @@ function createBookInfoHtml(bookTitle, author, amazonStarRating, amazonReviewCou
   }
 
   // Close the book-info div
-  bookInfoHtml += `</div></a>`;
+  bookInfoHtml += `</div>`;
 
   return bookInfoHtml;
 }
@@ -466,7 +455,7 @@ const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, is
 
     if (isKeyInsights || isAnecdotes || isQuotes || isMoreDetails) {
       const { bookImage, amazonLink, amazonStarRating, amazonReviewCount } = await getBookData(bookTitle, author, userCountry, bookDataObjectId);
-      const bookInfoHtml = createBookInfoHtml(bookTitle, author, amazonStarRating, amazonReviewCount, userCountry, bookDataObjectId);
+      const bookInfoHtml = createBookInfoHtml(bookTitle, author, amazonStarRating, amazonReviewCount);
       let imageDiv = '';
       if (bookImage) {
         imageDiv = `<div><img src="${bookImage}" alt=""></div>`;
@@ -518,7 +507,7 @@ const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, is
             pausedEmit = pausedEmit.replace(bookTitleMatch[0], bookTitleMatch[0] + contentDiv);
           }
 
-          const bookInfoHtml = createBookInfoHtml(bookTitle, author, amazonStarRating, amazonReviewCount, userCountry, bookDataObjectId);
+          const bookInfoHtml = createBookInfoHtml(bookTitle, author, amazonStarRating, amazonReviewCount);
           pausedEmit = pausedEmit.replace(bookTitleMatch[0], bookInfoHtml);
           pausedEmit = pausedEmit.replace(/#/g, '');
                     
