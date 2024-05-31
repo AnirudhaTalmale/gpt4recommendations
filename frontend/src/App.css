@@ -1206,7 +1206,7 @@ body:not(.history-pane-open) .input-area {
   text-decoration: none;
   color: #333;
   /* border: 1px solid black; */
-  padding: 0.5rem;
+  padding: 0.5rem 0.25rem;
 }
 
 .footer nav a:first-child {
