@@ -1196,7 +1196,7 @@ body:not(.history-pane-open) .input-area {
 .footer {
   background-color: rgb(242, 242, 242);
   text-align: center;
-  padding: 1.3rem 0rem;
+  padding: 1.3rem 0rem 1.3rem 0rem;
   position: relative;
   font-size: 0.8rem;
 }
@@ -1205,6 +1205,8 @@ body:not(.history-pane-open) .input-area {
   margin-left: 0.8rem;
   text-decoration: none;
   color: #333;
+  /* border: 1px solid black; */
+  padding: 0.5rem;
 }
 
 .footer nav a:first-child {
