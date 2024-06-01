@@ -1,12 +1,13 @@
 // components/PrivacyPolicy.js
 import React from 'react';
-import HeaderWithBackButton from './HeaderWithBackButton'; 
+import HeaderWithHomeButton from './HeaderWithHomeButton'; 
 
 const PrivacyPolicy = () => {
 
   return (
     <>
-        <HeaderWithBackButton />
+
+        <HeaderWithHomeButton />
         <div className="privacyPolicy">
         
         <header-privacy-policy>

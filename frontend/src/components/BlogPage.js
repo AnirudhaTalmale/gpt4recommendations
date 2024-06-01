@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import importedBlogs from './Blogs.js'; 
-import HeaderWithBackButton from './HeaderWithBackButton'; 
+import HeaderWithHomeButton from './HeaderWithHomeButton'; 
 import '../App.css'; 
 
 const BlogPostPreview = ({ title, imagePath }) => (
@@ -24,7 +24,7 @@ const BlogPage = () => {
 
   return (
     <div>
-      <HeaderWithBackButton />
+      <HeaderWithHomeButton />
       <div className="blog-page">
         
         <div className='blog-page-heading'>Blog</div>

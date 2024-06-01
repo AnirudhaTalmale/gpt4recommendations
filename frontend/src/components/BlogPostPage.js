@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import DOMPurify from 'dompurify';
 import importedBlogs from './Blogs.js'; 
-import HeaderWithBackButton from './HeaderWithBackButton'; 
+import HeaderWithBlogButton from './HeaderWithBlogButton'; 
 import '../App.css';
 
 const BlogPostPage = () => {
@@ -20,11 +20,11 @@ const BlogPostPage = () => {
 
   return (
     <div>
-      <HeaderWithBackButton />
+      <HeaderWithBlogButton />
       <div className="blogPostContainer">
         
         <h1>{post.title}</h1>
-        {post.imagePath && <img src={post.imagePath} alt={post.title} style={{ maxWidth: '100%' }} />}
+        {post.imagePath && <img src={post.imagePath} alt={post.title} className='topmost-blog-image' style={{ maxWidth: '100%' }} />}
         <div dangerouslySetInnerHTML={createMarkup(post.content)} />
       </div>
     </div>

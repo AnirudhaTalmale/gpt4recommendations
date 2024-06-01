@@ -1,154 +1,295 @@
 // Blogs.js
 const blogs = {
-    blog1: {
-        title: "Billionaires and their favorite Books",
-        imagePath: "/GreenBookShelf.webp",
-        content: `<h3>Introduction</h3>
-        <p>In the world of business and innovation, inspiration plays a key role. For many successful billionaires, certain books have been instrumental in shaping their strategies, philosophies, and business principles. Let’s explore some of these influential books and how they impacted the lives of these renowned billionaires.</p>
-
-        <h3>Jeff Bezos and "Made in America" by Sam Walton</h3>
-        <p>Before founding Amazon, Jeff Bezos drew significant inspiration from Sam Walton's autobiography, "Made in America." Detailing Walton’s journey in creating Walmart, the book emphasizes frugality, customer focus, and the importance of a strong corporate culture. Bezos has incorporated many of these principles into Amazon’s foundational strategy, propelling the company to its monumental success.</p>
-    
-        <h3>Larry Page and "The High Frontier" by Gerard K. O'Neill</h3>
-        <p>"The High Frontier" by Gerard K. O'Neill played a pivotal role in shaping Larry Page's vision before he co-founded Google. The book explores the feasibility of space colonization, instilling in Page a drive to think beyond traditional boundaries. These forward-thinking ideas not only influenced his approach at Google but also in his subsequent ventures at Alphabet.</p>
-    
-        <h3>Warren Buffett and "The Intelligent Investor" by Benjamin Graham</h3>
-        <p>Warren Buffett’s success as an investor can be traced back to the principles he learned from "The Intelligent Investor" by his mentor, Benjamin Graham. Buffett credits this book with laying the foundation of his investment philosophy, a cornerstone of his unparalleled success in the financial world.</p>
-    
-        <h3>Jack Ma and "The Godfather" by Mario Puzo</h3>
-        <p>Jack Ma, the founder of Alibaba Group, has often cited "The Godfather" by Mario Puzo as a significant influence on his business strategy and philosophy. The book’s portrayal of loyalty, leadership, and the complexities of business relationships resonated with Ma, shaping his approach to building and managing his business empire.</p>
-    
-        <h3>Tim Cook and "Competing Against Time" by George Stalk Jr. and Thomas M. Hout</h3>
-        <p>Apple CEO Tim Cook attributes much of his understanding of business efficiency and supply chain management to "Competing Against Time." The book’s emphasis on time as a strategic resource has influenced Cook’s approach to streamlining Apple's operations, maintaining its status as a leading tech giant.</p>
-    
-        <h3>Satya Nadella and "Mindset: The New Psychology of Success" by Carol S. Dweck</h3>
-        <p>"Mindset: The New Psychology of Success" by Carol S. Dweck has been transformative in the personal and professional life of Satya Nadella, CEO of Microsoft. The book’s insights into the growth mindset, which emphasizes developing abilities through dedication and hard work, have been integral to Nadella's leadership philosophy at Microsoft.</p>
-    
-        <h3>Reid Hoffman and "The Start-up of You" by Reid Hoffman and Ben Casnocha</h3>
-        <p>Reid Hoffman, the co-founder of LinkedIn, was influenced by many ideas that he later elaborated on in his co-authored book, "The Start-up of You." Hoffman’s approach to viewing one's career as a start-up and the importance of building networks and taking intelligent risks were key factors in his success with LinkedIn.</p>
-    
-        <h3>Mark Cuban and "Cashing in on the American Dream: How to Retire at 35" by Paul Terhorst</h3>
-        <p>Mark Cuban, before becoming a billionaire, was inspired by Paul Terhorst's "Cashing in on the American Dream: How to Retire at 35." This book taught him the importance of living frugally and saving money to start a business, a crucial step in his journey to success.</p>
-    
-        <h3>Conclusion</h3>
-        <p>In conclusion, these books have not only been sources of inspiration but also blueprints for success for these billionaires. They demonstrate the power of ideas and knowledge in shaping the paths to success and influencing some of the most successful entrepreneurs of our time.</p> `
+    "10-best-self-help-books": {
+        title: "10 Best Self Help Books",
+        imagePath: "/self-help.png",
+        content: `<div class="message-content"><div class="message-answer"><div class="book-info">
+        <strong class="book-title">The Power of Now</strong><div class="book-author">by Eckhart Tolle</div><div class="ratings-and-review"><div class="star-rating"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i></div><span class="review-count">60,645</span></div></div><div class="content-container"><div class="image-container"><img alt="" src="https://m.media-amazon.com/images/I/410hw6Q5a9L._AC_UF1000,1000_QL80_.jpg"></div><div class="buttons-container"></div></div>
+  <p>This book is highly regarded for encouraging readers to live in the present moment and to understand the importance of now. Eckhart Tolle offers practical insights to help individuals overcome their thoughts and ego to lead a more fulfilling life, making it a powerful guide for self-improvement.</p>
+  
+  <div class="book-info">
+        <strong class="book-title">Atomic Habits</strong><div class="book-author">by James Clear</div><div class="ratings-and-review"><div class="star-rating"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div><span class="review-count">126,284</span></div></div><div class="content-container"><div class="image-container"><img alt="" src="https://m.media-amazon.com/images/I/41C-012Es8L._AC_UF1000,1000_QL80_.jpg"></div><div class="buttons-container"></div></div>
+  <p>James Clear presents a compelling argument for focusing on small changes to create remarkable results in our personal and professional lives. His step-by-step approach to building good habits and breaking bad ones is practical, making it an invaluable resource for anyone looking to make lasting changes.</p>
+  
+  <div class="book-info">
+        <strong class="book-title">Think and Grow Rich</strong><div class="book-author">by Napoleon Hill</div><div class="ratings-and-review"><div class="star-rating"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div><span class="review-count">25,344</span></div></div><div class="content-container"><div class="image-container"><img alt="" src="https://m.media-amazon.com/images/I/51EhG-kKCAL._AC_UF1000,1000_QL80_.jpg"></div><div class="buttons-container"></div></div>
+  <p>This classic self-help book dives into the psychological power of thought and the brain in the process of furthering your career for both monetary and personal satisfaction. Napoleon Hill's research based on the most successful individuals of his time offers timeless wisdom on achieving success.</p>
+  
+  <div class="book-info">
+        <strong class="book-title">The 7 Habits of Highly Effective People</strong><div class="book-author">by Stephen R. Covey</div><div class="ratings-and-review"><div class="star-rating"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i></div><span class="review-count">1,799</span></div></div><div class="content-container"><div class="image-container"><img alt="" src="https://m.media-amazon.com/images/I/51G4LdDNUGL._AC_UF1000,1000_QL80_.jpg"></div><div class="buttons-container"></div></div>
+  <p>Stephen R. Covey's book remains a top choice for people looking to navigate their personal and professional lives more effectively. The seven habits outlined provide a holistic and principled approach to achieving personal and interpersonal effectiveness, making it a bedrock for self-help readers.</p>
+  
+  <div class="book-info">
+        <strong class="book-title">You Are a Badass</strong><div class="book-author">by Jen Sincero</div><div class="ratings-and-review"><div class="star-rating"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i></div><span class="review-count">46,409</span></div></div><div class="content-container"><div class="image-container"><img alt="" src="https://m.media-amazon.com/images/I/51xZX6COfaL._AC_UF1000,1000_QL80_.jpg"></div><div class="buttons-container"></div></div>
+  <p>Jen Sincero combines humor with no-nonsense advice in this motivational guide, encouraging readers to identify and change self-sabotaging beliefs and behaviors. It's a rallying cry for anyone looking to get unstuck, improve their self-confidence, and make the kind of changes that lead to a better life.</p><div class="book-info">
+        <strong class="book-title">Mindset: The New Psychology of Success</strong><div class="book-author">by Carol S. Dweck</div><div class="ratings-and-review"><div class="star-rating"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i></div><span class="review-count">21,361</span></div></div><div class="content-container"><div class="image-container"><img alt="" src="https://m.media-amazon.com/images/I/41wyCevk%2B6L._AC_UF1000,1000_QL80_.jpg"></div><div class="buttons-container"></div></div>  
+  <p>This book explores the concept of "fixed" vs. "growth" mindsets, a revolutionary idea that suggests our success is significantly influenced by how we perceive our abilities. Carol S. Dweck, a leading researcher in the field of motivation, demonstrates how adopting a growth mindset can help us reach our fullest potential in personal development, relationships, and careers.</p>
+  
+  <div class="book-info">
+        <strong class="book-title">The Subtle Art of Not Giving a F*ck</strong><div class="book-author">by Mark Manson</div><div class="ratings-and-review"><div class="star-rating"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i></div><span class="review-count">144,790</span></div></div><div class="content-container"><div class="image-container"><img alt="" src="https://m.media-amazon.com/images/I/51mN3bY0JjL._AC_UF1000,1000_QL80_.jpg"></div><div class="buttons-container"></div></div>  
+  <p>Mark Manson delivers an unconventional self-help guide that cuts through the clichés to get to the heart of life's challenges. With a combination of academic research, well-timed humor, and personal anecdotes, Manson argues that focusing too much on positivity and happiness can, in fact, be counterproductive. This book is a refreshing take on living a contented, grounded life.</p>
+  
+  <div class="book-info">
+        <strong class="book-title">How to Win Friends and Influence People</strong><div class="book-author">by Dale Carnegie</div><div class="ratings-and-review"><div class="star-rating"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i></div><span class="review-count">31,883</span></div></div><div class="content-container"><div class="image-container"><img alt="" src="https://m.media-amazon.com/images/I/41OksZQYt%2BL._AC_UF1000,1000_QL80_.jpg"></div><div class="buttons-container"></div></div>  
+  <p>Since its publication in 1936, this book has been a go-to guide for anyone looking to improve their social interactions and relationships. Dale Carnegie's timeless advice on communication and understanding human nature continues to help readers navigate complex social landscapes with confidence and ease. Its principles are just as relevant today in personal and professional settings.</p>
+  
+  <div class="book-info">
+        <strong class="book-title">Daring Greatly</strong><div class="book-author">by Brené Brown</div><div class="ratings-and-review"><div class="star-rating"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i></div><span class="review-count">30,006</span></div></div><div class="content-container"><div class="image-container"><img alt="" src="https://m.media-amazon.com/images/I/41UjqAwGVBL._AC_UF1000,1000_QL80_.jpg"></div><div class="buttons-container"></div></div>  
+  <p>Brené Brown, a leading expert on social connections, shares insights from her extensive research on vulnerability, courage, worthiness, and shame. She argues that understanding and embracing our vulnerabilities is crucial to developing meaningful connections and living a full life. This book is for anyone who wants to learn how to embrace imperfections and be brave.</p>
+  
+  <div class="book-info">
+        <strong class="book-title">The Four Agreements</strong><div class="book-author">by Don Miguel Ruiz</div><div class="ratings-and-review"><div class="star-rating"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i></div><span class="review-count">113,851</span></div></div><div class="content-container"><div class="image-container"><img alt="" src="https://m.media-amazon.com/images/I/517MwXYNucL._AC_UF1000,1000_QL80_.jpg"></div><div class="buttons-container"></div></div>  
+  <p>This book offers a powerful code of conduct that can rapidly transform our lives into a new experience of freedom, true happiness, and love. The concepts stem from Toltec wisdom, simplifying how personal beliefs that create needless suffering can be replaced with agreements that promote joy and fulfillment. Don Miguel Ruiz’s work provides a straightforward framework for navigating the complexities of human behavior and emotions.</p></div></div>
+    `
     },
-    blog2: {
-        title: "GPT-4: World's Best Book Recommender",
-        imagePath: "/PinkBookShelf.webp",
-        content: `<h3>Introduction</h3>
-        <p>In a world where each person faces their own unique challenges and searches for answers, often there's a book that can provide guidance, comfort, or insight. However, finding that one perfect book among millions can be daunting. This is where GPT-4, OpenAI's latest language model, becomes a game changer. With its training on millions of books, GPT-4 excels at connecting readers with the books most relevant to their needs. Let's see why GPT-4 is unmatched as the world's top book recommender.</p>
 
-        <h3>Extensively Trained on a Wide Array of Books</h3>
-        <p>GPT-4's effectiveness as a book recommender is rooted in its training on a diverse range of literary works. It's familiar with an enormous selection of books from every genre and author imaginable. This broad knowledge base enables GPT-4 to have a deep understanding of the literary world. Whether you're dealing with personal issues, seeking career advice, or in need of emotional support, GPT-4 can search through its vast database to find the book that perfectly aligns with your situation.</p>
-    
-        <h3>Personalized Recommendations</h3>
-        <p>The strength of GPT-4 lies in its ability to offer recommendations that are tailored specifically to you. It doesn't just suggest widely known or well-reviewed books; it selects titles that resonate with your personal story and current challenges. GPT-4 listens to your questions, grasps your needs, and responds with book suggestions that are customized and relevant. It's like having a knowledgeable friend who knows exactly which book will provide the guidance or comfort you need.</p>
-    
-        <h3>In-Depth Insights and Anecdotes for Every Recommendation</h3>
-        <p>When GPT-4 recommends a book, it doesn't just stop at the title. Alongside each recommendation, it provides detailed insights and interesting anecdotes about the book. For each book, GPT-4 can offer a brief summary, information about the author, the significance of the book, its key themes, and even intriguing anecdotes that add depth to your understanding. This not only helps you decide if the book is the right fit for you but also enriches your knowledge about the book before you begin reading.</p>
-        
-        <h3>Conclusion</h3>
-        <p>To sum up, GPT-4 is more than just a recommendation tool; it's a sophisticated guide in the vast world of literature. It understands the intricate nature of human experiences and the pivotal role of the right book at the right moment. Through its extensive training, personalized approach, and insightful, anecdote-rich recommendations, GPT-4 is revolutionizing how we discover and connect with books that have the power to influence our lives.</p> `
+    "10-best-romantic-books": {
+        title: "10 Best Romantic Books",
+        imagePath: "/romance.png",
+        content: `<div class="message-content"><div class="message-answer"><div class="book-info">
+        <strong class="book-title">Pride and Prejudice</strong><div class="book-author">by Jane Austen</div><div class="ratings-and-review"><div class="star-rating"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i></div><span class="review-count">591</span></div></div><div class="content-container"><div class="image-container"><img alt="" src="https://m.media-amazon.com/images/I/21164%2BrhPSL._AC_UF1000,1000_QL80_.jpg"></div><div class="buttons-container"></div></div>
+  <p>This classic novel is a timeless romance that explores the themes of love, class, and morality. Austen's witty narrative and the slow-burning romance between Elizabeth Bennet and Mr. Darcy have captivated readers for generations, making it a quintessential romantic read.</p>
+  
+  <div class="book-info">
+        <strong class="book-title">Outlander</strong><div class="book-author">by Diana Gabaldon</div><div class="ratings-and-review"><div class="star-rating"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i></div><span class="review-count">99,032</span></div></div><div class="content-container"><div class="image-container"><img alt="" src="https://m.media-amazon.com/images/I/31TTcJWPTnL._AC_UF1000,1000_QL80_.jpg"></div><div class="buttons-container"></div></div>
+  <p>A unique blend of historical fiction, romance, and adventure, "Outlander" tells the story of Claire Randall, a nurse from the 20th century who is transported back in time to 18th-century Scotland. There, she falls for the dashing Highland warrior Jamie Fraser. It's renowned for its passionate and enduring love story.</p>
+  
+  <div class="book-info">
+        <strong class="book-title">The Notebook</strong><div class="book-author">by Nicholas Sparks</div><div class="ratings-and-review"><div class="star-rating"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i></div><span class="review-count">12,896</span></div></div><div class="content-container"><div class="image-container"><img alt="" src="https://m.media-amazon.com/images/I/41tHMnZ5IjL._AC_UF1000,1000_QL80_.jpg"></div><div class="buttons-container"></div></div>
+  <p>This novel is a heartwrenching love story about Noah Calhoun and Allie Nelson, who spend a splendid summer together but are separated by their social differences. Their story, characterized by devotion and the power of love to overcome obstacles, has made "The Notebook" a favorite among romance enthusiasts.</p>
+  
+  <div class="book-info">
+        <strong class="book-title">Me Before You</strong><div class="book-author">by Jojo Moyes</div><div class="ratings-and-review"><div class="star-rating"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i></div><span class="review-count">3,399</span></div></div><div class="content-container"><div class="image-container"><img alt="" src="https://m.media-amazon.com/images/I/41qMPVl191L._AC_UF1000,1000_QL80_.jpg"></div><div class="buttons-container"></div></div>
+  <p>This contemporary romantic novel delves into the complex relationship between a quirky small-town girl, Louisa Clark, and Will Traynor, a man left paraplegic after an accident. This book deals with themes of love, loss, and making difficult choices, all while crafting a heart-touching romantic narrative.</p>
+  
+  <div class="book-info">
+        <strong class="book-title">The Time Traveler’s Wife</strong><div class="book-author">by Audrey Niffenegger</div><div class="ratings-and-review"><div class="star-rating"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i></div><span class="review-count">11,237</span></div></div><div class="content-container"><div class="image-container"><img alt="" src="https://m.media-amazon.com/images/I/51fLudhA2tL._AC_UF1000,1000_QL80_.jpg"></div><div class="buttons-container"></div></div>
+  <p>An unconventional love story that blends science fiction with romance, this novel tells the tale of Henry, a man with a genetic disorder that causes him to time travel unpredictively, and his wife Clare. Their unique and challenging relationship showcases the depth of love and the bonds that transcend time itself.</p><div class="book-info">
+        <strong class="book-title">Jane Eyre</strong><div class="book-author">by Charlotte Brontë</div><div class="ratings-and-review"><div class="star-rating"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i></div><span class="review-count">3,346</span></div></div><div class="content-container"><div class="image-container"><img alt="" src="https://m.media-amazon.com/images/I/41sOTGPO9uL._AC_UF1000,1000_QL80_.jpg"></div><div class="buttons-container"></div></div>
+  <p>This classic novel melds intense emotional power, captivating characters, and a deeply moving love story. Focused on the passionate and mysterious relationship between Jane Eyre and Mr. Rochester, it's celebrated for its exploration of the complexities of love, morality, and social class.</p>
+  
+  <div class="book-info">
+        <strong class="book-title">Gone with the Wind</strong><div class="book-author">by Margaret Mitchell</div><div class="ratings-and-review"><div class="star-rating"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div><span class="review-count">18,304</span></div></div><div class="content-container"><div class="image-container"><img alt="" src="https://m.media-amazon.com/images/I/51UXeJ5YI3L._AC_UF1000,1000_QL80_.jpg"></div><div class="buttons-container"></div></div>
+  <p>A sweeping epic of the American South during the Civil War era, this novel captures the enduring nature of true love through the tumultuous romance between Scarlett O'Hara and Rhett Butler. Its exploration of love, war, and survival has enthralled readers for generations.</p>
+  
+  <div class="book-info">
+        <strong class="book-title">Call Me By Your Name</strong><div class="book-author">by André Aciman</div><div class="ratings-and-review"><div class="star-rating"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i></div><span class="review-count">42,142</span></div></div><div class="content-container"><div class="image-container"><img alt="" src="https://m.media-amazon.com/images/I/51Ki35xruNL._AC_UF1000,1000_QL80_.jpg"></div><div class="buttons-container"></div></div>
+  <p>This contemporary novel explores the sudden and deep romantic bond that develops between two young men, Elio and Oliver, over one summer in Italy. It's celebrated for its beautiful prose, exploration of first love, and the intensity of emotions it evokes.</p>
+  
+  <div class="book-info">
+        <strong class="book-title">A Walk to Remember</strong><div class="book-author">by Nicholas Sparks</div><div class="ratings-and-review"><div class="star-rating"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i></div><span class="review-count">11,592</span></div></div><div class="content-container"><div class="image-container"><img alt="" src="https://m.media-amazon.com/images/I/51SSn9pbbGL._AC_UF1000,1000_QL80_.jpg"></div><div class="buttons-container"></div></div>
+  <p>Set in a small town, this novel tells the heartwarming and tragic love story between a popular teenage boy and a reverent minister's daughter. Its themes of unexpected love, redemption, and the power of faith and hope make it a deeply moving read.</p>
+  
+  <div class="book-info">
+        <strong class="book-title">Eleanor &amp; Park</strong><div class="book-author">by Rainbow Rowell</div><div class="ratings-and-review"><div class="star-rating"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i></div><span class="review-count">28,793</span></div></div><div class="content-container"><div class="image-container"><img alt="" src="https://m.media-amazon.com/images/I/3199vr0jB1L._AC_UF1000,1000_QL80_.jpg"></div><div class="buttons-container"></div></div>
+  <p>This novel is a touching portrayal of two outsiders—Eleanor, a misfit, and Park, a half-Korean high school kid—falling in love over one school year in 1986. It's known for its authentic narration, relatable characters, and the sweet, awkward, and all-consuming experience of a first love.</p></div> </div>`
     },
-    blog3: {
-        title: "Top GPT-4 Prompts for Book Recommendations",
-        imagePath: "/PurpleBookShelf.webp",
-        content: `<h3>Introduction</h3>
-        <p>Discover books that align with your personal and professional growth goals using our GPT-4 prompts. These prompts span a variety of themes, including personal development, professional skills, and spiritual growth, designed to help you find inspiring and insightful reads. By leveraging these GPT-4 prompts, you're equipped to explore a personalized selection of books that foster knowledge, inspiration, and self-improvement. Begin your journey to a curated reading experience that supports your aspirations and challenges.</p>
 
-        <h3>Personal Growth & Mindset</h3>
-        <ul>
-            <li><strong>Life's Ultimate Purpose</strong>: Uncovering one's true calling and passion.</li>
-            <li><strong>Resilience Building</strong>: Developing strength to overcome life's challenges.</li>
-            <li><strong>Cultivating Positive Habits</strong>: Forming habits that lead to success and fulfillment.</li>
-            <li><strong>Finding True Motivation</strong>: Keeping motivated for personal and professional goals.</li>
-            <li><strong>Stepping Out of Comfort Zone</strong>: Embracing challenges for growth.</li>
-        </ul>
-    
-        <h3>Resilience & Mental Well-being</h3>
-        <ul>
-            <li><strong>Emotional Regulation</strong>: Mastering control over one's emotions.</li>
-            <li><strong>Overcoming Depression and Anxiety</strong>: Strategies for coping with mental health issues.</li>
-            <li><strong>Stress Management</strong>: Techniques to reduce and manage stress effectively.</li>
-            <li><strong>Confrontation Skills</strong>: Navigating and resolving conflicts healthily.</li>
-            <li><strong>Decision Firmness</strong>: Building confidence in making and sticking to decisions.</li>
-        </ul>
-    
-        <h3>Mastering Soft Skills</h3>
-        <ul>
-            <li><strong>Effective Communication</strong>: Enhancing clarity and effectiveness in communication.</li>
-            <li><strong>Developing Empathy</strong>: Understanding and sharing others' feelings.</li>
-            <li><strong>Emotional Intelligence</strong>: Using and managing emotions in positive ways.</li>
-            <li><strong>Social Skills for Success</strong>: Improving networking and social interactions.</li>
-            <li><strong>Conflict Resolution</strong>: Resolving disputes constructively and effectively.</li>
-        </ul>
-    
-        <h3>Professional Skill Development</h3>
-        <ul>
-            <li><strong>Leadership</strong>: Fostering strong leadership qualities and abilities.</li>
-            <li><strong>Strategic Thinking</strong>: Developing the ability to plan and think strategically.</li>
-            <li><strong>Marketing</strong>: Gaining insights into advanced marketing strategies.</li>
-            <li><strong>Effective Communication in the Workplace</strong>: Enhancing professional communication skills.</li>
-            <li><strong>Coding</strong>: Acquiring proficiency in system design and algorithms.</li>
-        </ul>
-    
-        <h3>Entrepreneurship Insights</h3>
-        <ul>
-            <li><strong>Innovation in Business</strong>: Exploring innovative strategies and practices.</li>
-            <li><strong>Starting a Startup</strong>: Comprehensive guidance on launching new ventures.</li>
-            <li><strong>Entrepreneurial Mindset</strong>: Understanding the mindset of successful entrepreneurs.</li>
-            <li><strong>Building Startups from Scratch</strong>: Creating a business from the ground up.</li>
-            <li><strong>Global Business Skills</strong>: Expanding a business internationally.</li>
-        </ul>
-    
-        <h3>Emulating Success</h3>
-        <ul>
-            <li><strong>Mindset of Icons</strong>: Gleaning insights from figures like Elon Musk and Jeff Bezos.</li>
-            <li><strong>Business Strategy</strong>: Studying strategic moves of successful entrepreneurs.</li>
-            <li><strong>Success Stories</strong>: Learning from the biographies of successful individuals.</li>
-            <li><strong>Leadership Lessons</strong>: Extracting lessons from top global leaders.</li>
-            <li><strong>Innovation Pioneers</strong>: Understanding the minds behind major innovations.</li>
-        </ul>
-    
-        <h3>Business Giants Unveiled</h3>
-        <ul>
-            <li><strong>Corporate Strategy</strong>: Decoding strategies of successful businesses.</li>
-            <li><strong>Corporate Giants Insights</strong>: Understanding how major companies like Amazon and Google succeeded.</li>
-            <li><strong>Market Leadership</strong>: How top companies dominate their markets.</li>
-            <li><strong>Business Models Explained</strong>: Analyzing various successful business models.</li>
-            <li><strong>Global Business Trends</strong>: Keeping abreast of current global business trends.</li>
-        </ul>
-    
-        <h3>Navigating Relationships</h3>
-        <ul>
-            <li><strong>Building Healthy Relationships</strong>: Developing positive and supportive connections.</li>
-            <li><strong>Escaping Toxic Relationships</strong>: Identifying and moving away from harmful dynamics.</li>
-            <li><strong>Understanding Relationship Dynamics</strong>: Gaining deeper insights into relationship behaviors.</li>
-            <li><strong>Effective Communication in Relationships</strong>: Enhancing communication with partners and loved ones.</li>
-            <li><strong>Recovering from Heartbreak</strong>: Finding ways to heal and move forward.</li>
-        </ul>
-    
-        <h3>Spiritual Enlightenment</h3>
-        <ul>
-            <li><strong>Spiritual Awakening</strong>: Achieving and understanding spiritual enlightenment.</li>
-            <li><strong>Finding Peace in Life</strong>: Discovering paths to inner serenity.</li>
-            <li><strong>Mindfulness Practices</strong>: Incorporating mindfulness into everyday life.</li>
-            <li><strong>Meditation Guides</strong>: For beginners and advanced practitioners.</li>
-            <li><strong>Overcoming Overthinking</strong>: Strategies to clear the mind for focus.</li>
-        </ul>
-    
-        <h3>Fun & Entertainment</h3>
-        <ul>
-            <li><strong>Feel-Good Fiction</strong>: Books known for their positive and joyful stories.</li>
-            <li><strong>Top Adventure Novels</strong>: Popular books filled with excitement and exploration.</li>
-            <li><strong>Best Humorous Books</strong>: Highly-rated books that are funny and entertaining.</li>
-            <li><strong>Popular Romance Novels</strong>: Widely enjoyed novels about love and relationships.</li>
-            <li><strong>Engaging Mystery and Suspense</strong>: Top novels with thrilling mysteries and suspense.</li>
-        </ul>
-    
-        <h3>Conclusion</h3>
-        <p>Utilize these GPT-4 prompts to navigate the vast landscape of literature tailored to your journey of self-discovery and professional growth. Each prompt is a gateway to a curated selection of books designed to inspire, educate, and motivate you. Embark on this personalized reading adventure to enrich your knowledge and accelerate your path towards achieving your personal and professional goals.</p> `
+    "10-best-motivational-books": {
+        title: "10 Best Motivational Books",
+        imagePath: "/motivation.png",
+        content: `<div class="message-content"><div class="message-answer"><div class="book-info">
+        <strong class="book-title">The Power of Now</strong><div class="book-author">by Eckhart Tolle</div><div class="ratings-and-review"><div class="star-rating"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i></div><span class="review-count">60,645</span></div></div><div class="content-container"><div class="image-container"><img alt="" src="https://m.media-amazon.com/images/I/410hw6Q5a9L._AC_UF1000,1000_QL80_.jpg"></div><div class="buttons-container"></div></div> 
+  <p>This book is transformative, introducing readers to the concept of being fully present and the power of mindfulness. Tolle's insights help people understand the significance of now, which serves as an incredibly motivational tool for personal growth and overcoming the challenges of the past and future worries.</p>
+  
+  <div class="book-info">
+        <strong class="book-title">Awaken the Giant Within</strong><div class="book-author">by Tony Robbins</div><div class="ratings-and-review"><div class="star-rating"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i></div><span class="review-count">9,729</span></div></div><div class="content-container"><div class="image-container"><img alt="" src="https://m.media-amazon.com/images/I/41xKAlGEIdL._AC_UF1000,1000_QL80_.jpg"></div><div class="buttons-container"></div></div> 
+  <p>Robbins is known for his powerful strategies for creating lasting change and achieving peak performance. This book provides actionable techniques for controlling your emotions, finances, relationships, and life, making it a go-to source of motivation and empowerment.</p>
+  
+  <div class="book-info">
+        <strong class="book-title">Think and Grow Rich</strong><div class="book-author">by Napoleon Hill</div><div class="ratings-and-review"><div class="star-rating"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div><span class="review-count">25,344</span></div></div><div class="content-container"><div class="image-container"><img alt="" src="https://m.media-amazon.com/images/I/51EhG-kKCAL._AC_UF1000,1000_QL80_.jpg"></div><div class="buttons-container"></div></div> 
+  <p>Based on the foundational idea that success starts in the mind, Hill's book has motivated and inspired millions to achieve their personal and financial goals. It's a classic that delivers timeless wisdom on the psychological power of thought and the importance of perseverance.</p>
+  
+  <div class="book-info">
+        <strong class="book-title">The 7 Habits of Highly Effective People</strong><div class="book-author">by Stephen R. Covey</div><div class="ratings-and-review"><div class="star-rating"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i></div><span class="review-count">1,799</span></div></div><div class="content-container"><div class="image-container"><img alt="" src="https://m.media-amazon.com/images/I/51G4LdDNUGL._AC_UF1000,1000_QL80_.jpg"></div><div class="buttons-container"></div></div> 
+  <p>Covey's book offers a principle-centered approach for solving personal and professional problems. By integrating these habits into one's life, the book aims to help readers achieve true independence, interdependence, and continuous improvement, serving as an excellent source of motivation.</p>
+  
+  <div class="book-info">
+        <strong class="book-title">Grit: The Power of Passion and Perseverance</strong><div class="book-author">by Angela Duckworth</div><div class="ratings-and-review"><div class="star-rating"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i></div><span class="review-count">19,059</span></div></div><div class="content-container"><div class="image-container"><img alt="" src="https://m.media-amazon.com/images/I/41bN9NIz89L._AC_UF1000,1000_QL80_.jpg"></div><div class="buttons-container"></div></div> 
+  <p>Angela Duckworth dives into what truly drives success: not genius, but a unique blend of passion and long-term perseverance she calls "grit." This book is motivating because it showcases that anyone can achieve their goals through determination and resilience, debunking myths about talent and intelligence.</p><div class="book-info">
+        <strong class="book-title">Atomic Habits</strong><div class="book-author">by James Clear</div><div class="ratings-and-review"><div class="star-rating"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div><span class="review-count">126,623</span></div></div><div class="content-container"><div class="image-container"><img alt="" src="https://m.media-amazon.com/images/I/41C-012Es8L._AC_UF1000,1000_QL80_.jpg"></div><div class="buttons-container"></div></div> 
+  <p>This book offers a proven framework for improving every day. James Clear, one of the world's leading experts on habit formation, reveals practical strategies that will teach you exactly how to form good habits, break bad ones, and master the tiny behaviors that lead to remarkable results. It's ideal for anyone looking to motivate themselves to implement lasting change.</p>
+  
+  <div class="book-info">
+        <strong class="book-title">Mindset: The New Psychology of Success</strong><div class="book-author">by Carol S. Dweck</div><div class="ratings-and-review"><div class="star-rating"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i></div><span class="review-count">21,361</span></div></div><div class="content-container"><div class="image-container"><img alt="" src="https://m.media-amazon.com/images/I/41wyCevk%2B6L._AC_UF1000,1000_QL80_.jpg"></div><div class="buttons-container"></div></div>
+  <p>In this book, Carol D. Dweck offers insight into why mindset plays a significant role in determining achievement and success. With a focus on the fixed vs. growth mindset, this book teaches the reader how to foster a growth mindset in personal and professional aspects, making it a powerful tool for motivation.</p>
+  
+  <div class="book-info">
+        <strong class="book-title">The Subtle Art of Not Giving a F*ck</strong><div class="book-author">by Mark Manson</div><div class="ratings-and-review"><div class="star-rating"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i></div><span class="review-count">144,790</span></div></div><div class="content-container"><div class="image-container"><img alt="" src="https://m.media-amazon.com/images/I/51mN3bY0JjL._AC_UF1000,1000_QL80_.jpg"></div><div class="buttons-container"></div></div>
+  <p>This counterintuitive approach to living a good life by Mark Manson offers raw and refreshing honesty. It challenges conventional wisdom and offers deeply insightful, no-nonsense advice on navigating life's trials with a more grounded sense of priorities, making it highly motivational for those looking to focus on what really matters.</p>
+  
+  <div class="book-info">
+        <strong class="book-title">Can't Hurt Me: Master Your Mind and Defy the Odds</strong><div class="book-author">by David Goggins</div><div class="ratings-and-review"><div class="star-rating"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div><span class="review-count">96,721</span></div></div><div class="content-container"><div class="image-container"><img alt="" src="https://m.media-amazon.com/images/I/41amV20d1uL._AC_UF1000,1000_QL80_.jpg"></div><div class="buttons-container"></div></div>
+  <p>David Goggins shares his astonishing life story and reveals that most of us tap into only 40% of our capabilities. Goggins calls this The 40% Rule, and his story illuminates a path that anyone can follow to push past pain, demolish fear, and reach their full potential, making this book a powerhouse of motivation.</p>
+  
+  <div class="book-info">
+        <strong class="book-title">Drive: The Surprising Truth About What Motivates Us</strong><div class="book-author">by Daniel H. Pink</div><div class="ratings-and-review"><div class="star-rating"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i></div><span class="review-count">8,693</span></div></div><div class="content-container"><div class="image-container"><img alt="" src="https://m.media-amazon.com/images/I/41HB3UBVr9L._AC_UF1000,1000_QL80_.jpg"></div><div class="buttons-container"></div></div>
+  <p>Using 50 years of behavioral science, Daniel H. Pink uncovers the misunderstanding about what truly motivates us. He suggests that the secret to high performance and satisfaction is the deeply human need to direct our own lives, to learn and create new things, and to do better by ourselves and the world. This book is crucial for anyone seeking to foster intrinsic motivation in themselves or others.</p></div>
+  </div>`
+    },
+
+    "10-best-books-for-mindset": {
+        title: "10 Best Books for Mindset",
+        imagePath: "/mindset.png",
+        content: `<div class="message-content"><div class="message-answer"><div class="book-info">
+        <strong class="book-title">Mindset: The New Psychology of Success</strong><div class="book-author">by Carol S. Dweck</div><div class="ratings-and-review"><div class="star-rating"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i></div><span class="review-count">21,361</span></div></div><div class="content-container"><div class="image-container"><img alt="" src="https://m.media-amazon.com/images/I/41wyCevk%2B6L._AC_UF1000,1000_QL80_.jpg"></div><div class="buttons-container"></div></div> 
+  <p>This seminal work by Carol Dweck delves into the power of our mindset, illustrating how a simple yet groundbreaking idea of the "growth mindset" versus the "fixed mindset" can profoundly affect our lives. Dweck's theory encourages perseverance, effort, and a love of learning as pathways to success, making it a foundational read for anyone looking to foster a more adaptive and positive mindset.</p>
+  
+  <div class="book-info">
+        <strong class="book-title">Atomic Habits: An Easy &amp; Proven Way to Build Good Habits &amp; Break Bad Ones</strong><div class="book-author">by James Clear</div><div class="ratings-and-review"><div class="star-rating"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div><span class="review-count">126,238</span></div></div><div class="content-container"><div class="image-container"><img alt="" src="https://m.media-amazon.com/images/I/41C-012Es8L._AC_UF1000,1000_QL80_.jpg"></div><div class="buttons-container"></div></div> 
+  <p>James Clear's 'Atomic Habits' provides an insightful exploration into the incremental improvements that lead to significant results over time. Clear offers practical strategies for forming good habits, breaking bad ones, and mastering the tiny behaviors that lead to remarkable results. This book is essential for understanding how habits form the backbone of a positive mindset and achieving one's goals.</p>
+  
+  <div class="book-info">
+        <strong class="book-title">The Power of Now: A Guide to Spiritual Enlightenment</strong><div class="book-author">by Eckhart Tolle</div><div class="ratings-and-review"><div class="star-rating"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i></div><span class="review-count">60,617</span></div></div><div class="content-container"><div class="image-container"><img alt="" src="https://m.media-amazon.com/images/I/410hw6Q5a9L._AC_UF1000,1000_QL80_.jpg"></div><div class="buttons-container"></div></div> 
+  <p>Eckhart Tolle's guide to spiritual enlightenment emphasizes the importance of living in the present and detaching from the constant churn of thoughts and worries about the past and future. 'The Power of Now' is pivotal for readers striving to cultivate a peaceful and focused mindset, making it easier to tackle life's challenges with grace and equanimity.</p>
+  
+  <div class="book-info">
+        <strong class="book-title">Grit: The Power of Passion and Perseverance</strong><div class="book-author">by Angela Duckworth</div><div class="ratings-and-review"><div class="star-rating"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i></div><span class="review-count">19,059</span></div></div><div class="content-container"><div class="image-container"><img alt="" src="https://m.media-amazon.com/images/I/41bN9NIz89L._AC_UF1000,1000_QL80_.jpg"></div><div class="buttons-container"></div></div> 
+  <p>In 'Grit', Angela Duckworth unravels the essence of what truly drives success: a unique combination of passion and perseverance she defines as "grit." Duckworth's research shows that a tenacious and resilient mindset is far more important than talent alone, presenting a compelling argument for anyone looking to foster endurance and consistency in their personal and professional lives.</p>
+  
+  <div class="book-info">
+        <strong class="book-title">The Obstacle Is the Way: The Timeless Art of Turning Trials into Triumph</strong><div class="book-author">by Ryan Holiday</div><div class="ratings-and-review"><div class="star-rating"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i></div><span class="review-count">27,517</span></div></div><div class="content-container"><div class="image-container"><img alt="" src="https://m.media-amazon.com/images/I/41qkPXBugXL._AC_UF1000,1000_QL80_.jpg"></div><div class="buttons-container"></div></div> 
+  <p>Ryan Holiday's work draws on Stoicism, a branch of ancient Greek philosophy, to offer readers a formula for turning obstacles into advantages. By embracing challenges and understanding that overcoming difficulties is a primary pathway to achievement, this book equips readers with the tools to adopt a resilient and opportunistic mindset, making it invaluable for those aiming to thrive in the face of adversity.</p><div class="book-info">
+        <strong class="book-title">Thinking, Fast and Slow</strong><div class="book-author">by Daniel Kahneman</div><div class="ratings-and-review"><div class="star-rating"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i></div><span class="review-count">43,165</span></div></div><div class="content-container"><div class="image-container"><img alt="" src="https://m.media-amazon.com/images/I/41wI53OEpCL._AC_UF1000,1000_QL80_.jpg"></div><div class="buttons-container"></div></div> 
+  <p>This book delves into the dual-process theory of the mind and how our automatic, fast, and emotional system, and our deliberate, slow, and logical system shape our judgments and decisions. It's pivotal for understanding mindset as it unpacks the cognitive biases that affect our behavior and decision-making, offering profound insights into how we think and make choices.</p>
+  
+  <div class="book-info">
+        <strong class="book-title">The 7 Habits of Highly Effective People</strong><div class="book-author">by Stephen R. Covey</div><div class="ratings-and-review"><div class="star-rating"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i></div><span class="review-count">1,799</span></div></div><div class="content-container"><div class="image-container"><img alt="" src="https://m.media-amazon.com/images/I/51G4LdDNUGL._AC_UF1000,1000_QL80_.jpg"></div><div class="buttons-container"></div></div> 
+  <p>Stephen R. Covey's book is a classic that explores fundamental principles for personal and professional effectiveness. It centers on character ethics and the idea that true success encompasses a balance of personal and interpersonal effectiveness. This book is essential for developing a mindset focused on growth, productivity, and interpersonal relationships.</p>
+  
+  <div class="book-info">
+        <strong class="book-title">Deep Work: Rules for Focused Success in a Distracted World</strong><div class="book-author">by Cal Newport</div><div class="ratings-and-review"><div class="star-rating"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i></div><span class="review-count">31,843</span></div></div><div class="content-container"><div class="image-container"><img alt="" src="https://m.media-amazon.com/images/I/91ZEUnFeUSL._AC_UF1000,1000_QL80_.jpg"></div><div class="buttons-container"></div></div> 
+  <p>Cal Newport introduces the concept of 'deep work,' the ability to focus without distraction on a cognitively demanding task. This book is invaluable for cultivating a mindset that embraces deep work as a crucial skill for achieving success in any field, highlighting strategies to develop this skill and overcome the distractions of the modern world.</p>
+  
+  <div class="book-info">
+        <strong class="book-title">Mindfulness in Plain English</strong><div class="book-author">by Bhante Henepola Gunaratana</div><div class="ratings-and-review"><div class="star-rating"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i></div><span class="review-count">2,885</span></div></div><div class="content-container"><div class="image-container"><img alt="" src="https://m.media-amazon.com/images/I/41KAxLaE22L._AC_UF1000,1000_QL80_.jpg"></div><div class="buttons-container"></div></div> 
+  <p>This book offers a straightforward guide to mindfulness, meditation, and the practical applications of mindfulness practices in daily life. It's particularly useful for anyone looking to develop a mindset of present-moment awareness, reduce stress, and enhance personal and professional life through the cultivation of mindfulness.</p>
+  
+  <div class="book-info">
+        <strong class="book-title">Drive: The Surprising Truth About What Motivates Us</strong><div class="book-author">by Daniel H. Pink</div><div class="ratings-and-review"><div class="star-rating"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i></div><span class="review-count">8,693</span></div></div><div class="content-container"><div class="image-container"><img alt="" src="https://m.media-amazon.com/images/I/41HB3UBVr9L._AC_UF1000,1000_QL80_.jpg"></div><div class="buttons-container"></div></div> 
+  <p>Daniel H. Pink explores the intricacies of human motivation, debunking common myths about what motivates us at work and in life. He argues that the keys to high performance and satisfaction are the deeply human needs to direct our own lives, to learn and create new things, and to do better by ourselves and our world. This book is crucial for understanding and fostering a mindset that is motivated by intrinsic rewards rather than extrinsic incentives.</p></div></div>`
+    },
+
+    "10-best-books-for-entrepreneurs": {
+        title: "10 Best Books for Entrepreneurs",
+        imagePath: "/entrepreneurs.png",
+        content: `<div class="message-content"><div class="message-answer"><div class="book-info">
+        <strong class="book-title">The Lean Startup</strong><div class="book-author">by Eric Ries</div><div class="ratings-and-review"><div class="star-rating"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i></div><span class="review-count">16,453</span></div></div><div class="content-container"><div class="image-container"><img alt="" src="https://m.media-amazon.com/images/I/41%2BZsplOPWL._AC_UF1000,1000_QL80_.jpg"></div><div class="buttons-container"></div></div> 
+  <p>This book introduces entrepreneurs to the concept of lean startup methodology, encouraging them to create more successful businesses by building products that people really want. It's an essential read for understanding how today's startups are built and how to innovate effectively in business.</p>
+  
+  <div class="book-info">
+        <strong class="book-title">Zero to One: Notes on Startups, or How to Build the Future</strong><div class="book-author">by Peter Thiel with Blake Masters</div><div class="ratings-and-review"><div class="star-rating"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i></div><span class="review-count">36,193</span></div></div><div class="content-container"><div class="image-container"><img alt="" src="https://m.media-amazon.com/images/I/31Dj0fQiqYL._AC_UF1000,1000_QL80_.jpg"></div><div class="buttons-container"></div></div> 
+  <p>Peter Thiel, co-founder of PayPal and an early investor in Facebook, shares unconventional wisdom on startup innovation. "Zero to One" presents a unique perspective on building companies that create new things, making it a must-read for entrepreneurs wanting to think outside the box.</p>
+  
+  <div class="book-info">
+        <strong class="book-title">The $100 Startup: Reinvent the Way You Make a Living, Do What You Love, and Create a New Future</strong><div class="book-author">by Chris Guillebeau</div><div class="ratings-and-review"><div class="star-rating"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i></div><span class="review-count">7,269</span></div></div><div class="content-container"><div class="image-container"><img alt="" src="https://m.media-amazon.com/images/I/41bjAiHQINL._AC_UF1000,1000_QL80_.jpg"></div><div class="buttons-container"></div></div> 
+  <p>This book is perfect for entrepreneurs who are looking to start small but dream big. Chris Guillebeau inspires with real-life examples of individuals who built businesses earning $50,000 or more from a modest investment, often starting with only a passion and an idea.</p>
+  
+  <div class="book-info">
+        <strong class="book-title">Think and Grow Rich</strong><div class="book-author">by Napoleon Hill</div><div class="ratings-and-review"><div class="star-rating"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div><span class="review-count">25,344</span></div></div><div class="content-container"><div class="image-container"><img alt="" src="https://m.media-amazon.com/images/I/51EhG-kKCAL._AC_UF1000,1000_QL80_.jpg"></div><div class="buttons-container"></div></div> 
+  <p>Though first published in 1937, this book remains a cornerstone in the genre of personal success literature. Its philosophies on achieving financial and personal success have influenced countless entrepreneurs, making it a timeless guide for those seeking to improve their mindset and achieve extraordinary goals.</p>
+  
+  <div class="book-info">
+        <strong class="book-title">The Hard Thing About Hard Things: Building a Business When There Are No Easy Answers</strong><div class="book-author">by Ben Horowitz</div><div class="ratings-and-review"><div class="star-rating"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i></div><span class="review-count">14,069</span></div></div><div class="content-container"><div class="image-container"><img alt="" src="https://m.media-amazon.com/images/I/51NCFyHpkxL._AC_UF1000,1000_QL80_.jpg"></div><div class="buttons-container"></div></div> 
+  <p>Ben Horowitz, co-founder of Andreessen Horowitz and one of Silicon Valley's most respected and experienced entrepreneurs, offers essential advice on building and running a startup. This book is a realistic look at the difficulties of entrepreneurship and provides invaluable insights into overcoming the challenges that businesses face.</p><div class="book-info">
+        <strong class="book-title">Rework</strong><div class="book-author">by Jason Fried and David Heinemeier Hansson</div><div class="ratings-and-review"><div class="star-rating"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i></div><span class="review-count">10,933</span></div></div><div class="content-container"><div class="image-container"><img alt="" src="https://m.media-amazon.com/images/I/41ybybFtqIL._AC_UF1000,1000_QL80_.jpg"></div><div class="buttons-container"></div></div> 
+  <p>This book challenges conventional business notions, encouraging entrepreneurs to start small and focus on efficiency rather than expansion. It's great for those looking to bootstrap their business with minimal investments.</p>
+  
+  <div class="book-info">
+        <strong class="book-title">How to Win Friends and Influence People</strong><div class="book-author">by Dale Carnegie</div><div class="ratings-and-review"><div class="star-rating"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i></div><span class="review-count">31,883</span></div></div><div class="content-container"><div class="image-container"><img alt="" src="https://m.media-amazon.com/images/I/41OksZQYt%2BL._AC_UF1000,1000_QL80_.jpg"></div><div class="buttons-container"></div></div>
+  <p>Even though it's not a traditional business book, it's a timeless guide on interpersonal skills and communication, crucial for networking, sales, and leadership in entrepreneurial ventures.</p>
+  
+  <div class="book-info">
+        <strong class="book-title">The 4-Hour Workweek</strong><div class="book-author">by Timothy Ferriss</div><div class="ratings-and-review"><div class="star-rating"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i></div><span class="review-count">26,826</span></div></div><div class="content-container"><div class="image-container"><img alt="" src="https://m.media-amazon.com/images/I/51I2EIRF44L._AC_UF1000,1000_QL80_.jpg"></div><div class="buttons-container"></div></div>
+  <p>This book introduces entrepreneurs to the concept of lifestyle design and automating businesses to free up time for personal interests. It's ideal for those seeking to create a business that supports their desired lifestyle.</p>
+  
+  <div class="book-info">
+        <strong class="book-title">The E-Myth Revisited: Why Most Small Businesses Don't Work and What to Do About It</strong><div class="book-author">by Michael E. Gerber</div><div class="ratings-and-review"><div class="star-rating"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i></div><span class="review-count">11,847</span></div></div><div class="content-container"><div class="image-container"><img alt="" src="https://m.media-amazon.com/images/I/41uWUlsA1QL._AC_UF1000,1000_QL80_.jpg"></div><div class="buttons-container"></div></div>
+  <p>Gerber discusses the common pitfalls of assuming that understanding the technical work of a business means you can successfully run a business doing that work. It's a vital read for entrepreneurs to differentiate between working on your business versus working in your business.</p>
+  
+  <div class="book-info">
+        <strong class="book-title">Start with Why: How Great Leaders Inspire Everyone to Take Action</strong><div class="book-author">by Simon Sinek</div><div class="ratings-and-review"><div class="star-rating"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i></div><span class="review-count">37,054</span></div></div><div class="content-container"><div class="image-container"><img alt="" src="https://m.media-amazon.com/images/I/41iZulVq18L._AC_UF1000,1000_QL80_.jpg"></div><div class="buttons-container"></div></div>
+  <p>This book explores the significance of understanding and articulating the core motivations behind your business. It's essential for entrepreneurs who want to build a brand that resonates deeply with customers and employees alike.</p></div></div>`
+    },
+
+    "9-best-leadership-books": {
+        title: "9 Best Leadership Books",
+        imagePath: "/leaders.png",
+        content: `<div class="message-content"><div class="message-answer"><div class="book-info">
+        <strong class="book-title">Good to Great</strong><div class="book-author">by Jim Collins</div><div class="ratings-and-review"><div class="star-rating"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i></div><span class="review-count">8,822</span></div></div><div class="content-container"><div class="image-container"><img alt="" src="https://m.media-amazon.com/images/I/414giB97a3L._AC_UF1000,1000_QL80_.jpg"></div><div class="buttons-container"></div></div> 
+  <p>This book delves into how companies transition from being good to great, focusing on leadership strategies that have propelled organizations into long-term success. It's a seminal work for understanding the role of disciplined leadership in achieving excellence.</p>
+
+  <div class="book-info">
+        <strong class="book-title">Leaders Eat Last</strong><div class="book-author">by Simon Sinek</div><div class="ratings-and-review"><div class="star-rating"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i></div><span class="review-count">16,141</span></div></div><div class="content-container"><div class="image-container"><img alt="" src="https://m.media-amazon.com/images/I/41yEMb5UZDL._AC_UF1000,1000_QL80_.jpg"></div><div class="buttons-container"></div></div>
+  <p>Simon Sinek explores how great leaders build environments of trust and cooperation. Drawing on real-life examples and insights from various fields, the book argues that the best leaders are those who prioritize the well-being of their teams.</p>
+  
+  <div class="book-info">
+        <strong class="book-title">Dare to Lead</strong><div class="book-author">by Brené Brown</div><div class="ratings-and-review"><div class="star-rating"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i></div><span class="review-count">20,750</span></div></div><div class="content-container"><div class="image-container"><img alt="" src="https://m.media-amazon.com/images/I/41KwzXq2lgL._AC_UF1000,1000_QL80_.jpg"></div><div class="buttons-container"></div></div>
+  <p>Brené Brown addresses the critical role of vulnerability in leadership. Through extensive research, she demonstrates how courage and openness are essential qualities for effective leadership and organizational success.</p>
+  
+  <div class="book-info">
+        <strong class="book-title">The 21 Irrefutable Laws of Leadership</strong><div class="book-author">by John C. Maxwell</div><div class="ratings-and-review"><div class="star-rating"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i></div><span class="review-count">8,453</span></div></div><div class="content-container"><div class="image-container"><img alt="" src="https://m.media-amazon.com/images/I/41D6HT9Kn8L._AC_UF1000,1000_QL80_.jpg"></div><div class="buttons-container"></div></div>
+  <p>John C. Maxwell presents a compelling study of leadership principles that are timeless and applicable across various contexts. This book is invaluable for anyone looking to understand the foundational aspects of leading effectively and influencing others.</p><div class="book-info">
+        <strong class="book-title">Drive: The Surprising Truth About What Motivates Us</strong><div class="book-author">by Daniel H. Pink</div><div class="ratings-and-review"><div class="star-rating"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i></div><span class="review-count">8,693</span></div></div><div class="content-container"><div class="image-container"><img alt="" src="https://m.media-amazon.com/images/I/41HB3UBVr9L._AC_UF1000,1000_QL80_.jpg"></div><div class="buttons-container"></div></div>
+  <p>This book dives deep into what truly motivates us, going beyond traditional rewards to find how autonomy, mastery, and purpose can lead to greater success. It's an essential read for leaders looking to motivate their teams in more engaging and effective ways.</p>
+  
+  <div class="book-info">
+        <strong class="book-title">The Five Dysfunctions of a Team: A Leadership Fable</strong><div class="book-author">by Patrick Lencioni</div><div class="ratings-and-review"><div class="star-rating"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i></div><span class="review-count">13,473</span></div></div><div class="content-container"><div class="image-container"><img alt="" src="https://m.media-amazon.com/images/I/41oyIEPb-TL._AC_UF1000,1000_QL80_.jpg"></div><div class="buttons-container"></div></div>
+  <p>Through a unique fable-style narrative, Lencioni addresses the fundamental causes of team dysfunction and provides leaders with practical tools for overcoming these issues. It's crucial for anyone looking to build or lead a cohesive, effective team.</p>
+  
+  <div class="book-info">
+        <strong class="book-title">Primal Leadership: Unleashing the Power of Emotional Intelligence</strong><div class="book-author">by Daniel Goleman, Richard Boyatzis, and Annie McKee</div><div class="ratings-and-review"><div class="star-rating"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i></div><span class="review-count">1,537</span></div></div><div class="content-container"><div class="image-container"><img alt="" src="https://m.media-amazon.com/images/I/51gYcLLgLmL._AC_UF1000,1000_QL80_.jpg"></div><div class="buttons-container"></div></div>
+  <p>This book introduces Emotional Intelligence in leadership, showcasing its importance in managing teams to achieving greatness. It's a pivotal read for leaders who wish to connect on a deeper level with their employees and drive their teams to success.</p>
+  
+  <div class="book-info">
+        <strong class="book-title">Turn the Ship Around!: A True Story of Turning Followers into Leaders</strong><div class="book-author">by L. David Marquet</div><div class="ratings-and-review"><div class="star-rating"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i></div><span class="review-count">9,019</span></div></div><div class="content-container"><div class="image-container"><img alt="" src="https://m.media-amazon.com/images/I/411AWwAFhIL._AC_UF1000,1000_QL80_.jpg"></div><div class="buttons-container"></div></div>
+  <p>Marquet offers a compelling narrative of leadership transformation aboard a nuclear submarine. This book provides valuable insights into empowering team members and fostering a culture of initiative and innovation. It's ideal for leaders looking to cultivate a strong sense of ownership and accountability in their teams.</p>
+  
+  <div class="book-info">
+        <strong class="book-title">The Leadership Challenge: How to Make Extraordinary Things Happen in Organizations</strong><div class="book-author">by James M. Kouzes and Barry Z. Posner</div><div class="ratings-and-review"><div class="star-rating"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i></div><span class="review-count">3,215</span></div></div><div class="content-container"><div class="image-container"><img alt="" src="https://m.media-amazon.com/images/I/51A-GrLmGsL._AC_UF1000,1000_QL80_.jpg"></div><div class="buttons-container"></div></div>
+  <p>With decades of research behind it, this book explores five practices common to successful leaders. It combines evidence-based strategies with practical examples, making it a guide for developing leadership skills that can profoundly impact an organization's ability to thrive.</p></div></div>`
+    },
+
+    "10-best-biographies-of-entrepreneurs": {
+        title: "10 Best Biographies of Entrepreneurs",
+        imagePath: "/biographies.png",
+        content: `<div class="message-content"><div class="message-answer"><div class="book-info">
+        <strong class="book-title">Steve Jobs</strong><div class="book-author">by Walter Isaacson</div><div class="ratings-and-review"><div class="star-rating"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i></div><span class="review-count">24,395</span></div></div><div class="content-container"><div class="image-container"><img alt="" src="https://m.media-amazon.com/images/I/41ZEWWyQDnL._AC_UF1000,1000_QL80_.jpg"></div><div class="buttons-container"></div></div>
+  <p>This biography provides an in-depth look into the life of Steve Jobs, the iconic co-founder of Apple Inc. Written with exclusive interviews from Jobs himself, as well as his family, friends, and adversaries, Walter Isaacson presents an honest and detailed portrayal of a man whose passion for perfection revolutionized six industries: personal computers, animated movies, music, phones, tablet computing, and digital publishing. It's insightful for entrepreneurs for understanding the power of vision and innovation in entrepreneurship.</p>
+  
+  <div class="book-info">
+        <strong class="book-title">Elon Musk: Tesla, SpaceX, and the Quest for a Fantastic Future</strong><div class="book-author">by Ashlee Vance</div><div class="ratings-and-review"><div class="star-rating"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i></div><span class="review-count">39,850</span></div></div><div class="content-container"><div class="image-container"><img alt="" src="https://m.media-amazon.com/images/I/510K2KR%2Bo6L._AC_UF1000,1000_QL80_.jpg"></div><div class="buttons-container"></div></div>
+  <p>Ashlee Vance offers an exclusive look into the life of Elon Musk, the man behind SpaceX, Tesla, and SolarCity. The biography dives deep into Musk's vision for the future, his relentless drive, and his ambition to change the world for the better. Entrepreneurs will find Musk's risk-taking and resilience in the face of challenges inspiring, showcasing the mindset needed to tackle grand global issues through innovation.</p>
+  
+  <div class="book-info">
+        <strong class="book-title">The Everything Store: Jeff Bezos and the Age of Amazon</strong><div class="book-author">by Brad Stone</div><div class="ratings-and-review"><div class="star-rating"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i></div><span class="review-count">12,209</span></div></div><div class="content-container"><div class="image-container"><img alt="" src="https://m.media-amazon.com/images/I/41TSKiXaVNL._AC_UF1000,1000_QL80_.jpg"></div><div class="buttons-container"></div></div>
+  <p>This book offers a comprehensive look at the rise of Amazon and its founder, Jeff Bezos. From the company's humble beginnings in a garage to becoming a global behemoth, Brad Stone uncovers the unyielding drive and vision of Bezos. Entrepreneurs can glean lessons on scaling a business, customer focus, and the importance of long-term strategic thinking from Bezos's journey.</p>
+  
+  <div class="book-info">
+        <strong class="book-title">Shoe Dog: A Memoir</strong><div class="book-author">by the Creator of Nike</div><div class="ratings-and-review"><div class="star-rating"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i></div><span class="review-count">59,122</span></div></div><div class="content-container"><div class="image-container"><img alt="" src="https://m.media-amazon.com/images/I/41k%2BWVPLwZL._AC_UF1000,1000_QL80_.jpg"></div><div class="buttons-container"></div></div>
+  <p>Phil Knight provides a candid and humble narrative of the journey to create Nike, one of the most iconic and profitable brands worldwide. Starting from selling shoes from the trunk of his car to building a brand that revolutionized sportswear, Knight's story is filled with failures, setbacks, and vital lessons that are invaluable for entrepreneurs looking for real-world inspiration and the importance of perseverance.</p>
+  
+  <div class="book-info">
+        <strong class="book-title">The Snowball: Warren Buffett and the Business of Life</strong><div class="book-author">by Alice Schroeder</div><div class="ratings-and-review"><div class="star-rating"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i></div><span class="review-count">4,314</span></div></div><div class="content-container"><div class="image-container"><img alt="" src="https://m.media-amazon.com/images/I/51KVWaAP02L._AC_UF1000,1000_QL80_.jpg"></div><div class="buttons-container"></div></div>
+  <p>This biography provides a meticulous account of Warren Buffett, the legendary investor and philanthropist, tracing his journey from his early days to becoming one of the wealthiest and most respected men in the world. Alice Schroeder presents Buffett's investment strategies, business wisdom, and life lessons, making it a treasure trove for entrepreneurs and investors seeking to understand the discipline, mindset, and ethical compass necessary to build lasting success and wealth.</p><div class="book-info">
+        <strong class="book-title">Made in America</strong><div class="book-author">by Sam Walton</div><div class="ratings-and-review"><div class="star-rating"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i></div><span class="review-count">7,164</span></div></div><div class="content-container"><div class="image-container"><img alt="" src="https://m.media-amazon.com/images/I/41SigNmkZ9L._AC_UF1000,1000_QL80_.jpg"></div><div class="buttons-container"></div></div> 
+  <p>This biography captures the essence of entrepreneurship through the lens of Sam Walton, the founder of Walmart. It offers invaluable insights into Walton's relentless pursuit of excellence and innovation in retail, making it an essential read for anyone interested in the making of a business empire from the ground up.</p>
+  
+  <div class="book-info">
+        <strong class="book-title">Soros: The Life and Times of a Messianic Billionaire</strong><div class="book-author">by Michael T. Kaufman</div><div class="ratings-and-review"><div class="star-rating"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div><span class="review-count">110</span></div></div><div class="content-container"><div class="image-container"><img alt="" src="https://m.media-amazon.com/images/I/41J4ZRDONEL._AC_UF1000,1000_QL80_.jpg"></div><div class="buttons-container"></div></div> 
+  <p>This book provides a detailed account of George Soros, a man whose financial acumen and philanthropic activities have made him a significant figure in global economics and politics. It explores his early life, his theories on economics and politics, and his vast charitable work, offering readers a comprehensive view of a complex and influential entrepreneur.</p>
+  
+  <div class="book-info">
+        <strong class="book-title">Leonardo da Vinci</strong><div class="book-author">by Walter Isaacson</div><div class="ratings-and-review"><div class="star-rating"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i></div><span class="review-count">10,460</span></div></div><div class="content-container"><div class="image-container"><img alt="" src="https://m.media-amazon.com/images/I/51LS8guAn6L._AC_UF1000,1000_QL80_.jpg"></div><div class="buttons-container"></div></div> 
+  <p>While not a traditional entrepreneur, Leonardo da Vinci's life as detailed by Isaacson showcases the ultimate polymath's blend of art, science, and technology, shedding light on his immense creativity and inventiveness. For entrepreneurs seeking inspiration on innovation and interdisciplinary thinking, this biography is a treasure trove.</p>
+  
+  <div class="book-info">
+        <strong class="book-title">Grinding It Out: The Making of McDonald's</strong><div class="book-author">by Ray Kroc</div><div class="ratings-and-review"><div class="star-rating"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i></div><span class="review-count">2,518</span></div></div><div class="content-container"><div class="image-container"><img alt="" src="https://m.media-amazon.com/images/I/41AMV9NB7xL._AC_UF1000,1000_QL80_.jpg"></div><div class="buttons-container"></div></div> 
+  <p>This autobiography tells the story of Ray Kroc, the man behind the global McDonald's franchise. It chronicles his journey from a struggling salesman to the leader of one of the world's most successful fast-food chains, offering a raw and inspiring look at perseverance and vision in entrepreneurship.</p>
+  
+  <div class="book-info">
+        <strong class="book-title">I Invented the Modern Age: The Rise of Henry Ford</strong><div class="book-author">by Richard Snow</div><div class="ratings-and-review"><div class="star-rating"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i></div><span class="review-count">277</span></div></div><div class="content-container"><div class="image-container"><img alt="" src="https://m.media-amazon.com/images/I/41bq1g7zbpL._AC_UF1000,1000_QL80_.jpg"></div><div class="buttons-container"></div></div> 
+  <p>This book delves into the life of Henry Ford, not just as the inventor of the Model T but also as a pioneer who revolutionized industrial production. It explores his visionary approach to business, including the introduction of the assembly line and his complex personal life, making it a compelling read for anyone interested in the intersection of innovation, industry, and entrepreneurship.</p></div></div>`
     }
 };
 

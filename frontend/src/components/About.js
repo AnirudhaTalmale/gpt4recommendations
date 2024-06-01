@@ -1,11 +1,11 @@
 import React from 'react';
-import HeaderWithBackButton from './HeaderWithBackButton';
+import HeaderWithHomeButton from './HeaderWithHomeButton';
 import '../App.css';
 
 const About = () => {
     return (
       <div className="entire-about-us-page">
-        <HeaderWithBackButton />
+        <HeaderWithHomeButton />
         <div className="about-container">
             <h1>Founder's Story</h1>
             <p>Hi, I'm Anirudha, the founder of GetBooks.ai. As a software engineer with a tenure at Amazon and an avid reader, I've always been passionate about discovering the right books across genres like entrepreneurship, self-help, and time management. However, I faced significant challenges in this pursuit, which inspired me to create a solution.</p>

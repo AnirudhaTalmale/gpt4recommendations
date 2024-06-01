@@ -542,19 +542,20 @@ function Chat() {
   const [showContinueButton, setShowContinueButton] = useState(false);
 
   function extractTags(content) {
+    // console.log("content is", content);
     // Initialize the array to store extracted book titles and authors
     const bookDetails = [];
   
     // Regex to match each book section in the content
-    const bookInfoMatches = content.match(/<div class="book-info">[\s\S]*?<\/div><\/a><div class="content-container">/g) || [];
+    const bookInfoMatches = content.match(/<div class="book-info">[\s\S]*?<\/div><\/div><\/div>/g) || [];
     bookInfoMatches.forEach((bookInfo, index) => {
       // Extract the book title
       const titleMatch = bookInfo.match(/<strong class="book-title">(.*?)<\/strong>/);
       const title = titleMatch ? titleMatch[1].trim() : '';
   
-      // Extract the book author
-      const authorMatch = bookInfo.match(/<div class="book-author">(.*?)<\/div>/);
-      const author = authorMatch ? authorMatch[1].trim().substring(3) : '';  // Remove 'by ' prefix from the author name
+      // Extract the book author, removing the 'by ' prefix correctly
+      const authorMatch = bookInfo.match(/<div class="book-author">by (.*?)<\/div>/);
+      const author = authorMatch ? authorMatch[1].trim() : '';
   
       // Combine title and author with numbering
       if (title && author) {
@@ -565,6 +566,7 @@ function Chat() {
     // Return the extracted book titles and authors
     return bookDetails.join('\n'); // Joining with newline character
   }
+  
 
   const onContinueGenerating = () => {
     // Find the current session by its ID

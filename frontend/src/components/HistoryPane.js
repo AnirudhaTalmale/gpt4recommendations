@@ -320,11 +320,6 @@ const HistoryPane = forwardRef(({
                 <i className="fa-solid fa-trash"></i> Delete account
               </li>
               <li>
-                <a href="/blog/blog3" className="dropdown-link" style={{ display: 'block', width: '100%', height: '100%' }}>
-                  <i class="fa-solid fa-file"></i> Sample Prompts
-                </a>
-              </li>
-              <li>
                 <a href="/contact-us" className="dropdown-link" style={{ display: 'block', width: '100%', height: '100%' }}>
                   <i className="fa-solid fa-address-book"></i> Contact us
                 </a>

@@ -1,5 +1,5 @@
 import React, {useEffect} from 'react';
-import HeaderWithBackButton from './HeaderWithBackButton'; 
+import HeaderWithHomeButton from './HeaderWithHomeButton'; 
 import '../App.css';
 
 const Contact = () => {
@@ -22,7 +22,7 @@ const Contact = () => {
 
   return (
     <>
-     <HeaderWithBackButton />
+     <HeaderWithHomeButton />
     
     <div className="contact-container">
       
