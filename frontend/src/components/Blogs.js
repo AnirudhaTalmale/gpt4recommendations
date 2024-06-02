@@ -408,7 +408,7 @@ const blogs = {
     "key-insights-of-deep-work-by-cal-newport": {
         title: "Key Insights of 'Deep Work' by Cal Newport",
         imagePath: "/deep-work.png",
-        content: `<div class="blog=lightbox-content"><div>
+        content: `<div class="blog-lightbox-content"><div>
   <ol>
   <li><b>Deep Work Is Valuable</b>: Deep work is defined as professional activities performed in a state of distraction-free concentration that push your cognitive capabilities to their limit. These efforts create new value, improve your skill, and are hard to replicate.</li>
   <li><b>The Deep Work Hypothesis</b>: The ability to perform deep work is becoming increasingly rare at exactly the same time it is becoming increasingly valuable in our economy. As a result, the few who cultivate this skill, and then make it the core of their working life, will thrive.</li>
@@ -420,6 +420,252 @@ const blogs = {
   <li><b>Law of Productivity</b>: High-Quality Work Produced = (Time Spent) x (Intensity of Focus). This law underlines the importance of working not just harder but smarter, with intensity and without distraction.</li>
   <li><b>Grand Gestures</b>: Newport suggests that significant commitments to deep work, such as J.K. Rowling booking a hotel room to finish a novel, can help overcome procrastination and create an environment where deep work can flourish.</li>
   <li><b>Be Lazy</b>: Newport argues that downtime isn’t opposed to deep work but rather a complement to it. Scheduled downtime aids insights, helps recharge the energy needed for deep work, and prevents burnout by allowing for a work-life balance.</li>
+  </ol></div></div>`
+    },
+
+    "key-insights-of-zero-to-one-by-peter-thiel": {
+        title: "Key Insights of 'Zero to One' by Peter Thiel",
+        imagePath: "/zero-to-one.png",
+        content: `<div class="blog-lightbox-content"><div>
+  <ol>
+      <li><b>The Challenge of the Future</b>: The book begins with Thiel's premise that successful businesses are built by creating something new rather than merely copying what already exists. He argues that we live in a world where we need unique innovations that take us from 0 to 1, rather than from 1 to n.</li>
+      <li><b>Monopoly vs. Competition</b>: Thiel suggests that monopolies drive progress because they have the resources and incentive to innovate. In contrast, companies in fierce competition often end up with diminished profits and little incentive or ability to innovate.</li>
+      <li><b>The Importance of Secrets</b>: According to Thiel, every successful startup is based on a secret—a truth that others don’t see. Finding and exploiting these secrets is crucial to going from 0 to 1.</li>
+      <li><b>Building a Strong Foundation</b>: Thiel emphasizes the importance of a strong foundation for any startup, which includes a cohesive team and a unique product that offers a tenfold improvement over existing solutions.</li>
+      <li><b>Last Mover Advantage</b>: Thiel argues that the true value of a business lies in its future cash flows. Therefore, becoming the last mover in a particular market—creating a product that’s difficult to surpass—ensures long-term profitability.</li>
+      <li><b>The Power Law of Venture Capital</b>: The book discusses the power law dynamics of venture capital, where a small handful of investments will typically outperform all others. Thiel advises focusing intensely on a few ventures that have the potential to monopolize a market.</li>
+      <li><b>Start Small and Monopolize</b>: A successful startup should start with a small, niche market and expand outward, aiming to dominate each sector it enters.</li>
+      <li><b>The Mechanics of Mafia</b>: The term "PayPal mafia" is used to illustrate the concept of a tightly-knit group of people who share a common understanding and work ethic. Thiel stresses the importance of building a strong, dedicated team for startup success.</li>
+      <li><b>Foundations</b>: When building a startup, foundational decisions about the company’s culture, its hiring practices, and the relationship between its founders are critically important and can have long-lasting impacts.</li>
+      <li><b>Technology and Globalization</b>: Thiel discusses the differences between technology (doing more with less) and globalization (the spread of ideas and technology worldwide). He believes that significant progress comes from technological innovation, not only globalization.</li>
+  </ol></div></div>`
+    },
+
+    "key-insights-of-rework-by-jason-fried": {
+        title: "Key Insights of 'Rework' by Jason Fried",
+        imagePath: "/rework.png",
+        content: `<div class="blog-lightbox-content"><div>
+  <ol>
+  <li><b>Ignore the Real World</b>: The authors challenge the common notion that "it can't be done" by encouraging readers to ignore people who claim real-world limitations. Instead, they advocate for innovation and pursuing ideas that may seem unrealistic to some.</li>
+  <li><b>Learning from Failures is Overrated</b>: Fried and Hansson argue that the cultural obsession with learning from mistakes is not as beneficial as we think. They believe in learning more from successes and focusing on what actually works.</li>
+  <li><b>Workaholism</b>: The book takes a stand against the glorification of long hours and workaholism. It suggests that being effective is not about working hard but working smart, and that balance leads to better outcomes.</li>
+  <li><b>Scratch Your Own Itch</b>: Creating products or solutions should stem from personal needs. If you build a solution for a problem you understand well, it's likely that others will benefit from it too.</li>
+  <li><b>Start Making Something</b>: Instead of getting bogged down in planning and forecasting, Rework advocates for jumping straight into creation. The authors believe that tangible progress leads to better feedback and results than speculative planning.</li>
+  <li><b>Embracing Constraints</b>: Constraints should not be seen as limitations but as opportunities to focus and be creative within set boundaries. This can lead to more innovative solutions than if resources were limitless.</li>
+  <li><b>Ignore the Competition</b>: Constantly worrying about what competitors are doing can distract and derail your own progress. Rework suggests focusing on your own customers and products instead.</li>
+  <li><b>Less is More</b>: The philosophy of simplicity is central to Rework. The authors argue that doing less can lead to a better quality product or service, as it allows for the refinement of what truly matters.</li>
+  <li><b>Meetings Are Toxic</b>: Describing meetings as one of the biggest time-sinks in the business world, Rework proposes that most meetings can be replaced with more effective and less disruptive forms of communication.</li>
+  <li><b>Quick Wins</b>: Momentum in business is crucial, and securing quick wins early on can build confidence and pave the way for larger successes. Focus on achievable short-term goals that lead to immediate results.</li>
+  <li><b>Don't Copy</b>: Copying others may seem like a shortcut to success, but it only leads to being a second-rate version of something else. Original ideas foster uniqueness and can carve out new markets.</li>
+  <li><b>Decommoditize Your Product</b>: In a world full of similar products, adding a personal touch or unique feature can make your product stand out. This could be something as simple as unique copywriting or exceptional customer service.</li>
+  <li><b>Pick a Fight</b>: Standing up against a larger competitor can help define your brand and attract customers who are looking for an alternative. It’s about differentiating and positioning your product as a better choice.</li>
+  <li><b>Marketing Is Not a Department</b>: The Rework philosophy treats marketing as an integral part of every employee’s role. Everything you do communicates the value of your brand, not just the efforts of the marketing department.</li>
+  </ol></div></div>`
+    },
+
+    "key-insights-of-how-to-win-friends-and-influence-people-by-dale-carnegie": {
+        title: "Key Insights of 'How to Win Friends and Influence People' by Dale Carnegie",
+        imagePath: "/how-to-win-friends-and-influence-people.png",
+        content: `<div class="blog-lightbox-content">
+  <ol>
+      <li><b>Don't Criticize, Condemn, or Complain</b>: Emphasizing understanding and compassion over judgment fosters stronger relationships and more positive outcomes.</li>
+      <li><b>Give Honest and Sincere Appreciation</b>: Genuine appreciation encourages continued effort and good behavior, building deeper connections.</li>
+      <li><b>Arouse in the Other Person an Eager Want</b>: Success in persuasion often involves aligning your requests with others' desires or benefits, making them more receptive.</li>
+      <li><b>Become Genuinely Interested in Other People</b>: Showing genuine interest in others can build rapport and foster mutual respect and affection.</li>
+      <li><b>Smile</b>: A simple smile can be a powerful tool in winning friends and influencing people, conveying warmth and acceptance.</li>
+      <li><b>Remember That a Person’s Name Is to That Person the Sweetest and Most Important Sound in Any Language</b>: Using someone's name personalizes interactions, making them feel valued and respected.</li>
+      <li><b>Be a Good Listener. Encourage Others to Talk About Themselves</b>: Listening actively shows that you value others' opinions and feelings, enhancing connection and understanding.</li>
+      <li><b>Talk in Terms of the Other Person’s Interests</b>: Communicating in a way that reflects the other person's interests can increase their engagement and willingness to collaborate.</li>
+      <li><b>Make the Other Person Feel Important - And Do It Sincerely</b>: Acknowledging others' importance sincerely can boost their self-esteem and strengthen your relationship with them.</li>
+      <li><b>The Only Way to Get the Best of an Argument Is to Avoid It</b>: Avoiding arguments can prevent negativity and preserve relationships, making cooperation more likely.</li>
+  </ol></div></div>`
+    },
+
+    "key-insights-of-leaders-eat-last-by-simon-sinek": {
+        title: "Key Insights of 'Leaders Eat Last' by Simon Sinek",
+        imagePath: "/leaders-eat-last.png",
+        content: `<div class="blog-lightbox-content"><div>
+  <ol>
+      <li><b>The Circle Of Safety</b>: The concept explains how leaders can create a sense of belonging and security in the workplace, encouraging teamwork and collaboration by protecting their team from outside threats and internal competition.</li>
+      <li><b>Chemicals Of Leadership</b>: Sinek describes four key chemicals (Endorphins, Dopamine, Serotonin, and Oxytocin) that affect human feelings of happiness and leadership traits. Understanding these can help leaders foster loyalty and trust.</li>
+      <li><b>E.D.S.O.</b>: An acronym derived from the chemicals—Endorphins, Dopamine, Serotonin, Oxytocin—highlighting their importance in leadership and team cohesion. Leaders need to balance these to create a healthy workplace culture.</li>
+      <li><b>The Responsibility Of Leaders</b>: The book emphasizes that true leadership is about taking care of those in your charge, rather than just being in charge. This servant leadership approach builds stronger, more resilient teams.</li>
+      <li><b>Empathy And Leadership</b>: Sinek argues that empathy, the ability to recognize and share the feelings of another, is a key attribute of successful leaders, fostering an environment where employees feel valued and understood.</li>
+      <li><b>Abstraction Kills</b>: This insight discusses how the higher up the leadership chain someone goes, the more abstract their work becomes, and the more disconnected they can become from the front-line realities, potentially leading to harmful decisions due to lack of empathy or understanding.</li>
+      <li><b>The Courage To Do The Right Thing</b>: Leadership involves making tough decisions that are not always in one’s self-interest. The courage to do what is right for others before oneself defines great leadership.</li>
+      <li><b>Trust And Performance</b>: Teams that trust each other perform better because they feel safe to take risks, admit mistakes, and collaborate openly without fear of retribution or embarrassment.</li>
+      <li><b>The Dangers Of Dopamine</b>: While dopamine rewards accomplishments, over-reliance on it through short-term wins or achievements can lead to addiction and undermine the longer-term benefits of serotonin and oxytocin in building social connections and trust.</li>
+      <li><b>Why We Have Leaders</b>: The book posits that leaders exist to protect their teams from danger, both internal and external. This protection allows team members to focus on working together effectively and creatively.</li>
+  </ol></div></div>`
+    },
+
+    "key-insights-of-dare-to-lead-by-brene-brown": {
+        "title": "Key Insights of 'Dare to Lead' by Brené Brown",
+        imagePath: "/dare-to-lead.png",
+        content: `<div class="blog-lightbox-content"><div>
+  <ol>
+    <li><b>Vulnerability is a strength</b>: Brené Brown teaches that embracing vulnerability is not a sign of weakness, but a courageous act that leaders must adopt. It means showing up and being seen, even when there are no guarantees. This vulnerability paves the way for genuine connections and innovation.</li>
+    <li><b>Clear values guide good leadership</b>: Identifying and living by your values is crucial for effective leadership. Knowing your core values helps in making decisions, directing your team, and staying grounded through challenges.</li>
+    <li><b>Trust is built through small moments</b>: According to Brown, trust isn't gained through grand gestures; it's built incrementally over time through small moments of connection and reliability. Leaders need to pay attention to these moments to foster a culture of trust.</li>
+    <li><b>Braving involves boundaries</b>: Successful leadership and relationships require clear boundaries. The acronym BRAVING, standing for Boundaries, Reliability, Accountability, Vault, Integrity, Non-judgment, and Generosity, outlines the elements needed for building trust.</li>
+    <li><b>Failure is necessary for growth</b>: Leaders must not only accept their own mistakes but encourage a culture where failure is seen as an opportunity for growth. It is essential for innovation and learning.</li>
+    <li><b>Daring leadership means staying curious</b>: A key aspect of daring leadership is maintaining a sense of curiosity, especially when faced with challenging situations or differing opinions. This curiosity fosters learning and adaptability.</li>
+    <li><b>Empathy is more powerful than sympathy</b>: Empathy, the ability to feel with people, creates connections and helps in effective leadership. In contrast, sympathy can drive disconnection since it involves looking at someone's situation from the outside, not from their perspective.</li>
+    <li><b>Clear, kind feedback is crucial</b>: Effective leaders know how to give feedback in a way that's both clear and kind, ensuring that the message is received without damaging relationships. It's about being direct and respectful at the same time.</li>
+    <li><b>Rumbling with vulnerability is important</b>: Leaders must engage in difficult conversations and situations with an open heart and mind. This means not shying away from the discomfort of vulnerability.</li>
+    <li><b>Values-based cultures are sustainable</b>: Aligning organizational practices with core values creates a strong and sustainable culture. Leaders should work tirelessly to embed these values into every aspect of the organization.</li>
+    <li><b>Learning to rise after failing</b>: The ability to pick oneself up after making mistakes or failing is crucial. Brené Brown stresses the 'Rising Strong' process as a way to confront and learn from the emotions accompanying failure, allowing for real growth.</li>
+  </ol></div></div>`
+    },
+
+    "key-insights-of-shoe-dog-by-phil-knight": {
+        "title": "Key Insights of 'Shoe Dog' by Phil Knight",
+        imagePath: "/shoe-dog.png",
+        content: `<div class="blog-lightbox-content">
+  <ol>
+      <li><b>Embrace the Struggle</b>: The journey of creating and building Nike was filled with financial hardships, skepticism from those around Phil Knight, and numerous near-death experiences for the company. This insight illustrates the importance of perseverance and embracing challenges as opportunities for growth. Knight's story is a testament to the idea that enduring hardships can be a crucial component of success.</li>
+      <li><b>Innovate Relentlessly</b>: Phil Knight's commitment to innovation was pivotal in Nike's rise to the top of the athletic footwear industry. From the waffle shoe design to the endorsement deals with athletes, Nike's success was largely due to its willingness to take risks and innovate. This teaches the value of innovation in staying relevant and competitive in any market.</li>
+      <li><b>Value of a Strong Team</b>: Knight highlights the significance of assembling a dedicated and passionate team. The early Nike team, referred to as "Buttfaces" for their irreverence and dedication, was crucial in overcoming the company's myriad challenges. This reflects the idea that the right team can make an indomitable force against adversities.</li>
+      <li><b>Branding is Key</b>: The creation of the Nike brand, from the name to the Swoosh logo, emphasizes the power of branding. Knight's story demonstrates that creating a strong, recognizable brand is essential for building relationships with consumers and carving out a unique space in the marketplace.</li>
+      <li><b>Listen to Your Inner Voice</b>: Throughout the memoir, Phil Knight discusses the importance of following his intuition, from the initial idea of selling Japanese running shoes in America to taking on the establishment. This conveys the message that trusting your gut and believing in your vision, even when it goes against conventional wisdom, can lead to unparalleled success.</li>
+      <li><b>Impact Beyond Business</b>: Nike's journey under Knight wasn't just about selling shoes; it was about creating a culture and impacting lives. This shows that a business can transcend its basic function and become a part of people's identities and communities, underscoring the potential for businesses to have a broader social impact.</li>
+      <li><b>The Journey is the Reward</b>: Finally, Phil Knight reflects on the journey of building Nike as being the most rewarding part of his life, not just the financial success it brought. This insight highlights the value of cherishing experiences and growth over material success, suggesting that the process of striving toward a goal is often as meaningful as achieving it.</li>
+  </ol></div></div>`
+    },
+
+    "key-insights-of-elon-musk-by-ashlee-vance": {
+        "title": "Key Insights of 'Elon Musk' by Ashlee Vance",
+        imagePath: "/elon-musk.png",
+        content: `<div class="blog-lightbox-content">
+  <ol>
+      <li><b>Unyielding Determination</b>: This book showcases Elon Musk's unparalleled determination towards his goals. Despite numerous setbacks, such as the early failures of SpaceX and Tesla's near-bankruptcy, Musk's commitment never wavered. His ability to keep his companies afloat, especially during the 2008 financial crisis, illustrates his tenacity and drive.</li>
+      <li><b>Innovation and Vision</b>: Musk's success is largely driven by his vision for the future. He is not just content with creating profitable companies; he aims to change the world. His work with SpaceX, Tesla, and SolarCity reflects his ambition to combat climate change, reduce the world's dependence on fossil fuels, and make human life multi-planetary.</li>
+      <li><b>Risk-Taking</b>: The book highlights Musk's willingness to take significant risks. He invested almost all his personal wealth into his companies when they were near failure. This risk-taking behavior is a testament to his belief in his visions, regardless of the potential for personal financial loss.</li>
+      <li><b>Work Ethic</b>: Musk is portrayed as a highly driven individual, often working long hours and expecting the same from his employees. His work ethic is profound, with reports of him working 100 hours per week across his various companies. This intensity has been both a key to his success and a point of contention with employees.</li>
+      <li><b>Impact on Industries</b>: Through the narratives of Tesla and SpaceX, the book illustrates how Musk has been able to disrupt and innovate within the automotive and aerospace industries, respectively. By pushing for the development of electric vehicles and reusable rockets, Musk has challenged existing market norms and set new benchmarks for sustainability and innovation.</li>
+      <li><b>Leadership Style</b>: Musk's leadership style is characterized by his direct involvement in the minutiae of his businesses, from engineering decisions to product design. While his hands-on approach and high expectations have sometimes led to conflicts with employees and executives, they have also been fundamental to his companies' successes.</li>
+      <li><b>Focus on the Future</b>: The book underscores Musk's commitment to solving humanity's most significant problems. Whether it's making human life sustainable on Earth through renewable energy or ensuring the survival of the human species by colonizing Mars, his projects are always geared towards the future benefit of mankind.</li>
+  </ol></div></div>`
+    },
+
+    "key-insights-of-start-with-why-by-simon-sinek": {
+        "title": "Key Insights of 'Start with Why' by Simon Sinek",
+        imagePath: "/start-with-why.png",
+        content: `<div class="blog-lightbox-content">
+  <ol>
+  <li><b>The Golden Circle</b>: Simon Sinek introduces the concept of the Golden Circle, a framework comprising three concentric circles representing "What", "How", and "Why". The outermost circle, "What", refers to the products or services a company sells. The middle circle, "How", denotes the process or differentiating value proposition. The core circle, "Why", represents the purpose, cause, or belief that inspires the organization to do what it does. Sinek argues that most companies work from the outside in, focusing on what they do, but the most inspirational and successful leaders and organizations operate from the inside out, starting with "Why".</li>
+  <li><b>The Importance of Starting with Why</b>: Starting with "Why" is presented as crucial for inspiring action, whether among customers, employees, or the broader public. Sinek posits that people don't buy what you do; they buy why you do it. By communicating the purpose (Why) behind a company or idea, leaders can attract and energize followers who share that belief, fostering a strong, loyal community driven by a shared sense of purpose.</li>
+  <li><b>The Biology of Decision Making</b>: Sinek delves into the biological aspects of how humans make decisions. He explains that decision-making processes relate to different parts of the brain. The limbic brain, responsible for feelings like trust and loyalty, as well as decision-making, has no capacity for language. This explains why we often make decisions based on feelings rather than facts. Therefore, when leaders communicate their "Why", they are appealing directly to the part of the brain that influences behavior.</li>
+  <li><b>Manipulation vs. Inspiration</b>: Sinek distinguishes between manipulation and inspiration as two ways to influence behavior. Manipulation strategies, such as promotions, price drops, and fear tactics, can drive sales or action in the short term but do not foster long-term loyalty or motivation. In contrast, inspiration comes from a clear sense of purpose or "Why", leading to more sustainable and meaningful relationships with employees and customers.</li>
+  <li><b>The Role of Trust</b>: Trust is highlighted as a crucial element in the relationship between leaders and followers. Sinek explains that when an organization's "Why" is clear, and its actions align with that purpose, it builds trust with its customers, employees, and other stakeholders. This trust is foundational for creating a loyal following and achieving long-term success. Leaders who consistently communicate and act on their "Why" nurture an environment of trust and cooperation.</li>
+  <li><b>The Tipping Point of the Why</b>: Sinek discusses the concept of the Tipping Point in the context of the "Why". He suggests that once a certain threshold of people start believing in a company or movement's "Why", momentum builds, and the movement begins to attract more people almost effortlessly. This tipping point is critical for achieving widespread adoption or significant cultural change. It underscores the importance of a clear and compelling "Why" in rallying the early adopters who can help take a message mainstream.</li>
+  </ol></div></div>`
+    },
+
+    "key-insights-of-awaken-the-giant-within-by-tony-robbins": {
+        "title": "Key Insights of 'Awaken the Giant Within' by Tony Robbins",
+        imagePath: "/awaken-the-giant-within.png",
+        content: `<div class="blog-lightbox-content"><div>
+  <ol>
+      <li><b>Take Control of Your Mental and Emotional State</b>: Tony Robbins emphasizes the importance of gaining control over your own mental and emotional state. By doing so, you can significantly influence your life's outcomes and happiness.</li>
+      <li><b>Decisions Shape Destiny</b>: The book asserts that the decisions we make, not the conditions of our lives, shape our destiny. Robbins encourages readers to make conscious, empowering decisions.</li>
+      <li><b>The Power of Belief</b>: Robbins discusses how our beliefs about what we are and what we can be precisely determine what we can be. He encourages readers to challenge and change limiting beliefs.</li>
+      <li><b>Act Consistently with Your New Beliefs</b>: It's not enough to simply change your beliefs; Robbins emphasizes the need for actions that are consistent with your new beliefs to effect change in your life.</li>
+      <li><b>Question-and-Answer Technique</b>: Robbins introduces the Question-and-Answer Technique, which helps individuals direct their focus in a way that leads to empowering emotions and effective problem-solving.</li>
+      <li><b>Master Your Communication</b>: Your communication with yourself and others significantly affects your life. Mastery of communication can improve every area of your life, from your relationships to your self-image.</li>
+      <li><b>Modeling as a Pathway to Excellence</b>: Robbins suggests that one of the fastest ways to achieve success is to model the strategies, attitudes, and beliefs of people who have already succeeded in the way you want to.</li>
+      <li><b>Personal Power</b>: The concept of personal power is central to Robbins' philosophy. He defines personal inventory as the ability to take action and produce results you desire and to create value for others.</li>
+      <li><b>Set Compelling Goals</b>: Robbins advises setting clear, specific, and compelling goals as a means to direct your focus and energy toward the outcomes you want to achieve.</li>
+      <li><b>Embrace the Power of Giving</b>: Robbins highlights the importance of giving and contribution as a source of personal fulfillment and as a way to achieve true success and happiness.</li>
+      <li><b>Use the Power of Commitment</b>: Making a true commitment to your goals, values, and beliefs is presented as a way to drive yourself forward and overcome obstacles.</li>
+      <li><b>Transforming Fear into Power</b>: Robbins teaches techniques for transforming fear and anxiety into powerful drives toward achieving goals and overcoming challenges.</li>
+      <li><b>The Science of Neuro-Associative Conditioning (NAC)</b>: Robbins introduces the concept of Neuro-Associative Conditioning as a method for creating lasting changes in behavior and emotional patterns.</li>
+      <li><b>Energy Management</b>: Robbins stresses the importance of managing your physical energy through healthful living, exercise, and nutrition as a foundation for mental and emotional well-being.</li>
+      <li><b>Value Hierarchies</b>: Understanding and realigning your value hierarchies, or the things you value most, is key to living a fulfilled and balanced life according to Robbins.</li>
+  </ol></div></div>`
+    },
+
+    "key-anecdotes-of-eleanor-and-park-by-rainbow-rowell": {
+        "title": "Key Anecdotes of 'Eleanor & Park' by Rainbow Rowell",
+        imagePath: "/eleanor-and-park.png",
+        content: `<div class="blog-lightbox-content"><div>
+  <ol>
+  <li><b>First Meeting</b>: Eleanor and Park's first encounter is far from typical romance beginnings. Eleanor is the new girl on the bus, trying to find a seat among unfriendly faces. Park, somewhat reluctantly, offers her a seat next to him. This initial interaction, full of tension and discomfort, sets the tone for their unique relationship development.</li>
+  
+  <li><b>Comic Books and Headphones</b>: One of the key moments in their budding relationship is when Park notices Eleanor reading his comic books over his shoulder on the bus. Without saying a word, he begins to bring more comics, sharing them with her silently. This evolves into sharing headphones, slowly bridging the gap between them with music and stories.</li>
+  
+  <li><b>Starlight Drive-In</b>: A significant step in Eleanor and Park's relationship is their night out at the Starlight Drive-In movie. It's a moment filled with teenage awkwardness and excitement, symbolizing their growing connection and a rare escape from the difficulties of their individual lives.</li>
+  
+  <li><b>The "I Love You"</b>: Park's unexpected declaration of love during one of their phone conversations marks a pivotal moment in their relationship. It's a heartfelt admission made even more meaningful by Eleanor's hesitation to say it back, showcasing the vulnerability and depth of their feelings for each other.</li>
+  
+  <li><b>Eleanor's Family Secret</b>: Eleanor's difficult home life is a recurring element that influences her personality and relationship with Park. When Park discovers the true extent of Eleanor's struggles and the danger she's in, it brings a serious and protective dimension to their teenage romance.</li>
+  
+  <li><b>The Mixed Tape</b>: Park makes Eleanor a mixed tape as a gesture of his feelings, capturing the essence of the '80s and highlighting the personal and intimate nature of their relationship. The tracks he chooses and the effort he puts into the mixed tape serve as a love letter through music.</li>
+  
+  <li><b>Romeo and Juliet</b>: As part of their English class, Eleanor and Park are faced with the story of Romeo and Juliet, which mirrors the intense and somewhat forbidden nature of their own relationship. Their discussions about the play and its themes add depth to their understanding of love and each other.</li>
+  
+  <li><b>The Final Goodbye</b>: Eleanor and Park's relationship faces an ultimate test when Eleanor has to flee from her toxic family environment, leading to a heartbreaking and ambiguous goodbye. Park's drive to help Eleanor escape, coupled with their unsure farewell, exemplifies the depth of their first love and the pain of separation.</li>
+  </ol></div></div>`
+    },
+
+    "key-anecdotes-of-call-me-by-your-name-by-andre-aciman": {
+        "title": "Key Anecdotes of 'Call Me By Your Name' by André Aciman",
+        imagePath: "/call-me-by-your-name.png",
+        content: `<div class="blog-lightbox-content"><div>
+  <ol>
+      <li><b>The Villa</b>: Set in the mid-1980s in Italy, much of the novel takes place in a charming villa owned by Elio's family. This is where Elio and Oliver's relationship begins to blossom, absorbing the sun-drenched beauty of the Italian Riviera which becomes a silent witness to their burgeoning romance.</li>
+      <li><b>The Peach Scene</b>: A particularly poignant and symbolic moment occurs with the infamous peach scene, where Elio's vulnerability and Oliver's response to it encapsulate the intensity and rawness of their connection. This moment is a pivotal point in their relationship, highlighting themes of desire, shame, and acceptance.</li>
+      <li><b>The Bike Rides</b>: The leisurely bike rides through the Italian countryside become emblematic of Elio and Oliver's relationship, symbolizing freedom, exploration, and the fleeting nature of their summer romance. These rides serve as a metaphor for their journey together, filled with conversations that bridge their intellectual and emotional worlds.</li>
+      <li><b>The Postcard</b>: Elio's gifting of the postcard to Oliver, featuring Monet's Berm, symbolizes their shared moments and the private world they've created together. This gesture reflects the depth of their bond, with the postcard later serving as a memento of their time together.</li>
+      <li><b>The Final Meeting in Rome</b>: Their last days spent together in Rome showcase a culmination of their relationship, where they experience the city's enchanting history and vibrant nightlife. This bittersweet farewell captures the essence of their connection, bound by time yet timeless in its intensity.</li>
+      <li><b>Oliver's Visit Years Later</b>: Oliver's return to the villa years later, now a husband and father, reignites the profound yet unspoken feelings between him and Elio. This reunion, marked by the phrase "Elio, Elio, Elio," echoes their enduring connection and the lasting impact of their summer love.</li>
+      <li><b>“Call Me By Your Name”</b>: The phrase becomes a symbol of their intimate bond, representing how deeply intertwined their lives and identities have become. By calling each other by their own names, they express a profound level of empathy, understanding, and acceptance that transcends their physical relationship.</li>
+  </ol></div></div>`
+    },
+
+    "key-anecdotes-of-outlander-by-diana-gabaldon": {
+        "title": "Key Anecdotes of 'Outlander' by Diana Gabaldon",
+        imagePath: "/outlander.png",
+        content: `<div class="blog-lightbox-content"><div>
+  <ol>
+      <li><b>Through the Stones</b>: Claire Randall, a former WWII nurse, accidentally travels back in time from 1946 to 1743 through standing stones at Craigh na Dun in the Scottish Highlands. Her sudden appearance in the past initiates the bulk of the story as she navigates this dangerous and unfamiliar time.</li>
+      <li><b>Captured by the Clan</b>: After arriving in the 18th century, Claire is captured by members of Clan MacKenzie, suspecting her to be an English spy. This leads to her meeting with Jamie Fraser, which marks the beginning of their epic love story and her eventual integration into the clan.</li>
+      <li><b>The Wedding</b>: To protect Claire from falling into the hands of the cruel Captain Jonathan "Black Jack" Randall, she is forced to marry Jamie Fraser, despite her being technically still married in the 20th century. Their hastily arranged marriage blossoms into a deep and passionate love.</li>
+      <li><b>The Witch Trial</b>: Claire and her friend Geillis Duncan are accused of witchcraft. This dangerous situation reveals deep secrets about both women and tests Claire's wit and will to survive. It also leads to her divulging her true origin to Jamie.</li>
+      <li><b>The Duel and its Repercussions</b>: Jamie and Captain Randall duel, despite Claire's plea not to, leading to Jamie's capture and imprisonment by the English. Claire's desperate bid to rescue Jamie, showcasing her resourcefulness and the deep bond between them, forms a crucial turning point in their relationship.</li>
+      <li><b>Lallybroch</b>: Upon returning to Jamie's ancestral home, Lallybroch, Claire and Jamie attempt to lead a simpler life. This period provides deeper insights into Jamie's past, his relationship with his sister Jenny, and the challenges of leading the clan.</li>
+      <li><b>The Battle of Culloden Looms</b>: As the Jacobite rising leads to the fateful Battle of Culloden, Jamie and Claire's efforts to prevent this history-altering event portray their deep involvement in the politics and turmoil of the time.</li>
+      <li><b>The Farewell at the Stones</b>: Facing the inevitable destruction of the Jacobite rebellion and with Claire pregnant, Jamie sends her back to the 20th century to save her and their unborn child, showcasing the depth of his love and sacrifice.</li>
+  </ol></div></div>`
+    },
+
+    "key-insights-of-the-four-agreements-by-don-miguel-ruiz": {
+        "title": "Key Insights of 'The Four Agreements' by Don Miguel Ruiz",
+        imagePath: "/the-four-agreements.png",
+        content: `<div class="blog-lightbox-content">
+  <ol>
+      <li><b>Be Impeccable With Your Word</b>: The first agreement emphasizes the power of words. Speaking with integrity is crucial. Say only what you mean, and avoid speaking against yourself or gossiping about others. Words can either create a beautiful dream or destroy everything around you.</li>
+      <li><b>Don't Take Anything Personally</b>: The second agreement is about the understanding that nothing others do is because of you. What others say and do is a projection of their own reality, their own dream. When you are immune to the opinions and actions of others, you won’t be the victim of needless suffering.</li>
+      <li><b>Don't Make Assumptions</b>: The third agreement involves the quest to avoid assumptions. Ask questions and express what you really want. Communicate with others as clearly as you can to avoid misunderstandings, sadness, and drama.</li>
+      <li><b>Always Do Your Best</b>: The fourth agreement is about the action of the first three: always do your best. Your best will change from moment to moment; it will be different when you are healthy as opposed to sick. Under any circumstance, simply do your best, and you will avoid self-judgment, self-abuse, and regret.</li>
+  </ol></div></div>`
+    },
+
+    "key-insights-of-you-are-a-badass-by-jen-sincero": {
+        "title": "Key Insights of 'You Are a Badass' by Jen Sincero",
+        imagePath: "/you-are-a-badass.png",
+        content: `<div class="blog-lightbox-content"><div>
+  <ol>
+  <li><b>Self-Awareness Is Key</b>: Unlocking your potential starts with being brutally honest with yourself about your fears and limitations. Recognizing and accepting your flaws and strengths is the first step towards personal growth.</li>
+  <li><b>Love Yourself</b>: One of the book's core messages is the importance of self-love. Loving yourself is not about being narcissistic; it's about respecting yourself, understanding your worth, and not settling for less than you deserve.</li>
+  <li><b>Vibrations Attract Like Vibrations</b>: The concept of vibrating on a high frequency and attracting things into your life that are in harmony with your desires is central to this book. Positive thoughts and energy are key to manifesting your desires.</li>
+  <li><b>Your Thoughts Shape Your Reality</b>: How you think on a daily basis significantly affects your life. Negative thoughts create a negative reality, whereas positive thoughts breed a positive life. Changing your mindset can transform your life.</li>
+  <li><b>Gratitude Changes Everything</b>: Practicing gratitude can shift your perspective and enhance your life in every aspect. Gratitude fosters happiness and attracts more reasons to be grateful.</li>
+  <li><b>The Power of Decision</b>: Making firm decisions is portrayed as a critical step towards achieving your dreams. Indecision is seen as a form of self-sabotage that prevents you from moving forward.</li>
+  <li><b>Money Mindset Matters</b>: Your beliefs and attitudes towards money can significantly affect your financial situation. Transforming your financial mindset from a scarcity perspective to one of abundance is essential to attracting wealth.</li>
+  <li><b>The Universe Has Your Back</b>: Believing that the universe supports you and that everything happens for your highest good can help reduce fear and encourage you to take necessary risks.</li>
+  <li><b>Take Inspired Action</b>: While positive thinking and believing in oneself are crucial, taking concrete steps towards your goals is necessary for success. Action bridges the gap between intention and manifestation.</li>
+  <li><b>Surround Yourself With Positivity</b>: The people around you can influence your energy and thoughts. Surrounding yourself with positive, like-minded individuals can boost your motivation and help you maintain a positive outlook.</li>
   </ol></div></div>`
     }
 };

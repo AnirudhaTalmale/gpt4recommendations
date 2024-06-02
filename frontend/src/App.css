@@ -2012,6 +2012,7 @@ body:not(.history-pane-open) .input-area {
 .blogPostContainer h1 {
   margin-bottom: 2rem;
   text-align: center;
+  font-size: 1.7rem;
 }
 
 .topmost-blog-image {
@@ -2025,6 +2026,10 @@ body:not(.history-pane-open) .input-area {
   /* margin-bottom: 20px; */
   line-height: 1.8rem;
   font-size: 1rem;
+}
+
+.blogPostContainer ol {
+  padding-inline-start: 1.2rem;  /* Adjusts the starting padding of the list to reduce indentation */
 }
 
 /* BlogPage.css */
