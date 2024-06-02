@@ -5,12 +5,12 @@ const anecdotesPrompt = (userQuery) => {
 
   if (process.env.NODE_ENV === 'local') {
     prompt = `Book name is "${userQuery}"
- Provide Key Anecdotes strictly with following html tags:
- <b>Anecdotes</b><ol><li><b>Anecdote Name</b>: Anecdote Story</li></ol>`;
+    Provide large number of Key Anecdotes present in the above book, strictly with following html tags:
+ <b>Anecdotes</b><ol><li><b>Place anecdote name here</b>: provide anecdote story here</li></ol>`;
   } else {
     prompt = `Book name is "${userQuery}"
- Provide Key Anecdotes strictly with following html tags:
- <b>Anecdotes</b><ol><li><b>Anecdote Name</b>: Anecdote Story</li></ol>`;
+    Provide large number of Key Anecdotes present in the above book, strictly with following html tags:
+ <b>Anecdotes</b><ol><li><b>Place anecdote name here</b>: provide anecdote story here</li></ol>`;
   }
 
   return prompt;

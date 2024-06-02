@@ -290,6 +290,137 @@ const blogs = {
   <div class="book-info">
         <strong class="book-title">I Invented the Modern Age: The Rise of Henry Ford</strong><div class="book-author">by Richard Snow</div><div class="ratings-and-review"><div class="star-rating"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i></div><span class="review-count">277</span></div></div><div class="content-container"><div class="image-container"><img alt="" src="https://m.media-amazon.com/images/I/41bq1g7zbpL._AC_UF1000,1000_QL80_.jpg"></div><div class="buttons-container"></div></div> 
   <p>This book delves into the life of Henry Ford, not just as the inventor of the Model T but also as a pioneer who revolutionized industrial production. It explores his visionary approach to business, including the introduction of the assembly line and his complex personal life, making it a compelling read for anyone interested in the intersection of innovation, industry, and entrepreneurship.</p></div></div>`
+    },
+
+    "key-insights-of-think-and-grow-rich-by-napoleon-hill": {
+        title: "Key Insights of 'Think and Grow Rich' by Napoleon Hill",
+        imagePath: "/think_and_grow_rich.png",
+        content: `<div class="blog-lightbox-content"><div>
+  <ol>
+      <li><b>Power of Thought</b>: Napoleon Hill emphasizes that thoughts are things and incredibly powerful. The central thesis is that the intangible impulse of thought can be transformed into its physical counterpart through the principle of auto-suggestion.</li>
+      <li><b>Desire</b>: Hill suggests that desire is not a hope or a wish, but a keen, pulsating desire which surpasses everything else. The starting point of all achievement, desire, in his view, acts as the motivation for success.</li>
+      <li><b>Faith</b>: The visualization and belief in the attainment of desire. Hill stresses that faith is a state of mind which may be induced by auto-suggestion. This principle involves convincing oneself that success is achievable and acting with confidence.</li>
+      <li><b>Autosuggestion</b>: This concept revolves around the power of self-suggestion to influence the subconscious mind, leading to belief, and in turn, actualization of one’s goals.</li>
+      <li><b>Specialized Knowledge</b>: Success requires personal, specialized knowledge in addition to general knowledge. However, this knowledge does not necessarily have to be in the possession of the individual but can be acquired through the network of intelligence.</li>
+      <li><b>Imagination</b>: The workshop of the mind. Hill suggests that imagination can be split into two forms - “synthetic imagination” (arranging old concepts into new combinations) and “creative imagination” (the faculty through which "hunches" and "inspirations" are received).</li>
+      <li><b>Organized Planning</b>: Effective plans are essential for transforming desire into its monetary equivalent. The formulation of detailed plans, the assembly of a supportive team, and the persistence to follow through with the plan are all crucial components.</li>
+      <li><b>Decision</b>: The mastery of procrastination. Hill argues that successful individuals have the habit of making decisions promptly and changing them slowly, if and when they are changed at all.</li>
+      <li><b>Persistence</b>: The sustained effort necessary to induce faith and transform plan into action. Hill sees persistence as a critical factor that can overcome almost any obstacle.</li>
+      <li><b>The Master Mind</b>: The coordination of knowledge and effort between two or more people who work toward a definite purpose, in a spirit of harmony. This principle is about leveraging collective brainpower.</li>
+      <li><b>The Subconscious Mind</b>: The connecting link. Hill discusses the subconscious mind as a medium through which one can voluntarily influence their brain cells by focusing on emotions of a high order (faith, love, etc.).</li>
+      <li><b>The Brain</b>: A broadcaster and receiver of thought. Successful achievement comes from the positive use of the brain through the broadcasting of thought impulses with purpose and intent.</li>
+      <li><b>The Sixth Sense</b>: The door to the temple of wisdom. It's described as the intuitive thought/flashes of hunches, which can be honed and developed to a point where one can have better judgment in all their endeavors.</li>
+  </ol></div></div>`
+    },
+
+    "key-insights-of-the-power-of-now-by-eckhart-tolle": {
+        title: "Key Insights of 'The Power of Now' by Eckhart Tolle",
+        imagePath: "/the_power_of_now.png",
+        content: `<div class="blog-lightbox-content">
+  <ol>
+  <li><b>Living in the Now</b>: Eckhart Tolle emphasizes the importance of living in the present moment. By focusing on the "now," individuals can transcend the limitations of their minds, reduce suffering, and discover a sense of peace. He argues that psychological time, which is created by the mind constantly pulling us into the past or future, is the source of a great deal of anxiety and unhappiness.</li>
+  
+  <li><b>The Ego</b>: Tolle explains that the ego is the source of a lot of inner and outer conflict. The ego is the part of the self that feeds on negativity, seeks validation from external sources, and tries to assert itself over others and situations. By recognizing and observing the ego, instead of identifying with it, individuals can diminish its power over their lives.</li>
+  
+  <li><b>Acceptance of the Present</b>: Acceptance of the present moment is crucial, according to Tolle. Much of human suffering is due to resistance to what is. By accepting the present as it is, without judgment, individuals can find a deeper sense of peace and contentment. This doesn't mean a passive resignation but rather an active acknowledgment that the present moment is all we truly have, and thus, it is perfect in its own way.</li>
+  
+  <li><b>Mindfulness and Consciousness</b>: Tolle advocates for the practice of mindfulness as a way to increase consciousness and awaken to the true self. Being mindful involves paying attention to thoughts, emotions, and sensations without judgment or attachment. This heightened state of awareness can lead to spiritual awakening, where one realizes that their true essence is beyond mind and form.</li>
+  
+  <li><b>The Pain-Body</b>: Tolle introduces the concept of the "pain-body," a sort of emotional entity that feeds on negative energy and seeks to create drama and unhappiness in individuals' lives. Understanding and becoming aware of the pain-body is crucial for diminishing its power and breaking free from cycles of pain and suffering. Instead of identifying with the pain-body, Tolle suggests observing it with neutrality, which diminishes its energy and control.</li>
+  </ol></div></div>`
+    },
+
+    "notable-moments-in-pride-and-prejudice-by-jane-austen": {
+        title: "Notable Moments in 'Pride and Prejudice' by Jane Austen",
+        imagePath: "/pride_and_prejudice.png",
+        content: `<div class="blog-lightbox-content"><div>
+  <ol>
+      <li><b>Elizabeth's Prejudice &amp; Darcy's Pride</b>: At the initial ball in Meryton, Elizabeth Bennet overhears Mr. Fitzwilliam Darcy, a wealthy and proud gentleman, refuse to dance with her citing she is "not handsome enough to tempt me." This snub plants the seeds of prejudice in Elizabeth against Darcy's apparent pride, setting a tone for their tumultuous relationship ahead.</li>
+      <li><b>Mr. Collins' Proposal</b>: Mr. Collins, a pompous clergyman and the heir to the Bennet estate, proposes to Elizabeth Bennet in a manner that is both presumptuous and devoid of any genuine affection. His emphasis on the economic and social advantages of the match, rather than love, highlights the societal pressures of marriage during the time and elicits a firm refusal from Elizabeth, showcasing her individuality and desire for a marriage based on love.</li>
+      <li><b>The Letter of Truth</b>: After vehemently rejecting Mr. Darcy's initial proposal—critiquing his role in separating her sister Jane from Mr. Bingley and his mistreatment of Mr. Wickham—Elizabeth receives a letter from Darcy. In this letter, Darcy clarifies his actions, explaining the reasons behind his interference in Jane and Bingley's relationship and revealing the true character of Mr. Wickham. This letter begins to transform Elizabeth's prejudices against Darcy, highlighting the complexity of first impressions.</li>
+      <li><b>Lydia and Wickham's Elopement</b>: Lydia Bennet, the youngest of the Bennet sisters, elopes with Mr. Wickham, a charming but unscrupulous officer. This scandal threatens to ruin the Bennet family's reputation and marriage prospects. However, Mr. Darcy intervenes in secret, arranging for the couple to marry and settling Wickham's debts, demonstrating his love for Elizabeth in a significant, albeit hidden, gesture.</li>
+      <li><b>Darcy's Second Proposal</b>: After their initial misunderstandings are cleared and Elizabeth sees Darcy's true character and his acts of kindness towards her family, Darcy proposes again. This time, Elizabeth accepts, recognizing her true feelings for him and overcoming her initial prejudice. The story culminates in a tale of understanding, growth, and the overcoming of pride and prejudice on both sides.</li>
+  </ol></div></div>`
+    },
+
+    "key-insights-of-cant-hurt-me-by-david-goggins": {
+        title: "Key Insights of 'Can't Hurt Me' by David Goggins",
+        imagePath: "/cant_hurt_me.png",
+        content: `<div class="blog-lightbox-content"><div>
+  <ol>
+      <li><b>Power of Mind</b>: The book emphasizes that the human mind holds incredible power over one’s limitations. Goggins demonstrates through his own life that by mastering the mind, an individual can push beyond perceived limitations, accomplishing feats that seem beyond reach.</li>
+      <li><b>40% Rule</b>: A central concept in Goggins' philosophy, the 40% Rule suggests that when your mind tells you you're exhausted, you've only tapped into about 40% of your true potential. This insight encourages pushing beyond comfort zones to access untapped reservoirs of strength and endurance.</li>
+      <li><b>Accountability Mirror</b>: Goggins introduces the Accountability Mirror concept, where you face your fears, flaws, and truths head-on every day. This involves a clear, unflinching self-assessment to foster growth and personal improvement.</li>
+      <li><b>Embracing Discomfort</b>: One of the key messages from Goggins is the importance of stepping into discomfort rather than avoiding it. Goggins’ life embodies the practice of regularly embracing physical, mental, and emotional discomfort as a pathway to transformation and mastery.</li>
+      <li><b>The Cookie Jar Method</b>: Goggins utilizes a mental technique called the Cookie Jar method, where he draws on past victories and successes to fuel current challenges. By recalling times he prevailed over adversity, he taps into a well of inner strength to overcome new obstacles.</li>
+      <li><b>Calloused Mind</b>: The concept of developing a "calloused mind" involves repeatedly enduring hardship and stress to build mental and emotional resilience. Similar to how hands become calloused with physical labor, the mind too can be toughened through exposure to challenges.</li>
+      <li><b>Path to Self-Improvement</b>: Goggins showcases that the journey to mastering oneself is perpetual and fraught with setbacks. Rather than a deterrent, these setbacks are portrayed as opportunities for learning and essential steps on the path to self-improvement.</li>
+  </ol></div></div>`
+    },
+
+    "key-insights-of-the-obstacle-is-the-way-by-ryan-holiday": {
+        title: "Key Insights of 'The Obstacle Is the Way' by Ryan Holiday",
+        imagePath: "/the-obstacle-is-the-way.png",
+        content: `<div class="blog-lightbox-content"><div>
+  <ol>
+    <li><b>Perception Is Key</b>: The book underscores that the way we perceive the obstacles we encounter fundamentally affects our ability to overcome them. It emphasizes adopting a mindset where challenges are seen not as impediments but as opportunities to grow, learn, and adapt.</li>
+    
+    <li><b>Action Over Inaction</b>: Another pivotal insight is the encouragement to act in the face of obstacles. Rather than becoming paralyzed by difficulties, the book suggests adopting a proactive stance, experimenting, and finding creative solutions.</li>
+    
+    <li><b>Discipline Is Essential</b>: Persistence and discipline in tackling problems are highlighted as crucial. The book argues that disciplined action, coupled with a correct mindset and an adaptable approach, can lead to overcoming any challenge.</li>
+    
+    <li><b>Turning Obstacles Upside Down</b>: The idea that obstacles can be flipped to serve our purpose is central in "The Obstacle Is the Way." It suggests that every challenge holds within it the seeds of opportunity and growth, provided we are willing to look closely.</li>
+    
+    <li><b>Controlling Emotions</b>: Another important insight is the control and management of emotions when faced with adversity. The book posits that staying calm, composed, and not letting frustration or anger take over is crucial in dealing effectively with challenges.</li>
+    
+    <li><b>The Importance of Perception</b>: This ties back into the first key insight but further stresses the importance of how our individual perceptions can cloud or clarify our judgement and decision-making process when facing obstacles.</li>
+    
+    <li><b>Embrace Failure</b>: Understanding and accepting failure as a stepping stone rather than a blockade is an essential insight. The book teaches that failure is not the opposite of success but part of the journey towards it.</li>
+    
+    <li><b>Living in the Present</b>: Emphasizing the importance of focusing on the present rather than worrying about the past or the future. It encourages taking action now, using whatever resources and knowledge are available at the moment.</li>
+    
+    <li><b>Learning from History</b>: The book is filled with historical anecdotes and examples, suggesting that the paths to overcoming obstacles have been laid down before us by others. Learning from their experiences can provide guidance and inspiration.</li>
+    
+    <li><b>The Power of Will</b>: Finally, the book discusses the concept of will and the role it plays in confronting and prevailing over life's inevitable challenges. It portrays willpower not just as a force of endurance, but as a means to transform perspective, action, and ultimately, reality.</li>
+  </ol></div></div>`
+    },
+
+    "key-insights-of-thinking-fast-and-slow-by-daniel-kahneman": {
+        title: "Key Insights of 'Thinking, Fast and Slow' by Daniel Kahneman",
+        imagePath: "/thinking-fast-and-slow.png",
+        content: `<div class="blog-lightbox-content"><div>
+  <ol>
+      <li><b>Two Systems of Thinking</b>: The book introduces the concept of two primary systems of thought. System 1 is fast, intuitive, and emotional; System 2 is slower, more deliberative, and more logical. Kahneman explores how both systems shape our judgments and decisions in unexpected and sometimes erroneous ways.</li>
+      <li><b>The Anchoring Effect</b>: This insight discusses how our decisions are influenced by initial information, or "anchors," even when that information is irrelevant to the decision at hand. It shows how easily our minds can be swayed by first impressions.</li>
+      <li><b>The Availability Heuristic</b>: Kahneman explains how we often judge the frequency or likelihood of an event by the ease with which examples come to mind. This can lead to a skewed perception of reality based on recent news stories or personal experiences, rather than on actual statistics.</li>
+      <li><b>Overconfidence</b>: This section of the book demonstrates how and why people tend to overestimate their own abilities, the accuracy of their knowledge, and the predictability of the future. Kahneman discusses the psychological basis for overconfidence and its effects on decision-making.</li>
+      <li><b>Prospect Theory</b>: Kahneman introduces Prospect Theory, which he developed with Amos Tversky, challenging the traditional economic notion of rational decision-making. It suggests that people value gains and losses differently, leading to inconsistent and sometimes illogical decision-making.</li>
+      <li><b>The Endowment Effect</b>: The book discusses how people ascribe more value to things merely because they own them, which can lead to irrational decision-making and difficulty in exchanging or letting go of possessions.</li>
+      <li><b>System 1 and System 2 in Decision Making</b>: Kahneman delves deeper into how the two thinking systems interact to make decisions, highlighting the energy-saving function of System 1 and the lazy controller role of System 2, which accepts the suggestions of System 1 unless motivated to engage more deeply.</li>
+      <li><b>The Sunk Cost Fallacy</b>: This insight examines the common mistake of continuing a doomed project or investment because of the time, money, or effort already invested, demonstrating a flaw in human judgement and rationality.</li>
+      <li><b>The Illusion of Understanding</b>: Kahneman describes how hindsight and outcomes can make people believe they understand the past, which implies predictability and understanding of the future, leading to overconfidence in one's ability to foresee events.</li>
+      <li><b>The Illusion of Validity</b>: This concept explores how professionals, including those in the fields of psychology and finance, often believe their judgments and predictions are more accurate than they actually are, influenced by the coherence of the story their System 1 creates.</li>
+      <li><b>The Role of Luck in Success</b>: Acknowledging the significant role of random chance in personal and professional success, Kahneman challenges the common narrative of meritocracy and individual ability as sole factors for achievement.</li>
+      <li><b>The Importance of Framing</b>: Kahneman highlights how the way information is presented or "framed" can significantly impact decisions and judgments, influencing outcomes in scenarios ranging from medical decisions to financial investments.</li>
+  </ol></div></div>`
+    },
+
+    "key-insights-of-deep-work-by-cal-newport": {
+        title: "Key Insights of 'Deep Work' by Cal Newport",
+        imagePath: "/deep-work.png",
+        content: `<div class="blog=lightbox-content"><div>
+  <ol>
+  <li><b>Deep Work Is Valuable</b>: Deep work is defined as professional activities performed in a state of distraction-free concentration that push your cognitive capabilities to their limit. These efforts create new value, improve your skill, and are hard to replicate.</li>
+  <li><b>The Deep Work Hypothesis</b>: The ability to perform deep work is becoming increasingly rare at exactly the same time it is becoming increasingly valuable in our economy. As a result, the few who cultivate this skill, and then make it the core of their working life, will thrive.</li>
+  <li><b>Work Deeply</b>: The book provides strategies to cultivate a deep work ethic. These include the necessity to work with greater concentration on fewer tasks to boost productivity and innovation.</li>
+  <li><b>Embrace Boredom</b>: The idea here is not to take breaks from distraction but to take breaks from focus. Training oneself to embrace boredom rather than seeking distraction at every moment can improve one’s ability to focus and engage in deep work.</li>
+  <li><b>Quit Social Media</b>: Newport argues that social media can be a massive time sink and distraction from deep work. He suggests that individuals evaluate the utility of their social media use rigorously and suggests quitting platforms that do not add significant value.</li>
+  <li><b>Drain the Shallows</b>: To make more time for deep work, one must reduce the time spent on shallow work—non-cognitively demanding, logistical-style tasks, often performed while distracted. Strategies for doing this include scheduling every minute of your day and quantifying the depth of every activity.</li>
+  <li><b>Execute Like a Business</b>: Drawing inspiration from business strategies, Newport suggests adopting the 4 Disciplines of Execution approach: focusing on wildly important goals, acting on lead measures, keeping a compelling scorecard, and creating a cadence of accountability.</li>
+  <li><b>Law of Productivity</b>: High-Quality Work Produced = (Time Spent) x (Intensity of Focus). This law underlines the importance of working not just harder but smarter, with intensity and without distraction.</li>
+  <li><b>Grand Gestures</b>: Newport suggests that significant commitments to deep work, such as J.K. Rowling booking a hotel room to finish a novel, can help overcome procrastination and create an environment where deep work can flourish.</li>
+  <li><b>Be Lazy</b>: Newport argues that downtime isn’t opposed to deep work but rather a complement to it. Scheduled downtime aids insights, helps recharge the energy needed for deep work, and prevents burnout by allowing for a work-life balance.</li>
+  </ol></div></div>`
     }
 };
 

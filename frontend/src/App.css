@@ -33,6 +33,10 @@ body:not(.history-pane-open) .chat-area {
   margin-left: 0;
 }
 
+ol li {
+  margin-bottom: 1.2rem;  /* Increases the space between list items */
+}
+
 .header {
   display: flex;
   width: 97.5dvw;
@@ -1663,9 +1667,9 @@ body:not(.history-pane-open) .input-area {
   max-height: 94dvh; 
   overflow-y: auto; 
   position: relative; 
-  font-size: 0.98rem;
+  font-size: 1rem;
   color: #0D0D0D;
-  line-height: 1.63rem;
+  line-height: 1.7rem;
 }
 
 .lightbox-content-for-image img {
@@ -1986,6 +1990,12 @@ body:not(.history-pane-open) .input-area {
   margin-bottom: 0.6rem;
 }
 
+.blog-lightbox-content img {
+  margin-top: 0.8rem;
+  width: 135.625px;
+  height: 208.33333333333334px;
+}
+
 .lightbox-content button {
   width: 139px;
   margin-bottom: 1.4rem !important;
@@ -2005,7 +2015,7 @@ body:not(.history-pane-open) .input-area {
 }
 
 .topmost-blog-image {
-  max-width: 100%;
+  width: 100%;
   height: auto;
   margin-bottom: 2rem;
   border-radius: 0.8rem;
@@ -2160,6 +2170,10 @@ body:not(.history-pane-open) .input-area {
 
 /* About us page */
 
+.entire-about-us-page {
+  padding-bottom: 0.01rem;
+}
+
 .about-container {
   
   font-family: 'Arial', sans-serif;
@@ -2170,10 +2184,12 @@ body:not(.history-pane-open) .input-area {
   padding-right: 30px;
   max-width: 680px;
   margin: auto;
-  margin-top: 6rem;
+  margin-top: 7rem;
   background-color: #f9f9f9;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  /* border: 1px solid blue; */
+  margin-bottom: 6rem;
 }
 
 .about-container h1, .about-container h2 {
