@@ -35,7 +35,7 @@ function SamplePrevArrow(props) {
 const sliderSettings = {
     dots: false,
     infinite: true,
-    speed: 500,
+    speed: 400,
     slidesToShow: 1,
     slidesToScroll: 1,
     autoplay: true,
@@ -61,37 +61,37 @@ const HomePage = () => {
       id: 'book-info',
       title: 'Book Info Button',
       description: 'Get detailed summaries, author backgrounds, and critical acclaim with a single click',
-      imgSrc: '/book_info_gone_girl.png'
+      imgSrc: '/book_info_cant_hurt_me.png'
     },
     {
       id: 'key-insights',
       title: 'Insights Button',
       description: 'Discover the core concepts of each book with single-click access',
-      imgSrc: '/insights_you_are_a_badass.png'
+      imgSrc: '/insights_steve_jobs.png'
     },
     {
       id: 'anecdotes',
       title: 'Anecdotes Button',
       description: 'Explore captivating stories and moments from the book with just one click',
-      imgSrc: '/anecdotes_diary_of_a_young_girl.png'
+      imgSrc: '/anecdotes_shoe_dog.png'
     },
     {
       id: 'quotes',
       title: 'Quotes Button',
       description: 'Find powerful, inspirational quotes from books at the click of a button',
-      imgSrc: '/quotes_man_search_for_meaning.png'
+      imgSrc: '/quotes_warren_buffett.png'
     },
     {
       id: 'preview_on_google_books',
       title: 'Preview Button',
       description: 'Preview your next book instantly with Google Books through a single click',
-      imgSrc: '/google_preview_unfuck_yourself.png'
+      imgSrc: '/preview_rework.png'
     },
     {
       id: 'buy_now_on_amazon',
       title: 'Buy Now Button',
       description: 'Purchase your next read on Amazon instantly with just one click',
-      imgSrc: '/amazon_page_long_walk_to_freedom.png'
+      imgSrc: '/amazon_zero_to_one.png'
     },
   ]; 
 
@@ -145,7 +145,7 @@ const HomePage = () => {
   return (
     <div className="homepage">
       <header className="home-page-header">
-        <span>GetBooks.ai</span>
+      <img alt="logo" src="/GetBooks_32_32.png" />    <span>GetBooks.ai</span>
       </header>
 
       <section className="hero">

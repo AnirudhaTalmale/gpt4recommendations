@@ -1078,14 +1078,23 @@ body:not(.history-pane-open) .input-area {
 
 .home-page-header {
   display: flex;
-  justify-content: space-between;
+  /* justify-content: space-between; */
   align-items: center;
+  /* background-color: rgb(242, 242, 242); */
+  /* box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);  */
+  border: 0.7px solid lightgrey;
 }
 
 .home-page-header span {
-  font-size: 1.3rem;
-  margin: 1rem;
+  font-size: 1.2rem;
+  margin: 0.8rem 0rem;
   font-weight: bold;
+}
+
+.home-page-header img {
+  width: 1.7rem;
+  height: auto;
+  margin: 0.8rem 1rem 0.8rem 1.5rem;
 }
 
 .hero {
@@ -1094,9 +1103,11 @@ body:not(.history-pane-open) .input-area {
   width: 93dvw;
   max-width: 640px;
   margin: auto; 
-  margin-top: 4rem;
-  background-color: rgb(242, 242, 242);
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); 
+  margin-top: 5.5rem;
+  /* background-color: rgb(242, 242, 242); */
+  /* box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.1); */
+
+  border: 0.7px solid lightgrey;
 }
 
 .hero h2 {
@@ -1112,8 +1123,9 @@ body:not(.history-pane-open) .input-area {
   max-width: 640px;
   max-height: 92.5dvh;
   overflow: hidden; 
-  background-color: rgb(242, 242, 242);
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); 
+  /* background-color: rgb(242, 242, 242); */
+  /* box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.1); */
+  border: 0.7px solid lightgrey;
   padding: 0rem 0rem 1.25rem 0rem;
   margin: 6rem auto 5.7rem auto;
 }
@@ -1138,9 +1150,10 @@ body:not(.history-pane-open) .input-area {
   max-height: 95dvh;
   margin: auto;
   overflow: hidden; 
-  background-color: rgb(242, 242, 242);
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); 
-  padding: 0rem 0rem 4.5rem 0rem;
+  /* background-color: rgb(242, 242, 242); */
+  /* box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);  */
+  border: 0.7px solid lightgrey;
+  padding: 0rem 0rem 0.7rem 0rem;
 }
 
 .features-carousel img {
@@ -1198,11 +1211,12 @@ body:not(.history-pane-open) .input-area {
 }
 
 .footer {
-  background-color: rgb(242, 242, 242);
+  /* background-color: rgb(242, 242, 242); */
+  border: 0.7px solid lightgrey;
   text-align: center;
-  padding: 1.3rem 0rem 1.3rem 0rem;
+  padding: 1.5rem 0rem 1.5rem 0rem;
   position: relative;
-  font-size: 0.8rem;
+  font-size: 0.88rem;
 }
 
 .footer nav a {
@@ -1243,17 +1257,18 @@ body:not(.history-pane-open) .input-area {
   border-collapse: collapse;
   table-layout: fixed;
   border: 0.8px solid lightgrey;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); 
+  /* box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);  */
+  border: 0.7px solid lightgrey;
 }
 
 .comparison th, .comparison td {
-  padding: 1rem 0.8rem;
+  padding: 1rem 0.7rem;
   text-align: left;
-  border-bottom: 1px solid #ddd;
+  border-bottom: 0.7px solid lightgrey;
 }
 
 .comparison th {
-  background-color: #e8e8e8;
+  /* background-color: #e8e8e8; */
 }
 
 .comparison tbody tr:nth-child(odd) {
@@ -1261,7 +1276,7 @@ body:not(.history-pane-open) .input-area {
 }
 
 .comparison tbody tr:nth-child(even) {
-  background-color: rgb(242, 242, 242); /* A different shade for even rows for contrast */
+  /* background-color: rgb(242, 242, 242);  */
 }
 
 .comparison td:first-child {
@@ -1289,8 +1304,10 @@ body:not(.history-pane-open) .input-area {
 /* Styles for the right arrow on the home page */
 
 .home-page-left-arrow {
+  padding: 0.2rem;
+  /* border: 1.5px solid lightgrey; */
   color: rgb(190, 190, 190);
-  font-size: 1.3rem;
+  font-size: 1.1rem;
   position: absolute;
   top: 50%;
   left: 92%;
@@ -1298,8 +1315,10 @@ body:not(.history-pane-open) .input-area {
 }
 
 .home-page-right-arrow {
+  padding: 0.2rem;
+  /* border: 1.5px solid lightgrey; */
   color: rgb(190, 190, 190);
-  font-size: 1.3rem;
+  font-size: 1.1rem;
   position: absolute;
   top: 50%;
   left: 8%;
