@@ -149,7 +149,7 @@ const HomePage = () => {
       <HomePageHeader />
 
       <section className="hero">
-        <h2>Discover Your Next Great Read with GPT-4's Advanced AI-Powered Book Recommendations</h2>
+        <h2>World's Most Efficient and Accurate Book Recommendation App</h2>
           <div className="login-container">
             <button onClick={handleSignupGoogle} className="login-button">
                 <img src="/icons8-google-logo.svg" alt="" className="google-logo" />
