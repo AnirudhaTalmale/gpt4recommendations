@@ -17,12 +17,12 @@ function App() {
     <Router>
       <div className="App">
         <Routes>
-          <Route path="/auth/login" element={<HomePage />} />
           <Route path="/verify-email" element={<EmailVerificationPage />} />
           <Route path="/onboarding" element={<OnboardingPage />} /> 
           <Route path="/chat/:sessionId" element={<Chat />} />
           <Route path="/chat" element={<Chat />} />
-          <Route path="/" element={<HomePage />} />
+          <Route path="/" element={<Chat />} />
+          <Route path="/home" element={<HomePage />} />
           <Route path="/blog" element={<BlogPage />} />
           <Route path="/blog/:postId" element={<BlogPostPage />} />
           <Route path="/contact-us" element={<Contact />} />

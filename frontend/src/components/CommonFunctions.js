@@ -153,11 +153,11 @@ export const handleMoreDetailsRequest = async (bookDataObjectId, bookTitle, auth
         }
       } else {
         console.log("Authentication failed, redirecting to login page");
-        window.location.href = `${process.env.REACT_APP_FRONTEND_URL}/auth/login`;
+        window.location.href = `${process.env.REACT_APP_FRONTEND_URL}/home`;
       }
     } catch (error) {
       console.error('Error checking authentication status:', error);
-      window.location.href = `${process.env.REACT_APP_FRONTEND_URL}/auth/login`;
+      window.location.href = `${process.env.REACT_APP_FRONTEND_URL}/home`;
     }
   };
 
