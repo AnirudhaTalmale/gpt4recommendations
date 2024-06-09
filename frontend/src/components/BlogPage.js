@@ -25,10 +25,6 @@ const BlogPage = () => {
   return (
     <div>
       <HomePageHeader />
-
-      {/* <header className="home-page-header">
-      <img alt="logo" src="/GetBooks_32_32.png" />    <span>GetBooks.ai</span>
-      </header> */}
       <div className="blog-page">
         
         <div className='blog-page-heading'>Blog</div>
