@@ -91,28 +91,28 @@ const HomePage = () => {
       title: 'Insights Button',
       description: 'Discover the core concepts of each book with single-click access',
       imgSrc: '/insights_steve_jobs.png',
-      alt: 'Insights feature presenting key concepts from Steve Jobs biography'
+      alt: 'Book Insights feature presenting key concepts from Steve Jobs biography'
     },
     {
       id: 'anecdotes',
       title: 'Anecdotes Button',
       description: 'Explore captivating stories and moments from the book with just one click',
       imgSrc: '/anecdotes_shoe_dog.png',
-      alt: 'Anecdotes feature sharing stories from Shoe Dog by Phil Knight'
+      alt: 'Book Anecdotes feature sharing stories from Shoe Dog by Phil Knight'
     },
     {
       id: 'quotes',
       title: 'Quotes Button',
       description: 'Find powerful, inspirational quotes from books at the click of a button',
       imgSrc: '/quotes_warren_buffett.png',
-      alt: 'Quotes feature with inspirational sayings from The Snowball: Warren Buffett and the Business of Life'
+      alt: 'Book Quotes feature with inspirational sayings from The Snowball: Warren Buffett and the Business of Life'
     },
     {
       id: 'preview_on_google_books',
       title: 'Preview Button',
       description: 'Preview your next book instantly with Google Books through a single click',
       imgSrc: '/preview_rework.png',
-      alt: 'Preview feature showing a glimpse of Rework via Google Books'
+      alt: 'Book Preview feature showing a glimpse of Rework via Google Books'
     },
     {
       id: 'buy_now_on_amazon',
