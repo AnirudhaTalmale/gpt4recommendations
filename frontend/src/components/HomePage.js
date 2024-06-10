@@ -50,52 +50,79 @@ const sliderSettings = {
 const HomePage = () => {
   let navigate = useNavigate();
   const carouselImages = [
-    '/top_fiction_books.png',
-    '/worlds_most_influential_people_biographies.png',
-    '/nail_biting_mystery_books.png',
-    '/the_most_inspirational_book_of_all_time.png',
-    '/most_romantic_book_of_all_times.png',
-    '/the_subtle_art_of_not_giving.png'
+    {
+      src: '/worlds_most_influential_people_biographies.png',
+      alt: 'GetBooks.ai recommends biographies of world\'s most influential people, including "Steve Jobs" by Walter Isaacson and "Long Walk to Freedom" by Nelson Mandela'
+    },    
+    {
+      src: '/nail_biting_mystery_books.png',
+      alt: 'GetBooks.ai responds to a query for top nail-biting mystery books with recommendations including "Gone Girl" by Gillian Flynn and "The Girl with the Dragon Tattoo" by Stieg Larsson'
+    },
+    {
+      src: '/the_most_inspirational_book_of_all_time.png',
+      alt: 'GetBooks.ai suggests "Man\'s Search for Meaning" by Viktor E. Frankl and "The Alchemist" by Paulo Coelho as the most inspirational books of all time'
+    },
+    {
+      src: '/most_romantic_book_of_all_times.png',
+      alt: 'GetBooks.ai recommends the most romantic books including "Pride and Prejudice" by Jane Austen and "Wuthering Heights" by Emily Brontë'
+    },
+    {
+      src: '/the_subtle_art_of_not_giving.png',
+      alt: 'GetBooks.ai presents "The Subtle Art of Not Giving a F*ck" by Mark Manson and "Everything is F*cked: A Book About Hope" by Mark Manson for personal development'
+    },
+    {
+      src: '/top_fiction_books.png',
+      alt: 'GetBooks.ai showcases top fiction books that will keep readers engaged, featuring "The Night Circus" by Erin Morgenstern and "Shantaram" by Gregory David Roberts'
+    }
   ];
+  
+  
 
   const features = [
     {
       id: 'book-info',
       title: 'Book Info Button',
       description: 'Get detailed summaries, author backgrounds, and critical acclaim with a single click',
-      imgSrc: '/book_info_cant_hurt_me.png'
+      imgSrc: '/book_info_cant_hurt_me.png',
+      alt: 'Book Info feature for Can\'t Hurt Me by David Goggins, showing book summary, author credibility, and endorsements'
     },
     {
       id: 'key-insights',
       title: 'Insights Button',
       description: 'Discover the core concepts of each book with single-click access',
-      imgSrc: '/insights_steve_jobs.png'
+      imgSrc: '/insights_steve_jobs.png',
+      alt: 'Insights feature presenting key concepts from Steve Jobs biography'
     },
     {
       id: 'anecdotes',
       title: 'Anecdotes Button',
       description: 'Explore captivating stories and moments from the book with just one click',
-      imgSrc: '/anecdotes_shoe_dog.png'
+      imgSrc: '/anecdotes_shoe_dog.png',
+      alt: 'Anecdotes feature sharing stories from Shoe Dog by Phil Knight'
     },
     {
       id: 'quotes',
       title: 'Quotes Button',
       description: 'Find powerful, inspirational quotes from books at the click of a button',
-      imgSrc: '/quotes_warren_buffett.png'
+      imgSrc: '/quotes_warren_buffett.png',
+      alt: 'Quotes feature with inspirational sayings from The Snowball: Warren Buffett and the Business of Life'
     },
     {
       id: 'preview_on_google_books',
       title: 'Preview Button',
       description: 'Preview your next book instantly with Google Books through a single click',
-      imgSrc: '/preview_rework.png'
+      imgSrc: '/preview_rework.png',
+      alt: 'Preview feature showing a glimpse of Rework via Google Books'
     },
     {
       id: 'buy_now_on_amazon',
       title: 'Buy Now Button',
       description: 'Purchase your next read on Amazon instantly with just one click',
-      imgSrc: '/amazon_zero_to_one.png'
+      imgSrc: '/amazon_zero_to_one.png',
+      alt: 'Buy Now feature for Zero to One displayed on Amazon website'
     },
-  ]; 
+  ];
+   
 
   const [email, setEmail] = useState('');
     const [emailError, setEmailError] = useState('');
@@ -191,7 +218,7 @@ const HomePage = () => {
         <Slider {...sliderSettings}>
           {carouselImages.map((img, index) => (
             <div key={index}>
-              <img src={img} alt={`Slide ${index}`} style={{ width: '100%', height: 'auto' }} />
+              <img src={img.src} alt={img.alt} style={{ width: '100%', height: 'auto' }} />
             </div>
           ))}
         </Slider>
@@ -211,7 +238,7 @@ const HomePage = () => {
                 <h3>{feature.title}</h3>
                 <p>{feature.description}</p>
               </div>
-              <img src={feature.imgSrc} alt={feature.title} style={{ width: '100%', height: 'auto' }} />
+              <img src={feature.imgSrc} alt={feature.alt} style={{ width: '100%', height: 'auto' }} />
             </div>
           ))}
         </Slider>
@@ -224,7 +251,7 @@ const HomePage = () => {
             <tr>
               <th>Features</th>
               <th>GetBooks.ai</th>
-              <th>Other Apps</th>
+              <th>Other Websites</th>
             </tr>
           </thead>
           <tbody>
