@@ -458,7 +458,9 @@ const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, is
       const bookInfoHtml = createBookInfoHtml(bookTitle, author, amazonStarRating, amazonReviewCount);
       let imageDiv = '';
       if (bookImage) {
-        imageDiv = `<div><img src="${bookImage}" alt=""></div>`;
+        imageDiv = `<div><img src="${bookImage}" alt=""></div>`;  
+      } else {
+        imageDiv = `<div><img src="/blank_image.png" alt="" style="border: 0.7px solid grey;"></div>`;  
       }
       const buyNowButtonHtml = createBuyNowButtonHtml(amazonLink);
       completeResponse = bookInfoHtml + imageDiv + buyNowButtonHtml;
@@ -488,6 +490,8 @@ const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, is
           let imageDiv = '';
           if (imageSource) {
             imageDiv = `<div class="image-container"><img src="${imageSource}" alt=""></div>`;
+          } else {
+            imageDiv = `<div class="image-container"><img src="/blank_image.png" alt="" style="border: 0.7px solid grey;"></div>`;
           }
 
           if (isMoreDetails || messages[messages.length - 1].content.startsWith("Explain the book - ")) {
