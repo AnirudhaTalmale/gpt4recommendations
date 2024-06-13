@@ -39,7 +39,36 @@ function createPreviewButtonHtml(previewLink) {
   return `<div><button type="button" class="preview-btn" ${buttonStyles} ${dataAttribute}>Preview</button></div>`;
 }
 
+function renderStarRatingHtml(rating) {
+  let starsHtml = '';
+  const fullStars = Math.floor(rating);
+  const hasHalfStar = rating % 1 !== 0;
+  const maxStars = 5;
+
+  // Add full stars
+  for (let i = 0; i < fullStars; i++) {
+    starsHtml += `<i class="fa-solid fa-star"></i>`;
+  }
+
+  // Add half star if necessary
+  if (hasHalfStar) {
+    starsHtml += `<i class="fa-solid fa-star-half-stroke"></i>`;
+  }
+
+  // Calculate remaining stars needed to make total of 5
+  const totalStars = hasHalfStar ? fullStars + 1 : fullStars;
+  for (let i = totalStars; i < maxStars; i++) {
+    starsHtml += `<i class="fa-regular fa-star"></i>`;
+  }
+
+  return `<div class="star-rating">${starsHtml}</div>`;
+}
+
 function createBookInfoHtml(bookTitle, author, amazonStarRating, amazonReviewCount) {
+
+  // Log the data type and value of amazonStarRating
+  console.log('Data Type of amazonStarRating:', typeof amazonStarRating);
+  console.log('Value of amazonStarRating:', amazonStarRating);
 
   let bookInfoHtml = `<div class="book-info">
       <strong class="book-title">${bookTitle}</strong>`;
@@ -55,19 +84,7 @@ function createBookInfoHtml(bookTitle, author, amazonStarRating, amazonReviewCou
 
     // Add star rating
     if (amazonStarRating && amazonStarRating !== 'Unknown') { 
-      bookInfoHtml += `<div class="star-rating">`;
-
-      // Add full stars
-      for (let i = 0; i < Math.floor(amazonStarRating); i++) {
-        bookInfoHtml += `<i class="fa-solid fa-star"></i>`;
-      }
-
-      // Check for half star
-      if (amazonStarRating % 1 !== 0) {
-        bookInfoHtml += `<i class="fa-solid fa-star-half-stroke"></i>`;
-      }
-
-      bookInfoHtml += `</div>`; // Close star-rating div
+      bookInfoHtml += renderStarRatingHtml(amazonStarRating);
     }
 
     // If review count exists, add review count information
@@ -306,7 +323,6 @@ function updateBookWithAmazonData(book, amazonData, countryKey, title, author) {
 
 function createNewBook(title, author, amazonData, googleData, countryKey, genres) {
   const fallbackAmazonLink = `https://www.amazon.${countryKey === 'IN' ? 'in' : 'com'}/s?k=${encodeURIComponent(`${title.trim()} by ${author.trim()}`)}`;
-  console.log("googleData.previewLink is", googleData.previewLink);
   return new BookData({
     title,
     author,
@@ -357,7 +373,6 @@ const getBookData = async (title, author, userCountry, bookDataObjectId = '') =>
       const amazonData = await getAmazonBookData(title, author, userCountry);
       const googleData = await getGoogleBookData(title, author);
       const genres = await openaiApi.getGenres(title, author);
-      console.log("i am here for saving book");
       existingBook = createNewBook(title, author, amazonData, googleData, countryKey, genres);
     }
 

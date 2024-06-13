@@ -6,7 +6,7 @@ import Lightbox from './Lightbox';
 import socket from './socket';
 import axios from 'axios';
 import { useStreamChunkHandler } from './CommonHooks'; 
-import { checkAuthStatus } from './CommonFunctions';
+import { checkAuthStatus, renderStarRating } from './CommonFunctions';
 import HeaderWithHomeButton from './HeaderWithHomeButton'; 
 import LightboxForImage from './LightboxForImage';
 
@@ -208,16 +208,6 @@ function BookDetail() {
         );
     }
 
-    const renderStarRating = (rating) => {
-        let stars = [];
-        for (let i = 0; i < Math.floor(rating); i++) {
-            stars.push(<i key={`star-${i}`} className="fa-solid fa-star"></i>);
-        }
-        if (rating % 1 !== 0) {
-            stars.push(<i key="half-star" className="fa-solid fa-star-half-stroke"></i>);
-        }
-        return <div className="star-rating">{stars}</div>;
-    };
 
     // const getTitleMinHeight = (title) => {
     //     const lineChars = 25;

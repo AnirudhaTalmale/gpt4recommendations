@@ -163,14 +163,28 @@ export const handleMoreDetailsRequest = async (bookDataObjectId, bookTitle, auth
 
   export const renderStarRating = (rating) => {
     let stars = [];
-    for (let i = 0; i < Math.floor(rating); i++) {
-      stars.push(<i key={`star-${i}`} className="fa fa-star full-star-book-gallery" style={{color: 'orange', fontSize: '0.9rem'}}></i>);
+    const fullStars = Math.floor(rating);
+    const hasHalfStar = rating % 1 !== 0;
+    const maxStars = 5;
+
+    // Add full stars
+    for (let i = 0; i < fullStars; i++) {
+        stars.push(<i key={`star-${i}`} className="fa-solid fa-star"></i>);
     }
-    if (rating % 1 !== 0) {
-      stars.push(<i key="half-star" className="fa fa-star-half-stroke half-star-book-gallery" style={{color: 'orange', fontSize: '0.9rem'}}></i>);
+
+    // Add half star if necessary
+    if (hasHalfStar) {
+        stars.push(<i key="half-star" className="fa-solid fa-star-half-stroke"></i>);
     }
-    return <div style={{display: 'flex', alignItems: 'center', marginRight: '10px'}}>{stars}</div>;
-  };
+
+    // Calculate remaining stars needed to make total of 5
+    const totalStars = hasHalfStar ? fullStars + 1 : fullStars;
+    for (let i = totalStars; i < maxStars; i++) {
+        stars.push(<i key={`empty-star-${i}`} className="fa-regular fa-star"></i>);
+    }
+
+    return <div className="star-rating">{stars}</div>; 
+};
 
 
 // Button Components
