@@ -76,6 +76,16 @@ ol li {
   margin-right: 0.7rem;
 }
 
+.new-session-button-small-screen-book-detail {
+  border: none;
+  background: none;
+  font-size: 1.15rem;
+  cursor: pointer;
+  color: black;
+  margin-right: 0.7rem;
+  margin-left: 0.5rem;
+}
+
 .menu-button-small-screen {
   border: none;
   background: none;
@@ -279,7 +289,6 @@ ol li {
   grid-template-columns: 1fr;
   gap: 20px;
   margin: 20px;
-  margin-top: 4.5rem;
   margin-left: 1.7rem;
   margin-right: 1.7rem;
 }
@@ -313,15 +322,14 @@ ol li {
 }
 
 .main-book-container {
-  margin-left: 0.4rem;      /* Aligns the container to the left */
-  margin-right: auto;  /* Keeps right margin as auto for consistency, though it won't affect alignment */
+  margin: auto;
   width: 20rem;        /* Fixed width as before */
   height: auto;        /* Height automatically adjusts */
-  margin-top: 0.5rem;    /* Keeps top margin */
+  margin-top: 1.5rem;    /* Keeps top margin */
   /* border: 1px solid green; */
 }
 
-.main-book img{
+.main-book img {
   /* border: 1px solid green; */
   cursor: pointer;
 }
@@ -337,66 +345,11 @@ ol li {
   margin-bottom: 1rem;
 }
 
-.like-dislike-buttons {
-  max-width: 6.5rem;
-  display: flex;
-  justify-content: flex-start;
-  background-color: rgb(246, 246, 246);
-  border-radius: 2rem; /* rounded corners for the container */
-  padding: 0.4rem;
-  margin-bottom: 1.5rem;
+.similar-books {
+  /* border: 1px solid green; */
+  margin-top: 1.5rem; 
 }
 
-.like-dislike-buttons button {
-  border: none;
-  background: none;
-  cursor: pointer;
-  font-size: 1.05rem;
-  margin: auto;
-  
-}
-
-.fa-thumbs-up {
-  color: rgb(67, 67, 67);
-}
-
-.fa-thumbs-down {
-  color: rgb(67, 67, 67);
-}
-
-.like-count {
-  margin-left: 0.6rem;
-}
-
-.like-dislike-buttons-divider {
-  width: 1px;
-  background-color: #d1d1d1; /* divider color */
-  margin: auto;
-  align-self: center;
-  height: 1.2rem;
-}
-
-.comment-preview-button {
-  width: 100%;
-  border: none;
-  border-radius: 1rem;
-  padding: 0.8rem 1rem;
-  cursor: pointer;
-  background-color: rgb(246, 246, 246);
-}
-
-.comment-preview-button img {
-  width: 1.2rem !important;
-  height: 1.2rem !important;
-}
-
-.comment-preview-heading {
-  margin-right: 0.15rem;
-}
-
-.comment-preview-text {
-  font-size: 0.78rem;
-}
 
 /* Home component */
 
@@ -470,7 +423,7 @@ ol li {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(11.5rem, 1fr)); /* Creates a responsive grid with each column minimum 200px wide */
   gap: 2.5rem; /* Space between books */
-  padding: 10px 10px 1.5rem 10px;
+  padding: 0px 0px 1.5rem 0px;
   flex: 1;
   /* border: 1px solid red; */
 }

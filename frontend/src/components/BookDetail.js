@@ -7,7 +7,7 @@ import socket from './socket';
 import axios from 'axios';
 import { useStreamChunkHandler } from './CommonHooks'; 
 import { checkAuthStatus, renderStarRating } from './CommonFunctions';
-import HeaderWithHomeButton from './HeaderWithHomeButton'; 
+import BookDetailHeader from './BookDetailHeader'; 
 import LightboxForImage from './LightboxForImage';
 
 
@@ -384,7 +384,7 @@ function BookDetail() {
 
     return (
       <div>
-        <HeaderWithHomeButton />
+        <BookDetailHeader />
 
         <LightboxForImage
           isOpen={isLightboxForImageOpen}
