@@ -66,10 +66,6 @@ function renderStarRatingHtml(rating) {
 
 function createBookInfoHtml(bookTitle, author, amazonStarRating, amazonReviewCount) {
 
-  // Log the data type and value of amazonStarRating
-  console.log('Data Type of amazonStarRating:', typeof amazonStarRating);
-  console.log('Value of amazonStarRating:', amazonStarRating);
-
   let bookInfoHtml = `<div class="book-info">
       <strong class="book-title">${bookTitle}</strong>`;
 
@@ -351,10 +347,10 @@ const getBookData = async (title, author, userCountry, bookDataObjectId = '') =>
     let cacheKey = `book-data:${bookDataObjectId || title.toLowerCase()}:${countryKey}`;
 
     // Check if the data is available in Redis cache
-    let cachedData = await redisClient.get(cacheKey);
-    if (cachedData) {
-      return JSON.parse(cachedData);
-    }
+    // let cachedData = await redisClient.get(cacheKey);
+    // if (cachedData) {
+    //   return JSON.parse(cachedData);
+    // }
 
     let query = bookDataObjectId ? { _id: new ObjectId(bookDataObjectId) } : { title: { $regex: new RegExp('^' + escapedTitle + '$', 'i') } };
     let existingBook = await BookData.findOne(query);
