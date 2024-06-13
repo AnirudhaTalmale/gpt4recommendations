@@ -801,18 +801,18 @@ const getPriorityGenres = async (userId) => {
       throw new Error('Invalid userId format');
     }
 
-    const oneMonthAgo = new Date();
-    oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
+    const twoWeeksAgo = new Date();
+    twoWeeksAgo.setDate(twoWeeksAgo.getDate() - 14);
 
     const preferredGenres = await SearchHistory.aggregate([
-      { $match: { user: new mongoose.Types.ObjectId(userId), timestamp: { $gte: oneMonthAgo } } },
+      { $match: { user: new mongoose.Types.ObjectId(userId), timestamp: { $gte: twoWeeksAgo } } },
       { $addFields: { normalizedGenre: { $toLower: "$genre" } } },
       { $group: { _id: "$normalizedGenre", count: { $sum: 1 } } },
       { $match: { count: { $gte: 10 } } },
       { $sort: { count: -1 } }
     ]);
 
-    const userPreferredGenres = preferredGenres.map(item => item._id);
+    const userPreferredGenres = preferredGenres.map(item => item._id).slice(0, 15);
 
     // Define a base priority order for genres
     const basePriorityGenres = ['self-help', 'personal development', 'business', 'psychology', 'biography', 'memoir'];
@@ -821,7 +821,8 @@ const getPriorityGenres = async (userId) => {
     // Combine userPreferredGenres with the filtered basePriorityGenres
     const priorityGenres = userPreferredGenres.concat(uniqueBasePriorityGenres);
 
-    return priorityGenres;
+    // Limit the final array to a maximum of 20 entries
+    return priorityGenres.slice(0, 20);
   } catch (error) {
     console.error('Error fetching preferred genres:', error);
     throw error;
@@ -841,7 +842,7 @@ async function getDistinctGenres(countryCode) {
   // Fetch genres where the specified country has a non-null book image
   const booksWithImages = await BookData.find({
     [`countrySpecific.${countryCode}.bookImage`]: { $ne: null }
-  }).select('genres -_id');
+  }).select('genres -_id').limit(60);
 
   // Flatten the array of genres arrays and normalize the case
   const genresNormalized = booksWithImages
@@ -849,8 +850,11 @@ async function getDistinctGenres(countryCode) {
     .map(genre => genre.toLowerCase());
 
   // Get distinct genres and capitalize the first letter
-  return [...new Set(genresNormalized)]
+  const distinctGenres = [...new Set(genresNormalized)]
     .map(genre => genre.charAt(0).toUpperCase() + genre.slice(1));
+
+  // Ensure the final array does not exceed 20 entries
+  return distinctGenres.slice(0, 10);
 }
 
 function sortGenres(genres, priorityGenres) {
@@ -899,7 +903,7 @@ app.post('/api/distinct-genres', async (req, res) => {
 async function fetchAndProcessBooks(query, countryCode) {
   try {
     query[`countrySpecific.${countryCode}.bookImage`] = { $exists: true };
-    const books = await BookData.find(query);
+    const books = await BookData.find(query).limit(60);
 
     const imageSet = new Set();
     let allBooks = [];

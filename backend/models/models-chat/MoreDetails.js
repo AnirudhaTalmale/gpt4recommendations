@@ -8,4 +8,4 @@ const moreDetailsSchema = new Schema({
 });
 
 module.exports = mongoose.model('MoreDetails', moreDetailsSchema);
-
+ 

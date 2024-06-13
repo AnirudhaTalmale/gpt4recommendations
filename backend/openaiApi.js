@@ -306,6 +306,7 @@ function updateBookWithAmazonData(book, amazonData, countryKey, title, author) {
 
 function createNewBook(title, author, amazonData, googleData, countryKey, genres) {
   const fallbackAmazonLink = `https://www.amazon.${countryKey === 'IN' ? 'in' : 'com'}/s?k=${encodeURIComponent(`${title.trim()} by ${author.trim()}`)}`;
+  console.log("googleData.previewLink is", googleData.previewLink);
   return new BookData({
     title,
     author,
@@ -356,6 +357,7 @@ const getBookData = async (title, author, userCountry, bookDataObjectId = '') =>
       const amazonData = await getAmazonBookData(title, author, userCountry);
       const googleData = await getGoogleBookData(title, author);
       const genres = await openaiApi.getGenres(title, author);
+      console.log("i am here for saving book");
       existingBook = createNewBook(title, author, amazonData, googleData, countryKey, genres);
     }
 
@@ -554,9 +556,8 @@ const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, is
             bookTitle,
             detailedDescription: completeResponse // Save complete response here
           });
-          console.log("i am here 2");
           if ( checkFormatMoreDetails(completeResponse) ) {
-            console.log("i am here 3");
+            console.log("newDetail is", newDetail);
             await newDetail.save();
           }
         }

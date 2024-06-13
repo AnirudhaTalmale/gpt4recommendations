@@ -4,7 +4,7 @@ const { Schema } = mongoose;
 const bookSchema = new Schema({
   title: { type: String, required: true, index: true, unique: true },
   author: { type: String, required: true, index: true},
-  previewLink: { type: String, required: true },
+  previewLink: { type: String, default: '' },
   countrySpecific: {
     IN: {
       bookImage: String,
