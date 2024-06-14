@@ -13,8 +13,6 @@ const { Server } = require('socket.io');
 const bookRecommendationPrompt = require('./prompts/promptBook');
 const BookData = require('./models/models-chat/BookData'); 
 const SearchHistory = require('./models/models-chat/SearchHistory'); 
-const Comment = require('./models/models-chat/Comment'); 
-const BookLike = require('./models/models-chat/BookLike'); 
 const moreBooksRecommendationPrompt = require('./prompts/promptMoreBooks');
 const moreDetailsPrompt = require('./prompts/promptMoreDetails');
 const keyInsightsPrompt = require('./prompts/promptKeyInsights');
@@ -1056,308 +1054,6 @@ app.get('/api/books/:bookId/:country', async (req, res) => {
   }
 });
 
-// Comments section:  
-
-app.get('/api/comments', async (req, res) => {
-  const { bookId } = req.query;
-  try {
-    // Fetch comments and sort them by creation date in descending order
-    const comments = await Comment.find({ book: bookId })
-      .populate('user', 'displayName')  // Populating user details for the comment
-      .populate({
-        path: 'replies',  // Specifying the path to populate
-        options: { sort: { 'createdAt': -1 } },  // Sorting replies by createdAt in descending order
-        populate: { path: 'user', select: 'displayName' }  // Nested population for user details in replies
-      })
-      .sort({ createdAt: -1 })  // Sorting comments by createdAt in descending order
-      .exec();
-
-    res.json(comments);
-  } catch (error) {
-    console.error('Failed to fetch comments:', error);
-    res.status(500).json({ message: 'Error fetching comments' });
-  }
-}); 
-
-app.get('/api/comments/preview', async (req, res) => {
-  const { bookId } = req.query;
-  try {
-    // Count the number of comments associated with the bookId
-    const count = await Comment.countDocuments({ book: bookId }).exec();
-    
-    // Find the most recent comment and populate the user's image
-    const mostRecentComment = await Comment.findOne({ book: bookId })
-      .populate('user', 'image')  // Populating the user's image
-      .sort({ createdAt: -1 })  // Sorting by createdAt in descending order to get the most recent one
-      .exec();
-
-    // If there's a most recent comment, include its text and user's image in the response
-    if (mostRecentComment) {
-      res.json({
-        count,
-        mostRecentCommentText: mostRecentComment.text,
-        mostRecentCommentUserImage: mostRecentComment.user.image
-      });
-    } else {
-      res.json({ count });
-    }
-  } catch (error) {
-    console.error('Failed to fetch comment count:', error);
-    res.status(500).json({ message: 'Error fetching comment count' });
-  }
-});
-
-app.post('/api/comments', async (req, res) => {
-  const { text, bookId, userId } = req.body;
-  try {
-    const newComment = new Comment({
-      text,
-      book: bookId,
-      user: userId,
-      replies: [],
-      likes: [],
-      dislikes: []
-    });
-
-    await newComment.save();
-
-    // After saving, populate the user field to get the displayName
-    const populatedComment = await Comment.findById(newComment._id)
-      .populate('user', 'displayName');  // Ensure that 'displayName' is the correct field you want to send back
-
-    res.status(201).json(populatedComment);
-  } catch (error) {
-    console.error('Failed to create comment:', error);
-    res.status(500).json({ message: 'Error creating comment' });
-  }
-});
-
-app.post('/api/comments/:commentId/replies', async (req, res) => {
-  const { text, userId } = req.body;
-  const { commentId } = req.params;
-
-  try {
-    const comment = await Comment.findById(commentId);
-    if (!comment) {
-      return res.status(404).send('Comment not found');
-    }
-
-    const reply = {
-      text,
-      user: userId,
-      createdAt: new Date(),
-      likes: [],
-      dislikes: []
-    };
-    comment.replies.push(reply);
-    await comment.save();
-
-    // Repopulate the entire comment to update replies with user data
-    const updatedComment = await Comment.findById(commentId)
-      .populate('user', 'displayName')
-      .populate({
-        path: 'replies',
-        populate: { path: 'user', select: 'displayName' }
-      });
-
-    res.status(201).json(updatedComment); // Send back the updated comment with populated replies
-  } catch (error) {
-    console.error('Failed to add reply:', error);
-    res.status(500).json({ message: 'Failed to add reply' });
-  }
-});
-
-// Like endpoint
-app.patch('/api/comments/:commentId/like', async (req, res) => {
-  const { userId } = req.body;
-
-  if (!mongoose.Types.ObjectId.isValid(userId)) {
-    return res.status(400).json({ message: 'Invalid user ID format' });
-  }
-
-  try {
-    const comment = await Comment.findById(req.params.commentId);
-    if (!comment) {
-      return res.status(404).json({ message: 'Comment not found' });
-    }
-
-    // Toggle like
-    const likeIndex = comment.likes.indexOf(userId);
-    if (likeIndex === -1) {
-      // Remove from dislikes if exists
-      const dislikeIndex = comment.dislikes.indexOf(userId);
-      if (dislikeIndex !== -1) {
-        comment.dislikes.splice(dislikeIndex, 1);
-      }
-      // Add to likes
-      comment.likes.push(userId);
-    } else {
-      // Remove like if already exists
-      comment.likes.splice(likeIndex, 1);
-    }
-
-    await comment.save();
-    const updatedComment = await Comment.findById(req.params.commentId)
-      .populate('user', 'displayName')
-      .populate('replies.user', 'displayName');
-
-    res.json(updatedComment);
-  } catch (error) {
-    console.error('Failed to like comment:', error);
-    res.status(500).json({ message: 'Error updating like count' });
-  }
-});
-
-// Dislike endpoint
-app.patch('/api/comments/:commentId/dislike', async (req, res) => {
-  const { userId } = req.body;
-
-  if (!mongoose.Types.ObjectId.isValid(userId)) {
-    return res.status(400).json({ message: 'Invalid user ID format' });
-  }
-
-  try {
-    const comment = await Comment.findById(req.params.commentId);
-    if (!comment) {
-      return res.status(404).json({ message: 'Comment not found' });
-    }
-
-    // Toggle dislike
-    const dislikeIndex = comment.dislikes.indexOf(userId);
-    if (dislikeIndex === -1) {
-      // Remove from likes if exists
-      const likeIndex = comment.likes.indexOf(userId);
-      if (likeIndex !== -1) {
-        comment.likes.splice(likeIndex, 1);
-      }
-      // Add to dislikes
-      comment.dislikes.push(userId);
-    } else {
-      // Remove dislike if already exists
-      comment.dislikes.splice(dislikeIndex, 1);
-    }
-
-    await comment.save();
-    const updatedComment = await Comment.findById(req.params.commentId)
-      .populate('user', 'displayName')
-      .populate('replies.user', 'displayName');
-
-    res.json(updatedComment);
-  } catch (error) {
-    console.error('Failed to dislike comment:', error);
-    res.status(500).json({ message: 'Error updating dislike count' });
-  }
-});
-
-// Like a reply and remove dislike if it exists
-app.patch('/api/comments/replies/:replyId/like', async (req, res) => {
-  const userId = req.body.userId;
-  try {
-    const comment = await Comment.findOne({"replies._id": req.params.replyId});
-    const reply = comment.replies.id(req.params.replyId);
-    const alreadyLiked = reply.likes.includes(userId);
-    const currentlyDisliked = reply.dislikes.includes(userId);
-
-    if (!alreadyLiked) {
-      reply.likes.push(userId);
-      if (currentlyDisliked) {
-        reply.dislikes = reply.dislikes.filter(id => id.toString() !== userId.toString());
-      }
-    } else {
-      reply.likes = reply.likes.filter(id => id.toString() !== userId.toString());
-    }
-
-    await comment.save();
-    res.json(reply);
-  } catch (error) {
-    console.error('Failed to like reply:', error);
-    res.status(500).json({ message: 'Error updating like count for reply' });
-  }
-});
-
-// Dislike a reply and remove like if it exists
-app.patch('/api/comments/replies/:replyId/dislike', async (req, res) => {
-  const userId = req.body.userId;
-  try {
-    const comment = await Comment.findOne({"replies._id": req.params.replyId});
-    const reply = comment.replies.id(req.params.replyId);
-    const alreadyDisliked = reply.dislikes.includes(userId);
-    const currentlyLiked = reply.likes.includes(userId);
-
-    if (!alreadyDisliked) {
-      reply.dislikes.push(userId);
-      if (currentlyLiked) {
-        reply.likes = reply.likes.filter(id => id.toString() !== userId.toString());
-      }
-    } else {
-      reply.dislikes = reply.dislikes.filter(id => id.toString() !== userId.toString());
-    }
-
-    await comment.save();
-    res.json(reply);
-  } catch (error) {
-    console.error('Failed to dislike reply:', error);
-    res.status(500).json({ message: 'Error updating dislike count for reply' });
-  }
-});
-
-// like dislike specific to main-book
-app.post('/api/books/:bookId/like', async (req, res) => {
-  const { userId, like } = req.body;
-  const { bookId } = req.params;
-
-  if (!userId) {
-      return res.status(400).json({ message: "User ID must be provided" });
-  }
-
-  try {
-      if (like === null) {
-          // Directly delete the document without fetching
-          await BookLike.deleteOne({ user: userId, book: bookId });
-      } else {
-          const existingLike = await BookLike.findOne({ user: userId, book: bookId });
-          if (existingLike) {
-              existingLike.like = like;
-              await existingLike.save();
-          } else {
-              // Create a new document if it does not exist and like is not null
-              const newLike = new BookLike({ user: userId, book: bookId, like });
-              await newLike.save();
-          }
-      }
-      res.json({ message: 'Your preference has been recorded' });
-  } catch (error) {
-      console.error('Error updating like/dislike status:', error);
-      res.status(500).json({ message: 'Error processing your request', details: error.message });
-  }
-});
-
-
-// In your frontend fetching logic, adjust how userLiked and userDisliked are calculated
-app.post('/api/books/:bookId/likes-dislikes', async (req, res) => {
-  const { userId } = req.body;
-  const { bookId } = req.params;
-
-  try {
-      const likesCount = await BookLike.countDocuments({ book: bookId, like: true });
-      const dislikesCount = await BookLike.countDocuments({ book: bookId, like: false });
-      const userLike = userId ? await BookLike.findOne({ book: bookId, user: userId }) : null;
-
-      const userLiked = userLike ? userLike.like === true : false;
-      const userDisliked = userLike ? userLike.like === false : false;
-
-      res.json({
-          likes: likesCount,
-          dislikes: dislikesCount,
-          userLiked,
-          userDisliked
-      }); 
-  } catch (error) {
-      console.error('Failed to fetch likes/dislikes:', error);
-      res.status(500).json({ message: 'Error fetching likes/dislikes' });
-  }
-});
-
 app.post('/api/saveSearchHistory', async (req, res) => {
   const { userId, bookId } = req.body;
 
@@ -1394,6 +1090,76 @@ app.post('/api/saveSearchHistory', async (req, res) => {
 // development routes: 
 
 if (process.env.NODE_ENV === 'local') {
+
+  // Route for recent anecdotes
+  app.get('/api/recent-anecdotes', async (req, res) => {
+    const yesterday = new Date(Date.now() - 24*60*60*1000);
+    try {
+      const recentAnecdotes = await Anecdotes.find({
+        createdAt: { $gt: yesterday }
+      });
+      res.json({
+        message: 'Successfully retrieved recent anecdotes',
+        data: recentAnecdotes
+      });
+    } catch (error) {
+      console.error('Error fetching anecdotes:', error);
+      res.status(500).json({ message: 'Server error occurred' });
+    }
+  });
+
+  // Route for recent quotes
+  app.get('/api/recent-quotes', async (req, res) => {
+    const yesterday = new Date(Date.now() - 24*60*60*1000);
+    try {
+      const recentQuotes = await Quotes.find({
+        createdAt: { $gt: yesterday }
+      });
+      res.json({
+        message: 'Successfully retrieved recent quotes',
+        data: recentQuotes
+      });
+    } catch (error) {
+      console.error('Error fetching quotes:', error);
+      res.status(500).json({ message: 'Server error occurred' });
+    }
+  });
+
+  // Route for recent more details
+  app.get('/api/recent-more-details', async (req, res) => {
+    const yesterday = new Date(Date.now() - 24*60*60*1000);
+    try {
+      const recentDetails = await MoreDetails.find({
+        createdAt: { $gt: yesterday }
+      });
+      res.json({
+        message: 'Successfully retrieved more details',
+        data: recentDetails
+      });
+    } catch (error) {
+      console.error('Error fetching more details:', error);
+      res.status(500).json({ message: 'Server error occurred' });
+    }
+  });
+
+  // Route for recent key insights
+  app.get('/api/recent-key-insights', async (req, res) => {
+    try {
+      const yesterday = new Date(Date.now() - 24*60*60*1000); // 24 hours ago
+      const recentInsights = await KeyInsightsModel.find({
+        createdAt: { $gt: yesterday }
+      });
+
+      res.json({
+        message: 'Successfully retrieved recent key insights',
+        data: recentInsights
+      });
+    } catch (error) {
+      console.error('Server error:', error);
+      res.status(500).json({ message: 'Server error occurred while fetching recent key insights' });
+    }
+  });
+
   app.get('/api/redis-data', async (req, res) => {
     try {
       // Fetch all keys
@@ -1412,10 +1178,7 @@ if (process.env.NODE_ENV === 'local') {
       res.status(500).json({ message: 'Server error occurred while fetching Redis data' });
     }
   });
-}
 
-
-if (process.env.NODE_ENV === 'local') {
   app.get('/api/clear-redis-data', async (req, res) => {
     try {
       // Fetch all keys
@@ -1432,9 +1195,7 @@ if (process.env.NODE_ENV === 'local') {
       res.status(500).json({ message: 'Server error occurred while deleting Redis data' });
     }
   });
-}
 
-if (process.env.NODE_ENV === 'local') {
   app.get('/api/update-genres', async (req, res) => {
     try {
       // Fetch books without genres
@@ -1464,9 +1225,7 @@ if (process.env.NODE_ENV === 'local') {
       res.status(500).json({ message: 'Server error occurred while updating the records' });
     }
   });
-}
 
-if (process.env.NODE_ENV === 'local') {
   app.get('/api/populate-genres', async (req, res) => {
     try {
       // Fetch all books that need their genres populated
@@ -1499,11 +1258,25 @@ if (process.env.NODE_ENV === 'local') {
       res.status(500).json({ message: 'Server error occurred while repopulating genres' });
     }
   });
-}
 
+  app.get('/api/delete-genres', async (req, res) => {
+    try {
+      // Unset the genres field for all documents in the collection
+      const result = await BookData.updateMany(
+        {}, // empty filter means "match all documents"
+        { $unset: { genres: "" } } // remove the genres field from all documents
+      );
+  
+      res.json({
+        message: 'Genres field removed from all documents',
+        affectedCount: result.nModified
+      });
+    } catch (error) {
+      console.error('Server error:', error);
+      res.status(500).json({ message: 'Server error occurred while deleting genres field' });
+    }
+  });
 
-
-if (process.env.NODE_ENV === 'local') {
   app.get('/api/fix-genres-format', async (req, res) => {
     try {
       // Fetch books with genres formatted as nested arrays
@@ -1534,26 +1307,6 @@ if (process.env.NODE_ENV === 'local') {
     } catch (error) {
       console.error('Server error:', error);
       res.status(500).json({ message: 'Server error occurred while updating the genres format' });
-    }
-  });
-}
-
-if (process.env.NODE_ENV === 'local') {
-  app.get('/api/delete-genres', async (req, res) => {
-    try {
-      // Unset the genres field for all documents in the collection
-      const result = await BookData.updateMany(
-        {}, // empty filter means "match all documents"
-        { $unset: { genres: "" } } // remove the genres field from all documents
-      );
-  
-      res.json({
-        message: 'Genres field removed from all documents',
-        affectedCount: result.nModified
-      });
-    } catch (error) {
-      console.error('Server error:', error);
-      res.status(500).json({ message: 'Server error occurred while deleting genres field' });
     }
   });
 }

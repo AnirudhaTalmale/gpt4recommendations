@@ -157,7 +157,6 @@ async function getAmazonBookData(title, author, country) {
     });
 
     if (response.data.items && response.data.items.length > 0) {
-      console.log("response.data.items.length is", response.data.items.length);
       for (let i = 0; i < Math.min(3, response.data.items.length); i++) {
         const item = response.data.items[i];
 
@@ -188,8 +187,6 @@ async function getAmazonBookData(title, author, country) {
           let url = new URL(amazonLink);
           url.hostname = `www.${amazonDomain}`;
           amazonLink = url.href.split('/ref')[0];
-
-          console.log("value of i is", i);
 
           return { amazonLink, amazonStarRating, amazonReviewCount, amazonImage };
         } else {
