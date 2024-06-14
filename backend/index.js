@@ -1093,9 +1093,9 @@ if (process.env.NODE_ENV === 'local') {
 
   // Route for recent anecdotes
   app.get('/api/recent-anecdotes', async (req, res) => {
-    const yesterday = new Date(Date.now() - 24*60*60*1000);
+    const yesterday = new Date(Date.now() - 48*60*60*1000);
     try {
-      const recentAnecdotes = await Anecdotes.find({
+      const recentAnecdotes = await AnecdotesModel.find({
         createdAt: { $gt: yesterday }
       });
       res.json({
@@ -1110,9 +1110,9 @@ if (process.env.NODE_ENV === 'local') {
 
   // Route for recent quotes
   app.get('/api/recent-quotes', async (req, res) => {
-    const yesterday = new Date(Date.now() - 24*60*60*1000);
+    const yesterday = new Date(Date.now() - 48*60*60*1000);
     try {
-      const recentQuotes = await Quotes.find({
+      const recentQuotes = await QuotesModel.find({
         createdAt: { $gt: yesterday }
       });
       res.json({
@@ -1127,7 +1127,7 @@ if (process.env.NODE_ENV === 'local') {
 
   // Route for recent more details
   app.get('/api/recent-more-details', async (req, res) => {
-    const yesterday = new Date(Date.now() - 24*60*60*1000);
+    const yesterday = new Date(Date.now() - 48*60*60*1000);
     try {
       const recentDetails = await MoreDetails.find({
         createdAt: { $gt: yesterday }
@@ -1145,7 +1145,7 @@ if (process.env.NODE_ENV === 'local') {
   // Route for recent key insights
   app.get('/api/recent-key-insights', async (req, res) => {
     try {
-      const yesterday = new Date(Date.now() - 24*60*60*1000); // 24 hours ago
+      const yesterday = new Date(Date.now() - 48*60*60*1000); // 24 hours ago
       const recentInsights = await KeyInsightsModel.find({
         createdAt: { $gt: yesterday }
       });
@@ -1157,6 +1157,28 @@ if (process.env.NODE_ENV === 'local') {
     } catch (error) {
       console.error('Server error:', error);
       res.status(500).json({ message: 'Server error occurred while fetching recent key insights' });
+    }
+  });
+
+  // Route to fetch users created in the last 24 hours and count them
+  app.get('/api/recent-users', async (req, res) => {
+    const yesterday = new Date(Date.now() - 48 * 60 * 60 * 1000); // 24 hours ago
+    try {
+      const recentUsers = await User.find({
+        createdAt: { $gt: yesterday }
+      });
+
+      // Counting the users
+      const count = recentUsers.length;
+
+      res.json({
+        message: 'Successfully retrieved recent users',
+        totalUsers: count, // Total number of recent users
+        users: recentUsers   // List of recent users
+      });
+    } catch (error) {
+      console.error('Error fetching users:', error);
+      res.status(500).json({ message: 'Server error occurred while fetching recent users' });
     }
   });
 
