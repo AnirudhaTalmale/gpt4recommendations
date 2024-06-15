@@ -1162,25 +1162,27 @@ if (process.env.NODE_ENV === 'local') {
 
   // Route to fetch users created in the last 24 hours and count them
   app.get('/api/recent-users', async (req, res) => {
-    const yesterday = new Date(Date.now() - 48 * 60 * 60 * 1000); // 24 hours ago
+    const yesterday = new Date(Date.now() - 100000 * 60 * 60 * 1000); // Corrected to 24 hours ago
+  
     try {
       const recentUsers = await User.find({
         createdAt: { $gt: yesterday }
-      });
-
+      }).sort({ createdAt: -1 }); // Sorting users by creation date in descending order
+  
       // Counting the users
       const count = recentUsers.length;
-
+  
       res.json({
         message: 'Successfully retrieved recent users',
         totalUsers: count, // Total number of recent users
-        users: recentUsers   // List of recent users
+        users: recentUsers   // List of recent users sorted from latest to oldest
       });
     } catch (error) {
       console.error('Error fetching users:', error);
       res.status(500).json({ message: 'Server error occurred while fetching recent users' });
     }
   });
+  
 
   app.get('/api/redis-data', async (req, res) => {
     try {

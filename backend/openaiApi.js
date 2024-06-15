@@ -141,7 +141,7 @@ function getAuthorBeforeAnd(author) {
 }
 
 
-async function getAmazonBookData(title, author, country) {
+async function getAmazonBookData(title, author, country, fallback = true) {
   try {
     const titleBeforeDelimiter = getTitleBeforeDelimiter(title)
     const authorBeforeAnd = getAuthorBeforeAnd(author);
@@ -152,12 +152,12 @@ async function getAmazonBookData(title, author, country) {
         key: process.env.REACT_APP_GOOGLE_CUSTOM_SEARCH_API_KEY,
         cx: process.env.GOOGLE_CSE_ID,
         q: `site:${amazonDomain} ${title} by ${authorBeforeAnd}`,
-        num: 3  // Fetch three results instead of one
+        num: 2  // Fetch two results instead of one
       }
     });
 
     if (response.data.items && response.data.items.length > 0) {
-      for (let i = 0; i < Math.min(3, response.data.items.length); i++) {
+      for (let i = 0; i < Math.min(2, response.data.items.length); i++) {
         const item = response.data.items[i];
 
         if (!item.displayLink.endsWith(amazonDomain)) {
@@ -185,7 +185,13 @@ async function getAmazonBookData(title, author, country) {
           let amazonImage = imageIdMatch ? `${imageIdMatch[1]}._AC_UF1000,1000_QL80_.jpg` : '';
 
           let url = new URL(amazonLink);
-          url.hostname = `www.${amazonDomain}`;
+
+          if (!fallback && country === 'US') {
+            url.hostname = 'www.amazon.in'; // Change to amazon.in
+          } else {
+            url.hostname = `www.${amazonDomain}`; // Use the original domain
+          }
+
           amazonLink = url.href.split('/ref')[0];
 
           return { amazonLink, amazonStarRating, amazonReviewCount, amazonImage };
@@ -206,6 +212,12 @@ async function getAmazonBookData(title, author, country) {
         }
       }
     }
+
+    // Fallback to amazon.com
+    if (country === 'India' && fallback) {
+      return await getAmazonBookData(title, author, 'US', false);
+    }
+
     console.log('No suitable results found.');
     return { amazonLink: '', amazonStarRating: '', amazonReviewCount: '', amazonImage: '' };
   } catch (error) {
