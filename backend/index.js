@@ -320,7 +320,12 @@ function estimateTokenCount(text) {
 }
 
 const MESSAGE_LIMIT = process.env.MESSAGE_LIMIT;
-const WINDOW_DURATION = 6 * 60 * 60 * 1000; // 3 hours in milliseconds
+const WINDOW_DURATION = 3 * 60 * 60 * 1000; // 3 hours in milliseconds
+
+// Function to convert milliseconds to hours
+function durationInHours(ms) {
+  return ms / (60 * 60 * 1000); // Converts milliseconds to hours
+}
 
 io.on('connection', (socket) => {
   console.log('A user connected');
@@ -382,7 +387,7 @@ io.on('connection', (socket) => {
       const resetTimeString = resetTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
       const limitMessage = `
         <div style="border:1.3px solid red; background-color:#fff0f0; padding:10px; margin:10px 0; border-radius:8px; color:#444444; font-size: 0.9rem">
-          You have reached the message limit of 30 messages per 6 hours. Please try again after ${resetTimeString}.
+        You have reached the message limit of ${MESSAGE_LIMIT} messages per ${durationInHours(WINDOW_DURATION)} hours. Please try again after ${resetTimeString}.
         </div>`;
     
       // Emit a warning message to the client and set the limitMessage as the session name
@@ -485,7 +490,7 @@ io.on('connection', (socket) => {
       const resetTimeString = resetTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
       const limitMessage = `
         <div style="border:1.3px solid red; background-color:#fff0f0; padding:10px; margin:10px 0; border-radius:8px; color:#444444; font-size: 0.9rem">
-          You have reached the message limit of 30 messages per 6 hours. Please try again after ${resetTimeString}.
+        You have reached the message limit of ${MESSAGE_LIMIT} messages per ${durationInHours(WINDOW_DURATION)} hours. Please try again after ${resetTimeString}.
         </div>`;
     
       // Emit a warning message to the client and set the limitMessage as the session name

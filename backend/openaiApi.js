@@ -106,9 +106,15 @@ const normalizeTitle = (title) => {
     .replace(/–/g, '-') // Replace en dashes with hyphens
     .replace(/—/g, '-') // Replace em dashes with hyphens
     .replace(/,/g, '') // Remove commas
-    .replace(/\b(the|a|an)\b/g, '')
+    .replace(/\b(the|a|an)\b/g, '') // Remove articles
     .replace(/\s+/g, ' ') // Replace multiple spaces with a single space
-    .replace(/s\b/g, '')
+    .replace(/s\b/g, '') // Remove trailing 's' for plurals
+    .replace(/o\b/g, 'on') // Normalize ending 'o' to 'on'
+    .replace(/aa/g, 'a') // Normalize double 'a' to single 'a'
+    .replace(/ee/g, 'e') // Normalize double 'e' to single 'e'
+    .replace(/ii/g, 'i') // Normalize double 'i' to single 'i'
+    .replace(/oo/g, 'o') // Normalize double 'o' to single 'o'
+    .replace(/uu/g, 'u') // Normalize double 'u' to single 'u'
     .trim(); // Trim whitespace from the start and end of the string
 };
 
@@ -129,17 +135,30 @@ function getTitleBeforeDelimiter(title) {
 }
 
 function getAuthorBeforeAnd(author) {
-  // console.log("author is", author);
   // Check if the author is a non-empty string
   if (typeof author === 'string' && author.trim() !== '') {
-    return author.includes(' and ') ? author.split(' and ')[0] : author;
+      // Normalize the delimiters used for separating multiple authors to commas
+      const normalizedAuthor = author.replace(/ & /g, ', ').replace(/ and /g, ', ');
+      // Split the string at commas and return the first author
+      return normalizedAuthor.split(', ')[0];
   } else {
-    // Return a default value or handle the error appropriately
-    console.error('Invalid or missing author');
-    return '';
+      // Log or handle the error appropriately if input is invalid
+      console.error('Invalid or missing author');
+      return '';
   }
 }
 
+const getTextBeforeFirstColon = (title) => {
+  return title.split(':')[0].trim();
+};
+
+const getTextBetweenFirstAndSecondColon = (title) => {
+  const parts = title.split(':');
+  if (parts.length > 1) {
+      return parts[1].trim();
+  }
+  return '';
+};
 
 async function getAmazonBookData(title, author, country, fallback = true) {
   try {
@@ -152,12 +171,12 @@ async function getAmazonBookData(title, author, country, fallback = true) {
         key: process.env.REACT_APP_GOOGLE_CUSTOM_SEARCH_API_KEY,
         cx: process.env.GOOGLE_CSE_ID,
         q: `site:${amazonDomain} ${title} by ${authorBeforeAnd}`,
-        num: 2  // Fetch two results instead of one
+        num: 1  // Fetch two results instead of one
       }
     });
 
     if (response.data.items && response.data.items.length > 0) {
-      for (let i = 0; i < Math.min(2, response.data.items.length); i++) {
+      for (let i = 0; i < Math.min(1, response.data.items.length); i++) {
         const item = response.data.items[i];
 
         if (!item.displayLink.endsWith(amazonDomain)) {
@@ -165,10 +184,17 @@ async function getAmazonBookData(title, author, country, fallback = true) {
           continue;  // Skip to the next item
         }
 
-        const itemTitleNormalized = normalizeTitle(item.title);
+        const firstPart = getTextBeforeFirstColon(item.title);
+        const secondPart = getTextBetweenFirstAndSecondColon(item.title);
+
+        const firstPartNormalized = normalizeTitle(firstPart);
+        const secondPartNormalized = normalizeTitle(secondPart);
         const searchTitleNormalized = normalizeTitle(titleBeforeDelimiter);
 
-        if (itemTitleNormalized.includes(searchTitleNormalized) || searchTitleNormalized.includes(itemTitleNormalized)) {
+        // Check each part against the normalized search title
+        if (firstPartNormalized.includes(searchTitleNormalized) || searchTitleNormalized.includes(firstPartNormalized) || 
+            secondPartNormalized.includes(searchTitleNormalized) || searchTitleNormalized.includes(secondPartNormalized)) {
+
           // If title matches, process further
           const ogImage = item.pagemap.metatags[0]['og:image'];
           const decodedOgImage = decodeURIComponent(ogImage);
@@ -196,19 +222,11 @@ async function getAmazonBookData(title, author, country, fallback = true) {
 
           return { amazonLink, amazonStarRating, amazonReviewCount, amazonImage };
         } else {
+          console.log(country);
           console.log('Title does not match the search');
-          console.log(itemTitleNormalized);
+          console.log(firstPartNormalized);
+          console.log(secondPartNormalized);
           console.log(searchTitleNormalized);
-
-          const logEntry = new SearchMismatchLog({
-            title,
-            author,
-            country,
-            searchedTitle: searchTitleNormalized,
-            returnedTitle: itemTitleNormalized
-          });
-
-          logEntry.save().catch(logError => console.error('Error logging search mismatch:', logError));
         }
       }
     }
