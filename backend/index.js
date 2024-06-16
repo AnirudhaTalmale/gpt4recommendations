@@ -1096,6 +1096,139 @@ app.post('/api/saveSearchHistory', async (req, res) => {
 
 if (process.env.NODE_ENV === 'local') {
 
+  // Endpoint to retrieve books with null amazonStarRating in either IN or US
+  app.get('/api/books-with-null-rating', async (req, res) => {
+    try {
+      const booksWithNullRating = await BookData.find({
+        $or: [
+          { "countrySpecific.IN.amazonStarRating": { $exists: true, $eq: null } },
+          { "countrySpecific.US.amazonStarRating": { $exists: true, $eq: null } }
+        ]
+      });
+      const count = booksWithNullRating.length;  // Count of books with null ratings
+      res.json({
+        message: 'Successfully retrieved books with null amazon star ratings',
+        count: count,
+        data: booksWithNullRating
+      });
+    } catch (error) {
+      console.error('Error fetching books:', error);
+      res.status(500).json({ message: 'Server error occurred' });
+    }
+  });
+
+  // Endpoint to retrieve books with null amazonStarRating in either IN or US
+  app.get('/api/delete-books-with-null-rating', async (req, res) => {
+    try {
+      const query = {
+        $or: [
+          { "countrySpecific.IN.amazonStarRating": { $exists: true, $eq: null } },
+          { "countrySpecific.US.amazonStarRating": { $exists: true, $eq: null } }
+        ]
+      };
+  
+      const deleteResult = await BookData.deleteMany(query);
+      res.json({
+        message: 'Successfully deleted books with null amazon star ratings',
+        deletedCount: deleteResult.deletedCount
+      });
+    } catch (error) {
+      console.error('Error deleting books:', error);
+      res.status(500).json({ message: 'Server error occurred' });
+    }
+  });
+  
+  // Endpoint to delete books with 'google' in the bookImage
+  app.get('/api/delete-books-with-google-in-image', async (req, res) => {
+    try {
+        const query = {
+            $or: [
+                { "countrySpecific.IN.bookImage": { "$regex": "http://books.google.com", "$options": "i" } },
+                { "countrySpecific.US.bookImage": { "$regex": "http://books.google.com", "$options": "i" } }
+            ]
+        };
+
+        const deleteResult = await BookData.deleteMany(query);
+        res.json({
+            message: 'Successfully deleted books with google in book image',
+            deletedCount: deleteResult.deletedCount
+        });
+    } catch (error) {
+        console.error('Error deleting books:', error);
+        res.status(500).json({ message: 'Server error occurred' });
+    }
+  });
+
+  // Endpoint to get books with 'google' in the bookImage
+  app.get('/api/books-with-google-in-image', async (req, res) => {
+    try {
+      const query = {
+        $or: [
+          { "countrySpecific.IN.bookImage": { "$regex": "http://books.google.com", "$options": "i" } },
+          { "countrySpecific.US.bookImage": { "$regex": "http://books.google.com", "$options": "i" } }
+        ]
+      };
+
+      const booksWithGoogle = await BookData.find(query);
+      const totalCount = await BookData.countDocuments(query);
+
+      res.json({
+        message: 'Successfully retrieved books with google in book image',
+        total: totalCount,
+        data: booksWithGoogle
+      });
+    } catch (error) {
+      console.error('Error fetching books:', error);
+      res.status(500).json({ message: 'Server error occurred' });
+    }
+  });
+
+  // Endpoint to get books with 'blank_image' in the bookImage
+  app.get('/api/books-with-blank-image-in-image', async (req, res) => {
+    try {
+      const query = {
+        $or: [
+          { "countrySpecific.IN.bookImage": { "$regex": "blank_image", "$options": "i" } },
+          { "countrySpecific.US.bookImage": { "$regex": "blank_image", "$options": "i" } }
+        ]
+      };
+
+      const booksWithGoogle = await BookData.find(query);
+      const totalCount = await BookData.countDocuments(query);
+
+      res.json({
+        message: 'Successfully retrieved books with blank_image in book image',
+        total: totalCount,
+        data: booksWithGoogle
+      });
+    } catch (error) {
+      console.error('Error fetching books:', error);
+      res.status(500).json({ message: 'Server error occurred' });
+    }
+  });
+
+  // Endpoint to delete books with 'blank_image' in the bookImage
+  app.get('/api/delete-books-with-blank-image-in-image', async (req, res) => {
+    try {
+        const query = {
+            $or: [
+                { "countrySpecific.IN.bookImage": { "$regex": "blank_image", "$options": "i" } },
+                { "countrySpecific.US.bookImage": { "$regex": "blank_image", "$options": "i" } }
+            ]
+        };
+
+        const deleteResult = await BookData.deleteMany(query);
+        res.json({
+            message: 'Successfully deleted books with blank_image in book image',
+            deletedCount: deleteResult.deletedCount
+        });
+    } catch (error) {
+        console.error('Error deleting books:', error);
+        res.status(500).json({ message: 'Server error occurred' });
+    }
+  });
+
+
   // Route for recent anecdotes
   app.get('/api/recent-anecdotes', async (req, res) => {
     const yesterday = new Date(Date.now() - 48*60*60*1000);
