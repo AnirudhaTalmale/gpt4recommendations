@@ -383,10 +383,10 @@ const getBookData = async (title, author, userCountry, bookDataObjectId = '') =>
     let cacheKey = `book-data:${bookDataObjectId || title.toLowerCase()}:${countryKey}`;
 
     // Check if the data is available in Redis cache
-    // let cachedData = await redisClient.get(cacheKey);
-    // if (cachedData) {
-    //   return JSON.parse(cachedData);
-    // }
+    let cachedData = await redisClient.get(cacheKey);
+    if (cachedData) {
+      return JSON.parse(cachedData);
+    }
 
     let query = bookDataObjectId 
       ? { _id: new ObjectId(bookDataObjectId) }
@@ -411,7 +411,7 @@ const getBookData = async (title, author, userCountry, bookDataObjectId = '') =>
       existingBook = createNewBook(title, author, amazonData, googleData, countryKey, genres);
     }
 
-    // await existingBook.save();
+    await existingBook.save();
 
     let bookData = createBookDetails(existingBook, existingBook.countrySpecific[countryKey]);
     await redisClient.set(cacheKey, JSON.stringify(bookData));
