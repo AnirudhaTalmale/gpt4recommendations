@@ -6,7 +6,6 @@ const axios = require('axios');
 const BookData = require('./models/models-chat/BookData'); 
 const SearchHistory = require('./models/models-chat/SearchHistory'); 
 const BookDataErrorLog = require('./models/models-chat/BookDataErrorLog');
-const SearchMismatchLog = require('./models/models-chat/SearchMismatchLog');
 const redisClient = require('./redisClient');
 const mongoose = require('mongoose');
 const { Types } = mongoose;
@@ -106,6 +105,7 @@ const normalizeTitle = (title) => {
     .replace(/–/g, '-') // Replace en dashes with hyphens
     .replace(/—/g, '-') // Replace em dashes with hyphens
     .replace(/,/g, '') // Remove commas
+    .replace(/-/g, ' ') // Replace all hyphens with spaces
     .replace(/\b(the|a|an)\b/g, '') // Remove articles
     .replace(/\s+/g, ' ') // Replace multiple spaces with a single space
     .replace(/s\b/g, '') // Remove trailing 's' for plurals
@@ -378,16 +378,20 @@ function escapeRegExp(string) {
 const getBookData = async (title, author, userCountry, bookDataObjectId = '') => {
   try {
     const escapedTitle = escapeRegExp(title);
+    const escapedAuthor = escapeRegExp(author);
     const countryKey = userCountry === 'India' ? 'IN' : 'US';
     let cacheKey = `book-data:${bookDataObjectId || title.toLowerCase()}:${countryKey}`;
 
     // Check if the data is available in Redis cache
-    let cachedData = await redisClient.get(cacheKey);
-    if (cachedData) {
-      return JSON.parse(cachedData);
-    }
+    // let cachedData = await redisClient.get(cacheKey);
+    // if (cachedData) {
+    //   return JSON.parse(cachedData);
+    // }
 
-    let query = bookDataObjectId ? { _id: new ObjectId(bookDataObjectId) } : { title: { $regex: new RegExp('^' + escapedTitle + '$', 'i') } };
+    let query = bookDataObjectId 
+      ? { _id: new ObjectId(bookDataObjectId) }
+      : { title: { $regex: new RegExp('^' + escapedTitle + '$', 'i') }, author: { $regex: new RegExp('^' + escapedAuthor + '$', 'i') } };
+
     let existingBook = await BookData.findOne(query);
 
     if (existingBook && existingBook.countrySpecific && existingBook.countrySpecific[countryKey] && existingBook.countrySpecific[countryKey].amazonLink && existingBook.countrySpecific[countryKey].amazonLink.trim() !== '') {
@@ -407,7 +411,7 @@ const getBookData = async (title, author, userCountry, bookDataObjectId = '') =>
       existingBook = createNewBook(title, author, amazonData, googleData, countryKey, genres);
     }
 
-    await existingBook.save();
+    // await existingBook.save();
 
     let bookData = createBookDetails(existingBook, existingBook.countrySpecific[countryKey]);
     await redisClient.set(cacheKey, JSON.stringify(bookData));

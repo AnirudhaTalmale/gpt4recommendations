@@ -2,8 +2,8 @@ const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
 const bookSchema = new Schema({
-  title: { type: String, required: true, index: true, unique: true },
-  author: { type: String, required: true, index: true},
+  title: { type: String, required: true, index: true },
+  author: { type: String, required: true, index: true },
   previewLink: { type: String, default: '' },
   countrySpecific: {
     IN: {
@@ -21,5 +21,8 @@ const bookSchema = new Schema({
   },
   genres: [{ type: String, required: true }]
 });
+
+// Create a compound index on title and author
+bookSchema.index({ title: 1, author: 1 }, { unique: true });
 
 module.exports = mongoose.model('BookData', bookSchema);
