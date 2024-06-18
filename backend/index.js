@@ -1125,7 +1125,7 @@ if (process.env.NODE_ENV === 'local') {
           { "countrySpecific.IN.amazonStarRating": { $exists: true, $eq: null } },
           { "countrySpecific.US.amazonStarRating": { $exists: true, $eq: null } }
         ]
-      };
+      }; 
   
       const deleteResult = await BookData.deleteMany(query);
       res.json({
