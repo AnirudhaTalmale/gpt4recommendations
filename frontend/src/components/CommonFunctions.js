@@ -148,7 +148,6 @@ export const handleMoreDetailsRequest = async (bookDataObjectId, bookTitle, auth
   
         if (userInfoResponse.status === 200) {
           const userData = userInfoResponse.data.user;
-          window.gtag('config', process.env.REACT_APP_GA_MEASUREMENT_ID, {'user_id': userData.id.toString()});
           return userData;
         }
       } else {
