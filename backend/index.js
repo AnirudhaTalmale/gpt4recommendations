@@ -862,16 +862,6 @@ async function fetchAndProcessBooks(query, countryCode) {
   }
 }
 
-// Feed creation logic for genre called 'All': 
-// 1. To consider last 1 month time frame
-// 2. To consider a genre as preferred genre only if it is searched at least 10 times in last 1 month
-// 3. Arrange the preferred genres in the decreasing order of searches
-// 4. For each genre, the corresponding books should be ordered in decreasing order of review count
-// 5. Then in round robin fashion, starting from most preferred genre, we will start picking up the books
-// 6. This way we will get preferred books
-// 7. For non-preferred books, we will simply sort them by decreasing order of review count
-// 8. Final order = preferred books followed by non-preferred books
-
 app.post('/api/books', async (req, res) => {
   const { genre, countryCode } = req.body;
 
