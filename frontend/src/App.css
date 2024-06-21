@@ -15,7 +15,7 @@ html, body {
   height: 100dvh; 
   background-color: rgb(253, 253, 253);
   overflow-y: auto;
-  border: 1px solid black;
+  /* border: 1px solid black; */
   overflow-x: hidden;
 }
 
@@ -2296,9 +2296,6 @@ section-privacy-policy li strong {
 
 
 @media (max-width: 759px) {
-
-  
-
   .comparison td {
     hyphens: auto;
     word-break: break-word; /* Allows word breaking */
