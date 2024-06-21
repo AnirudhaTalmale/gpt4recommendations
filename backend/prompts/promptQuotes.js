@@ -5,11 +5,11 @@ const quotesPrompt = (userQuery) => {
 
   if (process.env.NODE_ENV === 'local') {
     prompt = `Book name is "${userQuery}"
- Provide large number of important Quotes present in the above book. The final answer should be strictly strictly with following html tags:
+ Provide large number of important Quotes present in the above book. The final answer should be strictly with following html tags:
  <b>Quotes</b><ol><li>"Quote"</li></ol>`;
   } else {
     prompt = `Book name is "${userQuery}"
-  Provide large number of important Quotes present in the above book. The final answer should be strictly strictly with following html tags:
+  Provide large number of important Quotes present in the above book. The final answer should be strictly with following html tags:
  <b>Quotes</b><ol><li>"Quote"</li></ol>`;
   }
 

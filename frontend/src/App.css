@@ -12,11 +12,11 @@ html, body {
 .chat-page {
   display: flex;
   flex-direction: column;
-  height: 100dvh;
+  height: 100vh; 
   background-color: rgb(253, 253, 253);
-  /* border: 1px solid green; */
-  overflow: hidden;
+  overflow-y: auto;
 }
+
 
 /* Header page */
 

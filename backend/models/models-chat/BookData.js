@@ -19,7 +19,15 @@ const bookSchema = new Schema({
       amazonReviewCount: String
     }
   },
-  genres: [{ type: String, required: true }]
+  genres: {
+    type: [{ type: String, required: true }],
+    validate: {
+      validator: function(v) {
+        return v.length > 0;
+      },
+      message: 'At least one genre must be specified'
+    }
+  }
 });
 
 // Create a compound index on title and author

@@ -73,16 +73,16 @@ function createBookInfoHtml(bookTitle, author, amazonStarRating, amazonReviewCou
   }
 
   // Start the ratings and review container
-  if (amazonStarRating !== 'Unknown' || amazonReviewCount !== 'Unknown') {
+  if (amazonStarRating !== '' || amazonReviewCount !== '') {
     bookInfoHtml += `<div class="ratings-and-review">`;
 
     // Add star rating
-    if (amazonStarRating && amazonStarRating !== 'Unknown') { 
+    if (amazonStarRating && amazonStarRating !== '') { 
       bookInfoHtml += renderStarRatingHtml(amazonStarRating);
     }
 
     // If review count exists, add review count information
-    if (amazonReviewCount && amazonReviewCount !== 'Unknown') {
+    if (amazonReviewCount && amazonReviewCount !== '') {
       bookInfoHtml += `<span class="review-count">${amazonReviewCount}</span>`;
     }
 
@@ -199,10 +199,10 @@ async function getAmazonBookData(title, author, country, fallback = true) {
           const decodedOgImage = decodeURIComponent(ogImage);
 
           const starRatingMatch = decodedOgImage.match(/_PIStarRating(.*?),/);
-          const amazonStarRating = starRatingMatch ? convertStarRating(starRatingMatch[1]) : 'Unknown';
+          const amazonStarRating = starRatingMatch ? convertStarRating(starRatingMatch[1]) : '';
           
           const reviewCountMatch = decodedOgImage.match(/_ZA(\d+(%2C\d+)?)/);
-          const amazonReviewCount = reviewCountMatch ? reviewCountMatch[1].replace('%2C', ',') : 'Unknown';
+          const amazonReviewCount = reviewCountMatch ? reviewCountMatch[1].replace('%2C', ',') : '';
 
           let amazonLink = item.pagemap.metatags[0]['og:url'];
 
@@ -279,13 +279,6 @@ const getGoogleBookData = async (title, author) => {
         return (itemTitleNormalized.includes(searchTitleNormalized) || searchTitleNormalized.includes(itemTitleNormalized))
             && item.volumeInfo.language === 'en';
     });
-    
-      // const bookWithPreview = filteredBooks.find(item => 
-      //   item.accessInfo.viewability !== 'NO_PAGES' &&
-      //   item.accessInfo.viewability !== 'UNKNOWN' &&
-      //   item.accessInfo.accessViewStatus !== 'NONE' &&
-      //   item.volumeInfo.previewLink 
-      // );
     
       const book =  filteredBooks[0];
     
@@ -438,8 +431,8 @@ const getBookData = async (title, author, userCountry, bookDataObjectId = '') =>
       bookImage: '',
       previewLink: '',
       amazonLink: '',
-      amazonStarRating: 'Unknown',
-      amazonReviewCount: 'Unknown',
+      amazonStarRating: '',
+      amazonReviewCount: '',
       genres: []  // Ensuring genres is included even in error scenarios
     };    
   }

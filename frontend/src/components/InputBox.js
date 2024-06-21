@@ -86,11 +86,6 @@ function InputBox({ onSubmit, isStreaming, onStopStreaming, isPaneOpen }) {
     return context.measureText(text).width;
   }
 
-  useEffect(() => {
-    console.log("Streaming state changed:", isStreaming);
-}, [isStreaming]);
-
-
   return (
     <form onSubmit={handleSubmit} className="input-area">
         <textarea ref={textareaRef}
