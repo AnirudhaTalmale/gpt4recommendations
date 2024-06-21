@@ -12,9 +12,11 @@ html, body {
 .chat-page {
   display: flex;
   flex-direction: column;
-  height: 100vh; 
+  height: 100dvh; 
   background-color: rgb(253, 253, 253);
   overflow-y: auto;
+  border: 1px solid black;
+  overflow-x: hidden;
 }
 
 
@@ -2310,6 +2312,7 @@ section-privacy-policy li strong {
 
   .chat-page {
     overflow-y: auto;
+    overflow-x: hidden;
   }
 
   .homepage {
