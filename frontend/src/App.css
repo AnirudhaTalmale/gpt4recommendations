@@ -2309,7 +2309,7 @@ section-privacy-policy li strong {
   }
 
   .chat-page {
-    overflow: hidden;
+    overflow-y: auto;
   }
 
   .homepage {
