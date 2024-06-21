@@ -327,6 +327,7 @@ function Chat() {
 
     if (!isMoreDetails && !moreBooks && !isKeyInsights && !isAnecdotes && !isQuotes && !isEdit) {
       updateSessionMessages(query, 'simple', true);
+      scrollToBottom();
     }
     else {
       socket.emit('query', {
