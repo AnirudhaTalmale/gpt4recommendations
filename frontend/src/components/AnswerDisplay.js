@@ -36,6 +36,7 @@ function AnswerDisplay({
   const handleKeyInsightsClick = (bookDataObjectId, bookTitle, author) => {
     if (!isKeyInsightsClicked && onKeyInsightsClick) {
       setIsKeyInsightsClicked(true);
+      
       onKeyInsightsClick(bookDataObjectId, bookTitle, author);
   
       // Reset the state after a delay
@@ -48,6 +49,7 @@ function AnswerDisplay({
   const handleMoreDetailsClick = (bookDataObjectId, bookTitle, author) => {
     if (!isMoreDetailsClicked && onMoreDetailsClick) {
       setIsMoreDetailsClicked(true);
+      
       onMoreDetailsClick(bookDataObjectId, bookTitle, author);
   
       setTimeout(() => {
@@ -59,6 +61,7 @@ function AnswerDisplay({
   const handleAnecdotesClick = (bookDataObjectId, bookTitle, author) => {
     if (!isAnecdotesClicked && onAnecdotesClick) {
       setIsAnecdotesClicked(true);
+      
       onAnecdotesClick(bookDataObjectId, bookTitle, author);
   
       setTimeout(() => {
@@ -70,6 +73,7 @@ function AnswerDisplay({
   const handleQuotesClick = (bookDataObjectId, bookTitle, author) => {
     if (!isQuotesClicked && onQuotesClick) {
       setIsQuotesClicked(true);
+      
       onQuotesClick(bookDataObjectId, bookTitle, author);
   
       setTimeout(() => {
@@ -81,6 +85,8 @@ function AnswerDisplay({
   const handlePreviewClick = (previewLink) => {
     if (!isPreviewClicked) {
       setIsPreviewClicked(true);
+      window.gtag('event', 'conversion', {'send_to': 'AW-16524885939/bdeKCIjxv7wZELP_1sc9'});
+      
       if (previewLink) {
         window.open(previewLink, '_blank');
       }
@@ -98,6 +104,8 @@ function AnswerDisplay({
         console.error('User email is not provided');
         return;
       }
+      
+      window.gtag('event', 'conversion', {'send_to': 'AW-16524885939/bdeKCIjxv7wZELP_1sc9'});
 
       // Call the API to increment the buy now click count using axios, sending userEmail in the body
       const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/increment-buy-now`, {
@@ -112,6 +120,8 @@ function AnswerDisplay({
   const handleContinueGenerating = () => {
     if (!isContinueGeneratingClicked && onContinueGenerating) {
       setIsContinueGeneratingClicked(true);
+      window.gtag('event', 'conversion', {'send_to': 'AW-16524885939/bdeKCIjxv7wZELP_1sc9'});
+      
       onContinueGenerating();
   
       setTimeout(() => {

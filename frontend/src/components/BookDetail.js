@@ -173,22 +173,6 @@ function BookDetail() {
       fetchBookDetails();
     }, [fetchBookDetails]);
 
-    useEffect(() => {
-      // Handler for the conversion tracking event
-      const handleConversionTracking = () => {  
-        // Trigger the Google Analytics event for conversion
-        window.gtag('event', 'conversion', {'send_to': 'AW-16524885939/bdeKCIjxv7wZELP_1sc9'});
-      };
-  
-      // Listen for the 'conversionTracking' event from the server
-      socket.on('book-detail-conversionTracking', handleConversionTracking);
-  
-      // Cleanup the listener when the component unmounts or dependencies change
-      return () => {
-        socket.off('book-detail-conversionTracking', handleConversionTracking);
-      };
-    }, []); 
-
     if (!book) {
         return (
             <div className="loading-overlay">
@@ -344,6 +328,8 @@ function BookDetail() {
         const previewLink = button.getAttribute('data-preview-link');
         if (!isPreviewClicked) {
           setIsPreviewClicked(true);
+          window.gtag('event', 'conversion', {'send_to': 'AW-16524885939/bdeKCIjxv7wZELP_1sc9'});
+
           if (previewLink) {
             window.open(previewLink, '_blank');
           }

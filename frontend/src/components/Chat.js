@@ -423,24 +423,6 @@ function Chat() {
     };
   }, [currentSessionIdRef]);
 
-  useEffect(() => {
-    // Handler for the conversion tracking event
-    const handleConversionTracking = () => {
-
-      // Trigger the Google Analytics event for conversion
-      window.gtag('event', 'conversion', {'send_to': 'AW-16524885939/bdeKCIjxv7wZELP_1sc9'});
-    };
-
-    // Listen for the 'conversionTracking' event from the server
-    socket.on('query-conversionTracking', handleConversionTracking);
-
-    // Cleanup the listener when the component unmounts or dependencies change
-    return () => {
-      socket.off('query-conversionTracking', handleConversionTracking);
-    };
-
-  }, []); 
-
   const loadSessions = useCallback(async (currentUserData) => {
     // Check if currentUserData.id is used instead of currentUserData.id
     if (!currentUserData || !currentUserData.id) { // Changed from !_id to .id

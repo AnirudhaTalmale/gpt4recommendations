@@ -31,6 +31,7 @@ function InputBox({ onSubmit, isStreaming, onStopStreaming, isPaneOpen }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    window.gtag('event', 'conversion', {'send_to': 'AW-16524885939/bdeKCIjxv7wZELP_1sc9'});
     onSubmit(input);
     setInput('');
     setIsInputNotEmpty(false); // Add this line
