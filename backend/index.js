@@ -459,8 +459,8 @@ io.on('connection', (socket) => {
         await session.user.save();
 
         // Emit the socket event right after saving the user
-        const transactionId = `${session.user._id}-${session.user.totalMessageCount}`;
-        socket.emit('query-conversionTracking', { transactionId });
+        // const transactionId = `${session.user._id}-${session.user.totalMessageCount}`;
+        // socket.emit('query-conversionTracking', { transactionId });
       } catch (error) {
         console.error('Error processing query:', error);
         socket.emit('error', 'Error processing your request');
@@ -532,8 +532,8 @@ io.on('connection', (socket) => {
       await user.save();
 
       // Emit the socket event right after saving the user
-      const transactionId = `${user._id}-${user.totalMessageCount}`;
-      socket.emit('book-detail-conversionTracking', { transactionId });
+      // const transactionId = `${user._id}-${user.totalMessageCount}`;
+      // socket.emit('book-detail-conversionTracking', { transactionId });
     } catch (error) {
       console.error('Error processing query:', error);
       socket.emit('error', 'Error processing your request');

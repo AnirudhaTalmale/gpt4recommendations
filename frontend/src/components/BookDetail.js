@@ -173,27 +173,27 @@ function BookDetail() {
       fetchBookDetails();
     }, [fetchBookDetails]);
 
-    useEffect(() => {
-      // Handler for the conversion tracking event
-      const handleConversionTracking = (data) => {
-        const { transactionId } = data;
+    // useEffect(() => {
+    //   // Handler for the conversion tracking event
+    //   const handleConversionTracking = (data) => {
+    //     const { transactionId } = data;
   
-        // Trigger the Google Analytics event for conversion
-        window.gtag('event', 'conversion', {
-          'send_to': 'AW-16524885939/kvNECOHOwLsZELP_1sc9',
-          'transaction_id': transactionId
-        });
-      };
+    //     // Trigger the Google Analytics event for conversion
+    //     window.gtag('event', 'conversion', {
+    //       'send_to': 'AW-16524885939/kvNECOHOwLsZELP_1sc9',
+    //       'transaction_id': transactionId
+    //     });
+    //   };
   
-      // Listen for the 'conversionTracking' event from the server
-      socket.on('book-detail-conversionTracking', handleConversionTracking);
+    //   // Listen for the 'conversionTracking' event from the server
+    //   socket.on('book-detail-conversionTracking', handleConversionTracking);
   
-      // Cleanup the listener when the component unmounts or dependencies change
-      return () => {
-        socket.off('book-detail-conversionTracking', handleConversionTracking);
-      };
+    //   // Cleanup the listener when the component unmounts or dependencies change
+    //   return () => {
+    //     socket.off('book-detail-conversionTracking', handleConversionTracking);
+    //   };
   
-    }, []); 
+    // }, []); 
 
 
     if (!book) {
