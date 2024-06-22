@@ -28,7 +28,7 @@ function OnboardingPage() {
             }, { withCredentials: true });
             
             if (response.data.success) {
-                window.gtag('event', 'conversion', {'send_to': 'AW-16524885939/csdgCKLXtrwZELP_1sc9'});
+                // window.gtag('event', 'conversion', {'send_to': 'AW-16524885939/csdgCKLXtrwZELP_1sc9'});
                 navigate(response.data.redirectTo);
             }
         } catch (error) {
