@@ -108,7 +108,7 @@ function Chat() {
     if (!chatAreaRef.current) return false;
     const { scrollTop, scrollHeight, clientHeight } = chatAreaRef.current;
     // Considered at bottom if within 100px of the bottom
-    return scrollTop + clientHeight >= scrollHeight - 20;
+    return scrollTop + clientHeight >= scrollHeight - 30;
   };
 
   const scrollToBottom = () => {
