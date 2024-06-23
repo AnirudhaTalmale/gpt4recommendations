@@ -942,6 +942,62 @@ app.get('/api/books/:bookId/:country', async (req, res) => {
 
 if (process.env.NODE_ENV === 'local') { 
 
+  app.get('/api/books/with-preview', async (req, res) => {
+    try {
+        // Fetch all books where previewLink is not an empty string
+        const booksWithPreview = await BookData.find({
+            previewLink: { $ne: '' } // Condition to match books where previewLink is not empty
+        }).select('previewLink -_id'); // Select only the previewLink field and exclude the _id
+
+        const totalCount = booksWithPreview.length; // Directly use the length of the array for total count
+
+        if (totalCount === 0) {
+            return res.status(404).json({
+                message: 'No books found with preview links.'
+            });
+        }
+
+        // Create an array of just the preview links
+        const previewLinks = booksWithPreview.map(book => book.previewLink);
+
+        res.json({
+            message: 'Successfully retrieved books with preview links',
+            totalBooks: totalCount, // Include the total count of matching records
+            previewLinks: previewLinks // Return the list of preview links
+        });
+    } catch (error) {
+        console.error('Error fetching books with preview links:', error);
+        res.status(500).json({
+            message: 'Server error occurred'
+        });
+    }
+});
+
+  app.get('/api/books/missing-preview', async (req, res) => {
+    try {
+        // Delete all books with an empty previewLink
+        const deleteResult = await BookData.deleteMany({
+            previewLink: '' // Condition to match books with an empty previewLink
+        });
+
+        if (deleteResult.deletedCount === 0) {
+            return res.status(404).json({
+                message: 'No books found with missing preview links to delete.'
+            });
+        }
+
+        res.json({
+            message: 'Successfully deleted books with missing preview links',
+            deletedBooksCount: deleteResult.deletedCount // Include the count of deleted records
+        });
+    } catch (error) {
+        console.error('Error deleting books with missing preview links:', error);
+        res.status(500).json({
+            message: 'Server error occurred'
+        });
+    }
+  });
+
   app.get('/api/books/missing-preview', async (req, res) => {
     try {
         // Fetch all books with an empty previewLink

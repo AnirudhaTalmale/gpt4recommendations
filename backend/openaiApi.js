@@ -312,9 +312,8 @@ const getGoogleBookData = async (title, author) => {
       
         
       if (book) {
-        const { volumeInfo, id } = book;
-        console.log("volumeInfo.previewLink is", volumeInfo.previewLink);
-        previewLink = `https://books.google.co.in/books?id=${id}&printsec=frontcover&gbpv=1`;
+        const { volumeInfo } = book;
+        previewLink = volumeInfo.previewLink;
 
         // To get the largest available image
         const imageLinks = volumeInfo.imageLinks;
