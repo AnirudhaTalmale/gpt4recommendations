@@ -295,19 +295,25 @@ const getGoogleBookData = async (title, author) => {
     const searchTitleNormalized = normalizeTitle(titleBeforeDelimiter);
 
     if (response.data.items?.length) {
-
+      // console.log("response.data.items is", response.data.items);
+      
       const book = response.data.items.find(item => {
         const itemTitleNormalized = normalizeTitle(item.volumeInfo.title);
         const itemPreviewLinkTitleNormalized = normalizeTitle(extractTitleFromLink(item.volumeInfo.previewLink));
         
-        return (itemTitleNormalized.includes(searchTitleNormalized) 
-        || searchTitleNormalized.includes(itemTitleNormalized)
-        || itemPreviewLinkTitleNormalized.includes(searchTitleNormalized) 
-        || searchTitleNormalized.includes(itemPreviewLinkTitleNormalized));
+        // Check if viewability is not 'NO_PAGES'
+        const hasPreviewAvailable = item.accessInfo.viewability !== 'NO_PAGES';
+        
+        return hasPreviewAvailable && (itemTitleNormalized.includes(searchTitleNormalized) 
+          || searchTitleNormalized.includes(itemTitleNormalized)
+          || itemPreviewLinkTitleNormalized.includes(searchTitleNormalized) 
+          || searchTitleNormalized.includes(itemPreviewLinkTitleNormalized));
       });
+      
         
       if (book) {
         const { volumeInfo, id } = book;
+        console.log("volumeInfo.previewLink is", volumeInfo.previewLink);
         previewLink = `https://books.google.co.in/books?id=${id}&printsec=frontcover&gbpv=1`;
 
         // To get the largest available image
