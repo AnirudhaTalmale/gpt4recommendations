@@ -328,7 +328,6 @@ function BookDetail() {
         const previewLink = button.getAttribute('data-preview-link');
         if (!isPreviewClicked) {
           setIsPreviewClicked(true);
-          window.gtag('event', 'conversion', {'send_to': 'AW-16524885939/bdeKCIjxv7wZELP_1sc9'});
 
           if (previewLink) {
             window.open(previewLink, '_blank');

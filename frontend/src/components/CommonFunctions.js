@@ -13,7 +13,6 @@ export const fetchAnecdotes = async (bookDataObjectId, bookTitle) => {
 
 export const handleAnecdotesRequest = async (bookDataObjectId, bookTitle, author, handleQuerySubmit, setIsLightboxOpen, setLightboxContent) => {
   try {
-    window.gtag('event', 'conversion', {'send_to': 'AW-16524885939/bdeKCIjxv7wZELP_1sc9'});
     const anecdotes = await fetchAnecdotes(bookDataObjectId, bookTitle);
     if (!anecdotes) {
       const userQuery = `${bookTitle} by ${author}`;
@@ -42,7 +41,6 @@ export const fetchQuotes = async (bookDataObjectId, bookTitle) => {
   
   export const handleQuotesRequest = async (bookDataObjectId, bookTitle, author, handleQuerySubmit, setIsLightboxOpen, setLightboxContent) => {
     try {
-      window.gtag('event', 'conversion', {'send_to': 'AW-16524885939/bdeKCIjxv7wZELP_1sc9'});
       const quotes = await fetchQuotes(bookDataObjectId, bookTitle);
       if (!quotes) {
         const userQuery = `${bookTitle} by ${author}`;
@@ -71,7 +69,6 @@ export const fetchKeyInsights = async (bookDataObjectId, bookTitle) => {
 
 export const handleKeyInsightsRequest = async (bookDataObjectId, bookTitle, author, handleQuerySubmit, setIsLightboxOpen, setLightboxContent) => {
   try {
-    window.gtag('event', 'conversion', {'send_to': 'AW-16524885939/bdeKCIjxv7wZELP_1sc9'});
     const keyInsights = await fetchKeyInsights(bookDataObjectId, bookTitle);
     if (!keyInsights) {
       const userQuery = `${bookTitle} by ${author}`;
@@ -101,7 +98,6 @@ export const fetchMoreDetails = async (bookDataObjectId, bookTitle) => {
 
 export const handleMoreDetailsRequest = async (bookDataObjectId, bookTitle, author, handleQuerySubmit, setIsLightboxOpen, setLightboxContent) => {
   try {
-    window.gtag('event', 'conversion', {'send_to': 'AW-16524885939/bdeKCIjxv7wZELP_1sc9'});
     const detailedDescription = await fetchMoreDetails(bookDataObjectId, bookTitle);
     if (!detailedDescription) {
       const userQuery = `Explain the book - ${bookTitle} by ${author}`;
@@ -198,7 +194,6 @@ export const BuyNowButton = ({ link, buttonText = 'Buy Now', userEmail }) => {
     }
 
     try {
-      window.gtag('event', 'conversion', {'send_to': 'AW-16524885939/bdeKCIjxv7wZELP_1sc9'});
 
       // Call the API to increment the buy now click count, sending userEmail in the body
       await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/increment-buy-now`, {

@@ -85,7 +85,6 @@ function AnswerDisplay({
   const handlePreviewClick = (previewLink) => {
     if (!isPreviewClicked) {
       setIsPreviewClicked(true);
-      window.gtag('event', 'conversion', {'send_to': 'AW-16524885939/bdeKCIjxv7wZELP_1sc9'});
       
       if (previewLink) {
         window.open(previewLink, '_blank');
@@ -105,7 +104,6 @@ function AnswerDisplay({
         return;
       }
       
-      window.gtag('event', 'conversion', {'send_to': 'AW-16524885939/bdeKCIjxv7wZELP_1sc9'});
 
       // Call the API to increment the buy now click count using axios, sending userEmail in the body
       const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/increment-buy-now`, {
@@ -120,7 +118,6 @@ function AnswerDisplay({
   const handleContinueGenerating = () => {
     if (!isContinueGeneratingClicked && onContinueGenerating) {
       setIsContinueGeneratingClicked(true);
-      window.gtag('event', 'conversion', {'send_to': 'AW-16524885939/bdeKCIjxv7wZELP_1sc9'});
       
       onContinueGenerating();
   
