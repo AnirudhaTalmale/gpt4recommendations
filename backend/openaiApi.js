@@ -191,8 +191,8 @@ async function getAmazonBookData(title, author, country, fallback = true) {
         const searchTitleNormalized = normalizeTitle(titleBeforeDelimiter);
 
         // Check each part against the normalized search title
-        if (firstPartNormalized.includes(searchTitleNormalized) || searchTitleNormalized.includes(firstPartNormalized) || 
-            secondPartNormalized.includes(searchTitleNormalized) || searchTitleNormalized.includes(secondPartNormalized)) {
+        if ((firstPartNormalized && (firstPartNormalized.includes(searchTitleNormalized) || searchTitleNormalized.includes(firstPartNormalized))) ||
+    (secondPartNormalized && (secondPartNormalized.includes(searchTitleNormalized) || searchTitleNormalized.includes(secondPartNormalized)))) {
 
           // If title matches, process further
           const ogImage = item.pagemap.metatags[0]['og:image'];
@@ -218,6 +218,11 @@ async function getAmazonBookData(title, author, country, fallback = true) {
           }
 
           amazonLink = url.href.split('/ref')[0];
+
+          console.log('Title matched the search');
+          console.log(firstPartNormalized);
+          console.log(secondPartNormalized);
+          console.log(searchTitleNormalized);
 
           return { amazonLink, amazonStarRating, amazonReviewCount, amazonImage };
         } else {
