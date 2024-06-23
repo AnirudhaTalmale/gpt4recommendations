@@ -264,6 +264,24 @@ function convertStarRating(starString) {
   return starRatingMap[starString] || starString;
 }
 
+const extractTitleFromLink = (link) => {
+  try {
+    const url = new URL(link);
+    const queryParams = url.searchParams;
+    const rawQuery = queryParams.get('dq');
+
+    if (rawQuery) {
+      const intitleMatch = rawQuery.match(/intitle:([^+]+)/);
+      return intitleMatch ? decodeURIComponent(intitleMatch[1]) : "";
+    }
+    
+    return "";
+  } catch (error) {
+    console.error("Invalid URL provided:", error.message);
+    return ""; // Return an empty string or handle the error as needed
+  }
+};
+
 const getGoogleBookData = async (title, author) => {
   try {
     const authorBeforeAnd = getAuthorBeforeAnd(author);
@@ -277,16 +295,17 @@ const getGoogleBookData = async (title, author) => {
     const searchTitleNormalized = normalizeTitle(titleBeforeDelimiter);
 
     if (response.data.items?.length) {
-      // console.log("response.data.items is: ", response.data.items);
 
-      const filteredBooks = response.data.items.filter(item => {
+      const book = response.data.items.find(item => {
         const itemTitleNormalized = normalizeTitle(item.volumeInfo.title);
-        return (itemTitleNormalized.includes(searchTitleNormalized) || searchTitleNormalized.includes(itemTitleNormalized))
-            && item.volumeInfo.language === 'en';
-    });
-    
-      const book =  filteredBooks[0];
-    
+        const itemPreviewLinkTitleNormalized = normalizeTitle(extractTitleFromLink(item.volumeInfo.previewLink));
+        
+        return (itemTitleNormalized.includes(searchTitleNormalized) 
+        || searchTitleNormalized.includes(itemTitleNormalized)
+        || itemPreviewLinkTitleNormalized.includes(searchTitleNormalized) 
+        || searchTitleNormalized.includes(itemPreviewLinkTitleNormalized));
+      });
+        
       if (book) {
         const { volumeInfo, id } = book;
         previewLink = `https://books.google.co.in/books?id=${id}&printsec=frontcover&gbpv=1`;

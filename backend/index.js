@@ -942,6 +942,38 @@ app.get('/api/books/:bookId/:country', async (req, res) => {
 
 if (process.env.NODE_ENV === 'local') { 
 
+  app.get('/api/books/missing-preview', async (req, res) => {
+    try {
+        // Fetch all books with an empty previewLink
+        const booksWithMissingPreview = await BookData.find({
+            previewLink: '' // Condition to match books with an empty previewLink
+        });
+
+        // Get the total count of books with an empty previewLink
+        const totalCount = await BookData.countDocuments({
+            previewLink: ''
+        });
+
+        if (totalCount === 0) {
+            return res.status(404).json({
+                message: 'No books found with missing preview links.'
+            });
+        }
+
+        res.json({
+            message: 'Successfully retrieved books with missing preview links',
+            totalBooks: totalCount, // Include the total count of matching records
+            books: booksWithMissingPreview // Return the complete list of books
+        });
+    } catch (error) {
+        console.error('Error fetching books with missing preview links:', error);
+        res.status(500).json({
+            message: 'Server error occurred'
+        });
+    }
+});
+
+
   // Endpoint to fetch the total count of "Buy Now" button clicks across all users,
   // capping individual contributions at 10 and excluding specific emails
   app.get('/api/clicks/buy-now-capped-total-exclude', async (req, res) => {
