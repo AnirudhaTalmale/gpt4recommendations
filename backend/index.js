@@ -458,7 +458,6 @@ io.on('connection', (socket) => {
         console.log("messagesForGPT4", messagesForGPT4);
         await openaiApi(messagesForGPT4, socket, session, currentSessionId, isMoreDetails, isKeyInsights, isAnecdotes, isQuotes, bookDataObjectId, bookTitle, author, moreBooks);
         await session.user.save();
-
         socket.emit('query-conversionTracking');
       } catch (error) {
         console.error('Error processing query:', error);
@@ -1816,6 +1815,234 @@ if (process.env.NODE_ENV === 'local') {
       res.status(500).json({ message: 'Server error occurred while updating the genres format' });
     }
   });
+
+  
+const extractTitleFromLink = (link) => {
+  try {
+    const url = new URL(link);
+    const queryParams = url.searchParams;
+    const rawQuery = queryParams.get('dq');
+
+    if (rawQuery) {
+      const intitleMatch = rawQuery.match(/intitle:([^+]+)/);
+      return intitleMatch ? decodeURIComponent(intitleMatch[1]) : "";
+    }
+    
+    return "";
+  } catch (error) {
+    console.error("Invalid URL provided:", error.message);
+    return ""; // Return an empty string or handle the error as needed
+  }
+};
+
+const normalizeTitle = (title) => {
+  return title
+    .toLowerCase()
+    .replace(/&/g, 'and')
+    .replace(/[‘’]/g, "'") // Replace curly single quotes with straight single quotes
+    .replace(/[“”]/g, '"') // Replace curly double quotes with straight double quotes
+    .replace(/–/g, '-') // Replace en dashes with hyphens
+    .replace(/—/g, '-') // Replace em dashes with hyphens
+    .replace(/,/g, '') // Remove commas
+    .replace(/-/g, ' ') // Replace all hyphens with spaces
+    .replace(/\b(the|a|an)\b/g, '') // Remove articles
+    .replace(/\s+/g, ' ') // Replace multiple spaces with a single space
+    .replace(/s\b/g, '') // Remove trailing 's' for plurals
+    .replace(/o\b/g, 'on') // Normalize ending 'o' to 'on'
+    .replace(/aa/g, 'a') // Normalize double 'a' to single 'a'
+    .replace(/ee/g, 'e') // Normalize double 'e' to single 'e'
+    .replace(/ii/g, 'i') // Normalize double 'i' to single 'i'
+    .replace(/oo/g, 'u') // Normalize double 'o' to single 'u'
+    .replace(/uu/g, 'u') // Normalize double 'u' to single 'u'
+    .trim(); // Trim whitespace from the start and end of the string
+};
+
+  const getAuthorBeforeAnd = (author) => {
+  // Check if the author is a non-empty string
+  if (typeof author === 'string' && author.trim() !== '') {
+      // Normalize the delimiters used for separating multiple authors to commas
+      const normalizedAuthor = author.replace(/ & /g, ', ').replace(/ and /g, ', ');
+      // Split the string at commas and return the first author
+      return normalizedAuthor.split(', ')[0];
+  } else {
+      // Log or handle the error appropriately if input is invalid
+      console.error('Invalid or missing author');
+      return '';
+  }
+}
+
+const getTitleBeforeDelimiter = (title) => {
+  // Find the index of each delimiter in the title. If a delimiter is not found, -1 is returned.
+  const colonIndex = title.indexOf(':');
+  const questionMarkIndex = title.indexOf('?');
+  const dotIndex = title.indexOf('.');
+
+  // Filter out any -1 values, as they indicate the delimiter was not found in the title,
+  // and then find the minimum index which is the leftmost delimiter.
+  const delimiterIndexes = [colonIndex, questionMarkIndex, dotIndex].filter(index => index !== -1);
+  const minIndex = delimiterIndexes.length > 0 ? Math.min(...delimiterIndexes) : -1;
+
+  // If a delimiter is found (minIndex is not -1), split the title at that delimiter.
+  // Otherwise, use the whole title.
+  return minIndex !== -1 ? title.substring(0, minIndex).trim() : title;
+}
+
+const getGoogleBookData = async (title, author) => {
+  try {
+    const authorBeforeAnd = getAuthorBeforeAnd(author);
+    const query = `intitle:${encodeURIComponent(title)}+inauthor:${encodeURIComponent(authorBeforeAnd)}`;
+    const response = await axios.get(`https://www.googleapis.com/books/v1/volumes?q=${query}&key=${process.env.REACT_APP_GOOGLE_BOOKS_API_KEY}`);
+
+    let previewLink = '';
+
+    const titleBeforeDelimiter = getTitleBeforeDelimiter(title);
+    const searchTitleNormalized = normalizeTitle(titleBeforeDelimiter);
+
+    if (response.data.items?.length) {
+      // console.log("response.data.items is", response.data.items);
+      
+      const book = response.data.items.find(item => {
+        const itemTitleNormalized = normalizeTitle(item.volumeInfo.title);
+        const itemPreviewLinkTitleNormalized = normalizeTitle(extractTitleFromLink(item.volumeInfo.previewLink));
+        
+        // Check if viewability is not 'NO_PAGES'
+        const hasPreviewAvailable = item.accessInfo.viewability !== 'NO_PAGES';
+        
+        return hasPreviewAvailable && (itemTitleNormalized.includes(searchTitleNormalized) 
+          || searchTitleNormalized.includes(itemTitleNormalized)
+          || itemPreviewLinkTitleNormalized.includes(searchTitleNormalized) 
+          || searchTitleNormalized.includes(itemPreviewLinkTitleNormalized));
+      });
+      
+        
+      if (book) {
+        const { volumeInfo } = book;
+        previewLink = volumeInfo.previewLink;
+      }
+    }
+    return { previewLink};
+
+  } catch (error) {
+    console.error(`Error fetching book cover for ${title}:`, error);
+    return { previewLink: '' };
+  }
+  };
+
+  app.get('/api/books/preview-links-check', async (req, res) => {
+    try {
+      // Fetch 5 books from the database
+      const books = await BookData.find({}).limit(20);
+  
+      // Map through each book and get new preview links without saving
+      const bookLinks = books.map(async (book) => {
+        const oldPreviewLink = book.previewLink; // Existing preview link
+        const newPreviewLink = await getGoogleBookData(book.title, book.author); // Fetch new preview link
+  
+        return {
+          title: book.title,
+          author: book.author,
+          oldPreviewLink: oldPreviewLink,
+          newPreviewLink: newPreviewLink
+        };
+      });
+  
+      // Resolve all promises from map
+      Promise.all(bookLinks).then(results => {
+        res.json(results);
+      });
+      
+    } catch (error) {
+      res.status(500).json({ message: 'Error fetching book data', error });
+    }
+  });
+
+  const delay = (duration) => {
+    return new Promise(resolve => setTimeout(resolve, duration));
+  }
+  
+  app.get('/api/books/update-preview-links', async (req, res) => {
+    try {
+      const books = await BookData.find({});
+      let updatedCount = 0;
+      let skippedCount = 0;
+      let updatedIds = [];
+      let skippedIds = [];
+  
+      for (const book of books) {
+        // Get the newPreviewLink object, then access the 'previewLink' property
+        const result = await getGoogleBookData(book.title, book.author);
+        const newPreviewLink = result.previewLink;  // Extract the previewLink string
+        await delay(1000); // Delay for 1 second to comply with rate limit
+  
+        if (newPreviewLink !== '') {
+          book.previewLink = newPreviewLink;
+          await book.save();
+          updatedCount++;
+          updatedIds.push(book._id);
+        } else {
+          skippedCount++;
+          skippedIds.push(book._id);
+        }
+      }
+  
+      res.json({
+        message: 'Update complete',
+        updatedCount: updatedCount,
+        skippedCount: skippedCount,
+        updatedIds: updatedIds,
+        skippedIds: skippedIds
+      });
+    } catch (error) {
+      res.status(500).json({ message: 'Error updating preview links', error });
+    }
+  });
+
+  app.get('/api/books/skipped-records', async (req, res) => {
+    try {
+      const skippedIds = [
+        "6618a496520976150acc557b",
+        "6618c2d3520976150acc608d",
+        "661ca56c52cd569b7bcf0fc6",
+        "6637ca462a9e87e81796fb67",
+        "66384e422a9e87e8179703a6",
+        "66426ce6e2c851008164eaaf",
+        "666c06c36baa839da327d760",
+        "666d36f5319836bb12ef8199",
+        "666f250907a146297007417a",
+        "66705e54134edc22e237e625",
+        "66705e56134edc22e237e657",
+        "6670702e7674a47057036f8e",
+        "667070647674a47057037126",
+        "66790fdedb1417497efcd2da"
+      ].map(id => new mongoose.Types.ObjectId(id));  // Correctly using 'new' to create ObjectId
+  
+      const skippedRecords = await BookData.find({
+        '_id': { $in: skippedIds }
+      });
+  
+      res.json({
+        message: 'Retrieved skipped records',
+        data: skippedRecords
+      });
+    } catch (error) {
+      console.error('Error during fetching skipped records:', error);  // Detailed logging
+      res.status(500).json({
+        message: 'Error retrieving skipped records',
+        error: error.message || error // Providing detailed error information to the response
+      });
+    }
+  }); 
+  
+  app.get('/api/books/count', async (req, res) => {
+    try {
+      // Count all documents in the BookData collection
+      const count = await BookData.countDocuments();
+      res.json({ count });
+    } catch (error) {
+      res.status(500).json({ message: 'Error counting book records', error });
+    }
+  });
+  
 }
 
 

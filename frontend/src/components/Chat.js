@@ -172,7 +172,7 @@ function Chat() {
       socket.off('query-conversionTracking', handleConversionTracking);
     };
 
-  }, []); 
+  }, []);
 
   const updateSessionName = useCallback(({ sessionId, sessionName }) => {
     setSessions(prevSessions => prevSessions.map(session => 
