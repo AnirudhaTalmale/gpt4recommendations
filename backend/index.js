@@ -7,7 +7,7 @@ const User = require('./models/models-chat/User');
 const KeyInsightsModel = require('./models/models-chat/KeyInsights'); 
 const AnecdotesModel = require('./models/models-chat/Anecdotes'); 
 const QuotesModel = require('./models/models-chat/Quotes'); 
-const ClickCount = require('./models/models-chat/ClickCount');
+const BookAction = require('./models/models-chat/BookAction');
 const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
@@ -541,28 +541,6 @@ io.on('connection', (socket) => {
 
 // ------------------- chat endpoints-------------------
 
-app.post('/api/increment-buy-now', async (req, res) => {
-  const userEmail = req.body.userEmail; // Assume userEmail is passed in the request body
-
-  if (!userEmail) {
-    return res.status(400).json({ message: "User email is required." });
-  }
-
-  try {
-    // Find the ClickCount document for the user or create one if it doesn't exist
-    const clickCount = await ClickCount.findOneAndUpdate(
-      { userEmail: userEmail, buttonId: 'buyNowButton' }, // Use userEmail and buttonId to identify the document
-      { $inc: { count: 1 }, $set: { updatedAt: new Date() } }, // Increment count and update the timestamp
-      { new: true, upsert: true } // Return the updated document and create a new one if it doesn't exist
-    );
-
-    res.status(200).json({ message: "Count incremented successfully", count: clickCount.count });
-  } catch (error) {
-    console.error('Server error:', error);
-    res.status(500).json({ message: 'Server error occurred while incrementing count' });
-  }
-});
-
 app.post('/api/stop-stream', async (req, res) => {
   try {
     // Assuming stopStream is async, you need to await it
@@ -574,6 +552,34 @@ app.post('/api/stop-stream', async (req, res) => {
   }
 });
 
+// Endpoint to post a new book action
+app.post('/api/book-action', async (req, res) => {
+  const { buttonClassName, title, author } = req.body;
+
+  // Validation for required fields
+  if (!buttonClassName) {
+    return res.status(400).json({ message: 'Missing required fields: buttonClassName and title are required' });
+  }
+
+  try {
+    // Create a new book action entry
+    const newBookAction = new BookAction({
+      buttonClassName,
+      title,  // This field is now optional; it will be undefined if not provided
+      author,  // This field is now optional; it will be undefined if not provided
+      createdAt: new Date()  // Use the server's current date and time
+    });
+
+    // Save the new book action to the database
+    const savedBookAction = await newBookAction.save();
+
+    // Respond with the saved book action
+    res.status(201).json(savedBookAction);
+  } catch (error) {
+    console.error('Error saving book action:', error);
+    res.status(500).json({ message: 'Failed to record book action', error: error.toString() });
+  }
+});
 
 app.get('/api/more-details', async (req, res) => {
   try {
@@ -943,6 +949,23 @@ app.get('/api/books/:bookId/:country', async (req, res) => {
 
 if (process.env.NODE_ENV === 'local') { 
 
+  // GET endpoint to retrieve book actions from the last 2 days
+  app.get('/api/book-actions', async (req, res) => {
+    try {
+      const twoDaysAgo = new Date();
+      twoDaysAgo.setDate(twoDaysAgo.getDate() - 2);
+
+      const bookActions = await BookAction.find({
+        createdAt: { $gte: twoDaysAgo }
+      }).sort({ createdAt: -1 }); // Sorting by date, newest first
+
+      res.status(200).json(bookActions);
+    } catch (error) {
+      console.error('Error retrieving book actions:', error);
+      res.status(500).json({ message: 'Failed to retrieve book actions', error: error.toString() });
+    }
+  });
+
   app.get('/api/books/with-preview', async (req, res) => {
     try {
         // Fetch all books where previewLink is not an empty string
@@ -1027,49 +1050,6 @@ if (process.env.NODE_ENV === 'local') {
         res.status(500).json({
             message: 'Server error occurred'
         });
-    }
-});
-
-
-  // Endpoint to fetch the total count of "Buy Now" button clicks across all users,
-  // capping individual contributions at 10 and excluding specific emails
-  app.get('/api/clicks/buy-now-capped-total-exclude', async (req, res) => {
-    try {
-      const excludedEmails = [
-        'anirudhatalmale7@gmail.com',
-        'anirudhatalmale9@gmail.com',
-        'anirudhatalmale4@gmail.com'
-      ];
-
-      const totalClicks = await ClickCount.aggregate([
-        { $match: { 
-          buttonId: 'buyNowButton',
-          userEmail: { $nin: excludedEmails } // Exclude specified emails
-        }},
-        { 
-          $project: {
-            userEmail: 1,
-            count: { $min: ["$count", 10] } // Cap each user's contribution to 10 clicks
-          }
-        },
-        { $group: { _id: null, total: { $sum: "$count" } } } // Sum all capped counts
-      ]);
-
-      if (totalClicks.length === 0) {
-        return res.status(404).json({
-          message: 'No clicks recorded for the Buy Now button.'
-        });
-      }
-
-      res.json({
-        message: 'Successfully retrieved total Buy Now button clicks with exclusions and caps',
-        totalClicks: totalClicks[0].total // Accessing total from the aggregation result
-      });
-    } catch (error) {
-      console.error('Error fetching total Buy Now button clicks:', error);
-      res.status(500).json({
-        message: 'Server error occurred'
-      });
     }
   });
 

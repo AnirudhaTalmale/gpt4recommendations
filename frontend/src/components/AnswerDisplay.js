@@ -31,14 +31,28 @@ function AnswerDisplay({
     });
     return { __html: safeHTML };
   };
-  
+
+  const handleActionButtonClick = async (className, bookTitle, author) => {
+    try {
+        const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/book-action`, {
+            buttonClassName: className,
+            title: bookTitle,
+            author: author
+        });
+
+        console.log(`${className} action recorded:`, response.data);
+    } catch (error) {
+        console.error(`Error handling ${className} click:`, error);
+    }
+  };
   
   const handleKeyInsightsClick = (bookDataObjectId, bookTitle, author) => {
     if (!isKeyInsightsClicked && onKeyInsightsClick) {
       setIsKeyInsightsClicked(true);
       
       onKeyInsightsClick(bookDataObjectId, bookTitle, author);
-  
+      handleActionButtonClick('key-insights-btn', bookTitle, author);
+
       // Reset the state after a delay
       setTimeout(() => {
         setIsKeyInsightsClicked(false);
@@ -51,7 +65,8 @@ function AnswerDisplay({
       setIsMoreDetailsClicked(true);
       
       onMoreDetailsClick(bookDataObjectId, bookTitle, author);
-  
+      handleActionButtonClick('more-details-btn', bookTitle, author);
+
       setTimeout(() => {
         setIsMoreDetailsClicked(false);
       }, 3500); // Adjust the delay as needed
@@ -63,7 +78,8 @@ function AnswerDisplay({
       setIsAnecdotesClicked(true);
       
       onAnecdotesClick(bookDataObjectId, bookTitle, author);
-  
+      handleActionButtonClick('anecdotes-btn', bookTitle, author);
+
       setTimeout(() => {
         setIsAnecdotesClicked(false);
       }, 3500); // Adjust the delay as needed
@@ -75,6 +91,7 @@ function AnswerDisplay({
       setIsQuotesClicked(true);
       
       onQuotesClick(bookDataObjectId, bookTitle, author);
+      handleActionButtonClick('quotes-btn', bookTitle, author);
   
       setTimeout(() => {
         setIsQuotesClicked(false);
@@ -82,13 +99,14 @@ function AnswerDisplay({
     }
   };
 
-  const handlePreviewClick = (previewLink) => {
+  const handlePreviewClick = (previewLink, bookTitle, author) => {
     if (!isPreviewClicked) {
       setIsPreviewClicked(true);
       
       if (previewLink) {
         window.open(previewLink, '_blank');
       }
+      handleActionButtonClick('preview-btn', bookTitle, author);
   
       setTimeout(() => {
         setIsPreviewClicked(false);
@@ -96,24 +114,11 @@ function AnswerDisplay({
     }
   };
 
-  const handleBuyNowClick = async () => {
-    try {
-      // Ensure userEmail is not undefined or null
-      if (!userEmail) {
-        console.error('User email is not provided');
-        return;
-      }
-      
 
-      // Call the API to increment the buy now click count using axios, sending userEmail in the body
-      const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/increment-buy-now`, {
-        userEmail: userEmail
-      });
-      console.log('Buy now count incremented:', response.data);
-    } catch (error) {
-      console.error('Error incrementing buy now count:', error);
-    }
+  const handleBuyNowClick = async (bookTitle, author) => {
+    await handleActionButtonClick('buy-now-btn', bookTitle, author);
   };
+
   
   const handleContinueGenerating = () => {
     if (!isContinueGeneratingClicked && onContinueGenerating) {
@@ -253,9 +258,13 @@ function AnswerDisplay({
             handleQuotesClick(bookDataObjectId, bookTitle, author);
           } else if (e.target.classList.contains('preview-btn')) {
             const previewLink = e.target.getAttribute('data-preview-link');
-            handlePreviewClick(previewLink);
+            const bookTitle = e.target.getAttribute('data-book-title');
+            const author = e.target.getAttribute('data-author');
+            handlePreviewClick(previewLink, bookTitle, author);
           } else if (e.target.classList.contains('buy-now-button')) {
-            handleBuyNowClick();
+            const bookTitle = e.target.getAttribute('data-book-title');
+            const author = e.target.getAttribute('data-author');
+            handleBuyNowClick(bookTitle, author);
           } 
         }}>
           {role === 'user' && (

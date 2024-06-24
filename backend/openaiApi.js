@@ -28,13 +28,13 @@ const parseBookTitle = (bookTitleWithAuthor) => {
   return { bookTitle, author };
 };
 
-function createPreviewButtonHtml(previewLink) {
+function createPreviewButtonHtml(previewLink, bookTitle, author) {
   const disabledStyles = `style="cursor: not-allowed; opacity: 0.5; pointer-events: none;"`;
   const isEnabled = previewLink !== '';
   const buttonStyles = isEnabled ? "" : disabledStyles;
-  const dataAttribute = isEnabled ? `data-preview-link="${previewLink}"` : "";
+  const dataAttributes = isEnabled ? `data-preview-link="${previewLink}" data-book-title="${bookTitle}" data-author="${author}"` : "";
 
-  return `<div><button type="button" class="preview-btn" ${buttonStyles} ${dataAttribute}>Preview</button></div>`;
+  return `<div><button type="button" class="preview-btn" ${buttonStyles} ${dataAttributes}>Preview</button></div>`;
 }
 
 function renderStarRatingHtml(rating) {
@@ -467,8 +467,12 @@ const getBookData = async (title, author, userCountry, bookDataObjectId = '') =>
   }
 };
 
-function createBuyNowButtonHtml(link, buttonText = 'Buy Now') {
-  return `<div><a href="${link}" target="_blank"><button class="buy-now-button">${buttonText}</button></a></div>`;
+function createBuyNowButtonHtml(link, bookTitle, author, buttonText = 'Buy Now') {
+  return `<div><a href="${link}" target="_blank">
+            <button class="buy-now-button" data-book-title="${bookTitle}" data-author="${author}">
+              ${buttonText}
+            </button>
+          </a></div>`;
 }
 
 let isStreamingActive = false;
@@ -517,7 +521,7 @@ const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, is
       } else {
         imageDiv = `<div><img src="/blank_image.png" alt="" style="border: 0.7px solid grey;"></div>`;  
       }
-      const buyNowButtonHtml = createBuyNowButtonHtml(amazonLink);
+      const buyNowButtonHtml = createBuyNowButtonHtml(amazonLink, bookTitle, author);
       completeResponse = bookInfoHtml + imageDiv + buyNowButtonHtml;
       socket.emit('chunk', { content: completeResponse, sessionId, isMoreDetails, isKeyInsights, isAnecdotes, isQuotes, moreBooks });
     }
@@ -538,7 +542,7 @@ const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, is
           const { bookTitle, author } = parseBookTitle(bookTitleWithAuthor);
           const { bookDataObjectId, bookImage, previewLink, amazonLink, amazonStarRating, amazonReviewCount } = await getBookData(bookTitle, author, userCountry);
           
-          const buyNowButtonHtml = createBuyNowButtonHtml(amazonLink);
+          const buyNowButtonHtml = createBuyNowButtonHtml(amazonLink, bookTitle, author);
 
           let imageSource = bookImage;
           let imageDiv = '';
@@ -555,7 +559,7 @@ const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, is
             const keyInsightsButtonHtml = `<div><button type="button" class="key-insights-btn" data-bookDataObjectId="${bookDataObjectId}" data-book-title="${bookTitle}" data-author="${author}">Insights</button></div>`;
             const anecdotesButtonHtml = `<div><button type="button" class="anecdotes-btn" data-bookDataObjectId="${bookDataObjectId}" data-book-title="${bookTitle}" data-author="${author}">Anecdotes</button></div>`;
             const quotesButtonHtml = `<div><button type="button" class="quotes-btn" data-bookDataObjectId="${bookDataObjectId}" data-book-title="${bookTitle}" data-author="${author}">Quotes</button></div>`;
-            const previewButtonHtml = createPreviewButtonHtml(previewLink);
+            const previewButtonHtml = createPreviewButtonHtml(previewLink, bookTitle, author);
 
             const buttonsHtml = buyNowButtonHtml + moreDetailsButtonHtml + keyInsightsButtonHtml + anecdotesButtonHtml + quotesButtonHtml + previewButtonHtml;
             const buttonsDiv = `<div class="buttons-container">${buttonsHtml}</div>`;
