@@ -458,6 +458,8 @@ io.on('connection', (socket) => {
         console.log("messagesForGPT4", messagesForGPT4);
         await openaiApi(messagesForGPT4, socket, session, currentSessionId, isMoreDetails, isKeyInsights, isAnecdotes, isQuotes, bookDataObjectId, bookTitle, author, moreBooks);
         await session.user.save();
+
+        socket.emit('query-conversionTracking');
       } catch (error) {
         console.error('Error processing query:', error);
         socket.emit('error', 'Error processing your request');
