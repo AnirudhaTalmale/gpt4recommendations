@@ -760,17 +760,22 @@ app.post('/api/session', async (req, res) => {
 app.get('/api/sessions', async (req, res) => {
   try {
     const userId = req.query.userId; // Get user ID from query parameter
-    const adminId = process.env.ADMIN_USER_ID;
+    const adminId = process.env.ADMIN_ID;
+    
+    const excludeIds = process.env.EXCLUDE_SESSION_IDS.split(','); // Array of IDs to exclude
 
     if (!userId) {
       return res.status(400).json({ message: 'User ID is required' });
     }
 
     let query = {};
-    if (userId !== adminId) {
-      query = { user: userId }; // Limit the search to the user's own sessions
+    if (userId === adminId) {
+      // Exclude sessions belonging to specified IDs when accessed by the admin
+      query = { user: { $nin: excludeIds } };
+    } else {
+      // Non-admin users can only access their own sessions
+      query = { user: userId };
     }
-    // If the user is the admin, the query remains empty which means all records are returned
 
     const sessions = await Session.find(query);
     res.json(sessions);
@@ -779,6 +784,7 @@ app.get('/api/sessions', async (req, res) => {
     res.status(500).json({ message: 'Error retrieving sessions', error: error.toString() });
   }
 });
+
 
 
 // DELETE endpoint for deleting a session
