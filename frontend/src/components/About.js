@@ -1,5 +1,6 @@
 import React from 'react';
 import HomePageHeader from './HomePageHeader';
+import Footer from './Footer';
 import '../App.css';
 
 const About = () => {
@@ -18,14 +19,7 @@ const About = () => {
             </div>
         </div>
 
-        <footer className="footer">
-        <nav>
-            <a href="/about-us">About Us</a><span>|</span>
-            <a href="/blog">Blog</a><span>|</span>
-            <a href="/privacy-policy">Privacy Policy</a><span>|</span>
-            <a href="/contact-us">Contact Us</a>
-        </nav>
-      </footer>
+        <Footer />
       </div>
     );
 };

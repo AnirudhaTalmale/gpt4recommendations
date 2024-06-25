@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import importedBlogs from './Blogs.js'; 
 import HomePageHeader from './HomePageHeader'; 
+import Footer from './Footer';
 import '../App.css'; 
 
 const BlogPostPreview = ({ title, imagePath }) => (
@@ -42,14 +43,7 @@ const BlogPage = () => {
         </div>
       </div>
 
-      <footer className="footer">
-        <nav>
-            <a href="/about-us">About Us</a><span>|</span>
-            <a href="/blog">Blog</a><span>|</span>
-            <a href="/privacy-policy">Privacy Policy</a><span>|</span>
-            <a href="/contact-us">Contact Us</a>
-        </nav>
-      </footer>
+      <Footer />
     </div>
   );
 };

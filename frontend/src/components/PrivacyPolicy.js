@@ -1,6 +1,8 @@
 // components/PrivacyPolicy.js
 import React from 'react';
 import HomePageHeader from './HomePageHeader'; 
+import Footer from './Footer';
+
 
 const PrivacyPolicy = () => {
 
@@ -118,14 +120,7 @@ const PrivacyPolicy = () => {
         </div>
         <div style={{ height: '0.1rem' }}></div>
 
-        <footer className="footer">
-        <nav>
-            <a href="/about-us">About Us</a><span>|</span>
-            <a href="/blog">Blog</a><span>|</span>
-            <a href="/privacy-policy">Privacy Policy</a><span>|</span>
-            <a href="/contact-us">Contact Us</a>
-        </nav>
-      </footer>
+        <Footer />
     </>
   );
 };
