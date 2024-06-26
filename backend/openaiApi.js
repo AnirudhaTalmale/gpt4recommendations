@@ -295,7 +295,7 @@ const getGoogleBookData = async (title, author) => {
     const searchTitleNormalized = normalizeTitle(titleBeforeDelimiter);
 
     if (response.data.items?.length) {
-      // console.log("response.data.items is", response.data.items);
+      console.log("response.data.items is", response.data.items);
       
       const book = response.data.items.find(item => {
         const itemTitleNormalized = normalizeTitle(item.volumeInfo.title);
@@ -304,16 +304,26 @@ const getGoogleBookData = async (title, author) => {
         // Check if viewability is not 'NO_PAGES'
         const hasPreviewAvailable = item.accessInfo.viewability !== 'NO_PAGES';
         
-        return hasPreviewAvailable && (itemTitleNormalized.includes(searchTitleNormalized) 
-          || searchTitleNormalized.includes(itemTitleNormalized)
-          || itemPreviewLinkTitleNormalized.includes(searchTitleNormalized) 
-          || searchTitleNormalized.includes(itemPreviewLinkTitleNormalized));
+        // Additional check for language
+        const isEnglish = item.volumeInfo.language === 'en';
+
+        // Adjust search condition based on language
+        return hasPreviewAvailable && (isEnglish ? 
+          (itemTitleNormalized.includes(searchTitleNormalized) || searchTitleNormalized.includes(itemTitleNormalized)) :
+          (itemTitleNormalized.includes(searchTitleNormalized) || searchTitleNormalized.includes(itemTitleNormalized) || itemPreviewLinkTitleNormalized.includes(searchTitleNormalized) || searchTitleNormalized.includes(itemPreviewLinkTitleNormalized)));
       });
       
         
       if (book) {
         const { volumeInfo } = book;
         previewLink = volumeInfo.previewLink;
+
+        // Ensure the preview link includes 'printsec=frontcover'
+        if (!previewLink.includes('printsec=frontcover')) {
+          const url = new URL(previewLink);
+          url.searchParams.set('printsec', 'frontcover');
+          previewLink = url.toString();
+        }
 
         // To get the largest available image
         const imageLinks = volumeInfo.imageLinks;

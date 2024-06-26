@@ -77,7 +77,7 @@ const PrivacyPolicy = () => {
         </section-privacy-policy>
         <section-privacy-policy>
             <h2>How Information is Processed</h2>
-            <p>The information may be processed by our Website in several ways to ensure the efficient delivery of our services. Below are the key methods and circumstances under which your personal information is processed:</p>
+            <p>The information may be processed by our App in several ways to ensure the efficient delivery of our services. Below are the key methods and circumstances under which your personal information is processed:</p>
             <ul>
             <li>To provide, administer, and improve our services, ensuring they are tailored to your needs.</li>
             <li>To manage your account and profile, and to validate your identity when you sign in.</li>
@@ -95,7 +95,7 @@ const PrivacyPolicy = () => {
             <li>With service providers who perform services on our behalf, such as cloud hosting, customer service, and email delivery services. These providers are bound by confidentiality obligations and are restricted from using your data for any other purpose.</li>
             <li>With business partners to provide you with a service or product that you have requested through a partnership we have with them, but only with your explicit consent.</li>
             <li>In the event of a merger,
-            acquisition, or sale of all or a portion of our assets, you will be notified via email and/or a prominent notice on our website of any change in ownership or uses of your personal information, as well as any choices you may have regarding your personal information.</li>
+            acquisition, or sale of all or a portion of our assets, you will be notified via email and/or a prominent notice on our app of any change in ownership or uses of your personal information, as well as any choices you may have regarding your personal information.</li>
             <li>With law enforcement, government officials, or other third parties when we are compelled to do so by a subpoena, court order, or similar legal procedure, or when we believe in good faith that the disclosure of personal information is necessary to prevent physical harm or financial loss, to report suspected illegal activity, or to investigate violations of our Terms of Service.</li>
             </ul>
             <p>Your personal information may also be transferred to countries outside of your country of residence, which may have different data protection standards. In such cases, we ensure that adequate safeguards, as required by applicable law, are in place to protect your personal information.</p>
