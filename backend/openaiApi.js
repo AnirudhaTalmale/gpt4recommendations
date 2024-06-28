@@ -318,7 +318,7 @@ const extractTitleFromLink = (link) => {
 const getGoogleBookData = async (title, author) => {
   try {
     const authorBeforeAnd = getAuthorBeforeAnd(author);
-    const query = `intitle:${encodeURIComponent(title)}`;
+    const query = `intitle:${encodeURIComponent(title)}+inauthor:${encodeURIComponent(authorBeforeAnd)}`;
     const response = await axios.get(`https://www.googleapis.com/books/v1/volumes?q=${query}&key=${process.env.REACT_APP_GOOGLE_BOOKS_API_KEY}`);
 
     let googleImage = '';
