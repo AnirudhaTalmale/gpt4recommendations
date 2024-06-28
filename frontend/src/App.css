@@ -121,7 +121,7 @@ ol li {
 /* chat area */
 
 .book-author {
-  font-size: 0.84rem; /* Smaller font size for the author's name */
+  font-size: 0.9rem; /* Smaller font size for the author's name */
   color: rgb(104, 103, 103); /* Different color for the author's name */
 }
 
@@ -1766,9 +1766,9 @@ body:not(.history-pane-open) .input-area {
   display: flex;
   align-items: flex-start; 
   max-width: 600px;
-  font-size: 0.98rem;
+  font-size: 1rem;
   color: #0D0D0D;
-  line-height: 1.63rem;
+  line-height: 1.7rem;
   width: 100%;
   margin-left: 1rem;
 }
