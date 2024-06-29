@@ -172,7 +172,8 @@ async function isValidLink(url) {
   }
 }
 
-async function getAmazonBookData(title, author, country, fallback = true) {
+async function getAmazonBookData(title, author, country, fallback = true,
+  amazonImage = '', amazonLink = '', amazonStarRating = '', amazonReviewCount = '') {
   try {
     const titleBeforeDelimiter = getTitleBeforeDelimiter(title)
     const authorBeforeAnd = getAuthorBeforeAnd(author);
@@ -185,7 +186,7 @@ async function getAmazonBookData(title, author, country, fallback = true) {
         q: `site:${amazonDomain} ${title} by ${authorBeforeAnd}`,
         num: 2
       }
-    });
+    }); 
 
     if (response.data.items && response.data.items.length > 0) {
       // console.log("country is", country);
@@ -208,6 +209,11 @@ async function getAmazonBookData(title, author, country, fallback = true) {
         // Ensure that 'pagemap' and 'metatags' exist and contain the 'og:image'
         if (!item.pagemap || !item.pagemap.metatags || !item.pagemap.metatags[0] || !item.pagemap.metatags[0]['og:image']) {
           console.log('og:image not found, skipping to the next item');
+
+          if (item.pagemap && item.pagemap.cse_image && item.pagemap.cse_image.length > 0 && amazonImage === '') {
+            amazonImage = item.pagemap.cse_image[0].src;
+            // console.log("amazon image set as ", amazonImage);
+          }         
           continue;  // Skip to the next item because 'og:image' is missing
         }
 
@@ -227,20 +233,26 @@ async function getAmazonBookData(title, author, country, fallback = true) {
           const decodedOgImage = decodeURIComponent(ogImage);
 
           const starRatingMatch = decodedOgImage.match(/_PIStarRating(.*?),/);
-          const amazonStarRating = starRatingMatch ? convertStarRating(starRatingMatch[1]) : '';
+          amazonStarRating = starRatingMatch ? convertStarRating(starRatingMatch[1]) : '';
           
           const reviewCountMatch = decodedOgImage.match(/_ZA(\d+(%2C\d+)?)/);
-          const amazonReviewCount = reviewCountMatch ? reviewCountMatch[1].replace('%2C', ',') : '';
+          amazonReviewCount = reviewCountMatch ? reviewCountMatch[1].replace('%2C', ',') : '';
 
-          let amazonLink = item.pagemap.metatags[0]['og:url'];
+          amazonLink = item.pagemap.metatags[0]['og:url'];
 
           const imageIdMatch = ogImage.match(/(https:\/\/m\.media-amazon\.com\/images\/I\/[^.]+)/);
-          let amazonImage = imageIdMatch ? `${imageIdMatch[1]}._AC_UF1000,1000_QL80_.jpg` : '';
+          amazonImage = imageIdMatch ? `${imageIdMatch[1]}._AC_UF1000,1000_QL80_.jpg` : '';
 
           let url = new URL(amazonLink);
 
-          if (!fallback && country === 'US') {
-            url.hostname = 'www.amazon.in'; // Change to amazon.in
+          if (!fallback) {
+            if (country === 'US') {
+                console.log("Switching to Amazon India for US");
+                url.hostname = 'www.amazon.in';
+            } else if (country === 'India') {
+                console.log("Switching to Amazon US for India");
+                url.hostname = 'www.amazon.com'; // Assuming you want to switch to Amazon US when in India
+            }
             amazonLink = url.href.split('/ref')[0];
             
             if (!(await isValidLink(amazonLink))) {
@@ -267,14 +279,18 @@ async function getAmazonBookData(title, author, country, fallback = true) {
       }
     }
 
-    // Fallback to amazon.com
-    if (country === 'India' && fallback) {
-      console.log("switching to US from India");
-      return await getAmazonBookData(title, author, 'US', false);
+    if (fallback) {
+      if (country === 'India') {
+        console.log("Switching to US from India");
+        return await getAmazonBookData(title, author, 'US', false, amazonImage);
+      } else if (country === 'US') {
+        console.log("Switching to India from US");
+        return await getAmazonBookData(title, author, 'India', false, amazonImage);
+      }
     }
-
+    
     console.log('No suitable results found.');
-    return { amazonLink: '', amazonStarRating: '', amazonReviewCount: '', amazonImage: '' };
+    return { amazonLink, amazonStarRating, amazonReviewCount, amazonImage};
   } catch (error) {
     console.error('Error during API request:', error);
     return { amazonLink: '', amazonStarRating: '', amazonReviewCount: '', amazonImage: '' };
