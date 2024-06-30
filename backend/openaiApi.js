@@ -3,10 +3,12 @@ const { OpenAI } = require('openai');
 require('dotenv').config();
 const openai = new OpenAI(process.env.OPENAI_API_KEY);
 const axios = require('axios');
+const cheerio = require('cheerio');
 const BookData = require('./models/models-chat/BookData'); 
 const BookDataErrorLog = require('./models/models-chat/BookDataErrorLog');
 const redisClient = require('./redisClient');
 const mongoose = require('mongoose');
+// const fs = require('fs');
 const { Types } = mongoose;
 const ObjectId = Types.ObjectId;
 const { 
@@ -36,6 +38,29 @@ function createPreviewButtonHtml(previewLink, bookTitle, author) {
 
   return `<div><button type="button" class="preview-btn" ${buttonStyles} ${dataAttributes}>Preview</button></div>`;
 }
+
+async function scrapeAmazon(amazonLink) {
+  try {
+    const { data } = await axios.get(amazonLink);
+    const $ = cheerio.load(data);
+
+    // Extracting the high-resolution image URL from the data-old-hires attribute
+    const amazonImage = $('#landingImage').attr('data-old-hires');
+    
+    const amazonStarRating = $('#acrPopover').attr('title').split(' ')[0]; 
+    const amazonReviewCount = $('#acrCustomerReviewText').text().split(' ')[0]; 
+
+    // console.log('High-Resolution Amazon Image URL:', amazonImage);
+    // console.log('Amazon Star Rating:', amazonStarRating);
+    // console.log('Amazon Review Count:', amazonReviewCount);
+
+    return { amazonImage, amazonStarRating, amazonReviewCount };
+  } catch (error) {
+    console.error('Error scraping Amazon:', error);
+    return { amazonImage: '', amazonStarRating: '', amazonReviewCount: '' };
+  }
+}
+
 
 function renderStarRatingHtml(rating) {
   let starsHtml = '';
@@ -161,13 +186,9 @@ const getTextBetweenFirstAndSecondColon = (title) => {
 
 async function isValidLink(url) {
   try {
-    // console.log("url is", url);
     const response = await axios.get(url);
-    // Check if the status code indicates the page exists
-    // console.log("response.status is", response.status);
     return response.status >= 200 && response.status < 300;
   } catch (error) {
-    // If there is a request error or a non-2xx status code, assume invalid link
     return false;
   }
 }
@@ -175,7 +196,7 @@ async function isValidLink(url) {
 async function getAmazonBookData(title, author, country, fallback = true,
   amazonImage = '', amazonLink = '', amazonStarRating = '', amazonReviewCount = '') {
   try {
-    const titleBeforeDelimiter = getTitleBeforeDelimiter(title)
+    const titleBeforeDelimiter = getTitleBeforeDelimiter(title);
     const authorBeforeAnd = getAuthorBeforeAnd(author);
     const amazonDomain = country === 'India' ? 'www.amazon.in' : 'www.amazon.com';
 
@@ -184,7 +205,7 @@ async function getAmazonBookData(title, author, country, fallback = true,
         key: process.env.REACT_APP_GOOGLE_CUSTOM_SEARCH_API_KEY,
         cx: process.env.GOOGLE_CSE_ID,
         q: `site:${amazonDomain} ${title} by ${authorBeforeAnd}`,
-        num: 2
+        num: 1
       }
     }); 
 
@@ -206,17 +227,6 @@ async function getAmazonBookData(title, author, country, fallback = true,
         // console.log("item.pagemap.metatags is", item.pagemap.metatags);
         // console.log("item.pagemap.cse_image is", item.pagemap.cse_image);
 
-        // Ensure that 'pagemap' and 'metatags' exist and contain the 'og:image'
-        if (!item.pagemap || !item.pagemap.metatags || !item.pagemap.metatags[0] || !item.pagemap.metatags[0]['og:image']) {
-          console.log('og:image not found, skipping to the next item');
-
-          if (item.pagemap && item.pagemap.cse_image && item.pagemap.cse_image.length > 0 && amazonImage === '') {
-            amazonImage = item.pagemap.cse_image[0].src;
-            // console.log("amazon image set as ", amazonImage);
-          }         
-          continue;  // Skip to the next item because 'og:image' is missing
-        }
-
         const firstPart = getTextBeforeFirstColon(item.title);
         const secondPart = getTextBetweenFirstAndSecondColon(item.title);
 
@@ -228,21 +238,13 @@ async function getAmazonBookData(title, author, country, fallback = true,
         if ((firstPartNormalized && (firstPartNormalized.includes(searchTitleNormalized) || searchTitleNormalized.includes(firstPartNormalized))) ||
     (secondPartNormalized && (secondPartNormalized.includes(searchTitleNormalized) || searchTitleNormalized.includes(secondPartNormalized)))) {
 
-          // If title matches, process further
-          const ogImage = item.pagemap.metatags[0]['og:image'];
-          const decodedOgImage = decodeURIComponent(ogImage);
+          amazonLink = amazonLink || (item.link ?? '');
 
-          const starRatingMatch = decodedOgImage.match(/_PIStarRating(.*?),/);
-          amazonStarRating = starRatingMatch ? convertStarRating(starRatingMatch[1]) : '';
+          const scrapedData = await scrapeAmazon(amazonLink);
+          amazonImage = scrapedData.amazonImage;
+          amazonStarRating = scrapedData.amazonStarRating;
+          amazonReviewCount = scrapedData.amazonReviewCount;
           
-          const reviewCountMatch = decodedOgImage.match(/_ZA(\d+(%2C\d+)?)/);
-          amazonReviewCount = reviewCountMatch ? reviewCountMatch[1].replace('%2C', ',') : '';
-
-          amazonLink = item.pagemap.metatags[0]['og:url'];
-
-          const imageIdMatch = ogImage.match(/(https:\/\/m\.media-amazon\.com\/images\/I\/[^.]+)/);
-          amazonImage = imageIdMatch ? `${imageIdMatch[1]}._AC_UF1000,1000_QL80_.jpg` : '';
-
           let url = new URL(amazonLink);
 
           if (!fallback) {
@@ -259,7 +261,7 @@ async function getAmazonBookData(title, author, country, fallback = true,
               amazonLink = '';
             }            
           } else {
-            url.hostname = `www.${amazonDomain}`; // Use the original domain
+            url.hostname = `${amazonDomain}`; // Use the original domain
             amazonLink = url.href.split('/ref')[0];
           }
 
@@ -282,10 +284,10 @@ async function getAmazonBookData(title, author, country, fallback = true,
     if (fallback) {
       if (country === 'India') {
         console.log("Switching to US from India");
-        return await getAmazonBookData(title, author, 'US', false, amazonImage);
+        return await getAmazonBookData(title, author, 'US', false);
       } else if (country === 'US') {
         console.log("Switching to India from US");
-        return await getAmazonBookData(title, author, 'India', false, amazonImage);
+        return await getAmazonBookData(title, author, 'India', false);
       }
     }
     
@@ -297,21 +299,21 @@ async function getAmazonBookData(title, author, country, fallback = true,
   }
 }
 
-function convertStarRating(starString) {
-  const starRatingMap = {
-    'ONE': '1.0',
-    'ONEANDHALF': '1.5',
-    'TWO': '2.0',
-    'TWOANDHALF': '2.5',
-    'THREE': '3.0',
-    'THREEANDHALF': '3.5',
-    'FOUR': '4.0',
-    'FOURANDHALF': '4.5',
-    'FIVE': '5.0'
-  };
+// function convertStarRating(starString) {
+//   const starRatingMap = {
+//     'ONE': '1.0',
+//     'ONEANDHALF': '1.5',
+//     'TWO': '2.0',
+//     'TWOANDHALF': '2.5',
+//     'THREE': '3.0',
+//     'THREEANDHALF': '3.5',
+//     'FOUR': '4.0',
+//     'FOURANDHALF': '4.5',
+//     'FIVE': '5.0'
+//   };
   
-  return starRatingMap[starString] || starString;
-}
+//   return starRatingMap[starString] || starString;
+// }
 
 const extractTitleFromLink = (link) => {
   try {
