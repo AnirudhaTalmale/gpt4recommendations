@@ -8,7 +8,7 @@ const BookData = require('./models/models-chat/BookData');
 const BookDataErrorLog = require('./models/models-chat/BookDataErrorLog');
 const redisClient = require('./redisClient');
 const mongoose = require('mongoose');
-// const fs = require('fs');
+const fs = require('fs');
 const { Types } = mongoose;
 const ObjectId = Types.ObjectId;
 const { 
@@ -44,8 +44,16 @@ async function scrapeAmazon(amazonLink) {
     const { data } = await axios.get(amazonLink);
     const $ = cheerio.load(data);
 
+    // fs.writeFile('output.html', data, err => {
+    //   if (err) {
+    //     console.error('Error writing to file:', err);
+    //   } else {
+    //     console.log('Successfully wrote to output.html');
+    //   }
+    // });
+
     // Extracting the high-resolution image URL from the data-old-hires attribute
-    const amazonImage = $('#landingImage').attr('data-old-hires');
+    const amazonImage = $('#landingImage').attr('data-old-hires') || $('#landingImage').attr('src');
     
     const amazonStarRating = $('#acrPopover').attr('title').split(' ')[0]; 
     const amazonReviewCount = $('#acrCustomerReviewText').text().split(' ')[0]; 
@@ -62,7 +70,7 @@ async function scrapeAmazon(amazonLink) {
 }
 
 
-function renderStarRatingHtml(rating) {
+function renderStarRatingHtml(rating) { 
   let starsHtml = '';
   const fullStars = Math.floor(rating);
   const hasHalfStar = rating % 1 !== 0;
