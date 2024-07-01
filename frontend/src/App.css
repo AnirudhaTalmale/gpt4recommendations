@@ -41,7 +41,7 @@ ol li {
 
 .header {
   display: flex;
-  width: 97.5dvw;
+  width: 100dvw;
   height: 2.7rem;
   justify-content: space-between; 
   padding: 0 10px;
@@ -75,7 +75,7 @@ ol li {
   font-size: 1.15rem;
   cursor: pointer;
   color: black;
-  margin-right: 0.7rem;
+  margin-right: 1.6rem;
 }
 
 .new-session-button-small-screen-book-detail {

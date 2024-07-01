@@ -8,7 +8,7 @@ const BookData = require('./models/models-chat/BookData');
 const BookDataErrorLog = require('./models/models-chat/BookDataErrorLog');
 const redisClient = require('./redisClient');
 const mongoose = require('mongoose');
-const fs = require('fs');
+// const fs = require('fs');
 const { Types } = mongoose;
 const ObjectId = Types.ObjectId;
 const { 
