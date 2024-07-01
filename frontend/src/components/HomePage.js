@@ -299,10 +299,6 @@ const HomePage = () => {
           </tbody>
         </table>
       </section>
-
-      
-
-
       <Footer />
     </div>
   );

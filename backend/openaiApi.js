@@ -207,84 +207,87 @@ async function getAmazonBookData(title, author, country, fallback = true,
     const titleBeforeDelimiter = getTitleBeforeDelimiter(title);
     const authorBeforeAnd = getAuthorBeforeAnd(author);
     const amazonDomain = country === 'India' ? 'www.amazon.in' : 'www.amazon.com';
+    const searchTitles = [title, titleBeforeDelimiter];
 
-    const response = await axios.get(`https://www.googleapis.com/customsearch/v1`, {
-      params: {
-        key: process.env.REACT_APP_GOOGLE_CUSTOM_SEARCH_API_KEY,
-        cx: process.env.GOOGLE_CSE_ID,
-        q: `site:${amazonDomain} ${title} by ${authorBeforeAnd}`,
-        num: 1
-      }
-    }); 
-
-    if (response.data.items && response.data.items.length > 0) {
-      // console.log("country is", country);
-      // console.log("fallback is", fallback);
-      // console.log("response.data.items is", response.data.items);
-
-      for (let i = 0; i < response.data.items.length; i++) {
-        const item = response.data.items[i];
-        // console.log("item is", item);
-
-        if (!item.displayLink.endsWith(amazonDomain)) {
-          console.log(`Result is not from a valid Amazon ${country} domain`);
-          continue;  // Skip to the next item
+    for (let i = 0; i < searchTitles.length; i++) {
+      const response = await axios.get(`https://www.googleapis.com/customsearch/v1`, {
+        params: {
+          key: process.env.REACT_APP_GOOGLE_CUSTOM_SEARCH_API_KEY,
+          cx: process.env.GOOGLE_CSE_ID,
+          q: `site:${amazonDomain} ${searchTitles[i]} by ${authorBeforeAnd}`,
+          num: 1
         }
+      }); 
 
-        // console.log("item.pagemap.cse_thumbnail is", item.pagemap.cse_thumbnail);
-        // console.log("item.pagemap.metatags is", item.pagemap.metatags);
-        // console.log("item.pagemap.cse_image is", item.pagemap.cse_image);
+      if (response.data.items && response.data.items.length > 0) {
+        // console.log("country is", country);
+        // console.log("fallback is", fallback);
+        // console.log("response.data.items is", response.data.items);
 
-        const firstPart = getTextBeforeFirstColon(item.title);
-        const secondPart = getTextBetweenFirstAndSecondColon(item.title);
+        for (let i = 0; i < response.data.items.length; i++) {
+          const item = response.data.items[i];
+          // console.log("item is", item);
 
-        const firstPartNormalized = normalizeTitle(firstPart);
-        const secondPartNormalized = normalizeTitle(secondPart);
-        const searchTitleNormalized = normalizeTitle(titleBeforeDelimiter);
-
-        // Check each part against the normalized search title
-        if ((firstPartNormalized && (firstPartNormalized.includes(searchTitleNormalized) || searchTitleNormalized.includes(firstPartNormalized))) ||
-    (secondPartNormalized && (secondPartNormalized.includes(searchTitleNormalized) || searchTitleNormalized.includes(secondPartNormalized)))) {
-
-          amazonLink = amazonLink || (item.link ?? '');
-
-          const scrapedData = await scrapeAmazon(amazonLink);
-          amazonImage = scrapedData.amazonImage;
-          amazonStarRating = scrapedData.amazonStarRating;
-          amazonReviewCount = scrapedData.amazonReviewCount;
-          
-          let url = new URL(amazonLink);
-
-          if (!fallback) {
-            if (country === 'US') {
-                console.log("Switching to Amazon India for US");
-                url.hostname = 'www.amazon.in';
-            } else if (country === 'India') {
-                console.log("Switching to Amazon US for India");
-                url.hostname = 'www.amazon.com'; // Assuming you want to switch to Amazon US when in India
-            }
-            amazonLink = url.href.split('/ref')[0];
-            
-            if (!(await isValidLink(amazonLink))) {
-              amazonLink = '';
-            }            
-          } else {
-            url.hostname = `${amazonDomain}`; // Use the original domain
-            amazonLink = url.href.split('/ref')[0];
+          if (!item.displayLink.endsWith(amazonDomain)) {
+            console.log(`Result is not from a valid Amazon ${country} domain`);
+            continue;  // Skip to the next item
           }
 
-          console.log('Title matched the search');
-          console.log(firstPartNormalized);
-          console.log(secondPartNormalized);
-          console.log(searchTitleNormalized);
+          // console.log("item.pagemap.cse_thumbnail is", item.pagemap.cse_thumbnail);
+          // console.log("item.pagemap.metatags is", item.pagemap.metatags);
+          // console.log("item.pagemap.cse_image is", item.pagemap.cse_image);
 
-          return { amazonLink, amazonStarRating, amazonReviewCount, amazonImage };
-        } else {
-          console.log(country);
-          console.log('Title does not match the search');
-          console.log(firstPartNormalized);
-          console.log(secondPartNormalized);
-          console.log(searchTitleNormalized);
+          const firstPart = getTextBeforeFirstColon(item.title);
+          const secondPart = getTextBetweenFirstAndSecondColon(item.title);
+
+          const firstPartNormalized = normalizeTitle(firstPart);
+          const secondPartNormalized = normalizeTitle(secondPart);
+          const searchTitleNormalized = normalizeTitle(titleBeforeDelimiter);
+
+          // Check each part against the normalized search title
+          if ((firstPartNormalized && (firstPartNormalized.includes(searchTitleNormalized) || searchTitleNormalized.includes(firstPartNormalized))) ||
+      (secondPartNormalized && (secondPartNormalized.includes(searchTitleNormalized) || searchTitleNormalized.includes(secondPartNormalized)))) {
+
+            amazonLink = amazonLink || (item.link ?? '');
+
+            const scrapedData = await scrapeAmazon(amazonLink);
+            amazonImage = scrapedData.amazonImage;
+            amazonStarRating = scrapedData.amazonStarRating;
+            amazonReviewCount = scrapedData.amazonReviewCount;
+            
+            let url = new URL(amazonLink);
+
+            if (!fallback) {
+              if (country === 'US') {
+                  console.log("Switching to Amazon India for US");
+                  url.hostname = 'www.amazon.in';
+              } else if (country === 'India') {
+                  console.log("Switching to Amazon US for India");
+                  url.hostname = 'www.amazon.com'; // Assuming you want to switch to Amazon US when in India
+              }
+              amazonLink = url.href.split('/ref')[0];
+              
+              if (!(await isValidLink(amazonLink))) {
+                amazonLink = '';
+              }            
+            } else {
+              url.hostname = `${amazonDomain}`; // Use the original domain
+              amazonLink = url.href.split('/ref')[0];
+            }
+
+            console.log('Title matched the search');
+            console.log(firstPartNormalized);
+            console.log(secondPartNormalized);
+            console.log(searchTitleNormalized);
+
+            return { amazonLink, amazonStarRating, amazonReviewCount, amazonImage };
+          } else {
+            console.log(country);
+            console.log('Title does not match the search');
+            console.log(firstPartNormalized);
+            console.log(secondPartNormalized);
+            console.log(searchTitleNormalized);
+          }
         }
       }
     }

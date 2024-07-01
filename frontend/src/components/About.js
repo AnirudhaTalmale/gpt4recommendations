@@ -18,7 +18,6 @@ const About = () => {
                 <p>"To ensure everyone can find the perfect book for themselves quickly and easily."</p>
             </div>
         </div>
-
         <Footer />
       </div>
     );
