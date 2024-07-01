@@ -42,7 +42,7 @@ ol li {
 .header {
   display: flex;
   width: 100dvw;
-  height: 2.7rem;
+  height: 2.3rem;
   justify-content: space-between; 
   padding: 0 10px;
   border-bottom: 0.5px solid lightgrey;
