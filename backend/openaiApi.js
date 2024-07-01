@@ -292,6 +292,8 @@ async function getAmazonBookData(title, author, country, fallback = true,
             console.log(secondPartNormalized);
             console.log(searchTitleNormalized);
 
+            console.log("amazon data is", amazonLink, amazonStarRating, amazonReviewCount, amazonImage);
+
             return { amazonLink, amazonStarRating, amazonReviewCount, amazonImage };
           } else {
             console.log(country);
@@ -412,6 +414,7 @@ const getGoogleBookData = async (title, author) => {
         }
       }
     }
+    console.log("google data is", googleImage, previewLink);
     return { googleImage, previewLink};
 
   } catch (error) {
@@ -520,6 +523,8 @@ const getBookData = async (title, author, userCountry, bookDataObjectId = '') =>
 
     let bookData = createBookDetails(existingBook, existingBook.countrySpecific[countryKey]);
     await redisClient.set(cacheKey, JSON.stringify(bookData));
+
+    console.log("bookData is: ", bookData);
 
     return bookData;
   } catch (error) {
