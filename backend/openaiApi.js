@@ -485,6 +485,8 @@ function escapeRegExp(string) {
 
 const getBookData = async (title, author, userCountry, bookDataObjectId = '') => {
   try {
+
+    console.log("getBookData function execution started");
     const escapedTitle = escapeRegExp(title);
     const escapedAuthor = escapeRegExp(author);
     const countryKey = userCountry === 'India' ? 'IN' : 'US';
@@ -493,6 +495,7 @@ const getBookData = async (title, author, userCountry, bookDataObjectId = '') =>
     // Check if the data is available in Redis cache
     let cachedData = await redisClient.get(cacheKey);
     if (cachedData) {
+      console.log("cachedData is", cachedData);
       return JSON.parse(cachedData);
     }
 
