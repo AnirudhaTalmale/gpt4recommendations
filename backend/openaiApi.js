@@ -41,9 +41,14 @@ function createPreviewButtonHtml(previewLink, bookTitle, author) {
 
 async function scrapeAmazon(amazonLink) {
   try {
-    const { data } = await axios.get(amazonLink);
+    const { data } = await axios.get(amazonLink, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36'
+      }
+    });
     const $ = cheerio.load(data);
 
+    // Optionally log or save data for debugging
     // fs.writeFile('output.html', data, err => {
     //   if (err) {
     //     console.error('Error writing to file:', err);
@@ -52,22 +57,29 @@ async function scrapeAmazon(amazonLink) {
     //   }
     // });
 
-    // Extracting the high-resolution image URL from the data-old-hires attribute
     const amazonImage = $('#landingImage').attr('data-old-hires') || $('#landingImage').attr('src');
-    
     const amazonStarRating = $('#acrPopover').attr('title').split(' ')[0]; 
     const amazonReviewCount = $('#acrCustomerReviewText').text().split(' ')[0]; 
 
-    // console.log('High-Resolution Amazon Image URL:', amazonImage);
+    console.log('High-Resolution Amazon Image URL:', amazonImage);
     // console.log('Amazon Star Rating:', amazonStarRating);
     // console.log('Amazon Review Count:', amazonReviewCount);
 
     return { amazonImage, amazonStarRating, amazonReviewCount };
   } catch (error) {
-    console.error('Error scraping Amazon:', error);
+    // Detailed error logging
+    console.error('Error scraping Amazon:', error.message);
+    if (error.response) {
+      // Log more detailed info if available
+      console.log('Response Status:', error.response.status);
+      console.log('Response Headers:', error.response.headers);
+      console.error('Detailed Error:', error.response.data);  // Optionally log the response body
+    }
+
     return { amazonImage: '', amazonStarRating: '', amazonReviewCount: '' };
   }
 }
+
 
 
 function renderStarRatingHtml(rating) { 
