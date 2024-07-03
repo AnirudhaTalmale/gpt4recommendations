@@ -1835,6 +1835,11 @@ body:not(.history-pane-open) .input-area {
   /* border: 1px solid green; */
 }
 
+.blog-image-container {
+  margin-top: 1rem;
+  width: 220px;
+}
+
 .image-container {
   width: 220px;
 }
