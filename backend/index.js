@@ -22,7 +22,7 @@ const passportSetup = require('./passport-setup'); // Import the setup function
 const axios = require('axios');
 const nodemailer = require('nodemailer');
 const jwt = require('jsonwebtoken'); 
-const redisClient = require('./redisClient'); 
+const redisClient = require('./redisClient');   
  
 require('dotenv').config();
 
