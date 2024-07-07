@@ -241,4 +241,19 @@
         <lastmod>2024-06-12T00:00:00+01:00</lastmod>
         <priority>0.7</priority>
     </url>
+    <url>
+    <loc>https://getbooks.ai/blog/top-5-books-on-spirituality</loc>
+    <lastmod>2024-06-12T00:00:00+01:00</lastmod>
+    <priority>0.7</priority>
+    </url>
+    <url>
+        <loc>https://getbooks.ai/blog/top-5-books-on-entrepreneurship</loc>
+        <lastmod>2024-06-12T00:00:00+01:00</lastmod>
+        <priority>0.7</priority>
+    </url>
+    <url>
+        <loc>https://getbooks.ai/blog/top-5-books-on-relationships</loc>
+        <lastmod>2024-06-12T00:00:00+01:00</lastmod>
+        <priority>0.7</priority>
+    </url>
 </urlset>
