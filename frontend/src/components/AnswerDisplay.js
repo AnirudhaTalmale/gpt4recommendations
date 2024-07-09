@@ -33,18 +33,26 @@ function AnswerDisplay({
   };
 
   const handleActionButtonClick = async (className, bookTitle, author) => {
+    // Check if all required fields are available
+    if (!className || !userEmail || !bookTitle) {
+      console.error('Missing required information:', { className, bookTitle, userEmail });
+      return;  // Stop execution if any required field is missing
+    }
+  
     try {
-        const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/book-action`, {
-            buttonClassName: className,
-            title: bookTitle,
-            author: author
-        });
-
-        console.log(`${className} action recorded:`, response.data);
+      const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/book-action`, {
+          buttonClassName: className,
+          title: bookTitle,
+          author: author,
+          userEmail: userEmail
+      });
+  
+      console.log(`${className} action recorded:`, response.data);
     } catch (error) {
-        console.error(`Error handling ${className} click:`, error);
+      console.error(`Error handling ${className} click:`, error);
     }
   };
+  
   
   const handleKeyInsightsClick = (bookDataObjectId, bookTitle, author) => {
     if (!isKeyInsightsClicked && onKeyInsightsClick) {

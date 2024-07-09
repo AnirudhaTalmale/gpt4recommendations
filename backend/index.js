@@ -554,19 +554,20 @@ app.post('/api/stop-stream', async (req, res) => {
 
 // Endpoint to post a new book action
 app.post('/api/book-action', async (req, res) => {
-  const { buttonClassName, title, author } = req.body;
+  const { buttonClassName, title, author, userEmail } = req.body;
 
   // Validation for required fields
-  if (!buttonClassName) {
-    return res.status(400).json({ message: 'Missing required fields: buttonClassName and title are required' });
+  if (!buttonClassName || !userEmail || !title) {  // Check for userEmail now
+    return res.status(400).json({ message: 'Missing required fields: buttonClassName, userEmail, and title are required' });
   }
 
   try {
-    // Create a new book action entry
+    // Create a new book action entry including userEmail
     const newBookAction = new BookAction({
       buttonClassName,
-      title,  // This field is now optional; it will be undefined if not provided
-      author,  // This field is now optional; it will be undefined if not provided
+      title,
+      author,
+      userEmail,  // Save userEmail
       createdAt: new Date()  // Use the server's current date and time
     });
 
@@ -580,6 +581,7 @@ app.post('/api/book-action', async (req, res) => {
     res.status(500).json({ message: 'Failed to record book action', error: error.toString() });
   }
 });
+
 
 app.get('/api/more-details', async (req, res) => {
   try {

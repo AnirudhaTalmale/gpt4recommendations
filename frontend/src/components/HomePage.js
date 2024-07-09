@@ -177,7 +177,7 @@ const HomePage = () => {
       <HomePageHeader />
 
       <section className="hero">
-        <h2>World's Most Efficient and Accurate Book Recommendation App</h2>
+        <h2>AI-Powered Book Recommendation App</h2>
           <div className="login-container">
             <button onClick={handleSignupGoogle} className="login-button">
                 <img src="/icons8-google-logo.svg" alt="" className="google-logo" />
