@@ -39,8 +39,16 @@ function createPreviewButtonHtml(previewLink, bookTitle, author) {
   return `<div><button type="button" class="preview-btn" ${buttonStyles} ${dataAttributes}>Preview</button></div>`;
 }
 
+function delay(time) {
+  return new Promise(resolve => setTimeout(resolve, time));
+}
+
 async function scrapeAmazon(amazonLink) {
   try {
+    // Introduce a delay of 2000 milliseconds (2 seconds) before the API call
+    await delay(1000);
+
+    // console.log("amazonLink is", amazonLink);
     const { data } = await axios.get(amazonLink);
     const $ = cheerio.load(data);
 
