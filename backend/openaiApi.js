@@ -378,10 +378,31 @@ const getGoogleBookData = async (title, author) => {
         const { volumeInfo } = book;
         previewLink = volumeInfo.previewLink;
 
-        // Ensure the preview link includes 'printsec=frontcover'
+        // Ensure 'printsec' parameter is set to 'frontcover'
         if (!previewLink.includes('printsec=frontcover')) {
           const url = new URL(previewLink);
           url.searchParams.set('printsec', 'frontcover');
+          previewLink = url.toString();
+        }
+
+        // Ensure 'f' parameter is set to 'true'
+        if (!previewLink.includes('f=true')) {
+          const url = new URL(previewLink);
+          url.searchParams.set('f', 'true');
+          previewLink = url.toString();
+        }
+
+        // Remove the 'dq' parameter
+        if (previewLink.includes('dq=')) {
+          const url = new URL(previewLink);
+          url.searchParams.delete('dq');
+          previewLink = url.toString();
+        }
+
+        // Remove the 'q' parameter
+        if (previewLink.includes('q=')) {
+          const url = new URL(previewLink);
+          url.searchParams.delete('q');
           previewLink = url.toString();
         }
 
