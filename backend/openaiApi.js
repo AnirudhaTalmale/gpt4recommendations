@@ -46,7 +46,7 @@ function delay(time) {
 async function scrapeAmazon(amazonLink) {
   try {
     // Introduce a delay of 2000 milliseconds (2 seconds) before the API call
-    await delay(1000);
+    await delay(2000);
 
     // console.log("amazonLink is", amazonLink);
     const { data } = await axios.get(amazonLink);
