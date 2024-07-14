@@ -45,11 +45,20 @@ function delay(time) {
 
 async function scrapeAmazon(amazonLink) {
   try {
-    // Introduce a delay of 2000 milliseconds (2 seconds) before the API call
+    // Introduce a delay of 3000 milliseconds (3 seconds) before the API call
     await delay(3000);
 
+    // Headers to mimic a typical browser request
+    const headers = {
+      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36',
+      'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+      'Accept-Language': 'en-US,en;q=0.5',
+      'Accept-Encoding': 'gzip, deflate, br',
+      'Connection': 'keep-alive'
+    };
+
     // console.log("amazonLink is", amazonLink);
-    const { data } = await axios.get(amazonLink);
+    const { data } = await axios.get(amazonLink, { headers: headers });
     const $ = cheerio.load(data);
 
     // fs.writeFile('output.html', data, err => {
