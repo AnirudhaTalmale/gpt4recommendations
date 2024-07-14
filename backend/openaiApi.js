@@ -599,7 +599,7 @@ const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, is
     const userCountry = session ? session.user.country : undefined;
 
     const stream = await openai.chat.completions.create({
-      model: "gpt-4o-2024-05-13", 
+      model: "gpt-4-0125-preview", 
       messages: filteredMessages,
       max_tokens: 4096,
       stream: true,
@@ -797,7 +797,7 @@ openaiApi.getGenres = async (title, author) => {
     const prompt = `Provide the genres of the book - "${title}" by ${author}. The answer should just be a single array of strings and nothing else.`;
 
     const response = await openai.chat.completions.create({
-      model: "gpt-4o-2024-05-13",
+      model: "gpt-4-0125-preview",
       messages: [{ role: 'system', content: prompt }]
     });
 
