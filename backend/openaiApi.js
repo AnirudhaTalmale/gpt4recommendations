@@ -46,7 +46,7 @@ function delay(time) {
 async function scrapeAmazon(amazonLink) {
   try {
     // Introduce a delay of 2000 milliseconds (2 seconds) before the API call
-    await delay(2000);
+    await delay(3000);
 
     // console.log("amazonLink is", amazonLink);
     const { data } = await axios.get(amazonLink);
@@ -213,7 +213,12 @@ async function getAmazonBookData(title, author, country, fallback = true,
     const titleBeforeDelimiter = getTitleBeforeDelimiter(title);
     const authorBeforeAnd = getAuthorBeforeAnd(author);
     const amazonDomain = country === 'India' ? 'www.amazon.in' : 'www.amazon.com';
-    const searchTitles = [title, titleBeforeDelimiter];
+    
+    // Ensure only unique titles are added to the searchTitles array
+    const searchTitles = [title];
+    if (title !== titleBeforeDelimiter) {
+      searchTitles.push(titleBeforeDelimiter);
+    }
 
     for (let i = 0; i < searchTitles.length; i++) {
       const response = await axios.get(`https://www.googleapis.com/customsearch/v1`, {
