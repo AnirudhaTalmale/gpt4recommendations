@@ -39,6 +39,8 @@ function createPreviewButtonHtml(previewLink, bookTitle, author) {
   return `<div><button type="button" class="preview-btn" ${buttonStyles} ${dataAttributes}>Preview</button></div>`;
 }
 
+const HttpsProxyAgent = require('https-proxy-agent');
+
 function delay(time) {
   return new Promise(resolve => setTimeout(resolve, time));
 }
@@ -47,6 +49,21 @@ async function scrapeAmazon(amazonLink) {
   try {
     // Introduce a delay of 3000 milliseconds (3 seconds) before the API call
     await delay(3000);
+
+    // Proxy configuration
+    const proxyConfig = {
+      host: process.env.PROXY_HOST,
+      port: process.env.PROXY_PORT, // Ensure port is a string if there's a type issue
+      auth: {
+        username: process.env.PROXY_USERNAME, // Be sure to replace with your actual username
+        password: process.env.PROXY_PASSWORD   // Be sure to replace with your actual password
+      }
+    };
+    
+
+    // Convert proxy configuration to URL format for the HttpsProxyAgent
+    const proxyUrl = `http://${proxyConfig.auth.username}:${proxyConfig.auth.password}@${proxyConfig.host}:${proxyConfig.port}`;
+    const httpsAgent = new HttpsProxyAgent(proxyUrl);
 
     // Headers to mimic a typical browser request
     const headers = {
@@ -57,21 +74,14 @@ async function scrapeAmazon(amazonLink) {
       'Connection': 'keep-alive'
     };
 
-    // console.log("amazonLink is", amazonLink);
-    const { data } = await axios.get(amazonLink, { headers: headers });
+    // Make the request using axios with proxy
+    const response = await axios.get(amazonLink, { headers, httpsAgent });
+    const data = response.data;
     const $ = cheerio.load(data);
-
-    // fs.writeFile('output.html', data, err => {
-    //   if (err) {
-    //     console.error('Error writing to file:', err);
-    //   } else {
-    //     console.log('Successfully wrote to output.html');
-    //   }
-    // });
 
     const amazonImage = $('#landingImage').attr('data-old-hires') || $('#landingImage').attr('src');
     const amazonStarRating = $('#acrPopover').attr('title').split(' ')[0]; 
-    const amazonReviewCount = $('#acrCustomerReviewText').text().split(' ')[0]; 
+    const amazonReviewCount = $('#acrCustomerReviewText').text().split(' ')[0];
 
     console.log('High-Resolution Amazon Image URL:', amazonImage);
     // console.log('Amazon Star Rating:', amazonStarRating);
