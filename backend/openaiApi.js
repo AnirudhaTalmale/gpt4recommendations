@@ -204,7 +204,7 @@ async function getAmazonBookData(title, author, country) {
         
           amazonImage = product_photo;
           amazonStarRating = product_star_rating;
-          amazonReviewCount = product_num_ratings;
+          amazonReviewCount = product_num_ratings.toLocaleString();
           amazonLink = product_url;
 
           console.log('Title matched the search');
@@ -429,10 +429,10 @@ const getBookData = async (title, author, userCountry, bookDataObjectId = '') =>
       existingBook = createNewBook(title, author, amazonData, googleData, countryKey, genres);
     }
 
-    // await existingBook.save();
+    await existingBook.save();
 
     let bookData = createBookDetails(existingBook, existingBook.countrySpecific[countryKey]);
-    // await redisClient.set(cacheKey, JSON.stringify(bookData));
+    await redisClient.set(cacheKey, JSON.stringify(bookData));
 
     return bookData;
   } catch (error) {
