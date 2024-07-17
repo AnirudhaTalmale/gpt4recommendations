@@ -1627,7 +1627,7 @@ if (process.env.NODE_ENV === 'local') {
 
   // Route to fetch all users 
   app.get('/api/recent-users', async (req, res) => {
-    const yesterday = new Date(Date.now() - 100000 * 60 * 60 * 1000); // Corrected to 24 hours ago
+    const yesterday = new Date(Date.now() - 100000 * 60 * 60 * 1000); 
   
     try {
       const recentUsers = await User.find({
@@ -1645,6 +1645,59 @@ if (process.env.NODE_ENV === 'local') {
     } catch (error) {
       console.error('Error fetching users:', error);
       res.status(500).json({ message: 'Server error occurred while fetching recent users' });
+    }
+  });
+
+   // Route to fetch all users 
+   app.get('/api/recent-users', async (req, res) => {
+    const yesterday = new Date(Date.now() - 100000 * 60 * 60 * 1000); 
+  
+    try {
+      const recentUsers = await User.find({
+        createdAt: { $gt: yesterday }
+      }).sort({ createdAt: -1 }); // Sorting users by creation date in descending order
+  
+      // Counting the users
+      const count = recentUsers.length;
+  
+      res.json({
+        message: 'Successfully retrieved recent users',
+        totalUsers: count, // Total number of recent users
+        users: recentUsers   // List of recent users sorted from latest to oldest
+      });
+    } catch (error) {
+      console.error('Error fetching users:', error);
+      res.status(500).json({ message: 'Server error occurred while fetching recent users' });
+    }
+  });
+
+  app.get('/api/top-communicators', async (req, res) => {
+    const yesterday = new Date(Date.now() - 100000 * 60 * 60 * 1000); 
+  
+    const excludedEmails = [
+      'getbooksai@gmail.com', 
+      'anirudhatalmale9@gmail.com', 
+      'anirudhatalmale4@gmail.com', 
+      'anirudhatalmale7@gmail.com'
+    ];
+
+    try {
+      const topCommunicators = await User.find({
+        createdAt: { $gt: yesterday },
+        'local.email': { $nin: excludedEmails }  // Exclude specified emails
+      }).sort({ totalMessageCount: -1 }); // Sorting users by total message count in descending order
+
+      // Counting the users
+      const count = topCommunicators.length;
+
+      res.json({
+        message: 'Successfully retrieved top communicators',
+        totalUsers: count, // Total number of top communicators
+        users: topCommunicators   // List of users sorted from highest to lowest total message count
+      });
+    } catch (error) {
+      console.error('Error fetching top communicators:', error);
+      res.status(500).json({ message: 'Server error occurred while fetching top communicators' });
     }
   });
   
@@ -2031,6 +2084,110 @@ const getGoogleBookData = async (title, author) => {
     }
   });
   
+  app.get('/api/books/invalid-country-specific', async (req, res) => {
+    try {
+        const booksWithInvalidData = await BookData.find({
+            $or: [
+                {
+                    'countrySpecific.IN': { $exists: true, $ne: {} },
+                    $or: [
+                        { 'countrySpecific.IN.bookImage': '' },
+                        { 'countrySpecific.IN.amazonLink': '' },
+                        { 'countrySpecific.IN.amazonReviewCount': '' }
+                    ]
+                },
+                {
+                    'countrySpecific.US': { $exists: true, $ne: {} },
+                    $or: [
+                        { 'countrySpecific.US.bookImage': '' },
+                        { 'countrySpecific.US.amazonLink': '' },
+                        { 'countrySpecific.US.amazonReviewCount': '' }
+                    ]
+                }
+            ]
+        });
+
+        const totalCount = await BookData.countDocuments({
+            $or: [
+                {
+                    'countrySpecific.IN': { $exists: true, $ne: {} },
+                    $or: [
+                        { 'countrySpecific.IN.bookImage': '' },
+                        { 'countrySpecific.IN.amazonLink': '' },
+                        { 'countrySpecific.IN.amazonReviewCount': '' }
+                    ]
+                },
+                {
+                    'countrySpecific.US': { $exists: true, $ne: {} },
+                    $or: [
+                        { 'countrySpecific.US.bookImage': '' },
+                        { 'countrySpecific.US.amazonLink': '' },
+                        { 'countrySpecific.US.amazonReviewCount': '' }
+                    ]
+                }
+            ]
+        });
+
+        if (totalCount === 0) {
+            return res.status(404).json({
+                message: 'No books found with invalid country-specific data.'
+            });
+        }
+
+        res.json({
+            message: 'Successfully retrieved books with invalid country-specific data',
+            totalBooks: totalCount,
+            books: booksWithInvalidData
+        });
+    } catch (error) {
+        console.error('Error fetching books with invalid country-specific data:', error);
+        res.status(500).json({
+            message: 'Server error occurred'
+        });
+    }
+  });
+
+  app.get('/api/books/delete-invalid-country-specific', async (req, res) => {
+    try {
+        const deleteResult = await BookData.deleteMany({
+            $or: [
+                {
+                    'countrySpecific.IN': { $exists: true, $ne: {} },
+                    $or: [
+                        { 'countrySpecific.IN.bookImage': '' },
+                        { 'countrySpecific.IN.amazonLink': '' },
+                        { 'countrySpecific.IN.amazonReviewCount': '' }
+                    ]
+                },
+                {
+                    'countrySpecific.US': { $exists: true, $ne: {} },
+                    $or: [
+                        { 'countrySpecific.US.bookImage': '' },
+                        { 'countrySpecific.US.amazonLink': '' },
+                        { 'countrySpecific.US.amazonReviewCount': '' }
+                    ]
+                }
+            ]
+        });
+
+        if (deleteResult.deletedCount === 0) {
+            return res.status(404).json({
+                message: 'No books found with invalid country-specific data to delete.'
+            });
+        }
+
+        res.json({
+            message: 'Successfully deleted books with invalid country-specific data',
+            deletedBooksCount: deleteResult.deletedCount
+        });
+    } catch (error) {
+        console.error('Error deleting books with invalid country-specific data:', error);
+        res.status(500).json({
+            message: 'Server error occurred'
+        });
+    }
+  });
+
 }
 
 
