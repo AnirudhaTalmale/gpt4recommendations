@@ -3,7 +3,6 @@ const { OpenAI } = require('openai');
 require('dotenv').config();
 const openai = new OpenAI(process.env.OPENAI_API_KEY);
 const axios = require('axios');
-const cheerio = require('cheerio');
 const BookData = require('./models/models-chat/BookData'); 
 const BookDataErrorLog = require('./models/models-chat/BookDataErrorLog');
 const redisClient = require('./redisClient');
@@ -37,61 +36,6 @@ function createPreviewButtonHtml(previewLink, bookTitle, author) {
   const dataAttributes = isEnabled ? `data-preview-link="${previewLink}" data-book-title="${bookTitle}" data-author="${author}"` : "";
 
   return `<div><button type="button" class="preview-btn" ${buttonStyles} ${dataAttributes}>Preview</button></div>`;
-}
-
-const HttpsProxyAgent = require('https-proxy-agent');
-
-function delay(time) {
-  return new Promise(resolve => setTimeout(resolve, time));
-}
-
-async function scrapeAmazon(amazonLink) {
-  try {
-    // Introduce a delay of 3000 milliseconds (3 seconds) before the API call
-    await delay(3000);
-
-    // Proxy configuration
-    const proxyConfig = {
-      host: process.env.PROXY_HOST,
-      port: process.env.PROXY_PORT, // Ensure port is a string if there's a type issue
-      auth: {
-        username: process.env.PROXY_USERNAME, // Be sure to replace with your actual username
-        password: process.env.PROXY_PASSWORD   // Be sure to replace with your actual password
-      }
-    };
-    
-
-    // Convert proxy configuration to URL format for the HttpsProxyAgent
-    const proxyUrl = `http://${proxyConfig.auth.username}:${proxyConfig.auth.password}@${proxyConfig.host}:${proxyConfig.port}`;
-    const httpsAgent = new HttpsProxyAgent(proxyUrl);
-
-    // Headers to mimic a typical browser request
-    const headers = {
-      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36',
-      'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-      'Accept-Language': 'en-US,en;q=0.5',
-      'Accept-Encoding': 'gzip, deflate, br',
-      'Connection': 'keep-alive'
-    };
-
-    // Make the request using axios with proxy
-    const response = await axios.get(amazonLink, { headers, httpsAgent });
-    const data = response.data;
-    const $ = cheerio.load(data);
-
-    const amazonImage = $('#landingImage').attr('data-old-hires') || $('#landingImage').attr('src');
-    const amazonStarRating = $('#acrPopover').attr('title').split(' ')[0]; 
-    const amazonReviewCount = $('#acrCustomerReviewText').text().split(' ')[0];
-
-    console.log('High-Resolution Amazon Image URL:', amazonImage);
-    // console.log('Amazon Star Rating:', amazonStarRating);
-    // console.log('Amazon Review Count:', amazonReviewCount);
-
-    return { amazonImage, amazonStarRating, amazonReviewCount };
-  } catch (error) {
-    console.error('Error scraping Amazon:', error);
-    return { amazonImage: '', amazonStarRating: '', amazonReviewCount: '' };
-  }
 }
 
 function renderStarRatingHtml(rating) { 
@@ -217,144 +161,74 @@ const getTextBetweenFirstAndSecondColon = (title) => {
   return '';
 };
 
-async function isValidLink(url) {
-  try {
-    const response = await axios.get(url);
-    return response.status >= 200 && response.status < 300;
-  } catch (error) {
-    return false;
-  }
-}
-
-async function getAmazonBookData(title, author, country, fallback = true,
-  amazonImage = '', amazonLink = '', amazonStarRating = '', amazonReviewCount = '') {
-  try {
-    const titleBeforeDelimiter = getTitleBeforeDelimiter(title);
-    const authorBeforeAnd = getAuthorBeforeAnd(author);
-    const amazonDomain = country === 'India' ? 'www.amazon.in' : 'www.amazon.com';
-    
-    // Ensure only unique titles are added to the searchTitles array
-    const searchTitles = [title];
-    if (title !== titleBeforeDelimiter) {
-      searchTitles.push(titleBeforeDelimiter);
-    }
-
-    for (let i = 0; i < searchTitles.length; i++) {
-      const response = await axios.get(`https://www.googleapis.com/customsearch/v1`, {
-        params: {
-          key: process.env.REACT_APP_GOOGLE_CUSTOM_SEARCH_API_KEY,
-          cx: process.env.GOOGLE_CSE_ID,
-          q: `site:${amazonDomain} ${searchTitles[i]} by ${authorBeforeAnd}`,
-          num: 1
-        }
-      }); 
-
-      if (response.data.items && response.data.items.length > 0) {
-        // console.log("country is", country);
-        // console.log("fallback is", fallback);
-        // console.log("response.data.items is", response.data.items);
-
-        for (let i = 0; i < response.data.items.length; i++) {
-          const item = response.data.items[i];
-          // console.log("item is", item);
-
-          if (!item.displayLink.endsWith(amazonDomain)) {
-            console.log(`Result is not from a valid Amazon ${country} domain`);
-            continue;  // Skip to the next item
-          }
-
-          // console.log("item.pagemap.cse_thumbnail is", item.pagemap.cse_thumbnail);
-          // console.log("item.pagemap.metatags is", item.pagemap.metatags);
-          // console.log("item.pagemap.cse_image is", item.pagemap.cse_image);
-
-          const firstPart = getTextBeforeFirstColon(item.title);
-          const secondPart = getTextBetweenFirstAndSecondColon(item.title);
-
-          const firstPartNormalized = normalizeTitle(firstPart);
-          const secondPartNormalized = normalizeTitle(secondPart);
-          const searchTitleNormalized = normalizeTitle(titleBeforeDelimiter);
-
-          // Check each part against the normalized search title
-          if ((firstPartNormalized && (firstPartNormalized.includes(searchTitleNormalized) || searchTitleNormalized.includes(firstPartNormalized))) ||
-      (secondPartNormalized && (secondPartNormalized.includes(searchTitleNormalized) || searchTitleNormalized.includes(secondPartNormalized)))) {
-
-            amazonLink = amazonLink || (item.link ?? '');
-
-            const scrapedData = await scrapeAmazon(amazonLink);
-            amazonImage = scrapedData.amazonImage;
-            amazonStarRating = scrapedData.amazonStarRating;
-            amazonReviewCount = scrapedData.amazonReviewCount;
-            
-            let url = new URL(amazonLink);
-
-            if (!fallback) {
-              if (country === 'US') {
-                  console.log("Switching to Amazon India for US");
-                  url.hostname = 'www.amazon.in';
-              } else if (country === 'India') {
-                  console.log("Switching to Amazon US for India");
-                  url.hostname = 'www.amazon.com'; // Assuming you want to switch to Amazon US when in India
-              }
-              amazonLink = url.href.split('/ref')[0];
-              
-              if (!(await isValidLink(amazonLink))) {
-                amazonLink = '';
-              }            
-            } else {
-              url.hostname = `${amazonDomain}`; // Use the original domain
-              amazonLink = url.href.split('/ref')[0];
-            }
-
-            console.log('Title matched the search');
-            console.log(firstPartNormalized);
-            console.log(secondPartNormalized);
-            console.log(searchTitleNormalized);
-
-            return { amazonLink, amazonStarRating, amazonReviewCount, amazonImage };
-          } else {
-            console.log(country);
-            console.log('Title does not match the search');
-            console.log(firstPartNormalized);
-            console.log(secondPartNormalized);
-            console.log(searchTitleNormalized);
-          }
-        }
-      }
-    }
-
-    if (fallback) {
-      if (country === 'India') {
-        console.log("Switching to US from India");
-        return await getAmazonBookData(title, author, 'US', false);
-      } else if (country === 'US') {
-        console.log("Switching to India from US");
-        return await getAmazonBookData(title, author, 'India', false);
-      }
-    }
-    
-    console.log('No suitable results found.');
-    return { amazonLink, amazonStarRating, amazonReviewCount, amazonImage};
-  } catch (error) {
-    console.error('Error during API request:', error);
-    return { amazonLink: '', amazonStarRating: '', amazonReviewCount: '', amazonImage: '' };
-  }
-}
-
-// function convertStarRating(starString) {
-//   const starRatingMap = {
-//     'ONE': '1.0',
-//     'ONEANDHALF': '1.5',
-//     'TWO': '2.0',
-//     'TWOANDHALF': '2.5',
-//     'THREE': '3.0',
-//     'THREEANDHALF': '3.5',
-//     'FOUR': '4.0',
-//     'FOURANDHALF': '4.5',
-//     'FIVE': '5.0'
-//   };
+async function getAmazonBookData(title, author, country) {
+  const titleBeforeDelimiter = getTitleBeforeDelimiter(title);
+  const authorBeforeAnd = getAuthorBeforeAnd(author);
+  const countryCode = country === 'India' ? 'IN' : 'US';
   
-//   return starRatingMap[starString] || starString;
-// }
+  const searchTitles = [title];
+  if (title !== titleBeforeDelimiter) {
+    searchTitles.push(titleBeforeDelimiter);
+  }
+
+  let amazonLink = '', amazonStarRating = '', amazonReviewCount = '', amazonImage = '';
+  
+  for (let searchTitle of searchTitles) {
+    const query = `${searchTitle} by ${authorBeforeAnd}`;
+    const encodedQuery = encodeURIComponent(query);
+    const url = `https://real-time-amazon-data.p.rapidapi.com/search?query=${encodedQuery}&page=1&country=${countryCode}&sort_by=RELEVANCE&product_condition=ALL`;
+
+    try {
+      const response = await axios.get(url, {
+        headers: {
+          'x-rapidapi-host': process.env.RAPIDAPI_HOST,
+          'x-rapidapi-key': process.env.RAPIDAPI_KEY
+        }
+      });
+
+      console.log("response.data is", response.data);
+
+      for (let i = 0; i < Math.min(2, response.data.data.products.length); i++) {
+        const product = response.data.data.products[i];
+        const { product_title, product_star_rating, product_num_ratings, product_url, product_photo } = product;
+        
+        const firstPart = getTextBeforeFirstColon(product_title);
+        const secondPart = getTextBetweenFirstAndSecondColon(product_title);
+
+        const firstPartNormalized = normalizeTitle(firstPart);
+        const secondPartNormalized = normalizeTitle(secondPart);
+        const searchTitleNormalized = normalizeTitle(titleBeforeDelimiter);
+    
+        if ((firstPartNormalized && (firstPartNormalized.includes(searchTitleNormalized) || searchTitleNormalized.includes(firstPartNormalized))) ||
+  (secondPartNormalized && (secondPartNormalized.includes(searchTitleNormalized) || searchTitleNormalized.includes(secondPartNormalized)))) {
+        
+          amazonImage = product_photo;
+          amazonStarRating = product_star_rating;
+          amazonReviewCount = product_num_ratings;
+          amazonLink = product_url;
+
+          console.log('Title matched the search');
+          console.log(firstPartNormalized);
+          console.log(secondPartNormalized);
+          console.log(searchTitleNormalized);
+
+          return { amazonLink, amazonStarRating, amazonReviewCount, amazonImage };
+        } else {
+          console.log(country);
+          console.log('Title does not match the search');
+          console.log(firstPartNormalized);
+          console.log(secondPartNormalized);
+          console.log(searchTitleNormalized);
+        }
+      }
+    } catch (error) {
+      console.error('Error during API request:', error);
+    }
+  } 
+
+  console.log('No suitable results found.');
+  return { amazonLink, amazonStarRating, amazonReviewCount, amazonImage};
+}
 
 const extractTitleFromLink = (link) => {
   try {
@@ -555,10 +429,10 @@ const getBookData = async (title, author, userCountry, bookDataObjectId = '') =>
       existingBook = createNewBook(title, author, amazonData, googleData, countryKey, genres);
     }
 
-    await existingBook.save();
+    // await existingBook.save();
 
     let bookData = createBookDetails(existingBook, existingBook.countrySpecific[countryKey]);
-    await redisClient.set(cacheKey, JSON.stringify(bookData));
+    // await redisClient.set(cacheKey, JSON.stringify(bookData));
 
     return bookData;
   } catch (error) {
