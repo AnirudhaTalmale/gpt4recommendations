@@ -16,6 +16,7 @@ const {
   checkFormatAnecdotes, 
   checkFormatQuotes 
 } = require('./checkFormatFunctions');
+const he = require('he'); 
 
 const parseBookTitle = (bookTitleWithAuthor) => {
   // Remove any occurrences of opening or closing quotes
@@ -192,8 +193,10 @@ async function getAmazonBookData(title, author, country) {
         const product = response.data.data.products[i];
         const { product_title, product_star_rating, product_num_ratings, product_url, product_photo } = product;
         
-        const firstPart = getTextBeforeFirstColon(product_title);
-        const secondPart = getTextBetweenFirstAndSecondColon(product_title);
+        const decodedTitle = he.decode(product_title);
+
+        const firstPart = getTextBeforeFirstColon(decodedTitle);
+        const secondPart = getTextBetweenFirstAndSecondColon(decodedTitle);
 
         const firstPartNormalized = normalizeTitle(firstPart);
         const secondPartNormalized = normalizeTitle(secondPart);
@@ -429,10 +432,10 @@ const getBookData = async (title, author, userCountry, bookDataObjectId = '') =>
       existingBook = createNewBook(title, author, amazonData, googleData, countryKey, genres);
     }
 
-    await existingBook.save();
+    // await existingBook.save();
 
     let bookData = createBookDetails(existingBook, existingBook.countrySpecific[countryKey]);
-    await redisClient.set(cacheKey, JSON.stringify(bookData));
+    // await redisClient.set(cacheKey, JSON.stringify(bookData));
 
     return bookData;
   } catch (error) {
