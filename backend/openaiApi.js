@@ -200,8 +200,9 @@ async function getAmazonBookData(title, author, country) {
 
         const firstPartNormalized = normalizeTitle(firstPart);
         const secondPartNormalized = normalizeTitle(secondPart);
+        console.log("titleBeforeDelimiter is", titleBeforeDelimiter);
         const searchTitleNormalized = normalizeTitle(titleBeforeDelimiter).split(' ')[0];
-    
+        console.log("searchTitleNormalized after splitting", searchTitleNormalized);
         if ((firstPartNormalized && (firstPartNormalized.includes(searchTitleNormalized) || searchTitleNormalized.includes(firstPartNormalized))) ||
   (secondPartNormalized && (secondPartNormalized.includes(searchTitleNormalized) || searchTitleNormalized.includes(secondPartNormalized)))) {
         
@@ -217,8 +218,8 @@ async function getAmazonBookData(title, author, country) {
 
           return { amazonLink, amazonStarRating, amazonReviewCount, amazonImage };
         } else {
-          console.log(country);
           console.log('Title does not match the search');
+          console.log(country);
           console.log(firstPartNormalized);
           console.log(secondPartNormalized);
           console.log(searchTitleNormalized);
