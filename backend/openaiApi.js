@@ -200,7 +200,7 @@ async function getAmazonBookData(title, author, country) {
 
         const firstPartNormalized = normalizeTitle(firstPart);
         const secondPartNormalized = normalizeTitle(secondPart);
-        const searchTitleNormalized = normalizeTitle(titleBeforeDelimiter);
+        const searchTitleNormalized = normalizeTitle(titleBeforeDelimiter).split(' ')[0];
     
         if ((firstPartNormalized && (firstPartNormalized.includes(searchTitleNormalized) || searchTitleNormalized.includes(firstPartNormalized))) ||
   (secondPartNormalized && (secondPartNormalized.includes(searchTitleNormalized) || searchTitleNormalized.includes(secondPartNormalized)))) {

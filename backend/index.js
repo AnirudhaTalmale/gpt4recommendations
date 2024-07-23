@@ -1949,16 +1949,37 @@ const getGoogleBookData = async (title, author) => {
         // Check if viewability is not 'NO_PAGES'
         const hasPreviewAvailable = item.accessInfo.viewability !== 'NO_PAGES';
         
-        return hasPreviewAvailable && (itemTitleNormalized.includes(searchTitleNormalized) 
-          || searchTitleNormalized.includes(itemTitleNormalized)
-          || itemPreviewLinkTitleNormalized.includes(searchTitleNormalized) 
-          || searchTitleNormalized.includes(itemPreviewLinkTitleNormalized));
+        const isEnglish = item.volumeInfo.language === 'en';
+
+        // Adjust search condition based on language
+        return hasPreviewAvailable && (isEnglish ? 
+          (itemTitleNormalized.includes(searchTitleNormalized) || searchTitleNormalized.includes(itemTitleNormalized)) :
+          (itemTitleNormalized.includes(searchTitleNormalized) || searchTitleNormalized.includes(itemTitleNormalized) || itemPreviewLinkTitleNormalized.includes(searchTitleNormalized) || searchTitleNormalized.includes(itemPreviewLinkTitleNormalized)));
       });
       
         
       if (book) {
         const { volumeInfo } = book;
         previewLink = volumeInfo.previewLink;
+
+        // console.log("previewLink is ", previewLink);
+
+        // Create a URL object from the previewLink
+        const url = new URL(previewLink);
+
+        // Set the URL protocol to 'https:'
+        url.protocol = "https:";
+
+        // Set parameters to desired values
+        url.searchParams.set('printsec', 'frontcover');
+        url.searchParams.set('f', 'true');
+
+        // Remove parameters that are not needed
+        url.searchParams.delete('dq');
+        url.searchParams.delete('q');
+
+        // Update the previewLink with all changes
+        previewLink = url.toString();
       }
     }
     return { previewLink};
@@ -1967,12 +1988,12 @@ const getGoogleBookData = async (title, author) => {
     console.error(`Error fetching book cover for ${title}:`, error);
     return { previewLink: '' };
   }
-  };
+};
 
   app.get('/api/books/preview-links-check', async (req, res) => {
     try {
       // Fetch 5 books from the database
-      const books = await BookData.find({}).limit(20);
+      const books = await BookData.find({}).limit(5);
   
       // Map through each book and get new preview links without saving
       const bookLinks = books.map(async (book) => {
@@ -2188,6 +2209,77 @@ const getGoogleBookData = async (title, author) => {
     }
   });
 
+  app.get('/api/books/filtered', async (req, res) => {
+    try {
+      // Retrieve all books where previewLink is not an empty string
+      const books = await BookData.find({ previewLink: { $ne: '' } });
+  
+      // Filter books based on the conditions from the provided code including checking the absence of https protocol
+      const filteredBooks = books.filter(book => {
+        const url = new URL(book.previewLink);
+        const protocol = url.protocol;
+        const printsec = url.searchParams.get('printsec');
+        const f = url.searchParams.get('f');
+        const dq = url.searchParams.get('dq');
+        const q = url.searchParams.get('q');
+  
+        // Check the conditions including the absence of https protocol
+        return (
+          protocol !== 'https:' ||  // Checks if the protocol is not https
+          q !== null ||  // contains 'q' parameter
+          dq !== null ||  // contains 'dq' parameter
+          f !== 'true' ||  // 'f' parameter is false or not present
+          printsec !== 'frontcover' ||  // 'printsec' is not 'frontcover' or not present
+          printsec === null
+        );
+      });
+  
+      // Return the filtered books
+      res.json(filteredBooks);
+    } catch (error) {
+      res.status(500).json({ message: 'Error retrieving filtered books', error });
+    }
+  });
+
+  app.get('/api/books/update-preview-links-without-calling-google-book-data-function', async (req, res) => {
+    try {
+      // Retrieve all books where previewLink is not an empty string
+      const books = await BookData.find({ previewLink: { $ne: '' } });
+
+      // Filter and update each book's previewLink
+      const updates = books.map(async (book) => {
+        const url = new URL(book.previewLink);
+
+        // Update the URL's protocol to 'https:'
+        url.protocol = "https:";
+
+        // Set parameters to desired values
+        url.searchParams.set('printsec', 'frontcover');
+        url.searchParams.set('f', 'true');
+
+        // Remove parameters that are not needed
+        url.searchParams.delete('dq');
+        url.searchParams.delete('q');
+
+        // Update the previewLink with all changes
+        book.previewLink = url.toString();
+
+        // Save the updated book back to the database
+        return book.save();
+      });
+
+      // Wait for all updates to complete
+      await Promise.all(updates);
+
+      // Fetch five sample entries to verify updates
+      const sampleUpdatedBooks = await BookData.find({ previewLink: { $ne: '' } }).limit(5);
+
+      // Respond back with the number of books updated and a sample of updated books
+      res.json({ updatedCount: updates.length, sampleUpdatedBooks });
+    } catch (error) {
+      res.status(500).json({ message: 'Error updating book records', error });
+    }
+  });
 }
 
 
