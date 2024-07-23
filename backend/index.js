@@ -363,6 +363,7 @@ io.on('connection', (socket) => {
 
     // Check message limit
     const now = new Date();
+    session.user.lastMessageTimestamp = now;
 
     if (session.user.firstMessageTimestamp === undefined || session.user.messageCount === undefined) {
       session.user.firstMessageTimestamp = now;
@@ -471,6 +472,7 @@ io.on('connection', (socket) => {
     
     // Check message limit
     const now = new Date();
+    user.lastMessageTimestamp = now;
 
     const user = await User.findById(userId);
 
@@ -1627,24 +1629,20 @@ if (process.env.NODE_ENV === 'local') {
 
   // Route to fetch all users 
   app.get('/api/recent-users', async (req, res) => {
-    const yesterday = new Date(Date.now() - 100000 * 60 * 60 * 1000); 
-  
     try {
-      const recentUsers = await User.find({
-        createdAt: { $gt: yesterday }
-      }).sort({ createdAt: -1 }); // Sorting users by creation date in descending order
+      const users = await User.find({}).sort({ createdAt: -1 }); // Sorting all users by creation date in descending order
   
       // Counting the users
-      const count = recentUsers.length;
+      const count = users.length;
   
       res.json({
-        message: 'Successfully retrieved recent users',
-        totalUsers: count, // Total number of recent users
-        users: recentUsers   // List of recent users sorted from latest to oldest
+        message: 'Successfully retrieved all users',
+        totalUsers: count, // Total number of users
+        users: users   // List of all users sorted from latest to oldest
       });
     } catch (error) {
       console.error('Error fetching users:', error);
-      res.status(500).json({ message: 'Server error occurred while fetching recent users' });
+      res.status(500).json({ message: 'Server error occurred while fetching users' });
     }
   });
 
@@ -1671,9 +1669,7 @@ if (process.env.NODE_ENV === 'local') {
     }
   });
 
-  app.get('/api/top-communicators', async (req, res) => {
-    const yesterday = new Date(Date.now() - 100000 * 60 * 60 * 1000); 
-  
+  app.get('/api/recent-communicators', async (req, res) => {
     const excludedEmails = [
       'getbooksai@gmail.com', 
       'anirudhatalmale9@gmail.com', 
@@ -1683,9 +1679,8 @@ if (process.env.NODE_ENV === 'local') {
 
     try {
       const topCommunicators = await User.find({
-        createdAt: { $gt: yesterday },
         'local.email': { $nin: excludedEmails }  // Exclude specified emails
-      }).sort({ totalMessageCount: -1 }); // Sorting users by total message count in descending order
+      }).sort({ lastMessageTimestamp: -1 }); // Sorting users by last message timestamp in descending order
 
       // Counting the users
       const count = topCommunicators.length;
@@ -1693,13 +1688,14 @@ if (process.env.NODE_ENV === 'local') {
       res.json({
         message: 'Successfully retrieved top communicators',
         totalUsers: count, // Total number of top communicators
-        users: topCommunicators   // List of users sorted from highest to lowest total message count
+        users: topCommunicators   // List of users sorted from most recent to oldest last message timestamp
       });
     } catch (error) {
       console.error('Error fetching top communicators:', error);
       res.status(500).json({ message: 'Server error occurred while fetching top communicators' });
     }
   });
+
   
  // api to fetch redis data
   app.get('/api/redis-data', async (req, res) => {

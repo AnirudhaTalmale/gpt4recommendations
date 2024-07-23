@@ -22,6 +22,7 @@ const userSchema = new Schema({
   accessToken: { type: String },
   verificationToken: { type: String },
   firstMessageTimestamp: { type: Date },
+  lastMessageTimestamp: { type: Date },
   messageCount: { type: Number, default: 0 },
   totalMessageCount: { type: Number, default: 0 },
   country: { type: String }
