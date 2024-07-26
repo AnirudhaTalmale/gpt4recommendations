@@ -16,7 +16,6 @@ const {
   checkFormatAnecdotes, 
   checkFormatQuotes 
 } = require('./checkFormatFunctions');
-const he = require('he'); 
 
 const parseBookTitle = (bookTitleWithAuthor) => {
   // Remove any occurrences of opening or closing quotes
@@ -150,18 +149,6 @@ function getAuthorBeforeAnd(author) {
   }
 }
 
-const getTextBeforeFirstColon = (title) => {
-  return title.split(':')[0].trim();
-};
-
-const getTextBetweenFirstAndSecondColon = (title) => {
-  const parts = title.split(':');
-  if (parts.length > 1) {
-      return parts[1].trim();
-  }
-  return '';
-};
-
 async function getAmazonBookData(title, author, country) {
   const titleBeforeDelimiter = getTitleBeforeDelimiter(title);
   const authorBeforeAnd = getAuthorBeforeAnd(author);
@@ -189,41 +176,16 @@ async function getAmazonBookData(title, author, country) {
 
       // console.log("response.data is", response.data);
 
-      for (let i = 0; i < Math.min(2, response.data.data.products.length); i++) {
+      for (let i = 0; i < Math.min(1, response.data.data.products.length); i++) {
         const product = response.data.data.products[i];
-        const { product_title, product_star_rating, product_num_ratings, product_url, product_photo } = product;
-        
-        const decodedTitle = he.decode(product_title);
+        const { product_star_rating, product_num_ratings, product_url, product_photo } = product;
 
-        const firstPart = getTextBeforeFirstColon(decodedTitle);
-        const secondPart = getTextBetweenFirstAndSecondColon(decodedTitle);
+        amazonImage = product_photo;
+        amazonStarRating = product_star_rating;
+        amazonReviewCount = product_num_ratings.toLocaleString();
+        amazonLink = product_url;
 
-        const firstPartNormalized = normalizeTitle(firstPart);
-        const secondPartNormalized = normalizeTitle(secondPart);
-        console.log("titleBeforeDelimiter is", titleBeforeDelimiter);
-        const searchTitleNormalized = normalizeTitle(titleBeforeDelimiter).split(' ')[0];
-        console.log("searchTitleNormalized after splitting", searchTitleNormalized);
-        if ((firstPartNormalized && (firstPartNormalized.includes(searchTitleNormalized) || searchTitleNormalized.includes(firstPartNormalized))) ||
-  (secondPartNormalized && (secondPartNormalized.includes(searchTitleNormalized) || searchTitleNormalized.includes(secondPartNormalized)))) {
-        
-          amazonImage = product_photo;
-          amazonStarRating = product_star_rating;
-          amazonReviewCount = product_num_ratings.toLocaleString();
-          amazonLink = product_url;
-
-          console.log('Title matched the search');
-          console.log(firstPartNormalized);
-          console.log(secondPartNormalized);
-          console.log(searchTitleNormalized);
-
-          return { amazonLink, amazonStarRating, amazonReviewCount, amazonImage };
-        } else {
-          console.log('Title does not match the search');
-          console.log(country);
-          console.log(firstPartNormalized);
-          console.log(secondPartNormalized);
-          console.log(searchTitleNormalized);
-        }
+        return { amazonLink, amazonStarRating, amazonReviewCount, amazonImage };
       }
     } catch (error) {
       console.error('Error during API request:', error);

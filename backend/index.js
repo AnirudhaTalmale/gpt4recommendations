@@ -961,12 +961,21 @@ if (process.env.NODE_ENV === 'local') {
 
   // GET endpoint to retrieve book actions from the last 2 days
   app.get('/api/book-actions', async (req, res) => {
+    
+    const excludedEmails = [
+      'getbooksai@gmail.com', 
+      'anirudhatalmale9@gmail.com', 
+      'anirudhatalmale4@gmail.com', 
+      'anirudhatalmale7@gmail.com'
+    ];
+
     try {
       const twoDaysAgo = new Date();
-      twoDaysAgo.setDate(twoDaysAgo.getDate() - 2);
+      twoDaysAgo.setDate(twoDaysAgo.getDate() - 10);
 
       const bookActions = await BookAction.find({
-        createdAt: { $gte: twoDaysAgo }
+        createdAt: { $gte: twoDaysAgo },
+        userEmail: { $nin: excludedEmails }
       }).sort({ createdAt: -1 }); // Sorting by date, newest first
 
       res.status(200).json(bookActions);
@@ -1679,7 +1688,8 @@ if (process.env.NODE_ENV === 'local') {
 
     try {
       const topCommunicators = await User.find({
-        'local.email': { $nin: excludedEmails }  // Exclude specified emails
+        'local.email': { $nin: excludedEmails },  // Exclude specified emails
+        'totalMessageCount': { $gt: 0 }  // Ensure totalMessageCount is greater than 0
       }).sort({ lastMessageTimestamp: -1 }); // Sorting users by last message timestamp in descending order
 
       // Counting the users
