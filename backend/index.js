@@ -789,8 +789,6 @@ app.get('/api/sessions', async (req, res) => {
   }
 });
 
-
-
 // DELETE endpoint for deleting a session
 app.delete('/api/session/:sessionId', async (req, res) => {
   const { sessionId } = req.params;
