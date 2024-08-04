@@ -51,6 +51,7 @@ passport.use(new GoogleStrategy({
       }
 
       user.accessToken = accessToken;
+      await user.save();
       return done(null, user);
     } catch (error) {
       console.error('Error in Google Strategy:', error);

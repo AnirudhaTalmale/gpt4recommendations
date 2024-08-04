@@ -34,7 +34,7 @@ const cors = require('cors');
 
 const corsOptions = {
   origin: `${process.env.FRONTEND_URL}`, 
-  credentials: true, 
+  credentials: true,  
 }; 
 
 app.use(cors(corsOptions));
@@ -172,22 +172,25 @@ app.get('/auth/logout', (req, res, next) => {
   req.logout(function(err) {
     if (err) { return next(err); }
 
-    // Revoke the Google access token
-    axios.post('https://accounts.google.com/o/oauth2/revoke', {
-      token: accessToken,
+    axios.post('https://accounts.google.com/o/oauth2/revoke', `token=${accessToken}`, {
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }
     }).then(() => {
       console.log('Google token revoked');
     }).catch(err => {
-      console.log('Error revoking Google token:', err); 
-    });
-
+      console.error('Complete error revoking Google token:', err);
+      console.error('Request sent:', err.config);
+    }); 
+  
+    
     req.session.destroy(function(err) {
       if (err) { return next(err); }
       res.clearCookie('connect.sid');
       res.json({ message: 'Logged out successfully' });
     });
   });
-});
+}); 
 
 // Email Verification code and Onboarding code: 
 

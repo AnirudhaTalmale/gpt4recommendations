@@ -26,8 +26,8 @@ const parseBookTitle = (bookTitleWithAuthor) => {
   const bookTitle = splitTitle[0];
   const author = splitTitle.length > 1 ? splitTitle[1] : null;
 
-  return { bookTitle, author };
-};
+  return { bookTitle, author }; 
+}; 
 
 function createPreviewButtonHtml(previewLink, bookTitle, author) {
   const disabledStyles = `style="cursor: not-allowed; opacity: 0.5; pointer-events: none;"`;
