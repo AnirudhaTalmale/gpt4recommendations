@@ -601,12 +601,18 @@ body:not(.history-pane-open) .input-area {
   padding: 0 0.5rem;
 }
 
+.disclaimer-text {
+  font-size: 0.8rem;
+  color: grey;
+  margin-bottom: 0.5rem;
+  margin-top: 0.5rem;
+}
+
 
 .input-box {
   width: 80%; /* Full width of the parent container */
   max-width: 40rem;
   margin: auto;
-  margin-bottom: 1.3rem;
   border-radius: 0.8rem;
   height: auto; /* Adjust height automatically based on content */
   border: 0.093rem solid #D3D3D3; /* Border color and width */
@@ -644,7 +650,7 @@ body:not(.history-pane-open) .input-area {
 .send-button, .stop-button {
   position: absolute;
   right: 3.7rem;
-  bottom: 1.95rem;
+  bottom: 2.5rem;
   font-size: 0.9rem;
   width: 1.7rem;
   height: 1.7rem;

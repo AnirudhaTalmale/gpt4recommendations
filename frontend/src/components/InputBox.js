@@ -96,6 +96,7 @@ function InputBox({ onSubmit, isStreaming, onStopStreaming, isPaneOpen }) {
           placeholder="Explain your query"
           rows={rows}
         />
+        <p className="disclaimer-text">Each query is independent. Prior context is not considered.</p>
         {isStreaming ? (
           <button type="button" className="stop-button" onClick={onStopStreaming} style={{ right: stopButtonRight }}>
             <i className="fa-regular fa-circle-stop"></i>
