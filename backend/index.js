@@ -322,7 +322,6 @@ function estimateTokenCount(text) {
   return text.trim().split(/\s+/).length;
 }
 
-const MESSAGE_LIMIT = process.env.MESSAGE_LIMIT;
 const WINDOW_DURATION = 3 * 60 * 60 * 1000; // 3 hours in milliseconds
 
 // Function to convert milliseconds to hours
@@ -387,6 +386,11 @@ io.on('connection', (socket) => {
     }
 
     session.user.totalMessageCount += 1;
+
+    // Check if the subscription object exists and the user is active
+    const isSubscribed = session.user.subscription && session.user.subscription.isActive;
+
+    const MESSAGE_LIMIT = isSubscribed ? process.env.MESSAGE_LIMIT_SUBSCRIBED : process.env.MESSAGE_LIMIT_NON_SUBSCRIBED;
 
     if (session.user.messageCount > MESSAGE_LIMIT) {
       const timePassed = now - session.user.firstMessageTimestamp.getTime();
@@ -498,6 +502,11 @@ io.on('connection', (socket) => {
     }
 
     user.totalMessageCount += 1;
+
+    // Check if the subscription object exists and the user is active
+    const isSubscribed = user.subscription && user.subscription.isActive;
+
+    const MESSAGE_LIMIT = isSubscribed ? process.env.MESSAGE_LIMIT_SUBSCRIBED : process.env.MESSAGE_LIMIT_NON_SUBSCRIBED;
 
     if (user.messageCount > MESSAGE_LIMIT) {
       const timePassed = now - user.firstMessageTimestamp.getTime();

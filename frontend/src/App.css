@@ -650,7 +650,7 @@ body:not(.history-pane-open) .input-area {
 .send-button, .stop-button {
   position: absolute;
   right: 3.7rem;
-  bottom: 2.5rem;
+  bottom: 2.3rem;
   font-size: 0.9rem;
   width: 1.7rem;
   height: 1.7rem;
@@ -945,6 +945,11 @@ body:not(.history-pane-open) .input-area {
   margin-left: 0.31rem;
 }
 
+.dropdown-menu .fa-cart-shopping {
+  margin-right: 1.24rem;
+  margin-left: 0.15rem;
+}
+
 .dropdown-menu .fa-envelope {
   margin-right: 1.03rem;
   margin-left: 0.19rem;
@@ -1033,6 +1038,143 @@ body:not(.history-pane-open) .input-area {
 
 .confirmation-dialog button:nth-child(2):hover {
   background-color: #c82333;
+}
+
+/* UpgradePlanModal */
+
+.upgrade-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.upgrade-modal-content {
+  background: white;
+  width: 80%;
+  max-width: 650px;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 3.3rem;
+  z-index: 10000000;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #e7e7e7;
+}
+
+.modal-heading {
+  margin-left: 1.63rem;
+}
+
+.plans-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.upgrade-plan-option {
+  flex: 1;
+  padding: 20px 26px 10px 26px;
+  padding-top: 5px;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid #e7e7e7; /* Only right border for separation */
+  border-bottom: 1px solid #e7e7e7;
+}
+
+.upgrade-plan-option h3 {
+  margin-bottom: 0.7rem;
+}
+
+.upgrade-amount {
+  color: grey;
+  margin-top: 0;
+}
+
+.upgrade-plan-option:first-child {
+  border-right: 1px solid #e7e7e7; /* Ensure the first item has a right border */
+}
+
+.upgrade-plan-option:last-child {
+  border-right: none; /* Remove right border for the last item */
+}
+
+.upgrade-button, .current-plan-button {
+  width: 100%;
+  padding: 10px;
+  border: none;
+  border-radius: 1rem;
+  font-size: 0.98rem;
+  cursor: pointer;
+  margin: 0.7rem 0;
+}
+
+.upgrade-button {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.current-plan-button {
+  background-color: white;
+  border: 0.5px solid lightgrey;
+  color: rgb(148, 148, 148);
+}
+
+.upgrade-button:hover {
+  background-color: #45a049;
+}
+
+.close-button {
+  cursor: pointer;
+  border: none;
+  background: none;
+}
+
+.close-button i {
+  margin-right: 1.5rem;
+  color: black;
+  font-size: 1.25rem !important;
+}
+
+.features-list {
+  list-style: none;
+  padding: 0;
+  margin-top: 10px;
+  font-size: 0.9rem;
+  line-height: 1.5rem;
+}
+
+.features-list li {
+  margin-bottom: 5px;
+  display: flex;
+  align-items: center;
+}
+
+.fa-check {
+  margin-right: 10px;
+}
+
+/* Media Query for smaller screens */
+@media (max-width: 610px) {
+  .plans-container {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .upgrade-plan-option {
+    width: 82%; /* Adjust the width as necessary for smaller screens */
+    border-right: none !important; /* Remove the border for better display on small screens */
+  }
 }
 
 /* header with home button */

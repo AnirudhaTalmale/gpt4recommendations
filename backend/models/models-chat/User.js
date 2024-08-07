@@ -6,6 +6,12 @@ const roles = {
   ADMIN: 'assistant'
 };
 
+const subscriptionSchema = new Schema({
+  startDate: { type: Date, default: Date.now },
+  endDate: { type: Date },  // Automatically calculated as startDate + 30 days on subscription renewal or creation
+  isActive: { type: Boolean, default: false }  // Manage active status of the subscription
+});
+
 const userSchema = new Schema({
   local: {
     email: { type: String, unique: true, sparse: true }
@@ -25,7 +31,8 @@ const userSchema = new Schema({
   lastMessageTimestamp: { type: Date },
   messageCount: { type: Number, default: 0 },
   totalMessageCount: { type: Number, default: 0 },
-  country: { type: String }
+  country: { type: String },
+  subscription: subscriptionSchema
 });
 
 module.exports = mongoose.model('User', userSchema);

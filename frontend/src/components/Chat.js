@@ -700,6 +700,7 @@ function Chat() {
           onDeleteSession={handleDeleteSession}
           userName={userData?.name}
           userImage={userData?.image}
+          userCountry={userData?.country}
           isPaneOpen={isPaneOpen}
           togglePane={togglePane}
           selectedSessionId={selectedSessionId}

@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect, forwardRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import ConfirmationDialog from './ConfirmationDialog'; 
+// import UpgradePlanModal from './UpgradePlanModal';
 import '../App.css';
 
 const HistoryPane = forwardRef(({
@@ -9,12 +10,15 @@ const HistoryPane = forwardRef(({
   onSelectSession, 
   onDeleteSession, 
   userName, 
-  userImage, 
+  userImage,
+  userCountry, 
   isPaneOpen, 
   togglePane,
   selectedSessionId,
   setSelectedSessionId
 }, ref) => {
+
+  console.log("userCountry is", userCountry);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isEntryActive, setIsEntryActive] = useState(false);
 
@@ -45,6 +49,8 @@ const HistoryPane = forwardRef(({
 
   const dropdownRef = useRef(null);
   const userEntryRef = useRef(null);
+  const confirmDialogRef = useRef(null);
+  const upgradeModalRef = useRef(null);
 
   useEffect(() => {
     // Function to check if the click is outside the dropdown
@@ -68,6 +74,8 @@ const HistoryPane = forwardRef(({
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [isDropdownOpen]);
+
+ 
 
   const toggleDropdown = () => {
       setIsDropdownOpen(!isDropdownOpen);
@@ -144,12 +152,28 @@ const HistoryPane = forwardRef(({
     setCategorizedSessions(categorizeSessions(sessions));
   }, [sessions]);
 
+  const [isUpgradeModalOpen, setIsUpgradeModalOpen] = useState(false);
+
+  // const handleUpgradeClick = () => {
+  //   setIsUpgradeModalOpen(true);
+  //   if (isPaneOpen) {
+  //     togglePane(); // Close the history pane
+  //   }
+  // };  
+
+  // const handleCloseUpgradeModal = () => {
+  //   setIsUpgradeModalOpen(false);
+  // };
+
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
 
   const handleDeleteAccount = () => {
     setIsConfirmDialogOpen(true);
+    if (isPaneOpen) {
+      togglePane(); // Close the history pane
+    }
   };
-
+  
   const handleConfirmDelete = async () => {
     try {
       const response = await axios.delete(`${process.env.REACT_APP_BACKEND_URL}/api/user/delete`, { withCredentials: true });
@@ -162,6 +186,32 @@ const HistoryPane = forwardRef(({
       setIsConfirmDialogOpen(false);
     }
   };
+
+  useEffect(() => {
+    function handleOutsideClickForDialog(event) {
+      if (isConfirmDialogOpen && confirmDialogRef.current && !confirmDialogRef.current.contains(event.target)) {
+        setIsConfirmDialogOpen(false);
+      }
+    }
+
+    document.addEventListener('mousedown', handleOutsideClickForDialog);
+    return () => {
+      document.removeEventListener('mousedown', handleOutsideClickForDialog);
+    };
+  }, [isConfirmDialogOpen]);
+
+  useEffect(() => {
+    function handleOutsideClickForUpgradeModal(event) {
+      if (isUpgradeModalOpen && upgradeModalRef.current && !upgradeModalRef.current.contains(event.target)) {
+        setIsUpgradeModalOpen(false); // Close the upgrade modal
+      }
+    } 
+
+    document.addEventListener('mousedown', handleOutsideClickForUpgradeModal);
+    return () => {
+      document.removeEventListener('mousedown', handleOutsideClickForUpgradeModal);
+    };
+  }, [isUpgradeModalOpen]);
 
   return (
     <div ref={paneRef}>
@@ -263,6 +313,9 @@ const HistoryPane = forwardRef(({
               <li onClick={handleDeleteAccount}>
                 <i className="fa-solid fa-trash"></i> Delete account
               </li>
+              {/* <li onClick={handleUpgradeClick}>
+                <i class="fa-solid fa-cart-shopping"></i> Upgrade Plan
+              </li> */}
               <li>
                 <a href="mailto:getbooksai@gmail.com" className="dropdown-link" style={{ display: 'block', width: '100%', height: '100%' }}>
                   <i className="fa-solid fa-address-book"></i> Contact us
@@ -277,10 +330,13 @@ const HistoryPane = forwardRef(({
       </div> 
 
       <ConfirmationDialog 
+        ref={confirmDialogRef}
         isOpen={isConfirmDialogOpen}
         onClose={() => setIsConfirmDialogOpen(false)}
         onConfirm={handleConfirmDelete}
       />
+
+      {/* <UpgradePlanModal ref={upgradeModalRef} isOpen={isUpgradeModalOpen} onClose={handleCloseUpgradeModal} userCountry={userCountry} /> */}
     </div>
   );
 });
