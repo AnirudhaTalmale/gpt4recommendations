@@ -638,6 +638,10 @@ body:not(.history-pane-open) .input-area {
   
 }
 
+.send-button i {
+  margin: auto;
+}
+
 .stop-button {
   border: none;
   background: none;
