@@ -656,6 +656,7 @@ body:not(.history-pane-open) .input-area {
   /* background-color: green; */
   margin-bottom: 0.52rem;
   margin-right: 0.6rem;
+  padding: auto !important;
 }
 
 .send-button.active {
