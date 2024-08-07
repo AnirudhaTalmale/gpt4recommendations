@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect, forwardRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import ConfirmationDialog from './ConfirmationDialog'; 
-// import UpgradePlanModal from './UpgradePlanModal';
+import UpgradePlanModal from './UpgradePlanModal';
 import '../App.css';
 
 const HistoryPane = forwardRef(({
@@ -154,16 +154,16 @@ const HistoryPane = forwardRef(({
 
   const [isUpgradeModalOpen, setIsUpgradeModalOpen] = useState(false);
 
-  // const handleUpgradeClick = () => {
-  //   setIsUpgradeModalOpen(true);
-  //   if (isPaneOpen) {
-  //     togglePane(); // Close the history pane
-  //   }
-  // };  
+  const handleUpgradeClick = () => {
+    setIsUpgradeModalOpen(true);
+    if (isPaneOpen) {
+      togglePane(); // Close the history pane
+    }
+  };  
 
-  // const handleCloseUpgradeModal = () => {
-  //   setIsUpgradeModalOpen(false);
-  // };
+  const handleCloseUpgradeModal = () => {
+    setIsUpgradeModalOpen(false);
+  };
 
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
 
@@ -336,7 +336,7 @@ const HistoryPane = forwardRef(({
         onConfirm={handleConfirmDelete}
       />
 
-      {/* <UpgradePlanModal ref={upgradeModalRef} isOpen={isUpgradeModalOpen} onClose={handleCloseUpgradeModal} userCountry={userCountry} /> */}
+      <UpgradePlanModal ref={upgradeModalRef} isOpen={isUpgradeModalOpen} onClose={handleCloseUpgradeModal} userCountry={userCountry} />
     </div>
   );
 });
