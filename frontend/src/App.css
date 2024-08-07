@@ -52,7 +52,7 @@ ol li {
 .header-title {
   display: inline-block;
   font-size: 1.21rem; 
-  margin-top: 0.38rem;
+  margin-top: 0.4rem;
   font-weight: bold;
 }
 
@@ -638,10 +638,6 @@ body:not(.history-pane-open) .input-area {
   
 }
 
-.send-button i {
-  margin: auto;
-}
-
 .stop-button {
   border: none;
   background: none;
@@ -668,8 +664,7 @@ body:not(.history-pane-open) .input-area {
 }
 
 .fa-arrow-up {
-  margin: 0;
-  /* background-color: yellow; */
+  margin: auto;
 }
 
 /* History pane css */
