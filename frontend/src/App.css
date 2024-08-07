@@ -52,8 +52,7 @@ ol li {
 .header-title {
   display: inline-block;
   font-size: 1.2rem; 
-  margin-top: auto;
-  margin-bottom: auto;
+  margin-top: 0.38rem;
   font-weight: bold;
 }
 
