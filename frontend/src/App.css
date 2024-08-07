@@ -602,20 +602,32 @@ body:not(.history-pane-open) .input-area {
 }
 
 .disclaimer-text {
-  font-size: 0.73rem;
+  font-size: 0.75rem;
   color: grey;
-  margin-bottom: 0.4rem; 
+  margin-bottom: 0.5rem; 
   margin-top: 0.4rem;
 }
 
+.input-box-container {
+  display: flex;        /* Enables Flexbox layout */
+  align-items: flex-end;  /* Vertically centers the children */
+  justify-content: space-between; /* Spaces children out; can adjust as needed */
+  width: 98%;
+  margin: auto;
+  position: relative;
+  border: 0.093rem solid #D3D3D3;
+  border-radius: 0.8rem;
+  max-width: 45rem;
+}
 
 .input-box {
-  width: 80%; /* Full width of the parent container */
-  max-width: 40rem;
+  width: 100%; /* Full width of the parent container */
+  /* max-width: 40rem; */
   margin: auto;
+  border: none;
   border-radius: 0.8rem;
   height: auto; /* Adjust height automatically based on content */
-  border: 0.093rem solid #D3D3D3; /* Border color and width */
+   /* Border color and width */
   outline: none; /* Removes the default focus outline */
   resize: none; /* Disables the resize handle */
   font-family: 'Arial', sans-serif; /* Font style */
@@ -623,7 +635,7 @@ body:not(.history-pane-open) .input-area {
   line-height: 1.5; /* Line height for text */
   color: #333; /* Text color */
   background-color: #fff; /* Background color */
-  padding: 0.6rem 3rem 0.6rem 1.2rem;
+  padding: 0.6rem 0.2rem 0.6rem 1rem;
   max-height: 10rem;
   overflow-y: auto;
 
@@ -648,21 +660,20 @@ body:not(.history-pane-open) .input-area {
 }
 
 .send-button, .stop-button {
-  position: absolute;
-  right: 3.7rem;
-  bottom: 2.25rem;
   font-size: 0.9rem;
   width: 1.7rem;
   height: 1.7rem;
+  
 }
 
 .stop-button {
   border: none;
   background: none;
   cursor: pointer;
-  font-size: 1.05rem;
-  bottom: 1.85rem;
+  font-size: 1.15rem;
   color: black;
+  margin-bottom: 0.46rem;
+  margin-right: 0.65rem;
 }
 
 .send-button {
@@ -670,9 +681,9 @@ body:not(.history-pane-open) .input-area {
   border: 1px solid #D3D3D3;
   border-radius: 0.5rem;
   color: white;
-  padding: 0;
   /* background-color: green; */
-  margin: 0;
+  margin-bottom: 0.52rem;
+  margin-right: 0.6rem;
 }
 
 .send-button.active {

@@ -154,12 +154,12 @@ const HistoryPane = forwardRef(({
 
   const [isUpgradeModalOpen, setIsUpgradeModalOpen] = useState(false);
 
-  const handleUpgradeClick = () => {
-    setIsUpgradeModalOpen(true);
-    if (isPaneOpen) {
-      togglePane(); // Close the history pane
-    }
-  };  
+  // const handleUpgradeClick = () => {
+  //   setIsUpgradeModalOpen(true);
+  //   if (isPaneOpen) {
+  //     togglePane(); // Close the history pane
+  //   }
+  // };  
 
   const handleCloseUpgradeModal = () => {
     setIsUpgradeModalOpen(false);

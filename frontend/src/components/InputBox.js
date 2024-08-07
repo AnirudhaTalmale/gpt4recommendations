@@ -1,30 +1,11 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import '../App.css';
 
 function InputBox({ onSubmit, isStreaming, onStopStreaming, isPaneOpen }) {
   const [input, setInput] = useState('');
   const [isInputNotEmpty, setIsInputNotEmpty] = useState(false);
   const [rows, setRows] = useState(1);
-  const [sendButtonRight, setSendButtonRight] = useState('2.3rem');
-  const [stopButtonRight, setStopButtonRight] = useState('2.3rem');
 
-  const updateButtonPositions = () => {
-    const parentWidth = document.querySelector('.input-area').clientWidth;
-    const inputBoxWidth = textareaRef.current.clientWidth;
-    const newRightPosition = (parentWidth - inputBoxWidth) / 2 + 12 + 'px'; // Example calculation, adjust as needed
-    setSendButtonRight(newRightPosition);
-    setStopButtonRight(newRightPosition); // Update for stop button as well
-  };  
-  
-  useEffect(() => {
-    updateButtonPositions();
-    window.addEventListener('resize', updateButtonPositions);
-    return () => {
-      window.removeEventListener('resize', updateButtonPositions);
-    };
-  }, [isPaneOpen]); // Add isPaneOpen to the dependency array
-  
-  
   const textareaRef = useRef(null);
   const rowHeightRem = 1.75; // Estimated row height in rem
   const maxHeightRem = 12; // Max height in rem
@@ -88,6 +69,7 @@ function InputBox({ onSubmit, isStreaming, onStopStreaming, isPaneOpen }) {
 
   return (
     <form onSubmit={handleSubmit} className="input-area">
+      <div className='input-box-container'>
         <textarea ref={textareaRef}
           className="input-box"
           value={input}
@@ -96,16 +78,17 @@ function InputBox({ onSubmit, isStreaming, onStopStreaming, isPaneOpen }) {
           placeholder="Explain your query"
           rows={rows}
         />
-        <p className="disclaimer-text">Each query is independent. Prior context is not considered.</p>
         {isStreaming ? (
-          <button type="button" className="stop-button" onClick={onStopStreaming} style={{ right: stopButtonRight }}>
+          <button type="button" className="stop-button" onClick={onStopStreaming} >
             <i className="fa-regular fa-circle-stop"></i>
           </button>
         ) : (
-          <button type="submit" className={`send-button ${isInputNotEmpty ? 'active' : ''}`} disabled={!isInputNotEmpty} style={{ right: sendButtonRight }}>
+          <button type="submit" className={`send-button ${isInputNotEmpty ? 'active' : ''}`} disabled={!isInputNotEmpty} >
             <i className="fa-solid fa-arrow-up"></i>
           </button>
         )}
+      </div>
+      <p className="disclaimer-text">Each query is independent. Prior context is not considered.</p>
     </form>
 
   );
