@@ -51,21 +51,9 @@ ol li {
 
 .header-title {
   display: inline-block;
-  font-size: 1.2rem; 
+  font-size: 1.21rem; 
   margin-top: 0.38rem;
   font-weight: bold;
-}
-
-.header-new-session-button {
-  border: 1px solid rgb(209, 208, 208);
-  cursor: pointer;
-  background: none;
-  font-size: 0.95rem;
-  padding: 0.5rem 0.6rem;
-  margin-left: 1rem;
-  border-radius: 0.5rem;
-  margin-top: -0.5rem;
-  color: black;
 }
 
 .new-session-button-small-screen {
@@ -100,21 +88,6 @@ ol li {
   display: flex; /* Use flexbox to align items side by side */
   align-items: center; /* Center items vertically */
   justify-content: flex-start; /* Align items to the left */
-}
-
-.header-title-large {
-  font-size: 1.15rem; /* Adjust size as needed */
-  font-weight: bold;
-  margin-left: 1.2rem;
-  margin-top: -0.5rem;
-}
-
-.header-title-pane-open {
-  font-size: 1.15rem; /* Adjust size as needed */
-  font-weight: bold;
-  margin-left: 280px;
-  /* margin-top: 0.8rem; */
-  margin-bottom: 0.35rem;
 }
 
 /* chat area */
