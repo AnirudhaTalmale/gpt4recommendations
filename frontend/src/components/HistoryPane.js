@@ -18,7 +18,7 @@ const HistoryPane = forwardRef(({
   setSelectedSessionId
 }, ref) => {
 
-  console.log("userCountry is", userCountry);
+  // console.log("userCountry is", userCountry);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isEntryActive, setIsEntryActive] = useState(false);
 

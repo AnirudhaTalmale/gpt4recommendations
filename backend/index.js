@@ -477,11 +477,11 @@ io.on('connection', (socket) => {
   socket.on('book-detail', async (data) => {
     const { message, isMoreDetails, isKeyInsights, isAnecdotes, isQuotes, bookDataObjectId, bookTitle, author, userId } = data;  
     
+    const user = await User.findById(userId);
+
     // Check message limit
     const now = new Date();
     user.lastMessageTimestamp = now;
-
-    const user = await User.findById(userId);
 
     if (user.firstMessageTimestamp === undefined || user.messageCount === undefined) {
       user.firstMessageTimestamp = now;
