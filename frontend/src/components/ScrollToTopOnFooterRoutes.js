@@ -17,3 +17,4 @@ const ScrollToTopOnFooterRoutes = () => {
 };
 
 export default ScrollToTopOnFooterRoutes;
+ 
