@@ -1,5 +1,25 @@
 import axios from 'axios';
 
+export const handleActionButtonClick = async (className, bookTitle, author, userEmail) => {
+  if (!className || !userEmail || !bookTitle) {
+    console.error('Missing required information:', { className, bookTitle, userEmail });
+    return;  // Stop execution if any required field is missing
+  }
+
+  try {
+    const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/book-action`, {
+        buttonClassName: className,
+        title: bookTitle,
+        author: author,
+        userEmail: userEmail
+    });
+
+    console.log(`${className} action recorded:`, response.data);
+  } catch (error) {
+    console.error(`Error handling ${className} click:`, error);
+  }
+};
+
 export const fetchAnecdotes = async (bookDataObjectId, bookTitle) => {
   try {
     const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/anecdotes`, {
@@ -186,30 +206,16 @@ export const handleMoreDetailsRequest = async (bookDataObjectId, bookTitle, auth
 };
 
 // Button Components
-export const BuyNowButton = ({ link, buttonText = 'Buy Now', userEmail }) => {
+export const BuyNowButton = ({ link, userEmail, bookTitle, author }) => {
   const handleBuyClick = async () => {
-    if (!userEmail) {
-      console.error('User email is not provided');
-      return;
-    }
-
-    try {
-
-      // Call the API to increment the buy now click count, sending userEmail in the body
-      await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/increment-buy-now`, {
-        userEmail: userEmail
-      });
-      console.log('Buy now count incremented');
-    } catch (error) {
-      console.error('Error incrementing buy now count:', error);
-    }
+    await handleActionButtonClick('buy-now-btn', bookTitle, author, userEmail);
   };
 
   return (
     <div>
       <a href={link} target="_blank" rel="noreferrer">
         <button className="buy-now-button" onClick={handleBuyClick}>
-          {buttonText}
+          Buy Now
         </button>
       </a>
     </div>

@@ -1,6 +1,6 @@
 import React, { useCallback, useState, useEffect, useRef } from 'react';
 import DOMPurify from 'dompurify';
-import axios from 'axios';
+import { handleActionButtonClick } from './CommonFunctions';
 import '../App.css';
 
 
@@ -31,35 +31,13 @@ function AnswerDisplay({
     });
     return { __html: safeHTML };
   };
-
-  const handleActionButtonClick = async (className, bookTitle, author) => {
-    // Check if all required fields are available
-    if (!className || !userEmail || !bookTitle) {
-      console.error('Missing required information:', { className, bookTitle, userEmail });
-      return;  // Stop execution if any required field is missing
-    }
-  
-    try {
-      const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/book-action`, {
-          buttonClassName: className,
-          title: bookTitle,
-          author: author,
-          userEmail: userEmail
-      });
-  
-      console.log(`${className} action recorded:`, response.data);
-    } catch (error) {
-      console.error(`Error handling ${className} click:`, error);
-    }
-  };
-  
   
   const handleKeyInsightsClick = (bookDataObjectId, bookTitle, author) => {
     if (!isKeyInsightsClicked && onKeyInsightsClick) {
       setIsKeyInsightsClicked(true);
       
       onKeyInsightsClick(bookDataObjectId, bookTitle, author);
-      handleActionButtonClick('key-insights-btn', bookTitle, author);
+      handleActionButtonClick('key-insights-btn', bookTitle, author, userEmail);
 
       // Reset the state after a delay
       setTimeout(() => {
@@ -73,7 +51,7 @@ function AnswerDisplay({
       setIsMoreDetailsClicked(true);
       
       onMoreDetailsClick(bookDataObjectId, bookTitle, author);
-      handleActionButtonClick('more-details-btn', bookTitle, author);
+      handleActionButtonClick('more-details-btn', bookTitle, author, userEmail);
 
       setTimeout(() => {
         setIsMoreDetailsClicked(false);
@@ -86,7 +64,7 @@ function AnswerDisplay({
       setIsAnecdotesClicked(true);
       
       onAnecdotesClick(bookDataObjectId, bookTitle, author);
-      handleActionButtonClick('anecdotes-btn', bookTitle, author);
+      handleActionButtonClick('anecdotes-btn', bookTitle, author, userEmail);
 
       setTimeout(() => {
         setIsAnecdotesClicked(false);
@@ -99,7 +77,7 @@ function AnswerDisplay({
       setIsQuotesClicked(true);
       
       onQuotesClick(bookDataObjectId, bookTitle, author);
-      handleActionButtonClick('quotes-btn', bookTitle, author);
+      handleActionButtonClick('quotes-btn', bookTitle, author, userEmail);
   
       setTimeout(() => {
         setIsQuotesClicked(false);
@@ -114,7 +92,7 @@ function AnswerDisplay({
       if (previewLink) {
         window.open(previewLink, '_blank');
       }
-      handleActionButtonClick('preview-btn', bookTitle, author);
+      handleActionButtonClick('preview-btn', bookTitle, author, userEmail);
   
       setTimeout(() => {
         setIsPreviewClicked(false);
@@ -124,7 +102,7 @@ function AnswerDisplay({
 
 
   const handleBuyNowClick = async (bookTitle, author) => {
-    await handleActionButtonClick('buy-now-btn', bookTitle, author);
+    await handleActionButtonClick('buy-now-btn', bookTitle, author, userEmail);
   };
 
   

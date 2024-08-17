@@ -6,10 +6,9 @@ import Lightbox from './Lightbox';
 import socket from './socket';
 import axios from 'axios';
 import { useStreamChunkHandler } from './CommonHooks'; 
-import { checkAuthStatus, renderStarRating } from './CommonFunctions';
+import { checkAuthStatus, renderStarRating, handleActionButtonClick } from './CommonFunctions';
 import BookDetailHeader from './BookDetailHeader'; 
 import LightboxForImage from './LightboxForImage';
-
 
 function BookDetail() {
     const { bookId, countryCode } = useParams();
@@ -267,6 +266,8 @@ function BookDetail() {
         if (!isKeyInsightsClicked && wrappedHandleKeyInsightsRequest) {
           setIsKeyInsightsClicked(true);
           wrappedHandleKeyInsightsRequest(bookDataObjectId, bookTitle, author);
+
+          handleActionButtonClick('key-insights-btn', bookTitle, author, userData?.email);
       
           // Reset the state after a delay
           setTimeout(() => {
@@ -284,6 +285,8 @@ function BookDetail() {
         if (!isMoreDetailsClicked && wrappedHandleMoreDetailsRequest) {
           setIsMoreDetailsClicked(true);
           wrappedHandleMoreDetailsRequest(bookDataObjectId, bookTitle, author);
+
+          handleActionButtonClick('more-details-btn', bookTitle, author, userData?.email);
       
           setTimeout(() => {
             setIsMoreDetailsClicked(false);
@@ -300,6 +303,8 @@ function BookDetail() {
         if (!isAnecdotesClicked && wrappedHandleAnecdotesRequest) {
           setIsAnecdotesClicked(true);
           wrappedHandleAnecdotesRequest(bookDataObjectId, bookTitle, author);
+
+          handleActionButtonClick('anecdotes-btn', bookTitle, author, userData?.email);
       
           setTimeout(() => {
             setIsAnecdotesClicked(false);
@@ -316,6 +321,8 @@ function BookDetail() {
         if (!isQuotesClicked && wrappedHandleQuotesRequest) {
           setIsQuotesClicked(true);
           wrappedHandleQuotesRequest(bookDataObjectId, bookTitle, author);
+
+          handleActionButtonClick('quotes-btn', bookTitle, author, userData?.email);
       
           setTimeout(() => {
             setIsQuotesClicked(false);
@@ -332,6 +339,8 @@ function BookDetail() {
           if (previewLink) {
             window.open(previewLink, '_blank');
           }
+
+          handleActionButtonClick('preview-btn', title, author, userData?.email);
       
           setTimeout(() => {
             setIsPreviewClicked(false);
@@ -407,7 +416,12 @@ function BookDetail() {
                       )}
                     </div>
                     <div className="book-buttons">
-                        <BuyNowButton link={countryData.amazonLink} userEmail={userData?.email}/>
+                        <BuyNowButton
+                          link={countryData.amazonLink}
+                          userEmail={userData?.email}
+                          bookTitle={title}  // Ensure these are passed as props
+                          author={author}
+                        />
                         <MoreDetailsButton
                             bookDataObjectId={bookId}
                             bookTitle={title}
