@@ -74,7 +74,7 @@ function createBookInfoHtml(bookTitle, author, amazonStarRating, amazonReviewCou
   }
 
   // Start the ratings and review container
-  if (amazonStarRating !== '' || amazonReviewCount !== '') {
+  if (amazonReviewCount !== '' && amazonReviewCount !== '0' && amazonStarRating != null) {
     bookInfoHtml += `<div class="ratings-and-review">`;
 
     // Add star rating
