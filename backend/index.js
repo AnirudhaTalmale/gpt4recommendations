@@ -27,6 +27,7 @@ const crypto = require('crypto');
 const crc32 = require('buffer-crc32');
 const fs = require('fs/promises');
 const fetch = require('node-fetch');
+const { addMonths } = require('date-fns');
 
 require('dotenv').config();
 
@@ -218,7 +219,17 @@ app.post('/api/check-subscription', async (req, res) => {
       }
 
       // Check if the user has an active subscription
-      const isSubscribed = user.subscription && user.subscription.currentEndDateUTC && new Date(user.subscription.currentEndDateUTC).setHours(23, 59, 59, 999) >= new Date();
+      let isSubscribed = false;
+      if (user.subscription && user.subscription.currentEndDateUTC) {
+          const endDateUTC = new Date(user.subscription.currentEndDateUTC).setUTCHours(23, 59, 59, 999);
+          const nowUTC = new Date().getTime();
+
+          // Console logs to verify the epoch time values
+          console.log("endDateUTC (in milliseconds since epoch):", endDateUTC);
+          console.log("nowUTC (current time in milliseconds since epoch):", nowUTC);
+
+          isSubscribed = endDateUTC >= nowUTC;
+      }
 
       res.json({ isSubscribed: isSubscribed });
   } catch (error) {
@@ -235,9 +246,9 @@ app.post('/api/store-subscription', async (req, res) => {
     return res.status(400).json({ success: false, message: 'User email and subscription ID are required' });
   }
 
-  // Calculate the current end date, assuming a one month period.
-  const currentDate = new Date(); // gets the current date
-  const currentEndDateUTC = new Date(currentDate.setMonth(currentDate.getMonth() + 1)); // sets the end date one month ahead
+  // Calculate the current end date, assuming a one-month period.
+  const currentDate = new Date(); // gets the current date in local time
+  const currentEndDateUTC = addMonths(currentDate, 1); // adds one month
 
   try {
     const user = await User.findOneAndUpdate(
@@ -304,13 +315,12 @@ app.post(LISTEN_PATH, express.raw({type: 'application/json'}), async (request, r
     console.log(`Received event`, JSON.stringify(data, null, 2));
  
     // Process the webhook payload
-    if (body.event_type === 'PAYMENT.SALE.COMPLETED' && body.resource) {
-      const createTime = new Date(body.resource.create_time); // Payment time in UTC
-      const subscriptionId = body.resource.billing_agreement_id; // Subscription ID
+    if (data.event_type === 'PAYMENT.SALE.COMPLETED' && data.resource) {
+      const createTime = new Date(data.resource.create_time); // Payment time in UTC
+      const subscriptionId = data.resource.billing_agreement_id; // Subscription ID
 
       // Calculate the subscription end date (assuming a 1-month subscription period)
-      const endDateUTC = new Date(createTime);
-      endDateUTC.setMonth(endDateUTC.getMonth() + 1);
+      const endDateUTC = addMonths(createTime, 1);
       
       try {
         // Update the user's subscription end date
