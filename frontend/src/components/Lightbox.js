@@ -1,7 +1,9 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import '../App.css';
 
 function Lightbox({ isOpen, content, onClose, contentRef }) {
+    const firstRender = useRef(true);
+
     useEffect(() => {
         const disableBodyScroll = () => {
             document.body.style.overflow = 'hidden';
@@ -26,6 +28,13 @@ function Lightbox({ isOpen, content, onClose, contentRef }) {
 
         if (isOpen) {
             disableBodyScroll();
+            // Scroll to the top every time the modal opens
+            setTimeout(() => {
+                if (!firstRender.current && contentRef.current) {
+                    contentRef.current.scrollTop = 0;
+                }
+            }, 10);
+            firstRender.current = false;
             document.addEventListener('wheel', handleScrollEvent, { passive: false });
             document.addEventListener('touchmove', handleScrollEvent, { passive: false });
         }

@@ -290,11 +290,6 @@ const HomePage = () => {
               <td>Simple, intuitive chat interface</td>
               <td>Generally more complex</td>
             </tr>
-            <tr>
-              <td>Pricing</td>
-              <td>Free</td>
-              <td>Apps that use advanced AI models typically require payment</td>
-            </tr>
           </tbody>
         </table>
       </section>

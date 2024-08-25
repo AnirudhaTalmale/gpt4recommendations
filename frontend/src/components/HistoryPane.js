@@ -9,9 +9,11 @@ const HistoryPane = forwardRef(({
   sessions, 
   onSelectSession, 
   onDeleteSession, 
-  userName, 
+  userName,
+  userEmail,
   userImage,
-  userCountry, 
+  userCountry,
+  isAdmin,
   isPaneOpen, 
   togglePane,
   selectedSessionId,
@@ -112,10 +114,20 @@ const HistoryPane = forwardRef(({
     // }
   };
   
-  const categorizeSessions = (sessions) => {
+  const categorizeSessions = (sessions, isAdmin) => {
     const today = new Date();
     const yesterday = new Date(today);
     yesterday.setDate(yesterday.getDate() - 1);
+  
+    // Sort sessions based on date
+    sessions.sort((a, b) => {
+      const dateA = new Date(isAdmin ? a.updatedAt : a.createdAt);
+      const dateB = new Date(isAdmin ? b.updatedAt : b.createdAt);
+      return dateB - dateA; // Sort descending
+    });
+  
+    // Log sorted dates for verification
+    // console.log("Sorted session dates:", sessions.map(session => new Date(isAdmin ? session.updatedAt : session.createdAt).toISOString()));
   
     const categories = {
       today: [],
@@ -125,12 +137,12 @@ const HistoryPane = forwardRef(({
     };
   
     sessions.forEach(session => {
-      const createdAt = new Date(session.createdAt); // Assuming createdAt is available in session object
-      if (createdAt.toDateString() === today.toDateString()) {
+      const sessionDate = new Date(isAdmin ? session.updatedAt : session.createdAt);
+      if (sessionDate.toDateString() === today.toDateString()) {
         categories.today.push(session);
-      } else if (createdAt.toDateString() === yesterday.toDateString()) {
+      } else if (sessionDate.toDateString() === yesterday.toDateString()) {
         categories.yesterday.push(session);
-      } else if (today - createdAt <= 30 * 24 * 60 * 60 * 1000) {
+      } else if (today - sessionDate <= 30 * 24 * 60 * 60 * 1000) {
         categories.last30Days.push(session);
       } else {
         categories.older.push(session);
@@ -139,6 +151,7 @@ const HistoryPane = forwardRef(({
   
     return categories;
   };
+  
 
   // Inside the HistoryPane component
   const [categorizedSessions, setCategorizedSessions] = useState({
@@ -149,17 +162,20 @@ const HistoryPane = forwardRef(({
   });
 
   useEffect(() => {
-    setCategorizedSessions(categorizeSessions(sessions));
-  }, [sessions]);
+    if (isAdmin !== undefined) { // Ensures isAdmin is not undefined before proceeding
+      setCategorizedSessions(categorizeSessions(sessions, isAdmin));
+    }
+  }, [sessions, isAdmin]); // Dependency array includes isAdmin to rerun when its value changes
+  
 
   const [isUpgradeModalOpen, setIsUpgradeModalOpen] = useState(false);
 
-  // const handleUpgradeClick = () => {
-  //   setIsUpgradeModalOpen(true);
-  //   if (isPaneOpen) {
-  //     togglePane(); // Close the history pane
-  //   }
-  // };  
+  const handleUpgradeClick = () => {
+    setIsUpgradeModalOpen(true);
+    if (isPaneOpen) {
+      togglePane(); // Close the history pane
+    }
+  };  
 
   const handleCloseUpgradeModal = () => {
     setIsUpgradeModalOpen(false);
@@ -225,7 +241,7 @@ const HistoryPane = forwardRef(({
           {categorizedSessions.today.length > 0 && (
             <div>
               <div className="category-title">Today</div>
-              {[...categorizedSessions.today].reverse().map((session, index) => (
+              {[...categorizedSessions.today].map((session, index) => (
                 <div 
                   key={session._id} 
                   className={`history-entry ${selectedSessionId === session._id ? 'active' : ''}`} 
@@ -245,7 +261,7 @@ const HistoryPane = forwardRef(({
           {categorizedSessions.yesterday.length > 0 && (
             <div>
               <div className="category-title">Yesterday</div>
-              {[...categorizedSessions.yesterday].reverse().map((session, index) => (
+              {[...categorizedSessions.yesterday].map((session, index) => (
                 <div 
                   key={session._id} 
                   className={`history-entry ${selectedSessionId === session._id ? 'active' : ''}`} 
@@ -265,7 +281,7 @@ const HistoryPane = forwardRef(({
           {categorizedSessions.last30Days.length > 0 && (
             <div>
               <div className="category-title">Previous 30 Days</div>
-              {[...categorizedSessions.last30Days].reverse().map((session, index) => (
+              {[...categorizedSessions.last30Days].map((session, index) => (
                 <div 
                   key={session._id} 
                   className={`history-entry ${selectedSessionId === session._id ? 'active' : ''}`} 
@@ -285,7 +301,7 @@ const HistoryPane = forwardRef(({
           {categorizedSessions.older.length > 0 && (
             <div>
               <div className="category-title">Older</div>
-              {[...categorizedSessions.older].reverse().map((session, index) => (
+              {[...categorizedSessions.older].map((session, index) => (
                 <div 
                   key={session._id} 
                   className={`history-entry ${selectedSessionId === session._id ? 'active' : ''}`} 
@@ -313,9 +329,11 @@ const HistoryPane = forwardRef(({
               <li onClick={handleDeleteAccount}>
                 <i className="fa-solid fa-trash"></i> Delete account
               </li>
-              {/* <li onClick={handleUpgradeClick}>
-                <i class="fa-solid fa-cart-shopping"></i> Upgrade Plan
-              </li> */}
+              {userCountry === 'United States' && (
+                <li onClick={handleUpgradeClick}>
+                  <i className="fa-solid fa-cart-shopping"></i> Upgrade Plan
+                </li>
+              )}
               <li>
                 <a href="mailto:getbooksai@gmail.com" className="dropdown-link" style={{ display: 'block', width: '100%', height: '100%' }}>
                   <i className="fa-solid fa-address-book"></i> Contact us
@@ -335,8 +353,8 @@ const HistoryPane = forwardRef(({
         onClose={() => setIsConfirmDialogOpen(false)}
         onConfirm={handleConfirmDelete}
       />
-
-      <UpgradePlanModal ref={upgradeModalRef} isOpen={isUpgradeModalOpen} onClose={handleCloseUpgradeModal} userCountry={userCountry} />
+      
+      <UpgradePlanModal ref={upgradeModalRef} isOpen={isUpgradeModalOpen} onClose={handleCloseUpgradeModal} userCountry={userCountry} userEmail={userEmail} />
     </div>
   );
 });

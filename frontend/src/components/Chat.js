@@ -158,22 +158,6 @@ function Chat() {
     }
   }, [currentSessionId, shouldAutoScroll, sessions]);
 
-  useEffect(() => {
-    // Handler for the conversion tracking event
-    const handleConversionTracking = () => {
-      window.gtag('event', 'conversion', {'send_to': 'AW-16524885939/bdeKCIjxv7wZELP_1sc9'});
-    };
-
-    // Listen for the 'conversionTracking' event from the server
-    socket.on('query-conversionTracking', handleConversionTracking);
-
-    // Cleanup the listener when the component unmounts or dependencies change
-    return () => {
-      socket.off('query-conversionTracking', handleConversionTracking);
-    };
-
-  }, []);
-
   const updateSessionName = useCallback(({ sessionId, sessionName }) => {
     setSessions(prevSessions => prevSessions.map(session => 
       session._id === sessionId ? { ...session, sessionName } : session
@@ -699,6 +683,7 @@ function Chat() {
           onSelectSession={setCurrentSessionIdWithStreamCheck}
           onDeleteSession={handleDeleteSession}
           userName={userData?.name}
+          userEmail={userData?.email}
           userImage={userData?.image}
           userCountry={userData?.country}
           isPaneOpen={isPaneOpen}
@@ -706,7 +691,7 @@ function Chat() {
           selectedSessionId={selectedSessionId}
           setSelectedSessionId={setSelectedSessionId}
         />
-        <Header isPaneOpen={isPaneOpen} togglePane={togglePane} />
+        <Header togglePane={togglePane} />
 
         {isHome && userData && userData.country ? (
           <Home userData={userData} />

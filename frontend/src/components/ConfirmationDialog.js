@@ -9,6 +9,18 @@ const ConfirmationDialog = forwardRef(({
 }, ref) => {
   if (!isOpen) return null;
 
+  if (!messageLimitReached && messageContent) {
+    return (
+      <div className="confirmation-dialog-overlay">
+        <div className="confirmation-dialog" ref={ref}>
+          <p>{messageContent}</p>
+          <button onClick={onConfirm}>Yes</button>
+          <button onClick={onClose}>No</button>
+      </div>
+    </div>
+    );
+  }
+
   if (messageLimitReached) {
     return (
       <div className="confirmation-dialog-overlay">
@@ -25,7 +37,7 @@ const ConfirmationDialog = forwardRef(({
       <div className="confirmation-dialog" ref={ref}>
         <p>Are you sure you want to delete your account? This action cannot be undone.</p>
         <button onClick={onConfirm}>Yes</button>
-        <button onClick={onClose}>Cancel</button>
+        <button onClick={onClose}>No</button>
       </div>
     </div>
   );
