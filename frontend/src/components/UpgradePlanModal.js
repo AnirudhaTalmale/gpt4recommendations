@@ -3,13 +3,12 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import '../App.css'; 
 import { toast } from 'react-toastify';
- 
+
 const UpgradePlanModal = forwardRef(({ isOpen, onClose, userCountry, userEmail }, ref) => {
     const [isSubscribed, setIsSubscribed] = useState(false);
     const navigate = useNavigate();
     const paypalContainerId = 'paypal-button-container-P-94A76765PN815393VM3D377A';
 
-    // Memoized function to check subscription status
     const checkSubscriptionStatus = useCallback(async () => {
         try {
             const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/check-subscription`, { userEmail });
@@ -22,8 +21,7 @@ const UpgradePlanModal = forwardRef(({ isOpen, onClose, userCountry, userEmail }
             console.error('Error checking subscription status:', error);
         } 
     }, [userEmail]);
-      
-    // Function to render PayPal button
+    
     const renderPayPalButton = useCallback(() => {
         if (!isSubscribed && window.paypal && document.getElementById(paypalContainerId)) {
             window.paypal.Buttons({
@@ -40,7 +38,7 @@ const UpgradePlanModal = forwardRef(({ isOpen, onClose, userCountry, userEmail }
                 },
                 onApprove: function(data, actions) {
                     axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/store-subscription`, {
-                        userEmail: userEmail,
+                        userEmail,
                         subscriptionID: data.subscriptionID
                     })
                     .then(response => {
@@ -69,10 +67,14 @@ const UpgradePlanModal = forwardRef(({ isOpen, onClose, userCountry, userEmail }
         }
     }, [isSubscribed, userEmail, onClose]);
 
-    // Effect to render PayPal button once modal opens and isSubscribed state is stable
     useEffect(() => {
         if (isOpen) {
             checkSubscriptionStatus();
+        }
+    }, [isOpen, checkSubscriptionStatus]);
+
+    useEffect(() => {
+        if (isOpen && !isSubscribed) {
             renderPayPalButton();
         }
 
@@ -83,13 +85,12 @@ const UpgradePlanModal = forwardRef(({ isOpen, onClose, userCountry, userEmail }
                 btnContainer.innerHTML = ''; // Clears the container to prevent duplication
             }
         };
-    }, [isOpen, isSubscribed, checkSubscriptionStatus, renderPayPalButton]);
+    }, [isOpen, isSubscribed, renderPayPalButton]);
 
-    // Function to handle navigation to Manage Subscription page
     const handleManageSubscription = () => {
-        navigate('/manage-subscription'); // Navigate to the manage subscription route
+        navigate('/manage-subscription');
     };
-    
+
     if (!isOpen || !userCountry) return null;
 
     return (
@@ -120,6 +121,7 @@ const UpgradePlanModal = forwardRef(({ isOpen, onClose, userCountry, userEmail }
 });
 
 export default UpgradePlanModal;
+
 
 
 
