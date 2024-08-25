@@ -2,6 +2,7 @@ import React, { forwardRef, useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import '../App.css'; 
+import { toast } from 'react-toastify';
  
 const UpgradePlanModal = forwardRef(({ isOpen, onClose, userCountry, userEmail }, ref) => {
     const [isSubscribed, setIsSubscribed] = useState(false);
@@ -46,6 +47,16 @@ const UpgradePlanModal = forwardRef(({ isOpen, onClose, userCountry, userEmail }
                         if (response.data.success) {
                             console.log('Subscription ID stored successfully.');
                             onClose();
+                            toast.success('🎉 Your plan has been upgraded successfully!', {
+                                position: "top-right",
+                                autoClose: 5000,
+                                hideProgressBar: false,
+                                closeOnClick: true,
+                                pauseOnHover: true,
+                                draggable: true,
+                                progress: undefined,
+                                theme: "colored"
+                            });
                         } else {
                             console.error('Failed to store subscription ID:', response.data.message);
                         }

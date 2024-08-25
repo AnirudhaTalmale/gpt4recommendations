@@ -1,5 +1,8 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 import Chat from './components/Chat';
 import OnboardingPage from './components/OnboardingPage'; 
 import BlogPage from './components/BlogPage';
@@ -18,6 +21,17 @@ function App() {
   return (
     <Router>
       <div className="App">
+        <ToastContainer
+          position="top-right"
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+        />
         <ScrollToTopOnFooterRoutes />
         <Routes>
           <Route path="/verify-email" element={<EmailVerificationPage />} />
