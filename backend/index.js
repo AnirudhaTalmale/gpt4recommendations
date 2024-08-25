@@ -282,12 +282,17 @@ async function downloadAndCache(url, cacheKey) {
 
 app.post(LISTEN_PATH, async (request, response) => {
   const headers = request.headers;
-  const eventBuffer = request.body;  // This should be a Buffer
+  const eventBuffer = request.body; // This should be a Buffer
+
+  console.log(`Raw event data: ${eventBuffer}`); // Log the Buffer
 
   try {
-    // Convert Buffer to string then parse JSON
-    const eventString = eventBuffer.toString('utf-8'); // Ensure correct encoding
-    const eventData = JSON.parse(eventString); // Now parse the JSON string
+    // Check if eventBuffer is a Buffer and convert it to string
+    const eventString = eventBuffer instanceof Buffer ? eventBuffer.toString('utf-8') : eventBuffer;
+    console.log(`Event as String: ${eventString}`); // Log the converted string
+
+    // Check if the string can be parsed to JSON
+    const eventData = JSON.parse(eventString); // Attempt to parse JSON
     console.log('Parsed JSON:', eventData);
 
     const isSignatureValid = await verifySignature(eventData, headers);
@@ -305,6 +310,7 @@ app.post(LISTEN_PATH, async (request, response) => {
     response.sendStatus(400); // Bad request
   }
 });
+
 
 async function verifySignature(event, headers) {
   const transmissionId = headers['paypal-transmission-id']
