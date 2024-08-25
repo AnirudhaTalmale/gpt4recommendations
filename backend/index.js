@@ -265,7 +265,7 @@ app.post('/api/store-subscription', async (req, res) => {
 const LISTEN_PATH = "/";
 const CACHE_DIR = ".";
 const WEBHOOK_ID = process.env.PAYPAL_WEBHOOK_ID;
-
+ 
 async function downloadAndCache(url, cacheKey) {
   if(!cacheKey) {
     cacheKey = url.replace(/\W+/g, '-')
@@ -285,7 +285,7 @@ async function downloadAndCache(url, cacheKey) {
  
   return data;
 }
-  
+ 
 app.post(LISTEN_PATH, express.raw({type: 'application/json'}), async (request, response) => {
   const headers = request.headers;
   const event = request.body;
@@ -303,6 +303,32 @@ app.post(LISTEN_PATH, express.raw({type: 'application/json'}), async (request, r
     // Successful receipt of webhook, do something with the webhook data here to process it, e.g. write to database
     console.log(`Received event`, JSON.stringify(data, null, 2));
  
+    // Process the webhook payload
+    if (body.event_type === 'PAYMENT.SALE.COMPLETED' && body.resource) {
+      const createTime = new Date(body.resource.create_time); // Payment time in UTC
+      const subscriptionId = body.resource.billing_agreement_id; // Subscription ID
+
+      // Calculate the subscription end date (assuming a 1-month subscription period)
+      const endDateUTC = new Date(createTime);
+      endDateUTC.setMonth(endDateUTC.getMonth() + 1);
+      
+      try {
+        // Update the user's subscription end date
+        const user = await User.findOneAndUpdate(
+          { "subscription.subscriptionId": subscriptionId },
+          { "subscription.currentEndDateUTC": endDateUTC },
+          { new: true }
+        );
+
+        if (user) {
+          console.log(`Subscription end date updated for user: ${user.email}`);
+        } else {
+          console.log('No user found with the provided subscription ID.');
+        }
+      } catch (error) {
+        console.error('Error updating subscription end date:', error);
+      }
+    }
   } else {
     console.log(`Signature is not valid for ${data?.id} ${headers?.['correlation-id']}`);
     // Reject processing the webhook event. May wish to log all headers+data for debug purposes.
@@ -316,28 +342,23 @@ async function verifySignature(event, headers) {
   const transmissionId = headers['paypal-transmission-id']
   const timeStamp = headers['paypal-transmission-time']
   const crc = parseInt("0x" + crc32(event).toString('hex')); // hex crc32 of raw event data, parsed to decimal form
-
+ 
   const message = `${transmissionId}|${timeStamp}|${WEBHOOK_ID}|${crc}`
-  console.log(`Original signed message ${message}`);  // Log the constructed message
-  console.log(`Transmission ID: ${transmissionId}`);
-  console.log(`Timestamp: ${timeStamp}`);
-  console.log(`WEBHOOK_ID: ${WEBHOOK_ID}`);  // Log the WEBHOOK_ID
-  console.log(`CRC: ${crc}`);
-
+  console.log(`Original signed message ${message}`);
+ 
   const certPem = await downloadAndCache(headers['paypal-cert-url']);
-  console.log(`Certificate used for verification: ${certPem}`); // Log the certificate content
-
+ 
+  // Create buffer from base64-encoded signature
   const signatureBuffer = Buffer.from(headers['paypal-transmission-sig'], 'base64');
-
+ 
+  // Create a verification object
   const verifier = crypto.createVerify('SHA256');
+ 
+  // Add the original message to the verifier
   verifier.update(message);
-
-  const isVerified = verifier.verify(certPem, signatureBuffer);
-  console.log(`Verification result: ${isVerified}`);  // Log the result of the verification
-
-  return isVerified;
+ 
+  return verifier.verify(certPem, signatureBuffer);
 }
-
 
 // Email Verification code and Onboarding code: 
 
