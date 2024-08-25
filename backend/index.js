@@ -280,38 +280,31 @@ async function downloadAndCache(url, cacheKey) {
   return data;
 }
 
-app.post(LISTEN_PATH, express.raw({type: 'application/json'}), async (request, response) => {
+app.post(LISTEN_PATH, async (request, response) => {
   const headers = request.headers;
-  const event = request.body;
-
-  console.log(`Raw event data: ${event.toString()}`);
+  const eventBuffer = request.body;  // This should be a Buffer
 
   try {
     // Convert Buffer to string then parse JSON
-    const data = JSON.parse(event.toString());
-    console.log(`Parsed JSON:`, JSON.stringify(data, null, 2));
+    const eventString = eventBuffer.toString('utf-8'); // Ensure correct encoding
+    const eventData = JSON.parse(eventString); // Now parse the JSON string
+    console.log('Parsed JSON:', eventData);
 
-    const isSignatureValid = await verifySignature(event, headers);
- 
+    const isSignatureValid = await verifySignature(eventData, headers);
+
     if (isSignatureValid) {
       console.log('Signature is valid.');
-      // Successful receipt of webhook, do something with the webhook data here to process it, e.g. write to database
-      console.log(`Received event`, JSON.stringify(data, null, 2));
+      // Process the eventData here...
+      response.sendStatus(200);
     } else {
-      console.log(`Signature is not valid for ${data?.id} ${headers?.['correlation-id']}`);
-      // Reject processing the webhook event. May wish to log all headers+data for debug purposes.
+      console.log('Signature is not valid.');
+      response.sendStatus(401); // Unauthorized or any other appropriate status
     }
-
-    // Return a 200 response to mark successful webhook delivery
-    response.sendStatus(200);
   } catch (error) {
     console.error('Failed to parse JSON:', error);
     response.sendStatus(400); // Bad request
   }
 });
-
-
-
 
 async function verifySignature(event, headers) {
   const transmissionId = headers['paypal-transmission-id']
