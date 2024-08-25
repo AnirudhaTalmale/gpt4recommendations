@@ -230,24 +230,27 @@ app.post('/api/store-subscription', async (req, res) => {
     return res.status(400).json({ success: false, message: 'User email and subscription ID are required' });
   }
 
+  // Calculate the current end date, assuming a one month period.
+  const currentDate = new Date(); // gets the current date
+  const currentEndDateUTC = new Date(currentDate.setMonth(currentDate.getMonth() + 1)); // sets the end date one month ahead
+
   try {
     const user = await User.findOneAndUpdate(
       { "local.email": userEmail },
       { 
         "subscription.subscriptionId": subscriptionID,
-        // Optional: Add other fields to update, such as the end date.
-        // "subscription.currentEndDateUTC": someDate
+        "subscription.currentEndDateUTC": currentEndDateUTC
       },
       { new: true }
     );
 
     if (user) {
-      res.json({ success: true, message: 'Subscription ID stored successfully' });
+      res.json({ success: true, message: 'Subscription ID and end date stored successfully' });
     } else {
       res.status(404).json({ success: false, message: 'User not found' });
     }
   } catch (error) {
-    console.error('Error storing subscription ID:', error);
+    console.error('Error storing subscription data:', error);
     res.status(500).json({ success: false, message: 'Server error' });
   }
 });
@@ -280,29 +283,32 @@ app.post(LISTEN_PATH, express.raw({type: 'application/json'}), async (request, r
   const headers = request.headers;
   const event = request.body;
 
-  // Convert Buffer to string then parse JSON
-  const data = JSON.parse(event.toString());
+  console.log(`Raw event data: ${event.toString()}`);
+
+  try {
+    // Convert Buffer to string then parse JSON
+    const data = JSON.parse(event.toString());
+    console.log(`Parsed JSON:`, JSON.stringify(data, null, 2));
+
+    const isSignatureValid = await verifySignature(event, headers);
  
-  console.log(`headers`, headers);
-  console.log(`parsed json`, JSON.stringify(data, null, 2));
-  console.log(`raw event: ${event}`);
- 
-  const isSignatureValid = await verifySignature(event, headers);
- 
-  if (isSignatureValid) {
-    console.log('Signature is valid.');
- 
-    // Successful receipt of webhook, do something with the webhook data here to process it, e.g. write to database
-    console.log(`Received event`, JSON.stringify(data, null, 2));
- 
-  } else {
-    console.log(`Signature is not valid for ${data?.id} ${headers?.['correlation-id']}`);
-    // Reject processing the webhook event. May wish to log all headers+data for debug purposes.
+    if (isSignatureValid) {
+      console.log('Signature is valid.');
+      // Successful receipt of webhook, do something with the webhook data here to process it, e.g. write to database
+      console.log(`Received event`, JSON.stringify(data, null, 2));
+    } else {
+      console.log(`Signature is not valid for ${data?.id} ${headers?.['correlation-id']}`);
+      // Reject processing the webhook event. May wish to log all headers+data for debug purposes.
+    }
+
+    // Return a 200 response to mark successful webhook delivery
+    response.sendStatus(200);
+  } catch (error) {
+    console.error('Failed to parse JSON:', error);
+    response.sendStatus(400); // Bad request
   }
- 
-  // Return a 200 response to mark successful webhook delivery
-  response.sendStatus(200);
 });
+
 
 
 
