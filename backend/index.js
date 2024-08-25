@@ -262,7 +262,9 @@ app.post('/api/store-subscription', async (req, res) => {
 
 // paypal-webhook
 
-const { LISTEN_PATH="/", CACHE_DIR = ".", WEBHOOK_ID = "<from when the listener URL was subscribed>" } = process.env;
+const LISTEN_PATH = "/";
+const CACHE_DIR = ".";
+const WEBHOOK_ID = process.env.PAYPAL_WEBHOOK_ID;
 
 async function downloadAndCache(url, cacheKey) {
   if(!cacheKey) {
