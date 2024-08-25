@@ -1100,7 +1100,7 @@ body:not(.history-pane-open) .input-area {
   border-radius: 1rem;
   font-size: 0.98rem;
   cursor: pointer;
-  margin: 0.5rem 0 0.7rem 0;
+  margin: 0.2rem 0 0.7rem 0;
 }
 
 .upgrade-button {
