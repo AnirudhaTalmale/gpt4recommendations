@@ -314,23 +314,28 @@ async function verifySignature(event, headers) {
   const transmissionId = headers['paypal-transmission-id']
   const timeStamp = headers['paypal-transmission-time']
   const crc = parseInt("0x" + crc32(event).toString('hex')); // hex crc32 of raw event data, parsed to decimal form
- 
+
   const message = `${transmissionId}|${timeStamp}|${WEBHOOK_ID}|${crc}`
-  console.log(`Original signed message ${message}`);
- 
+  console.log(`Original signed message ${message}`);  // Log the constructed message
+  console.log(`Transmission ID: ${transmissionId}`);
+  console.log(`Timestamp: ${timeStamp}`);
+  console.log(`WEBHOOK_ID: ${WEBHOOK_ID}`);  // Log the WEBHOOK_ID
+  console.log(`CRC: ${crc}`);
+
   const certPem = await downloadAndCache(headers['paypal-cert-url']);
- 
-  // Create buffer from base64-encoded signature
+  console.log(`Certificate used for verification: ${certPem}`); // Log the certificate content
+
   const signatureBuffer = Buffer.from(headers['paypal-transmission-sig'], 'base64');
- 
-  // Create a verification object
+
   const verifier = crypto.createVerify('SHA256');
- 
-  // Add the original message to the verifier
   verifier.update(message);
- 
-  return verifier.verify(certPem, signatureBuffer);
+
+  const isVerified = verifier.verify(certPem, signatureBuffer);
+  console.log(`Verification result: ${isVerified}`);  // Log the result of the verification
+
+  return isVerified;
 }
+
 
 // Email Verification code and Onboarding code: 
 
