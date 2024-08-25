@@ -258,7 +258,6 @@ app.post('/api/store-subscription', async (req, res) => {
 // paypal-webhook
 
 const { LISTEN_PATH="/", CACHE_DIR = ".", WEBHOOK_ID = "<from when the listener URL was subscribed>" } = process.env;
-app.use(express.raw({type: 'application/json'}));
 
 async function downloadAndCache(url, cacheKey) {
   if(!cacheKey) {
