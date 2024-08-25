@@ -282,19 +282,11 @@ async function downloadAndCache(url, cacheKey) {
 
 app.post(LISTEN_PATH, async (request, response) => {
   const headers = request.headers;
-  const eventBuffer = request.body; // This should be a Buffer
+  const eventData = request.body;  // Already a JavaScript object, no need to parse
 
-  console.log(`Raw event data: ${eventBuffer}`); // Log the Buffer
+  console.log(`Received event data:`, JSON.stringify(eventData, null, 2)); // Log the parsed object
 
   try {
-    // Check if eventBuffer is a Buffer and convert it to string
-    const eventString = eventBuffer instanceof Buffer ? eventBuffer.toString('utf-8') : eventBuffer;
-    console.log(`Event as String: ${eventString}`); // Log the converted string
-
-    // Check if the string can be parsed to JSON
-    const eventData = JSON.parse(eventString); // Attempt to parse JSON
-    console.log('Parsed JSON:', eventData);
-
     const isSignatureValid = await verifySignature(eventData, headers);
 
     if (isSignatureValid) {
@@ -306,7 +298,7 @@ app.post(LISTEN_PATH, async (request, response) => {
       response.sendStatus(401); // Unauthorized or any other appropriate status
     }
   } catch (error) {
-    console.error('Failed to parse JSON:', error);
+    console.error('Error processing request:', error);
     response.sendStatus(400); // Bad request
   }
 });
