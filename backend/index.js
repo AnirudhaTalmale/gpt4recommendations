@@ -22,8 +22,12 @@ const passportSetup = require('./passport-setup'); // Import the setup function
 const axios = require('axios');
 const nodemailer = require('nodemailer');
 const jwt = require('jsonwebtoken'); 
-const redisClient = require('./redisClient');   
- 
+const redisClient = require('./redisClient');
+const crypto = require('crypto');
+const crc32 = require('buffer-crc32');
+const fs = require('fs/promises');
+const fetch = require('node-fetch');
+
 require('dotenv').config();
 
 const app = express();
@@ -97,7 +101,6 @@ server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
 
-
 // Authentication Code: 
 
 app.get('/api/check-auth', async (req, res) => {
@@ -138,15 +141,14 @@ app.get('/api/check-auth', async (req, res) => {
 }); 
 
 app.get('/api/user-info', (req, res) => {
-
   if (req.isAuthenticated()) {
-
     let email = req.user.local && req.user.local.email ? req.user.local.email : '';
-
     let image = req.user.image;
     if (!image) {
       image = getDefaultImage(req.user.displayName);
     }
+
+    let isAdmin = req.user._id.toString() === process.env.ADMIN_ID;
 
     const userInfo = {
       id: req.user._id,
@@ -154,7 +156,8 @@ app.get('/api/user-info', (req, res) => {
       email: email,
       image: image,
       role: req.user.role,
-      country: req.user.country
+      country: req.user.country,
+      isAdmin: isAdmin
     };
 
     res.json({
@@ -191,6 +194,138 @@ app.get('/auth/logout', (req, res, next) => {
     });
   });
 }); 
+
+// ----------- Paypal code --------------
+
+// Endpoint to check if a user is subscribed
+app.post('/api/check-subscription', async (req, res) => {
+  const { userEmail } = req.body; // Get userEmail from request body
+
+  if (!userEmail) {
+      return res.status(400).json({ message: 'User email is required' });
+  }
+
+  try {
+      const user = await User.findOne({ "local.email": userEmail }).exec();
+
+      if (!user) {
+          return res.status(404).json({ message: 'User not found' });
+      }
+
+      // Check if the user has an active subscription
+      const isSubscribed = user.subscription && user.subscription.currentEndDateUTC && new Date(user.subscription.currentEndDateUTC).setHours(23, 59, 59, 999) >= new Date();
+
+      res.json({ isSubscribed: isSubscribed });
+  } catch (error) {
+      console.error('POST /api/check-subscription - Error:', error);
+      res.status(500).json({ message: 'Error checking subscription status', error: error.toString() });
+  }
+});
+
+// Endpoint to store subscription ID
+app.post('/api/store-subscription', async (req, res) => {
+  const { userEmail, subscriptionID } = req.body;
+
+  if (!userEmail || !subscriptionID) {
+    return res.status(400).json({ success: false, message: 'User email and subscription ID are required' });
+  }
+
+  try {
+    const user = await User.findOneAndUpdate(
+      { "local.email": userEmail },
+      { 
+        "subscription.subscriptionId": subscriptionID,
+        // Optional: Add other fields to update, such as the end date.
+        // "subscription.currentEndDateUTC": someDate
+      },
+      { new: true }
+    );
+
+    if (user) {
+      res.json({ success: true, message: 'Subscription ID stored successfully' });
+    } else {
+      res.status(404).json({ success: false, message: 'User not found' });
+    }
+  } catch (error) {
+    console.error('Error storing subscription ID:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+app.post('/paypal-webhook', express.raw({ type: 'application/json' }), async (req, res) => {
+  const headers = req.headers;
+  const body = JSON.parse(req.body);
+  
+  console.log('Received webhook:', JSON.stringify(body, null, 2));
+
+  const isSignatureValid = await verifySignature(req.body, headers);
+  
+  if (isSignatureValid) {
+    console.log('Signature is valid.');
+    
+    // Process the webhook payload
+    if (body.event_type === 'PAYMENT.SALE.COMPLETED' && body.resource) {
+      const createTime = new Date(body.resource.create_time); // Payment time in UTC
+      const subscriptionId = body.resource.billing_agreement_id; // Subscription ID
+
+      // Calculate the subscription end date (assuming a 1-month subscription period)
+      const endDateUTC = new Date(createTime);
+      endDateUTC.setMonth(endDateUTC.getMonth() + 1);
+      
+      try {
+        // Update the user's subscription end date
+        const user = await User.findOneAndUpdate(
+          { "subscription.subscriptionId": subscriptionId },
+          { "subscription.currentEndDateUTC": endDateUTC },
+          { new: true }
+        );
+
+        if (user) {
+          console.log(`Subscription end date updated for user: ${user.email}`);
+        } else {
+          console.log('No user found with the provided subscription ID.');
+        }
+      } catch (error) {
+        console.error('Error updating subscription end date:', error);
+      }
+    }
+    
+  } else {
+    console.log('Invalid signature, rejecting webhook.');
+    return res.status(401).send('Invalid signature');
+  }
+  
+  res.sendStatus(200);
+});
+
+async function verifySignature(body, headers) {
+  const transmissionId = headers['paypal-transmission-id'];
+  const timeStamp = headers['paypal-transmission-time'];
+  const crc = parseInt("0x" + crc32(body).toString('hex'));
+  const webhookId = process.env.PAYPAL_WEBHOOK_ID; // Use the environment variable
+  const message = `${transmissionId}|${timeStamp}|${webhookId}|${crc}`;
+  
+  const certPem = await fetchCertificate(headers['paypal-cert-url']);
+  const signature = headers['paypal-transmission-sig'];
+  
+  return crypto.createVerify('SHA256')
+    .update(message)
+    .verify(certPem, signature, 'base64');
+}
+
+async function fetchCertificate(certUrl) {
+  // Cache certificate locally to avoid downloading it every time
+  const cachePath = `./cert_cache/${certUrl.split('/').pop()}`;
+  try {
+    return await fs.readFile(cachePath, 'utf8');
+  } catch (err) {
+    // Certificate not in cache, download it
+    const response = await fetch(certUrl);
+    const certPem = await response.text();
+    await fs.writeFile(cachePath, certPem);
+    return certPem;
+  }
+}
 
 // Email Verification code and Onboarding code: 
 
@@ -388,8 +523,8 @@ io.on('connection', (socket) => {
     session.user.totalMessageCount += 1;
 
     // Check if the subscription object exists and the user is active
-    const isSubscribed = session.user.subscription && session.user.subscription.isActive;
-
+    const isSubscribed = session.user.subscription && session.user.subscription.currentEndDateUTC && new Date(session.user.subscription.currentEndDateUTC).setHours(23, 59, 59, 999) >= new Date();
+    
     const MESSAGE_LIMIT = isSubscribed ? process.env.MESSAGE_LIMIT_SUBSCRIBED : process.env.MESSAGE_LIMIT_NON_SUBSCRIBED;
 
     if (session.user.messageCount > MESSAGE_LIMIT) {
@@ -399,11 +534,21 @@ io.on('connection', (socket) => {
     
       // Formatting the reset time in HH:MM format
       const resetTimeString = resetTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-      const limitMessage = `
-        <div style="border:1.3px solid red; background-color:#fff0f0; padding:10px; margin:10px 0; border-radius:8px; color:#444444; font-size: 0.9rem">
-        You have reached the message limit of ${MESSAGE_LIMIT} messages per ${durationInHours(WINDOW_DURATION)} hours. Please try again after ${resetTimeString}.
-        </div>`;
-    
+      
+      // Determine the appropriate message based on subscription status
+      let limitMessage = '';
+      if (isSubscribed) {
+        limitMessage = `
+          <div style="border:1.3px solid red; background-color:#fff0f0; padding:10px; margin:10px 0; border-radius:8px; color:#444444; font-size: 0.9rem">
+          You have reached the message limit of ${MESSAGE_LIMIT} messages per ${durationInHours(WINDOW_DURATION)} hours. Please try again after ${resetTimeString}.
+          </div>`;
+      } else {
+        limitMessage = `
+          <div style="border:1.3px solid red; background-color:#fff0f0; padding:10px; margin:10px 0; border-radius:8px; color:#444444; font-size: 0.9rem">
+          You have reached the message limit of ${MESSAGE_LIMIT} messages per ${durationInHours(WINDOW_DURATION)} hours. To increase your message limit, please consider upgrading your plan. Alternatively, you may try again after ${resetTimeString}.
+          </div>`;
+      }
+     
       // Emit a warning message to the client and set the limitMessage as the session name
       socket.emit('messageLimitReached', { content: limitMessage, sessionId: currentSessionId, isMoreDetails, isKeyInsights, isAnecdotes, isQuotes });
     
@@ -466,7 +611,6 @@ io.on('connection', (socket) => {
         console.log("messagesForGPT4", messagesForGPT4);
         await openaiApi(messagesForGPT4, socket, session, currentSessionId, isMoreDetails, isKeyInsights, isAnecdotes, isQuotes, bookDataObjectId, bookTitle, author, moreBooks);
         await session.user.save();
-        socket.emit('query-conversionTracking');
       } catch (error) {
         console.error('Error processing query:', error);
         socket.emit('error', 'Error processing your request');
@@ -503,8 +647,7 @@ io.on('connection', (socket) => {
 
     user.totalMessageCount += 1;
 
-    // Check if the subscription object exists and the user is active
-    const isSubscribed = user.subscription && user.subscription.isActive;
+    const isSubscribed = user.subscription && user.subscription.currentEndDateUTC && new Date(user.subscription.currentEndDateUTC).setHours(23, 59, 59, 999) >= new Date();
 
     const MESSAGE_LIMIT = isSubscribed ? process.env.MESSAGE_LIMIT_SUBSCRIBED : process.env.MESSAGE_LIMIT_NON_SUBSCRIBED;
 
@@ -776,7 +919,6 @@ app.post('/api/session', async (req, res) => {
 app.get('/api/sessions', async (req, res) => {
   try {
     const userId = req.query.userId; // Get user ID from query parameter
-    const adminId = process.env.ADMIN_ID;
     
     const excludeIds = process.env.EXCLUDE_SESSION_IDS.split(','); // Array of IDs to exclude
 
@@ -785,7 +927,7 @@ app.get('/api/sessions', async (req, res) => {
     }
 
     let query = {};
-    if (userId === adminId) {
+    if (userId === process.env.ADMIN_ID) {
       // Exclude sessions belonging to specified IDs when accessed by the admin
       query = { user: { $nin: excludeIds } };
     } else {
@@ -2299,7 +2441,251 @@ const getGoogleBookData = async (title, author) => {
 }
 
 
+// const { validateWebhookSignature } = require('razorpay/dist/utils/razorpay-utils');
+// const Razorpay = require('razorpay');
+// const crypto = require('crypto');
 
+// ------------------- razorpay webhook -------------------
 
+// app.post('/razorpay/webhook', (req, res) => {
+//   const webhookSecret = process.env.WEBHOOK_SECRET;
+//   const razorpaySignature = req.headers['x-razorpay-signature'];
 
+//   // Validate Razorpay Webhook
+//   if (!validateWebhookSignature(JSON.stringify(req.body), razorpaySignature, webhookSecret)) {
+//     console.log('Invalid Razorpay signature');
+//     return res.status(403).json({ message: 'Invalid signature. Could not verify the source.' });
+//   }
 
+//   // Process the webhook payload
+//   try {
+//     const { payload } = req.body;
+//     const subscriptionId = payload.subscription.entity.id;
+//     if (payload.subscription.entity.current_end) { // Check if current_end is not null
+//       const currentEndDateUTC = new Date(payload.subscription.entity.current_end * 1000);
+      
+//       // Update the user subscription currentEndDate in UTC
+//       User.findOneAndUpdate(
+//         { 'subscription.subscriptionId': subscriptionId },
+//         { 'subscription.currentEndDateUTC': currentEndDateUTC },
+//         { new: true },
+//         (err, user) => {
+//           if (err) {
+//             console.error('Failed to update user subscription:', err);
+//             return res.status(500).json({ message: 'Failed to update subscription' });
+//           }
+//           console.log('Updated user subscription for', user.displayName, 'to new current end date:', currentEndDateUTC);
+//         }
+//       );
+//     } else {
+//       console.log('No update needed as current_end is null');
+//     }
+    
+//     res.status(200).json({ status: 'success', message: 'Webhook handled successfully' });
+//   } catch (error) {
+//     console.error('Error processing webhook', error);
+//     res.status(500).json({ message: 'Server error', error: error.toString() });
+//   }
+// });
+
+// Razorpay instance
+// const razorpay = new Razorpay({
+//   key_id: process.env.RAZORPAY_KEY_ID,
+//   key_secret: process.env.RAZORPAY_KEY_SECRET
+// });
+
+// // Endpoint to create a subscription only
+// app.post('/create-subscription', async (req, res) => {
+//   const { plan_id, total_count, userEmail } = req.body;
+
+//   if (!plan_id || !total_count || !userEmail) {
+//     res.status(400).send({
+//       error: {
+//         code: 'BAD_REQUEST',
+//         description: 'Missing required parameters: plan_id, total_count, or userEmail'
+//       }
+//     });
+//     return;
+//   }
+
+//   // Fetch the user by email
+//   const user = await User.findOne({ 'local.email': userEmail });
+//   if (!user) {
+//     return res.status(404).send({
+//       error: {
+//         code: 'USER_NOT_FOUND',
+//         description: 'User not found'
+//       }
+//     });
+//   }
+
+//   // Check if the user is already subscribed
+//   const now = new Date();
+//   const isSubscribed = user.subscription && user.subscription.currentEndDateUTC && now < user.subscription.currentEndDateUTC;
+
+//   if (isSubscribed) {
+//     return res.status(400).send({
+//       error: {
+//         code: 'ALREADY_SUBSCRIBED',
+//         description: 'User is already subscribed'
+//       }
+//     });
+//   }
+ 
+//   // Create a new subscription
+//   razorpay.subscriptions.create({
+//     plan_id: plan_id,
+//     total_count: total_count
+//   }).then((data) => {
+//     res.send({
+//       message: "Subscription created successfully",
+//       subscriptionId: data.id
+//     });
+//   }).catch((error) => {
+//     res.status(500).send({
+//       error: {
+//         code: error.code,
+//         description: error.description
+//       }
+//     });
+//   });
+// });
+
+// // Endpoint to verify payment and associate subscription with user
+// app.post('/verify-payment', async (req, res) => {
+//   const { razorpay_payment_id, server_razorpay_subscription_id, razorpay_signature, userEmail } = req.body;
+
+//   const hmac = crypto.createHmac('sha256', process.env.RAZORPAY_KEY_SECRET);
+//   hmac.update(`${razorpay_payment_id}|${server_razorpay_subscription_id}`);
+//   const generated_signature = hmac.digest('hex');
+
+//   if (generated_signature === razorpay_signature) {
+//     const user = await User.findOne({ 'local.email': userEmail });
+//     if (!user) {
+//       return res.status(404).send({ error: 'User not found' });
+//     }
+
+//     // Associate subscription ID with the user
+//     if (!user.subscription || !user.subscription.subscriptionId || !user.subscription.currentEndDateUTC) {
+//       user.subscription = {};
+//     }
+//     user.subscription.subscriptionId = server_razorpay_subscription_id;
+
+//     user.save().then(() => {
+//       res.send({ status: "success", message: "Payment verified and subscription activated!" });
+//     }).catch((error) => {
+//       res.status(500).send({
+//         error: {
+//           code: 'DATABASE_ERROR',
+//           description: 'Failed to update user with new subscription ID'
+//         }
+//       });
+//     });
+
+//   } else {
+//     res.status(403).send({ status: "failure", message: "Invalid signature. Verification failed." });
+//   }
+// });
+
+// // Endpoint to cancel a subscription
+// app.post('/cancel-subscription', async (req, res) => {
+//   const { subscriptionId } = req.body;
+
+//   if (!subscriptionId) {
+//     return res.status(400).send({
+//       error: {
+//         code: 'BAD_REQUEST',
+//         description: 'Missing required parameter: subscriptionId'
+//       }
+//     });
+//   }
+
+//   try {
+//     // First, fetch the subscription to check its current state
+//     const subscription = await razorpay.subscriptions.fetch(subscriptionId);
+    
+//     // Check if the subscription is in an 'active' or 'authenticated' state
+//     if (subscription.status === 'active' || subscription.status === 'authenticated') {
+//       // Cancel the subscription
+//       const result = await razorpay.subscriptions.cancel(subscriptionId);
+//       res.send({ status: "success", message: "Subscription cancelled successfully.", details: result });
+//     } else {
+//       res.status(400).send({
+//         error: {
+//           code: 'BAD_REQUEST_ERROR',
+//           description: 'Subscription cannot be cancelled in its current state.'
+//         }
+//       });
+//     }
+//   } catch (error) {
+//     res.status(500).send({
+//       error: {
+//         code: error.code,
+//         description: error.description || 'Failed to fetch or cancel the subscription.'
+//       }
+//     });
+//   }
+// });
+
+// // Endpoint to get the subscription status
+// app.get('/subscription-status', async (req, res) => {
+//   const { subscriptionId } = req.query;
+
+//   if (!subscriptionId) {
+//     return res.status(400).send({
+//       error: {
+//         code: 'BAD_REQUEST',
+//         description: 'Missing required parameter: subscriptionId'
+//       }
+//     });
+//   }
+
+//   try {
+//     const subscription = await razorpay.subscriptions.fetch(subscriptionId);
+//     res.send({
+//       status: subscription.status,
+//       current_end: subscription.current_end  // Include current_end in the response
+//     });
+//   } catch (error) {
+//     res.status(500).send({
+//       error: {
+//         code: error.code,
+//         description: error.description || 'Failed to fetch the subscription.'
+//       }
+//     });
+//   }
+// });
+
+// // Endpoint to get the subscription transaction history
+// app.get('/subscription-history', async (req, res) => {
+//   const { subscriptionId, userCountry } = req.query;
+
+//   if (!subscriptionId) {
+//       return res.status(400).send({
+//           error: {
+//               code: 'BAD_REQUEST',
+//               description: 'Missing required parameter: subscriptionId'
+//           }
+//       });
+//   }
+
+//   try {
+//       const invoices = await razorpay.invoices.all({ subscription_id: subscriptionId });
+//       const zone = userCountry === 'India' ? 'Asia/Kolkata' : 'America/New_York';
+
+//       const history = invoices.items.map(invoice => {
+//           const date = moment.unix(invoice.paid_at).tz(zone).format('MMMM DD, YYYY');
+//           const amount = (invoice.amount / 100).toLocaleString('en-IN', { style: 'currency', currency: userCountry === 'India' ? 'INR' : 'USD' });
+//           return { date, amount };
+//       });
+
+//       res.send({ history });
+//   } catch (error) {
+//       res.status(500).send({
+//           error: {
+//               code: error.code,
+//               description: error.description || 'Failed to fetch the subscription history.'
+//           }
+//       });
+//   }
+// });
