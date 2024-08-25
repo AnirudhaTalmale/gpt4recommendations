@@ -254,7 +254,7 @@ app.post('/api/store-subscription', async (req, res) => {
 
 // paypal-webhook
 
-const { LISTEN_PORT = 8888, LISTEN_PATH="/", CACHE_DIR = ".", WEBHOOK_ID = "<from when the listener URL was subscribed>" } = process.env;
+const { LISTEN_PATH="/", CACHE_DIR = ".", WEBHOOK_ID = "<from when the listener URL was subscribed>" } = process.env;
 
 async function downloadAndCache(url, cacheKey) {
   if(!cacheKey) {
@@ -279,7 +279,9 @@ async function downloadAndCache(url, cacheKey) {
 app.post(LISTEN_PATH, express.raw({type: 'application/json'}), async (request, response) => {
   const headers = request.headers;
   const event = request.body;
-  const data = JSON.parse(event)
+
+  // Convert Buffer to string then parse JSON
+  const data = JSON.parse(event.toString());
  
   console.log(`headers`, headers);
   console.log(`parsed json`, JSON.stringify(data, null, 2));
@@ -301,6 +303,7 @@ app.post(LISTEN_PATH, express.raw({type: 'application/json'}), async (request, r
   // Return a 200 response to mark successful webhook delivery
   response.sendStatus(200);
 });
+
 
 
 async function verifySignature(event, headers) {
