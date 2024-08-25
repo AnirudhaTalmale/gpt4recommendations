@@ -686,6 +686,7 @@ function Chat() {
           userEmail={userData?.email}
           userImage={userData?.image}
           userCountry={userData?.country}
+          isAdmin={userData?.isAdmin}
           isPaneOpen={isPaneOpen}
           togglePane={togglePane}
           selectedSessionId={selectedSessionId}
