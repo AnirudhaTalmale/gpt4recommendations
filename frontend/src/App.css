@@ -982,7 +982,7 @@ body:not(.history-pane-open) .input-area {
   justify-content: center;
   align-items: center;
   background-color: rgba(0, 0, 0, 0.5); 
-  z-index: 10000;
+  z-index: 1000000000;
 }
 
 .confirmation-dialog {
@@ -992,6 +992,7 @@ body:not(.history-pane-open) .input-area {
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
   text-align: center;
   font-size: 0.9rem;
+  z-index: 1000000000;
 }
 
 .confirmation-dialog p {
@@ -1040,7 +1041,7 @@ body:not(.history-pane-open) .input-area {
 .upgrade-modal-content {
   background: white;
   width: 80%;
-  max-width: 650px;
+  max-width: 400px;
   display: flex;
   flex-direction: column;
   padding-bottom: 3.3rem;
@@ -1081,6 +1082,7 @@ body:not(.history-pane-open) .input-area {
 .upgrade-amount {
   color: grey;
   margin-top: 0;
+  margin-bottom: 1.95rem;
 }
 
 .upgrade-plan-option:first-child {
@@ -1091,29 +1093,37 @@ body:not(.history-pane-open) .input-area {
   border-right: none; /* Remove right border for the last item */
 }
 
-.upgrade-button, .current-plan-button {
+.upgrade-button, .current-plan-button, .cancel-plan-button {
   width: 100%;
   padding: 10px;
   border: none;
   border-radius: 1rem;
   font-size: 0.98rem;
   cursor: pointer;
-  margin: 0.7rem 0;
+  margin: 0.5rem 0 0.7rem 0;
 }
 
 .upgrade-button {
-  background-color: #4CAF50;
-  color: white;
+  border: 0.5px solid lightgrey;
+  background-color: white;
+  color: black;
 }
 
-.current-plan-button {
+.current-plan-button, .cancel-plan-button {
   background-color: white;
   border: 0.5px solid lightgrey;
   color: rgb(148, 148, 148);
+  cursor: not-allowed;
+}
+
+.cancel-plan-button {
+  background-color: black;
+  color: white;
+  cursor: pointer;
 }
 
 .upgrade-button:hover {
-  background-color: #45a049;
+  background-color: rgb(187, 187, 187);
 }
 
 .close-button {
@@ -1131,9 +1141,10 @@ body:not(.history-pane-open) .input-area {
 .features-list {
   list-style: none;
   padding: 0;
-  margin-top: 10px;
-  font-size: 0.9rem;
-  line-height: 1.5rem;
+  margin-top: 1rem;
+  margin-bottom: 0.3rem;
+  font-size: 0.87rem;
+  line-height: 2rem;
 }
 
 .features-list li {
@@ -1144,6 +1155,14 @@ body:not(.history-pane-open) .input-area {
 
 .fa-check {
   margin-right: 10px;
+}
+
+.manage-subscription-link {
+  font-size: 0.8rem; /* Smaller font size */
+  color: #6f6f6f; /* Lighter font color */
+  margin-top: 10px; /* Space from the list above */
+  cursor: pointer; /* Makes it clear it's clickable */
+  text-decoration: underline; /* Underline text */
 }
 
 /* Media Query for smaller screens */
@@ -1158,6 +1177,54 @@ body:not(.history-pane-open) .input-area {
     border-right: none !important; /* Remove the border for better display on small screens */
   }
 }
+
+/* Manage subscription page */
+
+.manage-subscription-page {
+  font-family: 'Arial', sans-serif;
+  color: #333;
+  line-height: 1.7;
+  font-size: 1rem;
+  padding: 5px 30px 30px 30px;
+  max-width: 680px;
+  margin: auto;
+  border-radius: 8px;
+  margin: 3rem auto;
+}
+
+.manage-subscription-page h1,
+.manage-subscription-page h2 {
+  color: #333;
+  margin: 20px 0;
+}
+
+.manage-subscription-page h2 {
+  margin-top: 4rem;
+}
+
+.manage-subscription-page p,
+.manage-subscription-page li {
+  margin: 20px 0;
+}
+
+.manage-subscription-page a {
+  color: #0066cc;
+  text-decoration: none;
+}
+
+.manage-subscription-page a:hover {
+  text-decoration: underline;
+}
+
+.manage-subscription-page ol,
+.manage-subscription-page ul {
+  padding-left: 40px;
+}
+
+.manage-subscription-page ul {
+  list-style-type: disc;
+}
+
 
 /* header with home button */
 
@@ -1789,13 +1856,12 @@ body:not(.history-pane-open) .input-area {
   position: fixed;
   top: 1.5rem;
   right: 0.6rem;
-  font-size: 28px;
   cursor: pointer;
   z-index: 1001;
   background-color: rgba(0, 0, 0, 0.848);
   border-radius: 50%;
-  width: 1.3rem;
-  height: 1.3rem;
+  width: 1.5rem;
+  height: 1.5rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1803,7 +1869,7 @@ body:not(.history-pane-open) .input-area {
 
 .fa-xmark {
   color: white;
-  font-size: 0.85rem;
+  font-size: 0.95rem;
 }
 
 /* Custom scrollbar for lightbox-content */
@@ -2305,13 +2371,10 @@ body:not(.history-pane-open) .input-area {
   font-size: 1.05rem;
   padding: 5px 30px 30px 30px;
   max-width: 680px;
-  margin: auto;
-  margin-top: 7rem;
+  margin: 3rem auto 4rem auto;
   /* background-color: #f9f9f9; */
   border-radius: 8px;
   /* box-shadow: 0 4px 8px rgba(0,0,0,0.1); */
-  border: 0.7px solid lightgrey;
-  margin-bottom: 6rem;
 }
 
 .about-container h1, .about-container h2 {

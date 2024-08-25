@@ -6,10 +6,10 @@ const roles = {
   ADMIN: 'assistant'
 };
 
+// Define the Subscription Schema
 const subscriptionSchema = new Schema({
-  startDate: { type: Date, default: Date.now },
-  endDate: { type: Date },  // Automatically calculated as startDate + 30 days on subscription renewal or creation
-  isActive: { type: Boolean, default: false }  // Manage active status of the subscription
+  subscriptionId: { type: String, required: true },
+  currentEndDateUTC: { type: Date, default: null }  // Updated field name to indicate UTC
 });
 
 const userSchema = new Schema({
