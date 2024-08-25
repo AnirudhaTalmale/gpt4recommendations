@@ -49,7 +49,12 @@ const io = new Server(server, {
 });
  
 // For JSON payloads
-app.use(express.json({ limit: '50mb' }));
+app.use((req, res, next) => {
+  if (req.path !== '/') { // Exclude root path
+    return express.json({ limit: '50mb' })(req, res, next);
+  }
+  next();
+});
 
 // For URL-encoded payloads
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
@@ -278,31 +283,33 @@ async function downloadAndCache(url, cacheKey) {
  
   return data;
 }
-
-app.post(LISTEN_PATH, async (request, response) => {
+  
+app.post(LISTEN_PATH, express.raw({type: 'application/json'}), async (request, response) => {
   const headers = request.headers;
-  const eventData = request.body;  // Already a JavaScript object, no need to parse
-
-  console.log(`Received event data:`, JSON.stringify(eventData, null, 2)); // Log the parsed object
-
-  try {
-    const isSignatureValid = await verifySignature(eventData, headers);
-
-    if (isSignatureValid) {
-      console.log('Signature is valid.');
-      // Process the eventData here...
-      response.sendStatus(200);
-    } else {
-      console.log('Signature is not valid.');
-      response.sendStatus(401); // Unauthorized or any other appropriate status
-    }
-  } catch (error) {
-    console.error('Error processing request:', error);
-    response.sendStatus(400); // Bad request
+  const event = request.body;
+  const data = JSON.parse(event)
+ 
+  console.log(`headers`, headers);
+  console.log(`parsed json`, JSON.stringify(data, null, 2));
+  console.log(`raw event: ${event}`);
+ 
+  const isSignatureValid = await verifySignature(event, headers);
+ 
+  if (isSignatureValid) {
+    console.log('Signature is valid.');
+ 
+    // Successful receipt of webhook, do something with the webhook data here to process it, e.g. write to database
+    console.log(`Received event`, JSON.stringify(data, null, 2));
+ 
+  } else {
+    console.log(`Signature is not valid for ${data?.id} ${headers?.['correlation-id']}`);
+    // Reject processing the webhook event. May wish to log all headers+data for debug purposes.
   }
+ 
+  // Return a 200 response to mark successful webhook delivery
+  response.sendStatus(200);
 });
-
-
+ 
 async function verifySignature(event, headers) {
   const transmissionId = headers['paypal-transmission-id']
   const timeStamp = headers['paypal-transmission-time']
