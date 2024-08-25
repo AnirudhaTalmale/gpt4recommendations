@@ -221,14 +221,16 @@ app.post('/api/check-subscription', async (req, res) => {
       // Check if the user has an active subscription
       let isSubscribed = false;
       if (user.subscription && user.subscription.currentEndDateUTC) {
-          const endDateUTC = new Date(user.subscription.currentEndDateUTC).setUTCHours(23, 59, 59, 999);
-          const nowUTC = new Date().getTime();
+        const endDate = new Date(user.subscription.currentEndDateUTC);
+        endDate.setUTCHours(23, 59, 59, 999); // Set to end of the day in UTC
+        const endDateUTC = endDate.getTime(); // Get milliseconds since epoch
+        const nowUTC = new Date().getTime(); // Current time in milliseconds since epoch
 
-          // Console logs to verify the epoch time values
-          console.log("endDateUTC (in milliseconds since epoch):", endDateUTC);
-          console.log("nowUTC (current time in milliseconds since epoch):", nowUTC);
+        // Console logs to verify the epoch time values
+        console.log("endDateUTC (in milliseconds since epoch):", endDateUTC);
+        console.log("nowUTC (current time in milliseconds since epoch):", nowUTC);
 
-          isSubscribed = endDateUTC >= nowUTC;
+        isSubscribed = endDateUTC >= nowUTC;
       }
 
       res.json({ isSubscribed: isSubscribed });
@@ -331,7 +333,7 @@ app.post(LISTEN_PATH, express.raw({type: 'application/json'}), async (request, r
         );
 
         if (user) {
-          console.log(`Subscription end date updated for user: ${user.email}`);
+          console.log(`Subscription end date updated for user: ${user.local.email}`);
         } else {
           console.log('No user found with the provided subscription ID.');
         }
