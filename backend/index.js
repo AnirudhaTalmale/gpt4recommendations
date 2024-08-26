@@ -246,7 +246,7 @@ app.post('/api/store-subscription', async (req, res) => {
 
   // Calculate the current end date, assuming a one-month period.
   const currentDate = new Date(); // gets the current date in local time
-  const currentEndDateUTC = currentDate; // adds one month
+  const currentEndDateUTC = addMonths(currentDate, 1); // adds one month
 
   try {
     const user = await User.findOneAndUpdate(
