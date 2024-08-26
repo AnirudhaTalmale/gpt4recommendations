@@ -7,7 +7,7 @@ import { toast } from 'react-toastify';
 const UpgradePlanModal = forwardRef(({ isOpen, onClose, userCountry, userEmail }, ref) => {
     const [isSubscribed, setIsSubscribed] = useState(false);
     const navigate = useNavigate();
-    const paypalContainerId = 'paypal-button-container-P-9RJ51744VK8037048M3B73JI';
+    const paypalContainerId = 'paypal-button-container-P-94A76765PN815393VM3D377A';
 
     // Memoized function to check subscription status
     const checkSubscriptionStatus = useCallback(async () => {
@@ -35,7 +35,7 @@ const UpgradePlanModal = forwardRef(({ isOpen, onClose, userCountry, userEmail }
                 },
                 createSubscription: function(data, actions) {
                     return actions.subscription.create({
-                        plan_id: 'P-9RJ51744VK8037048M3B73JI'
+                        plan_id: 'P-94A76765PN815393VM3D377A'
                     });
                 },
                 onApprove: function(data, actions) {
