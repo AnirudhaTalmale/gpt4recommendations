@@ -574,9 +574,7 @@ io.on('connection', (socket) => {
     session.user.totalMessageCount += 1;
 
     if (session.user.messageCount > MESSAGE_LIMIT) {
-      const timePassed = now - session.user.firstMessageTimestamp.getTime();
-      const timeRemaining = WINDOW_DURATION - timePassed;
-      const resetTime = new Date(now.getTime() + timeRemaining);
+      const resetTime = new Date(session.user.firstMessageTimestamp.getTime() + WINDOW_DURATION);
     
       // Formatting the reset time in HH:MM format
       const resetTimeString = resetTime.toLocaleString(locale, {
@@ -706,9 +704,7 @@ io.on('connection', (socket) => {
     user.totalMessageCount += 1;
 
     if (user.messageCount > MESSAGE_LIMIT) {
-      const timePassed = now - user.firstMessageTimestamp.getTime();
-      const timeRemaining = WINDOW_DURATION - timePassed;
-      const resetTime = new Date(now.getTime() + timeRemaining);
+      const resetTime = new Date(user.firstMessageTimestamp.getTime() + WINDOW_DURATION);
     
       // Formatting the reset time in HH:MM format
       const resetTimeString = resetTime.toLocaleString(locale, {
