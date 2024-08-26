@@ -203,32 +203,37 @@ app.get('/auth/logout', (req, res, next) => {
 
 // ----------- Paypal code --------------
 
+// Function to check if the user is subscribed
+function isUserSubscribed(user) {
+  if (!user) {
+      throw new Error('User object is required');
+  }
+
+  let isSubscribed = false;
+  if (user.subscription && user.subscription.currentEndDateUTC) {
+      const endDate = new Date(user.subscription.currentEndDateUTC);
+      endDate.setUTCHours(23, 59, 59, 999); // Set to end of the day in UTC
+      const endDateUTC = endDate.getTime(); // Get milliseconds since epoch
+      const nowUTC = new Date().getTime(); // Current time in milliseconds since epoch
+
+      isSubscribed = endDateUTC >= nowUTC;
+  }
+
+  return isSubscribed;
+}
+
 // Endpoint to check if a user is subscribed
 app.post('/api/check-subscription', async (req, res) => {
   const { userEmail } = req.body; // Get userEmail from request body
-
   if (!userEmail) {
       return res.status(400).json({ message: 'User email is required' });
   }
-
   try {
       const user = await User.findOne({ "local.email": userEmail }).exec();
-
       if (!user) {
           return res.status(404).json({ message: 'User not found' });
       }
-
-      // Check if the user has an active subscription
-      let isSubscribed = false;
-      if (user.subscription && user.subscription.currentEndDateUTC) {
-        const endDate = new Date(user.subscription.currentEndDateUTC);
-        endDate.setUTCHours(23, 59, 59, 999); // Set to end of the day in UTC
-        const endDateUTC = endDate.getTime(); // Get milliseconds since epoch
-        const nowUTC = new Date().getTime(); // Current time in milliseconds since epoch
-
-        isSubscribed = endDateUTC >= nowUTC;
-      }
-
+      const isSubscribed = isUserSubscribed(user);
       res.json({ isSubscribed: isSubscribed });
   } catch (error) {
       console.error('POST /api/check-subscription - Error:', error);
@@ -563,8 +568,7 @@ io.on('connection', (socket) => {
 
     session.user.totalMessageCount += 1;
 
-    // Check if the subscription object exists and the user is active
-    const isSubscribed = session.user.subscription && session.user.subscription.currentEndDateUTC && new Date(session.user.subscription.currentEndDateUTC).setHours(23, 59, 59, 999) >= new Date();
+    const isSubscribed = isUserSubscribed(session.user);
     
     const MESSAGE_LIMIT = isSubscribed ? process.env.MESSAGE_LIMIT_SUBSCRIBED : process.env.MESSAGE_LIMIT_NON_SUBSCRIBED;
 
@@ -688,7 +692,7 @@ io.on('connection', (socket) => {
 
     user.totalMessageCount += 1;
 
-    const isSubscribed = user.subscription && user.subscription.currentEndDateUTC && new Date(user.subscription.currentEndDateUTC).setHours(23, 59, 59, 999) >= new Date();
+    const isSubscribed = isUserSubscribed(user);
 
     const MESSAGE_LIMIT = isSubscribed ? process.env.MESSAGE_LIMIT_SUBSCRIBED : process.env.MESSAGE_LIMIT_NON_SUBSCRIBED;
 
