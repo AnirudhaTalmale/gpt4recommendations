@@ -513,8 +513,11 @@ io.on('connection', (socket) => {
   let currentSessionId;
   
   socket.on('query', async (data) => {
-    const { sessionId, message, isMoreDetails, isKeyInsights, isAnecdotes, isQuotes, bookDataObjectId, bookTitle, author, moreBooks, isEdit } = data;
+    const { sessionId, message, isMoreDetails, isKeyInsights, isAnecdotes, isQuotes, bookDataObjectId, bookTitle, author, moreBooks, isEdit, timezone, locale } = data;
     currentSessionId = sessionId; 
+
+    // console.log('Timezone:', timezone); 
+    // console.log('locale:', locale); 
   
     // Find the session and update it with the new message and response
     const session = await Session.findById(sessionId).populate('user');
@@ -576,7 +579,14 @@ io.on('connection', (socket) => {
       const resetTime = new Date(now.getTime() + timeRemaining);
     
       // Formatting the reset time in HH:MM format
-      const resetTimeString = resetTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      const resetTimeString = resetTime.toLocaleString(locale, {
+        timeZone: timezone,
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
       
       // Determine the appropriate message based on subscription status
       let limitMessage = '';
@@ -588,7 +598,7 @@ io.on('connection', (socket) => {
       } else {
         limitMessage = `
           <div style="border:1.3px solid red; background-color:#fff0f0; padding:10px; margin:10px 0; border-radius:8px; color:#444444; font-size: 0.9rem">
-          You have reached the message limit of ${MESSAGE_LIMIT} messages per ${durationInHours(WINDOW_DURATION)} hours. To increase your message limit, please consider upgrading your plan. Alternatively, you may try again after ${resetTimeString}.
+          You have reached the message limit of ${MESSAGE_LIMIT} messages per ${durationInHours(WINDOW_DURATION)} hours. To increase the message limit, please consider upgrading your plan. Alternatively, you may try again after ${resetTimeString}.
           </div>`;
       }
      
@@ -662,7 +672,7 @@ io.on('connection', (socket) => {
   }); 
   
   socket.on('book-detail', async (data) => {
-    const { message, isMoreDetails, isKeyInsights, isAnecdotes, isQuotes, bookDataObjectId, bookTitle, author, userId } = data;  
+    const { message, isMoreDetails, isKeyInsights, isAnecdotes, isQuotes, bookDataObjectId, bookTitle, author, userId, timezone, locale } = data;  
     
     const user = await User.findById(userId);
 
@@ -701,11 +711,27 @@ io.on('connection', (socket) => {
       const resetTime = new Date(now.getTime() + timeRemaining);
     
       // Formatting the reset time in HH:MM format
-      const resetTimeString = resetTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-      const limitMessage = `
-        <div style="border:1.3px solid red; background-color:#fff0f0; padding:10px; margin:10px 0; border-radius:8px; color:#444444; font-size: 0.9rem">
-        You have reached the message limit of ${MESSAGE_LIMIT} messages per ${durationInHours(WINDOW_DURATION)} hours. Please try again after ${resetTimeString}.
-        </div>`;
+      const resetTimeString = resetTime.toLocaleString(locale, {
+        timeZone: timezone,
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+
+      let limitMessage = '';
+      if (isSubscribed) {
+        limitMessage = `
+          <div style="border:1.3px solid red; background-color:#fff0f0; padding:10px; margin:10px 0; border-radius:8px; color:#444444; font-size: 0.9rem">
+          You have reached the message limit of ${MESSAGE_LIMIT} messages per ${durationInHours(WINDOW_DURATION)} hours. Please try again after ${resetTimeString}.
+          </div>`;
+      } else {
+        limitMessage = `
+          <div style="border:1.3px solid red; background-color:#fff0f0; padding:10px; margin:10px 0; border-radius:8px; color:#444444; font-size: 0.9rem">
+          You have reached the message limit of ${MESSAGE_LIMIT} messages per ${durationInHours(WINDOW_DURATION)} hours. To increase the message limit, please consider upgrading your plan. Alternatively, you may try again after ${resetTimeString}.
+          </div>`;
+      }
     
       // Emit a warning message to the client and set the limitMessage as the session name
       socket.emit('chunk', { content: limitMessage, sessionId: null, isMoreDetails, isKeyInsights, isAnecdotes, isQuotes, moreBooks: null });

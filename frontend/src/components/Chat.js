@@ -271,6 +271,8 @@ function Chat() {
     // Find the current session by its ID
     const currentSessionId = currentSessionIdRef.current;
     const currentSession = sessions.find(session => session._id === currentSessionId);
+    const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone; 
+    const locale = navigator.language;
 
     if (lastUserMessage && currentSession?._id === lastUserMessage.sessionId) {
       const isFirstQuery = currentSession?.messages?.length === 1;
@@ -290,7 +292,9 @@ function Chat() {
         bookTitle: bookTitleState,
         author: authorState,
         moreBooks: moreBooks,
-        isEdit: isEdit
+        isEdit: isEdit,
+        timezone,
+        locale
       });
       // Reset lastUserMessage to avoid duplicate emissions
       setLastUserMessage(null);
@@ -301,6 +305,9 @@ function Chat() {
   const handleQuerySubmit = async (query, isMoreDetails = false, bookDataObjectId = null, bookTitle = null, author = null, moreBooks = false, isKeyInsights = false, isAnecdotes = false, isQuotes = false, isEdit = false) => {
     setIsLoading(true);
     setManualStop(false);
+
+    const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone; 
+    const locale = navigator.language;
   
     // Get the current session's ID
     const currentSessionId = currentSessionIdRef.current;
@@ -345,7 +352,9 @@ function Chat() {
         bookTitle,
         author,
         moreBooks,
-        isEdit
+        isEdit,
+        timezone,
+        locale
       });
     }
   };

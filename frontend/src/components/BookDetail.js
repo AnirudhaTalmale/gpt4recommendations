@@ -194,6 +194,9 @@ function BookDetail() {
     }
 
     const handleQuerySubmit = async (query, isMoreDetails = false, bookDataObjectId = null, bookTitle = null, author = null, moreBooks = false, isKeyInsights = false, isAnecdotes = false, isQuotes = false) => {
+      const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone; 
+      const locale = navigator.language;
+
       if (userData && userData.id) {
         socket.emit('book-detail', {
           message: {
@@ -208,7 +211,9 @@ function BookDetail() {
           bookTitle,
           author,
           userId: userData.id,
-          moreBooks
+          moreBooks,
+          timezone,
+          locale
         });
       } 
     };
