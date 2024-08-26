@@ -503,8 +503,6 @@ function estimateTokenCount(text) {
   return text.trim().split(/\s+/).length;
 }
 
-const WINDOW_DURATION = 3 * 60 * 60 * 1000; // 3 hours in milliseconds
-
 // Function to convert milliseconds to hours
 function durationInHours(ms) {
   return ms / (60 * 60 * 1000); // Converts milliseconds to hours
@@ -557,8 +555,12 @@ io.on('connection', (socket) => {
       session.user.totalMessageCount = 0;
     }
 
+    const isSubscribed = isUserSubscribed(session.user);
+    const WINDOW_DURATION = isSubscribed ? parseInt(process.env.WINDOW_DURATION_SUBSCRIBED) : parseInt(process.env.WINDOW_DURATION_NON_SUBSCRIBED);
+    const MESSAGE_LIMIT = isSubscribed ? process.env.MESSAGE_LIMIT_SUBSCRIBED : process.env.MESSAGE_LIMIT_NON_SUBSCRIBED;
+
     if (!session.user.firstMessageTimestamp || now - session.user.firstMessageTimestamp.getTime() > WINDOW_DURATION) {
-      // Reset if more than 3 hours have passed
+      // Reset if more than WINDOW DURATION have passed
       session.user.firstMessageTimestamp = now;
       session.user.messageCount = 1;
     } else {
@@ -567,10 +569,6 @@ io.on('connection', (socket) => {
     }
 
     session.user.totalMessageCount += 1;
-
-    const isSubscribed = isUserSubscribed(session.user);
-    
-    const MESSAGE_LIMIT = isSubscribed ? process.env.MESSAGE_LIMIT_SUBSCRIBED : process.env.MESSAGE_LIMIT_NON_SUBSCRIBED;
 
     if (session.user.messageCount > MESSAGE_LIMIT) {
       const timePassed = now - session.user.firstMessageTimestamp.getTime();
@@ -681,6 +679,11 @@ io.on('connection', (socket) => {
       user.totalMessageCount = 0;
     }
 
+    const isSubscribed = isUserSubscribed(user);
+
+    const WINDOW_DURATION = isSubscribed ? parseInt(process.env.WINDOW_DURATION_SUBSCRIBED) : parseInt(process.env.WINDOW_DURATION_NON_SUBSCRIBED);
+    const MESSAGE_LIMIT = isSubscribed ? process.env.MESSAGE_LIMIT_SUBSCRIBED : process.env.MESSAGE_LIMIT_NON_SUBSCRIBED;
+
     if (!user.firstMessageTimestamp || now - user.firstMessageTimestamp.getTime() > WINDOW_DURATION) {
       // Reset if more than 3 hours have passed
       user.firstMessageTimestamp = now;
@@ -691,10 +694,6 @@ io.on('connection', (socket) => {
     }
 
     user.totalMessageCount += 1;
-
-    const isSubscribed = isUserSubscribed(user);
-
-    const MESSAGE_LIMIT = isSubscribed ? process.env.MESSAGE_LIMIT_SUBSCRIBED : process.env.MESSAGE_LIMIT_NON_SUBSCRIBED;
 
     if (user.messageCount > MESSAGE_LIMIT) {
       const timePassed = now - user.firstMessageTimestamp.getTime();
