@@ -226,10 +226,6 @@ app.post('/api/check-subscription', async (req, res) => {
         const endDateUTC = endDate.getTime(); // Get milliseconds since epoch
         const nowUTC = new Date().getTime(); // Current time in milliseconds since epoch
 
-        // Console logs to verify the epoch time values
-        console.log("endDateUTC (in milliseconds since epoch):", endDateUTC);
-        console.log("nowUTC (current time in milliseconds since epoch):", nowUTC);
-
         isSubscribed = endDateUTC >= nowUTC;
       }
 
@@ -250,7 +246,7 @@ app.post('/api/store-subscription', async (req, res) => {
 
   // Calculate the current end date, assuming a one-month period.
   const currentDate = new Date(); // gets the current date in local time
-  const currentEndDateUTC = addMonths(currentDate, 1); // adds one month
+  const currentEndDateUTC = currentDate; // adds one month
 
   try {
     const user = await User.findOneAndUpdate(
