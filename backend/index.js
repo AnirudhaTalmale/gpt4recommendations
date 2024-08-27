@@ -93,14 +93,16 @@ app.get('/', (req, res) => {
 });  
 
 let transporter = nodemailer.createTransport({
-  host: 'smtp.gmail.com',
-  port: 587,
-  secure: false,
+  host: 'mail.privateemail.com',
+  port: 465,
+  secure: true, // true for 465, false for other ports
   auth: {
-    user: process.env.EMAIL_USER, 
+    user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS
   } 
-}); 
+});
+
+
 
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
@@ -416,13 +418,13 @@ app.post('/send-verification-email', async (req, res) => {
       
     // Send verification email
     transporter.sendMail({
-      from: '"GetBooks" <' + process.env.EMAIL_USER + '>',
+      from: '"GetBooks.ai" <' + process.env.EMAIL_USER + '>',
       to: email,
-      subject: 'GetBooks - Verify your email',
+      subject: 'GetBooks.ai - Verify your email',
       html: `
         <div style="font-family: 'Arial', sans-serif; text-align: left; padding: 20px; max-width: 600px; margin: auto;">
           <h1 style="font-size: 26px;">Verify your email address</h1>
-          <p style="font-size: 16px;">To continue setting up your GetBooks account, please verify that this is your email address.</p>
+          <p style="font-size: 16px;">To continue setting up your GetBooks.ai account, please verify that this is your email address.</p>
           <a href="${verificationUrl}" style="background-color: #4CAF50; color: white; padding: 8px 18px; text-decoration: none; border-radius: 5px; display: inline-block; font-size: 16px;">Verify email address</a>
           <p style="color: #666666; margin-top: 28px; font-size: 12px;">This link will expire in 15 minutes. If you did not make this request, please disregard this email.</p>
         </div>

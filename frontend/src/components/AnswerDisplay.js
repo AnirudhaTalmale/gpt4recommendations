@@ -284,7 +284,7 @@ function AnswerDisplay({
           )}
           {role === 'assistant' && (
             <>
-              <div className="message-sender">GetBooks</div>
+              <div className="message-sender">GetBooks.ai</div>
               <br></br>
               <div className="message-answer" 
                 ref={messageAnswerRef} 

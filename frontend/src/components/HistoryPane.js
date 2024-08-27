@@ -334,10 +334,8 @@ const HistoryPane = forwardRef(({
                   <i className="fa-solid fa-cart-shopping"></i> Upgrade Plan
                 </li>
               )}
-              <li>
-                <a href="mailto:getbooksai@gmail.com" className="dropdown-link" style={{ display: 'block', width: '100%', height: '100%' }}>
-                  <i className="fa-solid fa-address-book"></i> Contact us
-                </a>
+              <li onClick={() => navigate('/contact-us')} >
+                <i className="fa-solid fa-address-book"></i> Contact us
               </li>
               <li onClick={handleLogout}>
                 <i class="fa-solid fa-arrow-right-from-bracket"></i> Log out

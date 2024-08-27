@@ -17,7 +17,7 @@ const PrivacyPolicy = () => {
         </div>
         <section-privacy-policy>
             <h2>Scope and Purpose</h2>
-            <p>This policy is applicable to the Processing of users’ Personal Data at GetBooks. The purpose of this policy is to provide our current, former and potential users’ (jointly referred to as “users” or “you”) with a general understanding of:</p>
+            <p>This policy is applicable to the Processing of users’ Personal Data at GetBooks.ai. The purpose of this policy is to provide our current, former and potential users’ (jointly referred to as “users” or “you”) with a general understanding of:</p>
             <ul>
             <li>Type of personal information and manner of collection</li>
             <li>Purpose of collection and processing of personal information</li>
@@ -34,7 +34,7 @@ const PrivacyPolicy = () => {
             <li><strong>Anonymous data or anonymized data</strong> - This is the category of data which is not identifiable to a natural person. Even if coupled with other information, identification of such a natural person is not possible. Automated decision making- Automated decision making is the process of making a decision by automated means through algorithms without any human involvement. These decisions can be based on factual data, digitally created profiles or through data inferred.</li>
             <li><strong>Consent</strong> - Any freely given, informed and unambiguous statement which may be given by a clear affirmative action maybe referred to as consent.</li>
             <li><strong>Cookies</strong> - cookie is a small piece of data given to a web browser by a web server. The browser stores the data in a text file so it can be sent back to the server each time the browser requests a page from the server. Cookies have the capacity to store some of your personal data. For more details on what cookies we use and what personal data we store through the use of cookies you may refer to our cookie policy here.</li>
-            <li><strong>Data Fiduciary</strong> - Any natural or legal person that alone or jointly with others, determines the purposes and means of the processing of personal data. For the purposes of this privacy policy GetBooks is the data fiduciary of data.</li>
+            <li><strong>Data Fiduciary</strong> - Any natural or legal person that alone or jointly with others, determines the purposes and means of the processing of personal data. For the purposes of this privacy policy GetBooks.ai is the data fiduciary of data.</li>
             <li><strong>Data Processor</strong> - The natural or legal person who processes personal data of data principals on behalf of the data fiduciary.</li>
             <li><strong>Data Principal</strong> - is the natural person who interacts with us and whose personal data we collect in accordance with the provisions of this privacy policy</li>
             <li><strong>Erasure or Deletion</strong> - the irretrievable obliteration or destruction of your saved personal data stored with us, such that your re identification through this data becomes impossible.</li>
@@ -47,11 +47,11 @@ const PrivacyPolicy = () => {
         </section-privacy-policy>
         <section-privacy-policy>
             <h2>Details of the Data Fiduciary/Joint Data Fiduciary</h2>
-            <p>GetBooks is the data fiduciary under this Privacy Policy. The startup is engaged in the business of providing unique AI solutions to its customers/users.</p>
+            <p>GetBooks.ai is the data fiduciary under this Privacy Policy. The startup is engaged in the business of providing unique AI solutions to its customers/users.</p>
         </section-privacy-policy>
         <section-privacy-policy>
             <h2>Data Protection Officer</h2>
-            <p>If you have any queries under this Privacy Policy or want clarification about our processing of your personal information, you can mail us at getbooksai@gmail.com. We will resolve your queries within one calendar month.</p>
+            <p>If you have any queries under this Privacy Policy or want clarification about our processing of your personal information, you can mail us at contact@getbooks.ai. We will resolve your queries within one calendar month.</p>
         </section-privacy-policy>
         <section-privacy-policy>
             <h2>Type of Personal Information and Manner of Collection</h2>
@@ -115,7 +115,7 @@ const PrivacyPolicy = () => {
         </section-privacy-policy>
         <section-privacy-policy>
             <h2>Lodging of Complaint</h2>
-            <p>If you have any issues with the way we process data or you need any clarification on our privacy practices you can always contact us at getbooksai@gmail.com. Your issues will be addressed by us as soon as possible and within a maximum period of one month. However, if you are still of the opinion that we are processing your personal data in violation of data protection laws and regulations you have the right to lodge a complaint with the supervisory authority.</p>
+            <p>If you have any issues with the way we process data or you need any clarification on our privacy practices you can always contact us at contact@getbooks.ai. Your issues will be addressed by us as soon as possible and within a maximum period of one month. However, if you are still of the opinion that we are processing your personal data in violation of data protection laws and regulations you have the right to lodge a complaint with the supervisory authority.</p>
         </section-privacy-policy>
         </div>
         <div style={{ height: '0.1rem' }}></div>

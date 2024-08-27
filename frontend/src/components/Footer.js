@@ -8,7 +8,7 @@ const Footer = () => (
       <Link to="/about-us">About Us</Link><span>|</span>
       <Link to="/blog">Blog</Link><span>|</span>
       <Link to="/privacy-policy">Privacy Policy</Link><span>|</span>
-      <a href="mailto:getbooksai@gmail.com">Contact Us</a>
+      <Link to="/contact-us">Contact Us</Link>
     </nav>
   </footer>
 );

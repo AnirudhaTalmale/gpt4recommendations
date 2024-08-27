@@ -14,6 +14,7 @@ import About from './components/About';
 import PrivacyPolicy from './components/PrivacyPolicy';
 import BookDetail from './components/BookDetail';
 import ScrollToTopOnFooterRoutes from './components/ScrollToTopOnFooterRoutes';
+import ContactUs from './components/ContactUs'; 
 
 import './App.css';
 
@@ -45,6 +46,7 @@ function App() {
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
           <Route path="/books/:bookId/:countryCode" element={<BookDetail />} />
           <Route path="/manage-subscription" element={<ManageSubscriptionPage />} />
+          <Route path="/contact-us" element={<ContactUs />} />
         </Routes>
       </div>
     </Router>
