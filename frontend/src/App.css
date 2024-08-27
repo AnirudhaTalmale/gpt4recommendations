@@ -1986,7 +1986,7 @@ body:not(.history-pane-open) .input-area {
 }
 
 .display-image {
-  margin-top: 0.15rem;
+  margin-top: 0.25rem;
   width: 1.2rem;
   height: 1.2rem;
   border-radius: 50%;

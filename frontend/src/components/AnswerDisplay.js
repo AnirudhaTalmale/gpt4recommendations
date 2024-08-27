@@ -214,11 +214,12 @@ function AnswerDisplay({
           {role === 'user' ? (
             userImage ? (
               <div><img src={userImage} alt="" className="display-image" /></div> // Display user image
+              
             ) : (
               <span>U</span> // Fallback if no image is available
             )
           ) : (
-            <div><img src="/GetBooks.png" className="display-image" alt="" /></div> // Icon for the assistant
+            <div><img src="/GetBooks_64_64.png" className="display-image" alt="" /></div> // Icon for the assistant
           )}
         </div>
         <div className="message-content" onClick={(e) => {
