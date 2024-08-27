@@ -1,5 +1,5 @@
 const redis = require('redis');
-const redisURL = process.env.NODE_ENV === 'local' ? process.env.REDIS_URL_LOCAL : process.env.REDIS_URL;
+const redisURL = process.env.REDIS_URL;
 
 const redisClient = redis.createClient({
   url: redisURL
