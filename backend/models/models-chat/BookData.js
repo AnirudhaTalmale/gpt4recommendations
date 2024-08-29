@@ -6,19 +6,62 @@ const bookSchema = new Schema({
   author: { type: String, required: true, index: true },
   previewLink: { type: String, default: '' },
   countrySpecific: {
-    IN: {
-      bookImage: String,
-      amazonLink: String,
-      amazonStarRating: Number,
-      amazonReviewCount: String
+    IN: {  // India
+          bookImage: String,
+          amazonLink: String,
+          amazonStarRating: Number,
+          amazonReviewCount: String
+        },
+        US: {  // United States
+          bookImage: String,
+          amazonLink: String,
+          amazonStarRating: Number,
+          amazonReviewCount: String
+        },
+        GB: {  // United Kingdom
+          bookImage: String,
+          amazonLink: String,
+          amazonStarRating: Number,
+          amazonReviewCount: String
+        },
+        DE: {  // Germany
+          bookImage: String,
+          amazonLink: String,
+          amazonStarRating: Number,
+          amazonReviewCount: String
+        },
+        CA: {  // Canada
+          bookImage: String,
+          amazonLink: String,
+          amazonStarRating: Number,
+          amazonReviewCount: String
+        },
+        FR: {  // France
+          bookImage: String,
+          amazonLink: String,
+          amazonStarRating: Number,
+          amazonReviewCount: String
+        },
+        JP: {  // Japan
+          bookImage: String,
+          amazonLink: String,
+          amazonStarRating: Number,
+          amazonReviewCount: String
+        },
+        NL: {  // Netherlands
+          bookImage: String,
+          amazonLink: String,
+          amazonStarRating: Number,
+          amazonReviewCount: String
+        },
+        SE: {  // Sweden
+          bookImage: String,
+          amazonLink: String,
+          amazonStarRating: Number,
+          amazonReviewCount: String
+        }        
     },
-    US: {
-      bookImage: String,
-      amazonLink: String,
-      amazonStarRating: Number,
-      amazonReviewCount: String
-    }
-  },
+    
   genres: {
     type: [{ type: String, required: true }],
     validate: {

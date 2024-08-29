@@ -82,9 +82,16 @@ function OnboardingPage() {
                     </div>
                     {isOpen && (
                         <ul className="dropdown-list">
-                            <li onClick={() => { setCountry('India'); setIsOpen(false); }}>India</li>
-                            <li onClick={() => { setCountry('United States'); setIsOpen(false); }}>United States</li>
-                        </ul>
+                        <li onClick={() => { setCountry('Canada'); setIsOpen(false); }}>Canada</li>
+                        <li onClick={() => { setCountry('France'); setIsOpen(false); }}>France</li>
+                        <li onClick={() => { setCountry('Germany'); setIsOpen(false); }}>Germany</li>
+                        <li onClick={() => { setCountry('India'); setIsOpen(false); }}>India</li>
+                        <li onClick={() => { setCountry('Japan'); setIsOpen(false); }}>Japan</li>
+                        <li onClick={() => { setCountry('Netherlands'); setIsOpen(false); }}>Netherlands</li>
+                        <li onClick={() => { setCountry('Sweden'); setIsOpen(false); }}>Sweden</li>
+                        <li onClick={() => { setCountry('United Kingdom'); setIsOpen(false); }}>United Kingdom</li>
+                        <li onClick={() => { setCountry('United States'); setIsOpen(false); }}>United States</li>
+                    </ul>                    
                     )}
                 </div>
                 <button type="submit">Continue</button>

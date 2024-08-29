@@ -149,10 +149,38 @@ function getAuthorBeforeAnd(author) {
   }
 }
 
+const countryCodes = {
+  'India': 'IN',
+  'United States': 'US',
+  'United Kingdom': 'GB',
+  'Germany': 'DE',
+  'Canada': 'CA',
+  'France': 'FR',
+  'Japan': 'JP',
+  'Netherlands': 'NL',
+  'Sweden': 'SE'
+};
+
+const amazonDomains = {
+  'IN': 'in',
+  'US': 'com',
+  'GB': 'co.uk',
+  'DE': 'de',
+  'CA': 'ca',
+  'FR': 'fr',
+  'JP': 'co.jp',
+  'NL': 'nl',
+  'SE': 'se'
+};
+
+const getCountryCode = (countryName) => {
+  return countryCodes[countryName] || 'US'; // Default to 'US' if country not found
+};
+
 async function getAmazonBookData(title, author, country) {
   const titleBeforeDelimiter = getTitleBeforeDelimiter(title);
   const authorBeforeAnd = getAuthorBeforeAnd(author);
-  const countryCode = country === 'India' ? 'IN' : 'US';
+  const countryCode = getCountryCode(country);
   
   const searchTitles = [title];
   if (title !== titleBeforeDelimiter) {
@@ -304,7 +332,8 @@ function createBookDetails(book, countrySpecificData) {
 }
 
 function updateBookWithAmazonData(book, amazonData, countryKey, title, author) {
-  const fallbackAmazonLink = `https://www.amazon.${countryKey === 'IN' ? 'in' : 'com'}/s?k=${encodeURIComponent(`${title.trim()} by ${author.trim()}`)}`;
+  const amazonDomain = amazonDomains[countryKey] || 'com';
+  const fallbackAmazonLink = `https://www.amazon.${amazonDomain}/s?k=${encodeURIComponent(`${title.trim()} by ${author.trim()}`)}`;
   
   if (!book.countrySpecific) {
     book.countrySpecific = {};
@@ -327,7 +356,9 @@ function updateBookWithAmazonData(book, amazonData, countryKey, title, author) {
 }
 
 function createNewBook(title, author, amazonData, googleData, countryKey, genres) {
-  const fallbackAmazonLink = `https://www.amazon.${countryKey === 'IN' ? 'in' : 'com'}/s?k=${encodeURIComponent(`${title.trim()} by ${author.trim()}`)}`;
+  const amazonDomain = amazonDomains[countryKey] || 'com';
+  const fallbackAmazonLink = `https://www.amazon.${amazonDomain}/s?k=${encodeURIComponent(`${title.trim()} by ${author.trim()}`)}`;
+  
   return new BookData({
     title,
     author,
@@ -353,7 +384,7 @@ const getBookData = async (title, author, userCountry, bookDataObjectId = '') =>
   try {
     const escapedTitle = escapeRegExp(title);
     const escapedAuthor = escapeRegExp(author);
-    const countryKey = userCountry === 'India' ? 'IN' : 'US';
+    const countryKey = getCountryCode(userCountry);
     let cacheKey = `book-data:${bookDataObjectId || title.toLowerCase()}:${countryKey}`;
 
     // Check if the data is available in Redis cache

@@ -329,7 +329,7 @@ const HistoryPane = forwardRef(({
               <li onClick={handleDeleteAccount}>
                 <i className="fa-solid fa-trash"></i> Delete account
               </li>
-              {userCountry === 'United States' && (
+              {userCountry !== 'India' && (
                 <li onClick={handleUpgradeClick}>
                   <i className="fa-solid fa-cart-shopping"></i> Upgrade Plan
                 </li>

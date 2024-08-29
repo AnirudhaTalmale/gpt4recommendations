@@ -277,7 +277,7 @@ const HomePage = () => {
             </tr>
             <tr>
               <td>Direct Amazon Buy Now Links</td>
-              <td>Available for both Amazon India and US</td>
+              <td>Available for 9 Countries</td>
               <td>Available only for Amazon US</td>
             </tr>
             <tr>

@@ -298,8 +298,15 @@ export const QuotesButton = ({ bookDataObjectId, bookTitle, author, onClick }) =
 
 export const mapCountryNameToCode = (countryName) => {
   const countryMapping = {
-      'India': 'IN',
-      'United States': 'US'
+    'India': 'IN',
+    'United States': 'US',
+    'United Kingdom': 'GB',
+    'Germany': 'DE',
+    'Canada': 'CA',
+    'France': 'FR',
+    'Japan': 'JP',
+    'Netherlands': 'NL',
+    'Sweden': 'SE'
   };
 
   return countryMapping[countryName] || null; // returns null if no match found
