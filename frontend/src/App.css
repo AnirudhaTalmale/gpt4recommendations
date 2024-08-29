@@ -1808,6 +1808,8 @@ body:not(.history-pane-open) .input-area {
   box-shadow: 0 2px 5px rgba(0,0,0,0.2);
   background-color: white;
   z-index: 1000;
+  max-height: 200px; /* Adjust this value to control the max height */
+  overflow-y: auto; /* Enables scrolling */
 }
 
 .dropdown-list li {
