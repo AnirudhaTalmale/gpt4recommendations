@@ -12,6 +12,14 @@ function InputBox({ onSubmit, isStreaming, onStopStreaming, isPaneOpen }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    if (input.trim()) {
+      // Track the search event with the Facebook Pixel
+      window.fbq && window.fbq('track', 'Search', {
+        search_string: input.trim()
+      });
+    }
+    
     onSubmit(input);
     setInput('');
     setIsInputNotEmpty(false); // Add this line

@@ -1219,7 +1219,7 @@ if (process.env.NODE_ENV === 'local') {
 
     try {
       const twoDaysAgo = new Date();
-      twoDaysAgo.setDate(twoDaysAgo.getDate() - 10);
+      twoDaysAgo.setDate(twoDaysAgo.getDate() - 20);
 
       const bookActions = await BookAction.find({
         createdAt: { $gte: twoDaysAgo },
