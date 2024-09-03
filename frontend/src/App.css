@@ -1281,7 +1281,7 @@ body:not(.history-pane-open) .input-area {
   
   margin-left: 1rem;
   margin-right: 1rem;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
   line-height: 2.15rem;
 }
 
