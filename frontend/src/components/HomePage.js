@@ -11,6 +11,12 @@ import { v4 as uuidv4 } from 'uuid';
 import Cookies from 'js-cookie';
 
 
+function isEmbeddedWebView() {
+  const userAgent = navigator.userAgent; // Directly using userAgent
+  return /wv|WebView|FBAN|FBAV|Twitter|Instagram/i.test(userAgent);
+}
+
+
 function SampleNextArrow(props) {
   const { className, style, onClick } = props;
   return (
@@ -52,6 +58,8 @@ const sliderSettings = {
 
 const HomePage = () => {
   let navigate = useNavigate();
+  const [inWebView, setInWebView] = useState(false);
+
   const carouselImages = [
     {
       src: '/worlds_most_influential_people_biographies.png',
@@ -175,6 +183,7 @@ const HomePage = () => {
     };
 
     useEffect(() => {
+      setInWebView(isEmbeddedWebView());
       let userId = Cookies.get('user_id');
     
       if (!userId) {
@@ -201,11 +210,12 @@ const HomePage = () => {
       <section className="hero">
         <h2>AI-Powered Book Recommendation App</h2>
           <div className="login-container">
-            <button onClick={handleSignupGoogle} className="login-button">
-                <img src="/icons8-google-logo.svg" alt="" className="google-logo" />
-                Continue with Google
-            </button>
-            
+            {!inWebView && (
+              <button onClick={handleSignupGoogle} className="login-button">
+                  <img src="/icons8-google-logo.svg" alt="" className="google-logo" />
+                  Continue with Google
+              </button>
+            )}
             <div className="divider">
                 <span className="line"></span>
                 OR
