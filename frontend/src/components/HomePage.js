@@ -211,17 +211,19 @@ const HomePage = () => {
         <h2>AI-Powered Book Recommendation App</h2>
           <div className="login-container">
             {!inWebView && (
+              <>
               <button onClick={handleSignupGoogle} className="login-button">
                   <img src="/icons8-google-logo.svg" alt="" className="google-logo" />
                   Continue with Google
               </button>
-            )}
+            
             <div className="divider">
                 <span className="line"></span>
                 OR
                 <span className="line"></span>
             </div>
-
+            </>
+            )}
             <form onSubmit={handleLoginWithEmail} noValidate>
                 <div className="email-input-group">
                     <input
