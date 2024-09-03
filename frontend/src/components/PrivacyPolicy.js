@@ -51,7 +51,7 @@ const PrivacyPolicy = () => {
         </section-privacy-policy>
         <section-privacy-policy>
             <h2>Data Protection Officer</h2>
-            <p>If you have any queries under this Privacy Policy or want clarification about our processing of your personal information, you can mail us at contact@getbooks.ai. We will resolve your queries within one calendar month.</p>
+            <p>If you have any queries under this Privacy Policy or want clarification about our processing of your personal information, you can mail us at getbooksai@gmail.com. We will resolve your queries within one calendar month.</p>
         </section-privacy-policy>
         <section-privacy-policy>
             <h2>Type of Personal Information and Manner of Collection</h2>
@@ -115,7 +115,7 @@ const PrivacyPolicy = () => {
         </section-privacy-policy>
         <section-privacy-policy>
             <h2>Lodging of Complaint</h2>
-            <p>If you have any issues with the way we process data or you need any clarification on our privacy practices you can always contact us at contact@getbooks.ai. Your issues will be addressed by us as soon as possible and within a maximum period of one month. However, if you are still of the opinion that we are processing your personal data in violation of data protection laws and regulations you have the right to lodge a complaint with the supervisory authority.</p>
+            <p>If you have any issues with the way we process data or you need any clarification on our privacy practices you can always contact us at getbooksai@gmail.com. Your issues will be addressed by us as soon as possible and within a maximum period of one month. However, if you are still of the opinion that we are processing your personal data in violation of data protection laws and regulations you have the right to lodge a complaint with the supervisory authority.</p>
         </section-privacy-policy>
         </div>
         <div style={{ height: '0.1rem' }}></div>

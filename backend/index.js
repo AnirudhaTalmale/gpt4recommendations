@@ -94,16 +94,14 @@ app.get('/', (req, res) => {
 });  
 
 let transporter = nodemailer.createTransport({
-  host: 'mail.privateemail.com',
-  port: 465,
-  secure: true, // true for 465, false for other ports
+  host: 'smtp.gmail.com',
+  port: 587,
+  secure: false,
   auth: {
-    user: process.env.EMAIL_USER,
+    user: process.env.EMAIL_USER, 
     pass: process.env.EMAIL_PASS
   } 
-});
-
-
+}); 
 
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
