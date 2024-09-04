@@ -41,6 +41,31 @@ ol li {
 
 .header {
   display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 40px; /* You can adjust the height as needed */
+  padding: 0 20px; /* Add padding on the left and right for spacing */
+  background-color: #f8f9fa; /* Example background color */
+}
+
+.menu-button-small-screen,
+.new-session-button-small-screen,
+.new-session-button-small-screen-book-detail {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1em;
+}
+
+.header-title {
+  font-size: 1.05rem; /* Example font size */
+  color: #333; /* Example text color */
+  font-weight: bold;
+}
+
+
+/* .header {
+  display: flex;
   width: 100dvw;
   height: 2rem;
   justify-content: space-between; 
@@ -51,8 +76,8 @@ ol li {
 
 .header-title {
   display: inline-block;
-  font-size: 1.15rem; 
-  margin-top: 0.33rem !important;
+  font-size: 1.15rem;
+  margin-top: 0.33rem;
   font-weight: bold;
 }
 
@@ -64,9 +89,9 @@ ol li {
   color: black;
   margin-right: 1.6rem;
   margin-top: 0.05rem;
-}
+} */
 
-.new-session-button-small-screen-book-detail {
+/* .new-session-button-small-screen-book-detail {
   border: none;
   background: none;
   font-size: 1.15rem;
@@ -74,8 +99,8 @@ ol li {
   color: black;
   margin-right: 0.7rem;
   margin-left: 0.5rem;
-}
-
+} */
+/* 
 .menu-button-small-screen {
   border: none;
   background: none;
@@ -85,7 +110,7 @@ ol li {
   margin-left: 0.25rem;
   margin-right: 0.15rem;
   margin-top: 0.1rem;
-}
+} */
 
 .header-content {
   display: flex; /* Use flexbox to align items side by side */
