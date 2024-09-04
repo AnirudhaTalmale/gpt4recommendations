@@ -419,12 +419,11 @@ app.post('/send-verification-email', async (req, res) => {
     transporter.sendMail({
       from: '"GetBooks.ai" <' + process.env.EMAIL_USER + '>',
       to: email,
-      subject: 'GetBooks.ai - Verify your email',
+      subject: 'Sign in to GetBooks.ai',
       html: `
         <div style="font-family: 'Arial', sans-serif; text-align: left; padding: 20px; max-width: 600px; margin: auto;">
-          <h1 style="font-size: 26px;">Verify your email address</h1>
-          <p style="font-size: 16px;">To continue setting up your GetBooks.ai account, please verify that this is your email address.</p>
-          <a href="${verificationUrl}" style="background-color: #4CAF50; color: white; padding: 8px 18px; text-decoration: none; border-radius: 5px; display: inline-block; font-size: 16px;">Verify email address</a>
+          <h1 style="font-size: 26px;">Sign in to your account</h1>
+          <a href="${verificationUrl}" style="background-color: #4CAF50; color: white; padding: 8px 18px; text-decoration: none; border-radius: 5px; display: inline-block; font-size: 16px;">Sign in</a>
           <p style="color: #666666; margin-top: 28px; font-size: 12px;">This link will expire in 15 minutes. If you did not make this request, please disregard this email.</p>
         </div>
       `

@@ -1653,12 +1653,12 @@ body:not(.history-pane-open) .input-area {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 100dvh; 
+  min-height: 90dvh; 
   text-align: center;
+  padding: 1rem;
 }
 
 .verification-message {
-  max-width: 250px; /* Adjust as needed */
 }
 
 .verification-message h2 {
@@ -1667,7 +1667,7 @@ body:not(.history-pane-open) .input-area {
 
 .verification-message p {
   font-size: 1rem;
-  line-height: 1.5rem;
+  line-height: 1.7rem;
 }
 
 .login-container .error-message {

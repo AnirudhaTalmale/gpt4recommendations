@@ -36,8 +36,8 @@ function EmailVerificationPage() {
             <HeaderWithBackButton />
             <div className="centered-container">
                 <div className="verification-message">
-                    <h2>Verify your email</h2>
-                    <p>We sent an email to <strong>{emailToBeVerified}</strong>. Click the link inside to get started.</p>
+                    <h2>Check your email</h2>
+                    <p>A temporary login link has been sent to <strong>{emailToBeVerified}</strong></p>
                     {!emailResent ? (
                         <button onClick={resendVerificationEmail} className="resend-email-button">
                             Resend email
