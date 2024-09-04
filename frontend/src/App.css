@@ -52,17 +52,18 @@ ol li {
 .header-title {
   display: inline-block;
   font-size: 1.15rem; 
-  margin-top: 0.452rem;
+  margin-top: 0.454rem;
   font-weight: bold;
 }
 
 .new-session-button-small-screen {
   border: none;
   background: none;
-  font-size: 1.15rem;
+  font-size: 1.11rem;
   cursor: pointer;
   color: black;
   margin-right: 1.6rem;
+  margin-top: 0.05rem;
 }
 
 .new-session-button-small-screen-book-detail {
