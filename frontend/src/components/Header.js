@@ -16,7 +16,6 @@ function Header({ togglePane }) {
           <button className="menu-button-small-screen" onClick={togglePane}>
             <i className="fa-solid fa-bars"></i>
           </button>
-          <div className="header-title">GPT-4 Turbo</div>
           <button className="new-session-button-small-screen" onClick={onNewSession}>
             <i class="fa-solid fa-house"></i>
           </button>
