@@ -45,7 +45,7 @@ ol li {
   align-items: center;
   height: 40px; /* You can adjust the height as needed */
   padding: 0 20px; /* Add padding on the left and right for spacing */
-  background-color: #f8f9fa; /* Example background color */
+  border: 0.5px solid lightgrey;
 }
 
 .menu-button-small-screen,
