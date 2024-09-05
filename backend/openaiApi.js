@@ -482,7 +482,7 @@ const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, is
 
     if (isKeyInsights || isAnecdotes || isQuotes || isMoreDetails) {
       const { bookImage, amazonLink, amazonStarRating, amazonReviewCount } = await getBookData(bookTitle, author, userCountry, bookDataObjectId);
-      console.log("bookImage is", bookImage);
+      // console.log("bookImage is", bookImage);
       const bookInfoHtml = createBookInfoHtml(bookTitle, author, amazonStarRating, amazonReviewCount);
       let imageDiv = '';
       if (bookImage) {
