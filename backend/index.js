@@ -1009,32 +1009,34 @@ app.post('/api/session', async (req, res) => {
 });
 
 // GET endpoint for retrieving all sessions with their messages
-app.get('/api/sessions', async (req, res) => {
-  try {
-    const userId = req.query.userId; // Get user ID from query parameter
-    
-    const excludeIds = process.env.EXCLUDE_SESSION_IDS.split(','); // Array of IDs to exclude
+if (process.env.NODE_ENV === 'production') { 
+  app.get('/api/sessions', async (req, res) => {
+    try {
+      const userId = req.query.userId; // Get user ID from query parameter
+      
+      const excludeIds = process.env.EXCLUDE_SESSION_IDS.split(','); // Array of IDs to exclude
 
-    if (!userId) {
-      return res.status(400).json({ message: 'User ID is required' });
+      if (!userId) {
+        return res.status(400).json({ message: 'User ID is required' });
+      }
+
+      let query = {};
+      if (userId === process.env.ADMIN_ID) {
+        // Exclude sessions belonging to specified IDs when accessed by the admin
+        query = { user: { $nin: excludeIds } };
+      } else {
+        // Non-admin users can only access their own sessions
+        query = { user: userId };
+      }
+
+      const sessions = await Session.find(query);
+      res.json(sessions);
+    } catch (error) {
+      console.error('GET /api/sessions - Error:', error);
+      res.status(500).json({ message: 'Error retrieving sessions', error: error.toString() });
     }
-
-    let query = {};
-    if (userId === process.env.ADMIN_ID) {
-      // Exclude sessions belonging to specified IDs when accessed by the admin
-      query = { user: { $nin: excludeIds } };
-    } else {
-      // Non-admin users can only access their own sessions
-      query = { user: userId };
-    }
-
-    const sessions = await Session.find(query);
-    res.json(sessions);
-  } catch (error) {
-    console.error('GET /api/sessions - Error:', error);
-    res.status(500).json({ message: 'Error retrieving sessions', error: error.toString() });
-  }
-});
+  });
+}
 
 // DELETE endpoint for deleting a session
 app.delete('/api/session/:sessionId', async (req, res) => {
@@ -1204,26 +1206,52 @@ app.get('/api/books/:bookId/:country', async (req, res) => {
 
 if (process.env.NODE_ENV === 'local') { 
 
+  const excludedEmails = [
+    'getbooksai@gmail.com', 
+    'anirudhatalmale7@gmail.com',
+    'anirudhatalmale9@gmail.com', 
+    'anirudhatalmale4@gmail.com', 
+    'anirudhatalmale7@gmail.com'
+  ];
+
+  app.get('/api/sessions', async (req, res) => {
+    try {
+      const userId = '66d74c087cc59ccb247a93f0'; // Get user ID from query parameter
+
+      let query = { user: userId };
+
+      const sessions = await Session.find(query);
+      res.json(sessions);
+    } catch (error) {
+      console.error('GET /api/sessions - Error:', error);
+      res.status(500).json({ message: 'Error retrieving sessions', error: error.toString() });
+    }
+  });
+
   // GET endpoint to retrieve book actions from the last 2 days
   app.get('/api/book-actions', async (req, res) => {
     
-    const excludedEmails = [
-      'getbooksai@gmail.com', 
-      'anirudhatalmale9@gmail.com', 
-      'anirudhatalmale4@gmail.com', 
-      'anirudhatalmale7@gmail.com'
-    ];
-
+    const IST_OFFSET = 5.5 * 60 * 60 * 1000; // IST is UTC + 5:30, in milliseconds
+  
     try {
       const twoDaysAgo = new Date();
-      twoDaysAgo.setDate(twoDaysAgo.getDate() - 20);
-
-      const bookActions = await BookAction.find({
+      twoDaysAgo.setHours(twoDaysAgo.getHours() - 200); // Adjust to 2 days ago
+  
+      let bookActions = await BookAction.find({
         createdAt: { $gte: twoDaysAgo },
         userEmail: { $nin: excludedEmails }
-      }).sort({ createdAt: -1 }); // Sorting by date, newest first
-
-      res.status(200).json(bookActions);
+      }).sort({ createdAt: -1 });
+  
+      // Convert each createdAt to IST before sending
+      const convertedData = bookActions.map(action => {
+        let date = new Date(action.createdAt.getTime() + IST_OFFSET);
+        return {
+          ...action.toObject(),
+          createdAt: date.toISOString().replace('Z', '+05:30') // Adjusting ISO string to show IST offset explicitly
+        };
+      });
+  
+      res.status(200).json(convertedData);
     } catch (error) {
       console.error('Error retrieving book actions:', error);
       res.status(500).json({ message: 'Failed to retrieve book actions', error: error.toString() });
@@ -1924,33 +1952,36 @@ if (process.env.NODE_ENV === 'local') {
   });
 
   app.get('/api/recent-communicators', async (req, res) => {
-    const excludedEmails = [
-      'getbooksai@gmail.com', 
-      'anirudhatalmale9@gmail.com', 
-      'anirudhatalmale4@gmail.com', 
-      'anirudhatalmale7@gmail.com'
-    ];
-
+  
+    const IST_OFFSET = 5.5 * 60 * 60 * 1000; // IST is UTC + 5:30, in milliseconds
+  
     try {
       const topCommunicators = await User.find({
-        'local.email': { $nin: excludedEmails },  // Exclude specified emails
-        'totalMessageCount': { $gt: 0 }  // Ensure totalMessageCount is greater than 0
-      }).sort({ lastMessageTimestamp: -1 }); // Sorting users by last message timestamp in descending order
-
-      // Counting the users
-      const count = topCommunicators.length;
-
+        'local.email': { $nin: excludedEmails },
+        'totalMessageCount': { $gt: 0 }
+      }).sort({ lastMessageTimestamp: -1 });
+  
+      // Convert each lastMessageTimestamp to IST
+      const usersWithConvertedTime = topCommunicators.map(user => {
+        let userObject = user.toObject();  // Convert mongoose document to JavaScript object
+        if (userObject.lastMessageTimestamp) {
+          let newDate = new Date(userObject.lastMessageTimestamp.getTime() + IST_OFFSET);
+          // Display with the IST offset, not just 'Z'
+          userObject.lastMessageTimestamp = newDate.toISOString().replace('Z', '+05:30');
+        }
+        return userObject;
+      });
+  
       res.json({
         message: 'Successfully retrieved top communicators',
-        totalUsers: count, // Total number of top communicators
-        users: topCommunicators   // List of users sorted from most recent to oldest last message timestamp
+        totalUsers: usersWithConvertedTime.length,
+        users: usersWithConvertedTime
       });
     } catch (error) {
       console.error('Error fetching top communicators:', error);
       res.status(500).json({ message: 'Server error occurred while fetching top communicators' });
     }
   });
-
   
  // api to fetch redis data
   app.get('/api/redis-data', async (req, res) => {

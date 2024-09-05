@@ -7,14 +7,12 @@ export const handleActionButtonClick = async (className, bookTitle, author, user
   }
 
   try {
-    const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/book-action`, {
+    await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/book-action`, {
         buttonClassName: className,
         title: bookTitle,
         author: author,
         userEmail: userEmail
     });
-
-    console.log(`${className} action recorded:`, response.data);
   } catch (error) {
     console.error(`Error handling ${className} click:`, error);
   }

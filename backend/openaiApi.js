@@ -251,27 +251,11 @@ const getGoogleBookData = async (title, author) => {
     let googleImage = '';
     let previewLink = '';
 
-    const titleBeforeDelimiter = getTitleBeforeDelimiter(title);
-    const searchTitleNormalized = normalizeTitle(titleBeforeDelimiter);
 
     if (response.data.items?.length) {
       // console.log("response.data.items is", response.data.items);
       
-      const book = response.data.items.find(item => {
-        const itemTitleNormalized = normalizeTitle(item.volumeInfo.title);
-        const itemPreviewLinkTitleNormalized = normalizeTitle(extractTitleFromLink(item.volumeInfo.previewLink));
-        
-        // Check if viewability is not 'NO_PAGES'
-        const hasPreviewAvailable = item.accessInfo.viewability !== 'NO_PAGES';
-        
-        // Additional check for language
-        const isEnglish = item.volumeInfo.language === 'en';
-
-        // Adjust search condition based on language
-        return hasPreviewAvailable && (isEnglish ? 
-          (itemTitleNormalized.includes(searchTitleNormalized) || searchTitleNormalized.includes(itemTitleNormalized)) :
-          (itemTitleNormalized.includes(searchTitleNormalized) || searchTitleNormalized.includes(itemTitleNormalized) || itemPreviewLinkTitleNormalized.includes(searchTitleNormalized) || searchTitleNormalized.includes(itemPreviewLinkTitleNormalized)));
-      });
+      const book = response.data.items[0];
         
       if (book) {
         const { volumeInfo } = book;
