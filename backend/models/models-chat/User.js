@@ -26,7 +26,8 @@ const userSchema = new Schema({
   role: { type: String, enum: Object.values(roles), default: roles.USER },
   createdAt: { type: Date, default: Date.now },
   accessToken: { type: String },
-  verificationToken: { type: String },
+  verificationToken: { type: String },  // JWT token for email verification
+  verificationCode: { type: String },  // Verification code for email confirmation
   firstMessageTimestamp: { type: Date },
   lastMessageTimestamp: { type: Date },
   messageCount: { type: Number, default: 0 },

@@ -77,7 +77,8 @@ const sessionConfig = {
     sameSite: 'Lax', 
     httpOnly: true,
     maxAge: 30 * 24 * 60 * 60 * 1000 // 30 days in milliseconds
-  }
+  },
+  name: 'connect.sid'
 }; 
 
 // Use the session middleware
@@ -111,7 +112,7 @@ server.listen(PORT, () => {
 // Authentication Code: 
 
 app.get('/api/check-auth', async (req, res) => {
-
+  console.log("check-auth");
   if (req.isAuthenticated()) {
 
     // Check if onboarding is complete based on the displayName being set
@@ -380,73 +381,109 @@ app.post('/send-verification-email', async (req, res) => {
   const { email } = req.body;
 
   try {
-    const rateLimit = await EmailRateLimit.findOne({ email });
-
-    if (rateLimit) {
-      const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000); // 1 hour ago
-      if (rateLimit.lastSent > oneHourAgo) {
-        if (rateLimit.count >= 8) {
-          const resetTime = new Date(rateLimit.lastSent.getTime() + 60 * 60 * 1000); // 1 hour after the last sent email
-          return res.status(429).json({ 
-            message: 'Rate limit exceeded.', 
-            resetTime: resetTime.toISOString() // Send the reset time in ISO format
-          });
-        }
-        rateLimit.count++;
+      const rateLimit = await EmailRateLimit.findOne({ email });
+      if (rateLimit) {
+          const oneHourAgo = new Date(Date.now() - 3600000); // 1 hour ago
+          if (rateLimit.lastSent > oneHourAgo) {
+              if (rateLimit.count >= 8) {
+                  const resetTime = new Date(rateLimit.lastSent.getTime() + 3600000);
+                  return res.status(429).json({
+                      message: 'Rate limit exceeded.',
+                      resetTime: resetTime.toISOString()
+                  });
+              }
+              rateLimit.count++;
+          } else {
+              rateLimit.count = 1; // Reset count
+          }
+          rateLimit.lastSent = new Date();
+          await rateLimit.save();
       } else {
-        rateLimit.count = 1; // Reset the count if it's been more than an hour
+          await new EmailRateLimit({ email, count: 1, lastSent: new Date() }).save();
       }
-      rateLimit.lastSent = new Date(); // Update lastSent time
-      await rateLimit.save();
-    } else {
-      // If no rate limit record exists, create one
-      await new EmailRateLimit({ email, count: 1, lastSent: new Date() }).save();
-    }
 
-    let user = await User.findOne({ 'local.email': email });
-
-    const newVerificationToken = jwt.sign(
-        { email: email },
-        process.env.JWT_SECRET,
-        { expiresIn: '15m' }
-    );
-
-    const hasDisplayName = user && user.displayName ? 'true' : 'false';
-    const hasCountry = user && user.country ? 'true' : 'false';
-    const verificationUrl = `${process.env.FRONTEND_URL}/onboarding?token=${newVerificationToken}&hasDisplayName=${hasDisplayName}&hasCountry=${hasCountry}`;
+      let user = await User.findOne({ 'local.email': email });
+      if (!user) {
+          user = new User({
+              local: { email: email },
+              verificationToken: '',
+              verificationCode: ''
+          });
+      }
       
-    // Send verification email
-    transporter.sendMail({
-      from: '"GetBooks.ai" <' + process.env.EMAIL_USER + '>',
-      to: email,
-      subject: 'Sign in to GetBooks.ai',
-      html: `
-        <div style="font-family: 'Arial', sans-serif; text-align: left; padding: 20px; max-width: 600px; margin: auto;">
-          <h1 style="font-size: 26px;">Sign in to your account</h1>
-          <a href="${verificationUrl}" style="background-color: #4CAF50; color: white; padding: 8px 18px; text-decoration: none; border-radius: 5px; display: inline-block; font-size: 16px;">Sign in</a>
-          <p style="color: #666666; margin-top: 28px; font-size: 12px;">This link will expire in 15 minutes. If you did not make this request, please disregard this email.</p>
-        </div>
-      `
-    });
+      const verificationCode = Math.floor(100000 + Math.random() * 900000); // 6-digit code
+      const newVerificationToken = jwt.sign({ email }, process.env.JWT_SECRET, { expiresIn: '15m' });
 
-    if (user) {
       user.verificationToken = newVerificationToken;
+      user.verificationCode = verificationCode;
       await user.save();
-    } else {
-        user = new User({
-            local: { email: email },
-            verificationToken: newVerificationToken
-        });
-        await user.save();
+
+      transporter.sendMail({
+          from: '"GetBooks.ai" <' + process.env.EMAIL_USER + '>',
+          to: email,
+          subject: 'Your Verification Code',
+          html: `
+              <p>Your verification code is: <strong>${verificationCode}</strong></p>
+              <p>This code will expire in 15 minutes.</p>
+          `
+      });
+
+      res.json({ message: 'Verification email sent' });
+  } catch (error) {
+      console.error('Error in sending email:', error);
+      res.status(500).send('Internal Server Error');
+  }
+});
+
+app.post('/verify-code', async (req, res) => {
+  const { email, code } = req.body;
+
+  try {
+    const user = await User.findOne({ 'local.email': email });
+
+    if (!user || user.verificationCode !== code) {
+      return res.status(400).send('Invalid verification code');
     }
 
-    // Respond that the email is sent
-    res.json({ message: 'Verification email sent' });
+    // Check if the verification token is expired
+    try {
+      jwt.verify(user.verificationToken, process.env.JWT_SECRET);
+
+      // Check if onboarding is completed
+      if (user.displayName && user.country && user.image) {
+        // Proceed to log the user in and redirect to /chat
+        
+        req.login(user, (err) => {
+          if (err) { 
+            return res.status(500).send('Error logging in'); 
+          }
+          req.session.save(err => {
+            if (err) {
+              return res.status(500).send('Failed to save session');
+            }
+            console.log("Session saved successfully. Session ID:", req.sessionID);
+          console.log("Authentication status:", req.isAuthenticated());
+            res.json({ success: true, redirectTo: '/chat' });
+          });
+        });
+        
+      } else {
+        // Redirect to onboarding if not all fields are set, using the existing verification token
+        res.json({ success: true, redirectTo: `/onboarding?token=${user.verificationToken}` });
+      }
+    } catch (err) {
+      if (err.name === 'TokenExpiredError') {
+        res.status(400).send('Verification token expired, please request a new code.');
+      } else {
+        throw err; // Handle other unexpected errors
+      }
+    }
   } catch (error) {
-    console.error('Error in sending email:', error);
+    console.error('Error verifying code:', error);
     res.status(500).send('Internal Server Error');
   }
 });
+
 
 app.post('/api/onboarding', async (req, res) => {
   const { token, displayName, country } = req.body;
