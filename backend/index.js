@@ -178,29 +178,18 @@ app.get('/api/user-info', (req, res) => {
 });
 
 app.get('/auth/logout', (req, res, next) => {
-  const accessToken = req.user.accessToken; // Retrieve the stored access token
   req.logout(function(err) {
     if (err) { return next(err); }
 
-    axios.post('https://accounts.google.com/o/oauth2/revoke', `token=${accessToken}`, {
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded'
-      }
-    }).then(() => {
-      console.log('Google token revoked');
-    }).catch(err => {
-      console.error('Complete error revoking Google token:', err);
-      console.error('Request sent:', err.config);
-    }); 
-  
-    
+    // Immediately destroy the session and clear the cookie
     req.session.destroy(function(err) {
       if (err) { return next(err); }
       res.clearCookie('connect.sid');
       res.json({ message: 'Logged out successfully' });
     });
   });
-}); 
+});
+
 
 // ----------- Paypal code --------------
 
