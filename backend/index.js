@@ -112,7 +112,6 @@ server.listen(PORT, () => {
 // Authentication Code: 
 
 app.get('/api/check-auth', async (req, res) => {
-  console.log("check-auth");
   if (req.isAuthenticated()) {
 
     // Check if onboarding is complete based on the displayName being set
@@ -375,8 +374,7 @@ async function verifySignature(event, headers) {
   return verifier.verify(certPem, signatureBuffer);
 }
 
-// Email Verification code and Onboarding code: 
-
+// Endpoint to send verification email with code
 app.post('/send-verification-email', async (req, res) => {
   const { email } = req.body;
 
@@ -439,48 +437,42 @@ app.post('/verify-code', async (req, res) => {
   const { email, code } = req.body;
 
   try {
+    // Find the user by their email
     const user = await User.findOne({ 'local.email': email });
-
+    
     if (!user || user.verificationCode !== code) {
-      return res.status(400).send('Invalid verification code');
+      return res.status(400).json({ message: 'Invalid verification code' });
     }
 
-    // Check if the verification token is expired
-    try {
-      jwt.verify(user.verificationToken, process.env.JWT_SECRET);
+    // Verify the JWT token (check for expiration)
+    jwt.verify(user.verificationToken, process.env.JWT_SECRET, async (err, decoded) => {
+      if (err) {
+        if (err.name === 'TokenExpiredError') {
+          return res.status(400).json({ message: 'Verification token expired, please request a new code' });
+        }
+        throw err; // For any other error, rethrow to be caught by the outer catch
+      }
 
-      // Check if onboarding is completed
+      // If the user has completed profile setup, log them in and redirect to /chat
       if (user.displayName && user.country && user.image) {
-        // Proceed to log the user in and redirect to /chat
-        
         req.login(user, (err) => {
-          if (err) { 
-            return res.status(500).send('Error logging in'); 
+          if (err) {
+            return res.status(500).json({ message: 'Error logging in' });
           }
-          req.session.save(err => {
-            if (err) {
-              return res.status(500).send('Failed to save session');
-            }
-            console.log("Session saved successfully. Session ID:", req.sessionID);
-          console.log("Authentication status:", req.isAuthenticated());
-            res.json({ success: true, redirectTo: '/chat' });
-          });
+          return res.json({ success: true, redirectTo: '/chat' });
         });
-        
-      } else {
-        // Redirect to onboarding if not all fields are set, using the existing verification token
-        res.json({ success: true, redirectTo: `/onboarding?token=${user.verificationToken}` });
+      } 
+      // Otherwise, return the token for the onboarding process
+      else {
+        return res.json({
+          success: true,
+          verificationToken: user.verificationToken // Send the token for client-side onboarding
+        });
       }
-    } catch (err) {
-      if (err.name === 'TokenExpiredError') {
-        res.status(400).send('Verification token expired, please request a new code.');
-      } else {
-        throw err; // Handle other unexpected errors
-      }
-    }
+    });
   } catch (error) {
     console.error('Error verifying code:', error);
-    res.status(500).send('Internal Server Error');
+    return res.status(500).json({ message: 'Internal Server Error' });
   }
 });
 
@@ -491,7 +483,6 @@ app.post('/api/onboarding', async (req, res) => {
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const user = await User.findOne({ 'local.email': decoded.email });
-
     if (!user) {
       return res.status(400).send('Invalid token');
     }

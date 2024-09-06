@@ -27,6 +27,7 @@ function OnboardingPage() {
                 country
             }, { withCredentials: true });
             
+            // If the response indicates success, navigate to the provided redirect URL
             if (response.data.success) {
                 navigate(response.data.redirectTo);
             }

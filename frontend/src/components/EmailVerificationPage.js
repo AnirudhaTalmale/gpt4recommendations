@@ -14,15 +14,28 @@ function EmailVerificationPage() {
 
     const handleVerifyAndSignIn = async () => {
         try {
-            console.log("emailToBeVerified is", emailToBeVerified);
             const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/verify-code`, {
                 email: emailToBeVerified,
                 code: verificationCode
+            }, {
+                withCredentials: true  // Ensures cookies, authorization headers, and TLS client certificates are sent with the request
             });
-            if (response.data && response.data.redirectTo) {
-                navigate(response.data.redirectTo); // navigate to either /chat or /onboarding?token=XYZ
-            } else {
-                console.error('Unexpected response structure:', response);
+    
+            // If the response indicates success
+            if (response.data.success) {
+                if (response.data.redirectTo) {
+                    // If the user is fully onboarded, redirect to /chat
+                    navigate(response.data.redirectTo);
+                } else if (response.data.verificationToken) {
+                    // If the user needs onboarding, use the verificationToken for onboarding
+                    const onboardingResponse = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/onboarding`, {
+                        token: response.data.verificationToken
+                    }, { withCredentials: true });
+
+                    if (onboardingResponse.data.success) {
+                        navigate(onboardingResponse.data.redirectTo);  // Redirect after onboarding
+                    }
+                }
             }
         } catch (error) {
             if (error.response && error.response.status === 400) {
@@ -33,6 +46,7 @@ function EmailVerificationPage() {
             }
         }
     };
+    
     
 
     const resendVerificationEmail = async () => {
