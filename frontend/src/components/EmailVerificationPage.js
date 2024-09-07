@@ -74,34 +74,36 @@ function EmailVerificationPage() {
     return (
         <div>
             <HeaderWithBackButton />
-            <div className="centered-container">
-                <div className="verification-message">
-                    <h2>Verify Your Email</h2>
+            <div className="email-verification-container">
+                <div className="email-verification-box">
+                    <h2>Enter the code from your email</h2>
+                    <p>A verification code has been sent to {emailToBeVerified} </p>
                     <input
                         type="text"
                         value={verificationCode}
                         onChange={(e) => setVerificationCode(e.target.value)}
                         placeholder="Verification Code"
+                        className="email-verification-input"
                     />
                     {verificationError && (
-                        <div className="error-message">{verificationError}</div>
+                        <div className="email-verification-error-message">{verificationError}</div>
                     )}
-                    <button onClick={handleVerifyAndSignIn} disabled={!verificationCode}>
+                    <button onClick={handleVerifyAndSignIn} disabled={!verificationCode} className="email-verification-signin-btn">
                         Sign In
                     </button>
                     {!emailResent ? (
-                        <button onClick={resendVerificationEmail} className="resend-email-button">
+                        <button onClick={resendVerificationEmail} className="email-verification-resend-btn">
                             Resend Email
                         </button>
                     ) : (
-                        <div className="email-sent-confirmation">
+                        <div className="email-verification-confirmation">
                             Email sent. You can resend in {countdown} seconds.
                         </div>
                     )}
                 </div>
             </div>
         </div>
-    );
+    );    
 }
 
 export default EmailVerificationPage;

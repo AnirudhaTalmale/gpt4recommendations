@@ -406,14 +406,17 @@ app.post('/send-verification-email', async (req, res) => {
       await user.save();
 
       transporter.sendMail({
-          from: '"GetBooks.ai" <' + process.env.EMAIL_USER + '>',
-          to: email,
-          subject: 'Your Verification Code',
-          html: `
-              <p>Your verification code is: <strong>${verificationCode}</strong></p>
-              <p>This code will expire in 15 minutes.</p>
-          `
-      });
+        from: `"GetBooks.ai" <${process.env.EMAIL_USER}>`,
+        to: email,
+        subject: `${verificationCode} is your GetBooks.ai verification code`, // Corrected: Template literal used
+        html: `
+            <div style="font-family: Arial, sans-serif; color: #333; padding: 20px; text-align: center; border: 1px solid #ddd; border-radius: 8px; max-width: 600px; margin: 20px auto;">
+                <h2 style="color: #5c67f2;">Verification Code</h2>
+                <p style="font-size: 16px;">Your GetBooks.ai verification code is: <strong style="font-size: 18px; color: #000;">${verificationCode}</strong></p>
+                <p style="font-size: 14px; color: #666;">This code will expire in 15 minutes.</p>
+            </div>
+        `
+    });    
 
       res.json({ message: 'Verification email sent' });
   } catch (error) {

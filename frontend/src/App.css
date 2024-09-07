@@ -1653,6 +1653,100 @@ body:not(.history-pane-open) .input-area {
   min-width: 132px;
 }
 
+/* Email Verification Page css start */
+
+.email-verification-container {
+  display: flex;
+  justify-content: center; /* Align horizontally at the center */
+  align-items: center; /* Align vertically at the center */
+  height: 100vh; /* Full viewport height */
+  padding: 20px;
+}
+
+.email-verification-box {
+  width: 100%;
+  max-width: 400px;
+  background: #ffffff;
+  padding: 10px 25px 25px 25px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  text-align: center;
+  border-radius: 8px;
+}
+
+.email-verification-box h2 {
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.email-verification-box p {
+  color: #666;
+  font-size: 0.95rem;
+  line-height: 1.4rem;
+  margin-bottom: 20px;
+}
+
+.email-verification-input {
+  width: calc(100% - 20px); /* Adjust width considering padding */
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box; /* Include padding and border in the element's total width */
+  font-size: 0.95rem;
+}
+
+.email-verification-signin-btn,
+.email-verification-resend-btn {
+  width: calc(100% - 20px); /* Ensure buttons are of the same width as input */
+  padding: 10px;
+  border: none;
+  background-color: #5c67f2;
+  color: white;
+  cursor: pointer;
+  border-radius: 4px;
+  margin-bottom: 10px;
+  transition: background-color 0.3s ease;
+  box-sizing: border-box; /* Include padding and border in the element's total width */
+  font-size: 0.95rem;
+}
+
+
+.email-verification-signin-btn:hover,
+.email-verification-resend-btn:hover {
+  background-color: #4a54e1;
+}
+
+.email-verification-signin-btn:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.email-verification-resend-btn {
+  background-color: #f3f3f3;
+  color: #333;
+}
+
+.email-verification-resend-btn:hover {
+  background-color: #e2e2e2;
+}
+
+.email-verification-error-message {
+  color: #ff6b6b;
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+
+.email-verification-confirmation {
+  font-size: 0.9rem;
+  color: #28a745;
+}
+
+
+
+/* Email verification page css end */
+
+
+
 .centered-container {
   display: flex;
   flex-direction: column;
@@ -1702,35 +1796,6 @@ body:not(.history-pane-open) .input-area {
   height: 1.6rem;
 }
 
-.edit-email-button {
-  position: absolute;
-  right: 6.5px; /* Adjust as needed */
-  top: 39%;
-  transform: translateY(-50%);
-  background: none; /* Remove any background */
-  border: none; /* Remove the border */
-  color: green; /* Use the green color as in the design */
-  cursor: pointer; /* Cursor to indicate clickable button */
-  font-size: 0.78rem;
-}
-
-.password-input-group {
-  position: relative;
-  display: flex;
-}
-
-.toggle-password {
-  position: absolute;
-  right: 6.5px; /* Adjust as needed */
-  top: 39%;
-  transform: translateY(-50%);
-  background: none; /* Remove any background */
-  border: none; /* Remove the border */
-  color: green; /* Use the green color as in the design */
-  cursor: pointer; /* Cursor to indicate clickable button */
-  font-size: 0.78rem;
-}
-
 /* Ensure the password input does not overlap the toggle button */
 .email-input {
   flex-grow: 1;
@@ -1744,7 +1809,6 @@ body:not(.history-pane-open) .input-area {
 .email-input:focus {
   outline: none;
 }
-
 
 /* Onboarding Page */
 
