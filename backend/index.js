@@ -412,7 +412,7 @@ app.post('/send-verification-email', async (req, res) => {
         html: `
             <div style="font-family: Arial, sans-serif; color: #333; padding: 20px; text-align: center; border: 1px solid #ddd; border-radius: 8px; max-width: 600px; margin: 20px auto;">
                 <h2 style="color: #5c67f2;">Verification Code</h2>
-                <p style="font-size: 16px;">Your GetBooks.ai verification code is: <strong style="font-size: 18px; color: #000;">${verificationCode}</strong></p>
+                <p style="font-size: 16px; line-height: 24px;">Your GetBooks.ai verification code is: <strong style="font-size: 18px; color: #000;">${verificationCode}</strong></p>
                 <p style="font-size: 14px; color: #666;">This code will expire in 15 minutes.</p>
             </div>
         `
