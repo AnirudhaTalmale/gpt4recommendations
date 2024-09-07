@@ -39,7 +39,7 @@ function EmailVerificationPage() {
             }
         } catch (error) {
             if (error.response && error.response.status === 400) {
-                setVerificationError('Incorrect verification code or token expired');
+                setVerificationError('Incorrect verification code');
             } else {
                 console.error('Error verifying code:', error);
                 setVerificationError('Error verifying code. Please try again.');

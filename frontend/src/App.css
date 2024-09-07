@@ -1679,9 +1679,9 @@ body:not(.history-pane-open) .input-area {
 }
 
 .email-verification-box p {
-  color: #666;
-  font-size: 0.95rem;
-  line-height: 1.4rem;
+  color: black;
+  font-size: 0.98rem;
+  line-height: 1.55rem;
   margin-bottom: 20px;
 }
 
@@ -1693,14 +1693,22 @@ body:not(.history-pane-open) .input-area {
   border-radius: 4px;
   box-sizing: border-box; /* Include padding and border in the element's total width */
   font-size: 0.95rem;
+  transition: border-color 0.3s ease-out; /* Smooth transition for focus */
 }
+
+.email-verification-input:focus {
+  outline: none; /* Removes default focus outline */
+  border-color: #5c67f2; /* A blue border color when focused */
+  box-shadow: 0 0 5px rgba(92, 103, 242, 0.5); /* Adds a subtle glow around the input */
+}
+
 
 .email-verification-signin-btn,
 .email-verification-resend-btn {
   width: calc(100% - 20px); /* Ensure buttons are of the same width as input */
   padding: 10px;
   border: none;
-  background-color: #5c67f2;
+  background-color: rgba(0, 0, 255, 0.74);
   color: white;
   cursor: pointer;
   border-radius: 4px;
@@ -1731,7 +1739,7 @@ body:not(.history-pane-open) .input-area {
 }
 
 .email-verification-error-message {
-  color: #ff6b6b;
+  color: red;
   font-size: 14px;
   margin-bottom: 10px;
 }
