@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import ConfirmationDialog from './ConfirmationDialog'; 
 import UpgradePlanModal from './UpgradePlanModal';
+import UpgradePlanModalIndia from './UpgradePlanModalIndia';
 import '../App.css';
 
 const HistoryPane = forwardRef(({
@@ -229,6 +230,8 @@ const HistoryPane = forwardRef(({
     };
   }, [isUpgradeModalOpen]);
 
+  const UpgradeModal = userCountry === 'India' ? UpgradePlanModalIndia : UpgradePlanModal;
+
   return (
     <div ref={paneRef}>
       <div className={`history-pane ${isPaneOpen ? '' : 'closed'}`}>
@@ -329,11 +332,9 @@ const HistoryPane = forwardRef(({
               <li onClick={handleDeleteAccount}>
                 <i className="fa-solid fa-trash"></i> Delete account
               </li>
-              {userCountry !== 'India' && (
-                <li onClick={handleUpgradeClick}>
-                  <i className="fa-solid fa-cart-shopping"></i> Upgrade Plan
-                </li>
-              )}
+              <li onClick={handleUpgradeClick}>
+                <i className="fa-solid fa-cart-shopping"></i> Upgrade Plan
+              </li>
               <li onClick={() => navigate('/contact-us')} >
                 <i className="fa-solid fa-address-book"></i> Contact us
               </li>
@@ -352,7 +353,14 @@ const HistoryPane = forwardRef(({
         onConfirm={handleConfirmDelete}
       />
       
-      <UpgradePlanModal ref={upgradeModalRef} isOpen={isUpgradeModalOpen} onClose={handleCloseUpgradeModal} userCountry={userCountry} userEmail={userEmail} />
+      <UpgradeModal
+        ref={ref}
+        isOpen={isUpgradeModalOpen}
+        onClose={handleCloseUpgradeModal}
+        userCountry={userCountry}
+        userEmail={userEmail}
+        userName={userName}
+      />
     </div>
   );
 });

@@ -33,7 +33,8 @@ const userSchema = new Schema({
   messageCount: { type: Number, default: 0 },
   totalMessageCount: { type: Number, default: 0 },
   country: { type: String },
-  subscription: subscriptionSchema
+  subscription: subscriptionSchema,
+  premiumBenefitsEnd: { type: Date, default: null }
 });
 
 module.exports = mongoose.model('User', userSchema);

@@ -29,6 +29,8 @@ const crc32 = require('buffer-crc32');
 const fs = require('fs/promises');
 const fetch = require('node-fetch');
 const { addMonths } = require('date-fns');
+const moment = require('moment-timezone');
+
 
 require('dotenv').config();
 
@@ -190,178 +192,290 @@ app.get('/auth/logout', (req, res, next) => {
   });
 });
 
+// ----------- Razorpay code ------------
+
+const Razorpay = require('razorpay');
+
+const razorpayInstance = new Razorpay({
+  key_id: process.env.RAZORPAY_KEY_ID,
+  key_secret: process.env.RAZORPAY_KEY_SECRET
+});
+
+app.post('/orders', async (req, res) => {
+  const { amount, currency } = req.body;
+
+  if (!amount || !currency) {
+    return res.status(400).json({ message: 'Amount and currency are required' });
+  }
+
+  try {
+    const order = await razorpayInstance.orders.create({
+      amount: amount, 
+      currency: currency
+    });
+
+    res.json(order);
+  } catch (error) {
+    console.error('POST /orders - Error:', error);
+    res.status(500).json({ message: 'Error creating order', error: error.toString() });
+  }
+});
+
+app.post('/verify-payment', async (req, res) => {
+  const { orderId, paymentId, signature, userEmail } = req.body;
+
+  try {
+    // Compute the HMAC SHA256 hash
+    const data = `${orderId}|${paymentId}`;
+    const secret = process.env.RAZORPAY_KEY_SECRET;
+    const generatedSignature = crypto.createHmac('sha256', secret)
+                                    .update(data)
+                                    .digest('hex');
+
+    // Compare the computed signature with the received signature
+    if (generatedSignature === signature) {
+      res.json({ verified: true });
+    } else {
+      res.status(400).json({ verified: false, message: "Invalid signature. Verification failed." });
+    }
+  } catch (error) {
+    console.error('Verification error:', error);
+    res.status(500).json({ message: 'Internal server error', error: error.toString() });
+  }
+});
+
+app.post('/update-premium', async (req, res) => {
+  const { userEmail } = req.body;
+
+  try {
+    const user = await User.findOne({ "local.email": userEmail });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Set new benefits end date: one month from today in UTC
+    const newBenefitsEnd = moment.utc().add(1, 'months');
+
+    user.premiumBenefitsEnd = newBenefitsEnd.toDate(); // Convert moment object back to JS Date
+    await user.save();
+
+    res.json({ success: true, message: "Premium benefits updated successfully." });
+  } catch (error) {
+    console.error('Error updating premium benefits:', error);
+    res.status(500).json({ message: 'Internal server error', error: error.toString() });
+  }
+});
+
+const determinePremiumStatus = (user) => {
+  if (!user) {
+      return { status: 404, data: { message: "User not found" } };
+  }
+
+  // Handle case where premiumBenefitsEnd might not be set for some users
+  if (!user.premiumBenefitsEnd) {
+      return { status: 200, data: { isPremiumActive: false, message: "No premium benefits period set for this user." } };
+  }
+
+  const nowUtc = moment.utc();
+  const premiumEndUtc = moment(user.premiumBenefitsEnd).utc();
+  const premiumEndIST = premiumEndUtc.tz('Asia/Kolkata').format('MMM D');
+
+  if (nowUtc.isBefore(premiumEndUtc)) {
+      return { status: 200, data: { isPremiumActive: true, premiumEndIST } };
+  } else {
+      return { status: 200, data: { isPremiumActive: false, premiumEndIST } };
+  }
+};
+
+app.get('/api/check-premium-status', async (req, res) => {
+  const { userEmail } = req.query;
+
+  try {
+      const user = await User.findOne({ "local.email": userEmail });
+      const result = determinePremiumStatus(user);
+
+      if (result.status !== 200) {
+          return res.status(result.status).json(result.data);
+      }
+
+      res.json(result.data);
+  } catch (error) {
+      console.error('Error checking premium status:', error);
+      res.status(500).json({ message: 'Internal server error', error: error.toString() });
+  }
+});
 
 // ----------- Paypal code --------------
 
-// Function to check if the user is subscribed
-function isUserSubscribed(user) {
-  if (!user) {
-      throw new Error('User object is required');
-  }
+// // Function to check if the user is subscribed
+// function isUserSubscribed(user) {
+//   if (!user) {
+//       throw new Error('User object is required');
+//   }
 
-  let isSubscribed = false;
-  if (user.subscription && user.subscription.currentEndDateUTC) {
-      const endDate = new Date(user.subscription.currentEndDateUTC);
-      endDate.setUTCHours(23, 59, 59, 999); // Set to end of the day in UTC
-      const endDateUTC = endDate.getTime(); // Get milliseconds since epoch
-      const nowUTC = new Date().getTime(); // Current time in milliseconds since epoch
+//   let isSubscribed = false;
+//   if (user.subscription && user.subscription.currentEndDateUTC) {
+//       const endDate = new Date(user.subscription.currentEndDateUTC);
+//       endDate.setUTCHours(23, 59, 59, 999); // Set to end of the day in UTC
+//       const endDateUTC = endDate.getTime(); // Get milliseconds since epoch
+//       const nowUTC = new Date().getTime(); // Current time in milliseconds since epoch
 
-      isSubscribed = endDateUTC >= nowUTC;
-  }
+//       isSubscribed = endDateUTC >= nowUTC;
+//   }
 
-  return isSubscribed;
-}
+//   return isSubscribed;
+// }
 
-// Endpoint to check if a user is subscribed
-app.post('/api/check-subscription', async (req, res) => {
-  const { userEmail } = req.body; // Get userEmail from request body
-  if (!userEmail) {
-      return res.status(400).json({ message: 'User email is required' });
-  }
-  try {
-      const user = await User.findOne({ "local.email": userEmail }).exec();
-      if (!user) {
-          return res.status(404).json({ message: 'User not found' });
-      }
-      const isSubscribed = isUserSubscribed(user);
-      res.json({ isSubscribed: isSubscribed });
-  } catch (error) {
-      console.error('POST /api/check-subscription - Error:', error);
-      res.status(500).json({ message: 'Error checking subscription status', error: error.toString() });
-  }
-});
+// // Endpoint to check if a user is subscribed
+// app.post('/api/check-subscription', async (req, res) => {
+//   const { userEmail } = req.body; // Get userEmail from request body
+//   if (!userEmail) {
+//       return res.status(400).json({ message: 'User email is required' });
+//   }
+//   try {
+//       const user = await User.findOne({ "local.email": userEmail }).exec();
+//       if (!user) {
+//           return res.status(404).json({ message: 'User not found' });
+//       }
+//       const isSubscribed = isUserSubscribed(user);
+//       res.json({ isSubscribed: isSubscribed });
+//   } catch (error) {
+//       console.error('POST /api/check-subscription - Error:', error);
+//       res.status(500).json({ message: 'Error checking subscription status', error: error.toString() });
+//   }
+// });
 
-// Endpoint to store subscription ID
-app.post('/api/store-subscription', async (req, res) => {
-  const { userEmail, subscriptionID } = req.body;
+// // Endpoint to store subscription ID
+// app.post('/api/store-subscription', async (req, res) => {
+//   const { userEmail, subscriptionID } = req.body;
 
-  if (!userEmail || !subscriptionID) {
-    return res.status(400).json({ success: false, message: 'User email and subscription ID are required' });
-  }
+//   if (!userEmail || !subscriptionID) {
+//     return res.status(400).json({ success: false, message: 'User email and subscription ID are required' });
+//   }
 
-  // Calculate the current end date, assuming a one-month period.
-  const currentDate = new Date(); // gets the current date in local time
-  const currentEndDateUTC = addMonths(currentDate, 1); // adds one month
+//   // Calculate the current end date, assuming a one-month period.
+//   const currentDate = new Date(); // gets the current date in local time
+//   const currentEndDateUTC = addMonths(currentDate, 1); // adds one month
 
-  try {
-    const user = await User.findOneAndUpdate(
-      { "local.email": userEmail },
-      { 
-        "subscription.subscriptionId": subscriptionID,
-        "subscription.currentEndDateUTC": currentEndDateUTC
-      },
-      { new: true }
-    );
+//   try {
+//     const user = await User.findOneAndUpdate(
+//       { "local.email": userEmail },
+//       { 
+//         "subscription.subscriptionId": subscriptionID,
+//         "subscription.currentEndDateUTC": currentEndDateUTC
+//       },
+//       { new: true }
+//     );
 
-    if (user) {
-      res.json({ success: true, message: 'Subscription ID and end date stored successfully' });
-    } else {
-      res.status(404).json({ success: false, message: 'User not found' });
-    }
-  } catch (error) {
-    console.error('Error storing subscription data:', error);
-    res.status(500).json({ success: false, message: 'Server error' });
-  }
-});
+//     if (user) {
+//       res.json({ success: true, message: 'Subscription ID and end date stored successfully' });
+//     } else {
+//       res.status(404).json({ success: false, message: 'User not found' });
+//     }
+//   } catch (error) {
+//     console.error('Error storing subscription data:', error);
+//     res.status(500).json({ success: false, message: 'Server error' });
+//   }
+// });
 
 // paypal-webhook
 
-const LISTEN_PATH = "/";
-const CACHE_DIR = ".";
-const WEBHOOK_ID = process.env.PAYPAL_WEBHOOK_ID;
+// const LISTEN_PATH = "/";
+// const CACHE_DIR = ".";
+// const WEBHOOK_ID = process.env.PAYPAL_WEBHOOK_ID;
  
-async function downloadAndCache(url, cacheKey) {
-  if(!cacheKey) {
-    cacheKey = url.replace(/\W+/g, '-')
-  }
-  const filePath = `${CACHE_DIR}/${cacheKey}`;
+// async function downloadAndCache(url, cacheKey) {
+//   if(!cacheKey) {
+//     cacheKey = url.replace(/\W+/g, '-')
+//   }
+//   const filePath = `${CACHE_DIR}/${cacheKey}`;
  
-  // Check if cached file exists
-  const cachedData = await fs.readFile(filePath, 'utf-8').catch(() => null);
-  if (cachedData) {
-    return cachedData;
-  }
+//   // Check if cached file exists
+//   const cachedData = await fs.readFile(filePath, 'utf-8').catch(() => null);
+//   if (cachedData) {
+//     return cachedData;
+//   }
  
-  // Download the file if not cached
-  const response = await fetch(url);
-  const data = await response.text()
-  await fs.writeFile(filePath, data);
+//   // Download the file if not cached
+//   const response = await fetch(url);
+//   const data = await response.text()
+//   await fs.writeFile(filePath, data);
  
-  return data;
-}
+//   return data;
+// }
  
-app.post(LISTEN_PATH, express.raw({type: 'application/json'}), async (request, response) => {
-  const headers = request.headers;
-  const event = request.body;
-  const data = JSON.parse(event)
+// app.post(LISTEN_PATH, express.raw({type: 'application/json'}), async (request, response) => {
+//   const headers = request.headers;
+//   const event = request.body;
+//   const data = JSON.parse(event)
  
-  console.log(`headers`, headers);
-  console.log(`parsed json`, JSON.stringify(data, null, 2));
-  console.log(`raw event: ${event}`);
+//   console.log(`headers`, headers);
+//   console.log(`parsed json`, JSON.stringify(data, null, 2));
+//   console.log(`raw event: ${event}`);
  
-  const isSignatureValid = await verifySignature(event, headers);
+//   const isSignatureValid = await verifySignature(event, headers);
  
-  if (isSignatureValid) {
-    console.log('Signature is valid.');
+//   if (isSignatureValid) {
+//     console.log('Signature is valid.');
  
-    // Successful receipt of webhook, do something with the webhook data here to process it, e.g. write to database
-    console.log(`Received event`, JSON.stringify(data, null, 2));
+//     // Successful receipt of webhook, do something with the webhook data here to process it, e.g. write to database
+//     console.log(`Received event`, JSON.stringify(data, null, 2));
  
-    // Process the webhook payload
-    if (data.event_type === 'PAYMENT.SALE.COMPLETED' && data.resource) {
-      const createTime = new Date(data.resource.create_time); // Payment time in UTC
-      const subscriptionId = data.resource.billing_agreement_id; // Subscription ID
+//     // Process the webhook payload
+//     if (data.event_type === 'PAYMENT.SALE.COMPLETED' && data.resource) {
+//       const createTime = new Date(data.resource.create_time); // Payment time in UTC
+//       const subscriptionId = data.resource.billing_agreement_id; // Subscription ID
 
-      // Calculate the subscription end date (assuming a 1-month subscription period)
-      const endDateUTC = addMonths(createTime, 1);
+//       // Calculate the subscription end date (assuming a 1-month subscription period)
+//       const endDateUTC = addMonths(createTime, 1);
       
-      try {
-        // Update the user's subscription end date
-        const user = await User.findOneAndUpdate(
-          { "subscription.subscriptionId": subscriptionId },
-          { "subscription.currentEndDateUTC": endDateUTC },
-          { new: true }
-        );
+//       try {
+//         // Update the user's subscription end date
+//         const user = await User.findOneAndUpdate(
+//           { "subscription.subscriptionId": subscriptionId },
+//           { "subscription.currentEndDateUTC": endDateUTC },
+//           { new: true }
+//         );
 
-        if (user) {
-          console.log(`Subscription end date updated for user: ${user.local.email}`);
-        } else {
-          console.log('No user found with the provided subscription ID.');
-        }
-      } catch (error) {
-        console.error('Error updating subscription end date:', error);
-      }
-    }
-  } else {
-    console.log(`Signature is not valid for ${data?.id} ${headers?.['correlation-id']}`);
-    // Reject processing the webhook event. May wish to log all headers+data for debug purposes.
-  }
+//         if (user) {
+//           console.log(`Subscription end date updated for user: ${user.local.email}`);
+//         } else {
+//           console.log('No user found with the provided subscription ID.');
+//         }
+//       } catch (error) {
+//         console.error('Error updating subscription end date:', error);
+//       }
+//     }
+//   } else {
+//     console.log(`Signature is not valid for ${data?.id} ${headers?.['correlation-id']}`);
+//     // Reject processing the webhook event. May wish to log all headers+data for debug purposes.
+//   }
  
-  // Return a 200 response to mark successful webhook delivery
-  response.sendStatus(200);
-});
+//   // Return a 200 response to mark successful webhook delivery
+//   response.sendStatus(200);
+// });
  
-async function verifySignature(event, headers) {
-  const transmissionId = headers['paypal-transmission-id']
-  const timeStamp = headers['paypal-transmission-time']
-  const crc = parseInt("0x" + crc32(event).toString('hex')); // hex crc32 of raw event data, parsed to decimal form
+// async function verifySignature(event, headers) {
+//   const transmissionId = headers['paypal-transmission-id']
+//   const timeStamp = headers['paypal-transmission-time']
+//   const crc = parseInt("0x" + crc32(event).toString('hex')); // hex crc32 of raw event data, parsed to decimal form
  
-  const message = `${transmissionId}|${timeStamp}|${WEBHOOK_ID}|${crc}`
-  console.log(`Original signed message ${message}`);
+//   const message = `${transmissionId}|${timeStamp}|${WEBHOOK_ID}|${crc}`
+//   console.log(`Original signed message ${message}`);
  
-  const certPem = await downloadAndCache(headers['paypal-cert-url']);
+//   const certPem = await downloadAndCache(headers['paypal-cert-url']);
  
-  // Create buffer from base64-encoded signature
-  const signatureBuffer = Buffer.from(headers['paypal-transmission-sig'], 'base64');
+//   // Create buffer from base64-encoded signature
+//   const signatureBuffer = Buffer.from(headers['paypal-transmission-sig'], 'base64');
  
-  // Create a verification object
-  const verifier = crypto.createVerify('SHA256');
+//   // Create a verification object
+//   const verifier = crypto.createVerify('SHA256');
  
-  // Add the original message to the verifier
-  verifier.update(message);
+//   // Add the original message to the verifier
+//   verifier.update(message);
  
-  return verifier.verify(certPem, signatureBuffer);
-}
+//   return verifier.verify(certPem, signatureBuffer);
+// }
 
 // Endpoint to send verification email with code
 app.post('/send-verification-email', async (req, res) => {
@@ -578,9 +692,9 @@ io.on('connection', (socket) => {
       session.user.totalMessageCount = 0;
     }
 
-    const isSubscribed = isUserSubscribed(session.user);
+    const isSubscribed = determinePremiumStatus(session.user).data.isPremiumActive;
     const WINDOW_DURATION = isSubscribed ? parseInt(process.env.WINDOW_DURATION_SUBSCRIBED) : parseInt(process.env.WINDOW_DURATION_NON_SUBSCRIBED);
-    const MESSAGE_LIMIT = isSubscribed ? process.env.MESSAGE_LIMIT_SUBSCRIBED : process.env.MESSAGE_LIMIT_NON_SUBSCRIBED;
+    const MESSAGE_LIMIT = isSubscribed ? parseInt(process.env.MESSAGE_LIMIT_SUBSCRIBED) : parseInt(process.env.MESSAGE_LIMIT_NON_SUBSCRIBED);
 
     if (!session.user.firstMessageTimestamp || now - session.user.firstMessageTimestamp.getTime() > WINDOW_DURATION) {
       // Reset if more than WINDOW DURATION have passed
@@ -599,9 +713,6 @@ io.on('connection', (socket) => {
       // Formatting the reset time in HH:MM format
       const resetTimeString = resetTime.toLocaleString(locale, {
         timeZone: timezone,
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
         hour: '2-digit',
         minute: '2-digit'
       });
@@ -615,9 +726,9 @@ io.on('connection', (socket) => {
           </div>`;
       } else {
         limitMessage = `
-          <div style="border:1.3px solid red; background-color:#fff0f0; padding:10px; margin:10px 0; border-radius:8px; color:#444444; font-size: 0.95rem">
-          You have reached the message limit of ${MESSAGE_LIMIT} messages per ${durationInHours(WINDOW_DURATION)} hours. To increase the message limit, please consider upgrading your plan. Alternatively, you may try again after ${resetTimeString}.
-          </div>`;
+        <div style="border:1.3px solid red; background-color:#fff0f0; padding:10px; margin:10px 0; border-radius:8px; color:#444444; font-size: 0.95rem">
+        You have reached the message limit of ${MESSAGE_LIMIT} messages per ${durationInHours(WINDOW_DURATION)} hours. To increase the message limit to ${process.env.MESSAGE_LIMIT_SUBSCRIBED} messages per ${durationInHours(process.env.WINDOW_DURATION_SUBSCRIBED)} hours, please consider upgrading your plan at just Rs 9 per month.
+        </div>`;
       }
      
       // Emit a warning message to the client and set the limitMessage as the session name
@@ -707,10 +818,9 @@ io.on('connection', (socket) => {
       user.totalMessageCount = 0;
     }
 
-    const isSubscribed = isUserSubscribed(user);
-
+    const isSubscribed = determinePremiumStatus(session.user).data.isPremiumActive;
     const WINDOW_DURATION = isSubscribed ? parseInt(process.env.WINDOW_DURATION_SUBSCRIBED) : parseInt(process.env.WINDOW_DURATION_NON_SUBSCRIBED);
-    const MESSAGE_LIMIT = isSubscribed ? process.env.MESSAGE_LIMIT_SUBSCRIBED : process.env.MESSAGE_LIMIT_NON_SUBSCRIBED;
+    const MESSAGE_LIMIT = isSubscribed ? parseInt(process.env.MESSAGE_LIMIT_SUBSCRIBED) : parseInt(process.env.MESSAGE_LIMIT_NON_SUBSCRIBED);
 
     if (!user.firstMessageTimestamp || now - user.firstMessageTimestamp.getTime() > WINDOW_DURATION) {
       // Reset if more than 3 hours have passed
@@ -729,9 +839,6 @@ io.on('connection', (socket) => {
       // Formatting the reset time in HH:MM format
       const resetTimeString = resetTime.toLocaleString(locale, {
         timeZone: timezone,
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
         hour: '2-digit',
         minute: '2-digit'
       });
@@ -744,9 +851,9 @@ io.on('connection', (socket) => {
           </div>`;
       } else {
         limitMessage = `
-          <div style="border:1.3px solid red; background-color:#fff0f0; padding:10px; margin:10px 0; border-radius:8px; color:#444444; font-size: 0.95rem">
-          You have reached the message limit of ${MESSAGE_LIMIT} messages per ${durationInHours(WINDOW_DURATION)} hours. To increase the message limit, please consider upgrading your plan. Alternatively, you may try again after ${resetTimeString}.
-          </div>`;
+        <div style="border:1px solid #ff6a6a; background-color:#fffaf0; padding:12px; margin:10px 0; border-radius:10px; color:#333333; font-size:1rem; font-weight:400; box-shadow:0 2px 5px rgba(0,0,0,0.1); font-family: 'Arial', sans-serif;">
+        You have reached the message limit of ${MESSAGE_LIMIT} messages per ${durationInHours(WINDOW_DURATION)} hours. To increase the message limit to ${messageLimitSubscribed} messages per ${durationInHours(windowDurationSubscribed)} hours, please consider upgrading your plan at just Rs 9 per month.
+        </div>`;
       }
     
       // Emit a warning message to the client and set the limitMessage as the session name
