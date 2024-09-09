@@ -42,6 +42,11 @@ const UpgradePlanModalIndia = forwardRef(({ isOpen, onClose, userCountry, userEm
           if (verificationResponse.data.verified) {
             await axios.post(`${process.env.REACT_APP_BACKEND_URL}/update-premium`, { userEmail: userEmail });
             checkPremiumStatus();
+            window.fbq('track', 'Subscribe', {
+                value: 9.00,
+                currency: 'INR',
+                subscription_id: order.id,
+            });
           }
         } catch (error) {
           console.error('Error during payment process:', error);
