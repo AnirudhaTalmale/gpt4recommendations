@@ -727,7 +727,8 @@ io.on('connection', (socket) => {
       } else {
         limitMessage = `
         <div style="border:1.3px solid red; background-color:#fff0f0; padding:10px; margin:10px 0; border-radius:8px; color:#444444; font-size: 0.95rem">
-        You have reached the message limit of ${MESSAGE_LIMIT} messages per ${durationInHours(WINDOW_DURATION)} hours. To increase the message limit to ${process.env.MESSAGE_LIMIT_SUBSCRIBED} messages per ${durationInHours(process.env.WINDOW_DURATION_SUBSCRIBED)} hours, please consider upgrading your plan at just Rs 9 per month.
+        You have reached the message limit of ${MESSAGE_LIMIT} messages per ${durationInHours(WINDOW_DURATION)} hours.<br><br>
+        Consider upgrading your plan to increase the message limit to ${process.env.MESSAGE_LIMIT_SUBSCRIBED} messages per ${durationInHours(process.env.WINDOW_DURATION_SUBSCRIBED)} hours, at just Rs 9 per month.
         </div>`;
       }
      
@@ -851,8 +852,9 @@ io.on('connection', (socket) => {
           </div>`;
       } else {
         limitMessage = `
-        <div style="border:1px solid #ff6a6a; background-color:#fffaf0; padding:12px; margin:10px 0; border-radius:10px; color:#333333; font-size:1rem; font-weight:400; box-shadow:0 2px 5px rgba(0,0,0,0.1); font-family: 'Arial', sans-serif;">
-        You have reached the message limit of ${MESSAGE_LIMIT} messages per ${durationInHours(WINDOW_DURATION)} hours. To increase the message limit to ${messageLimitSubscribed} messages per ${durationInHours(windowDurationSubscribed)} hours, please consider upgrading your plan at just Rs 9 per month.
+        <div style="border:1.3px solid red; background-color:#fff0f0; padding:10px; margin:10px 0; border-radius:8px; color:#444444; font-size: 0.95rem">
+        You have reached the message limit of ${MESSAGE_LIMIT} messages per ${durationInHours(WINDOW_DURATION)} hours.<br><br>
+        Consider upgrading your plan to increase the message limit to ${process.env.MESSAGE_LIMIT_SUBSCRIBED} messages per ${durationInHours(process.env.WINDOW_DURATION_SUBSCRIBED)} hours, at just Rs 9 per month.
         </div>`;
       }
     
