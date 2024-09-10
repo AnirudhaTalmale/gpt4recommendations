@@ -5,11 +5,11 @@ const keyInsightsPrompt = (userQuery) => {
 
   if (process.env.NODE_ENV === 'local') {
     prompt = `Book name is "${userQuery}"
-    Provide a large number of Key Insights from the above book, strictly in the following format without any intro and outro:
+    Provide a large number of Key Insights from the above book, strictly in the following format:
     <b>Insights</b><ol><li><b>Insight name</b>: Insight Description</li></ol>`;
   } else {
     prompt = `Book name is "${userQuery}"
-    Provide a large number of Key Insights from the above book, strictly in the following format without any intro and outro:
+    Provide a large number of Key Insights from the above book, strictly in the following format:
     <b>Insights</b><ol><li><b>Insight name</b>: Insight Description</li></ol>`;
   }
 
