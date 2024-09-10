@@ -550,6 +550,10 @@ app.post('/verify-code', async (req, res) => {
       return res.status(400).json({ message: 'Invalid verification code' });
     }
 
+    if (!user.verificationToken) {
+      return res.status(400).json({ message: 'No verification token provided' });
+    }    
+
     // Verify the JWT token (check for expiration)
     jwt.verify(user.verificationToken, process.env.JWT_SECRET, async (err, decoded) => {
       if (err) {
@@ -1345,7 +1349,7 @@ if (process.env.NODE_ENV === 'local') {
 
   app.get('/api/sessions', async (req, res) => {
     try {
-      const userId = '66e05f190c154e7c6086b65b'; // Get user ID from query parameter
+      const userId = '66e0849398ecff23be8af39f'; // Get user ID from query parameter
 
       let query = { user: userId };
 
