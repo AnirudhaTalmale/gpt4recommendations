@@ -1345,7 +1345,7 @@ if (process.env.NODE_ENV === 'local') {
 
   app.get('/api/sessions', async (req, res) => {
     try {
-      const userId = '66ada95da9e90148e8944d09'; // Get user ID from query parameter
+      const userId = '66e05f190c154e7c6086b65b'; // Get user ID from query parameter
 
       let query = { user: userId };
 
