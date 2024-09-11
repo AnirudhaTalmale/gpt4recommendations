@@ -4,7 +4,6 @@ const Session = require('./models/models-chat/Session');
 const EmailRateLimit = require('./models/models-chat/EmailRateLimit');
 const MoreDetails = require('./models/models-chat/MoreDetails');
 const User = require('./models/models-chat/User');
-const Visit = require('./models/models-chat/Visit');
 const KeyInsightsModel = require('./models/models-chat/KeyInsights'); 
 const AnecdotesModel = require('./models/models-chat/Anecdotes'); 
 const QuotesModel = require('./models/models-chat/Quotes'); 
