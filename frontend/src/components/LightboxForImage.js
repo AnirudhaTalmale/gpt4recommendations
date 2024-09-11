@@ -28,14 +28,16 @@ function LightboxForImage({ isOpen, onClose, imageUrl }) {
             }
         };
 
-        const handlePopState = () => {
-            // Close the lightbox when the back button is pressed
-            onClose();
+        const handlePopState = (event) => {
+            if (event.state && event.state.lightbox) {
+                onClose();  // Close the lightbox when the back button is pressed
+            }
         };
 
         const overlay = overlayRef.current;
         if (overlay && isOpen) {
             disableBodyScroll();
+            window.history.pushState({ lightbox: true }, 'lightbox'); // Push a new state into the history
             overlay.addEventListener('wheel', handleScrollEvent, { passive: false });
             overlay.addEventListener('touchmove', handleScrollEvent, { passive: false });
             window.addEventListener('popstate', handlePopState);
@@ -48,6 +50,11 @@ function LightboxForImage({ isOpen, onClose, imageUrl }) {
                 overlay.removeEventListener('touchmove', handleScrollEvent);
             }
             window.removeEventListener('popstate', handlePopState);
+
+            // On closing, go back in history if it was the lightbox state
+            if (isOpen) {
+                window.history.back();
+            }
         };
     }, [isOpen, onClose]);
 
