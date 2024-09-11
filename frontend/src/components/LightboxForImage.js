@@ -4,7 +4,6 @@ import '../App.css';
 function LightboxForImage({ isOpen, onClose, imageUrl }) {
     const overlayRef = useRef(null);  // Properly defining the overlayRef
     const contentRef = useRef(null);  // Reference for the image content
-    const popStateListenerRef = useRef(null);
 
     useEffect(() => {
         const disableBodyScroll = () => {
@@ -29,19 +28,11 @@ function LightboxForImage({ isOpen, onClose, imageUrl }) {
             }
         };
 
-        const handlePopState = () => {
-            onClose();
-        };
-
-        popStateListenerRef.current = handlePopState;
-
         const overlay = overlayRef.current;
         if (overlay && isOpen) {
             disableBodyScroll();
-            window.history.pushState({ lightbox: true }, ''); // Push a lightbox-specific state
             overlay.addEventListener('wheel', handleScrollEvent, { passive: false });
             overlay.addEventListener('touchmove', handleScrollEvent, { passive: false });
-            window.addEventListener('popstate', popStateListenerRef.current);
         }
 
         return () => {
@@ -50,13 +41,8 @@ function LightboxForImage({ isOpen, onClose, imageUrl }) {
                 overlay.removeEventListener('wheel', handleScrollEvent);
                 overlay.removeEventListener('touchmove', handleScrollEvent);
             }
-            window.removeEventListener('popstate', popStateListenerRef.current);
-
-            if (isOpen) {
-                window.history.replaceState(null, '', document.location.pathname); // Replace the current state to clean lightbox-specific state without altering the URL
-            }
         };
-    }, [isOpen, onClose]);
+    }, [isOpen]);
 
     if (!isOpen || !imageUrl) return null;
 
