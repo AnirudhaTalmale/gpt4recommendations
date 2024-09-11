@@ -784,20 +784,20 @@ io.on('connection', (socket) => {
     }    
     else {
 
-      if (message.isFirstQuery && !isMoreDetails && !isKeyInsights && !isAnecdotes && !isQuotes && !moreBooks) {
-        // Get the 4-word summary
-        const summary = await openaiApi.getSummary(message.content);
-        session.sessionName = summary; // Update the session name with the summary
-        await session.save(); // Don't forget to save the updated session
-        socket.emit('updateSessionName', { sessionId: session._id, sessionName: summary });
-      }
-    
       const messagesForGPT4 = [{ role: 'user', content: completePrompt }];
 
       try {
         console.log("messagesForGPT4", messagesForGPT4);
         await openaiApi(messagesForGPT4, socket, session, currentSessionId, isMoreDetails, isKeyInsights, isAnecdotes, isQuotes, bookDataObjectId, bookTitle, author, moreBooks);
         await session.user.save();
+
+        if (message.isFirstQuery && !isMoreDetails && !isKeyInsights && !isAnecdotes && !isQuotes && !moreBooks) {
+          // Get the 4-word summary
+          const summary = await openaiApi.getSummary(message.content);
+          session.sessionName = summary; // Update the session name with the summary
+          await session.save(); // Don't forget to save the updated session
+          socket.emit('updateSessionName', { sessionId: session._id, sessionName: summary });
+        }
       } catch (error) {
         console.error('Error processing query:', error);
         socket.emit('error', 'Error processing your request');
