@@ -31,10 +31,6 @@ function LightboxForImage({ isOpen, onClose, imageUrl }) {
 
         const handlePopState = () => {
             onClose();
-            // After handling the close, push the state back to what it was to prevent URL change
-            window.removeEventListener('popstate', popStateListenerRef.current);
-            window.history.pushState(null, '');
-            window.addEventListener('popstate', popStateListenerRef.current);
         };
 
         popStateListenerRef.current = handlePopState;
@@ -45,7 +41,7 @@ function LightboxForImage({ isOpen, onClose, imageUrl }) {
             window.history.pushState({ lightbox: true }, ''); // Push a lightbox-specific state
             overlay.addEventListener('wheel', handleScrollEvent, { passive: false });
             overlay.addEventListener('touchmove', handleScrollEvent, { passive: false });
-            window.addEventListener('popstate', handlePopState);
+            window.addEventListener('popstate', popStateListenerRef.current);
         }
 
         return () => {
@@ -54,11 +50,10 @@ function LightboxForImage({ isOpen, onClose, imageUrl }) {
                 overlay.removeEventListener('wheel', handleScrollEvent);
                 overlay.removeEventListener('touchmove', handleScrollEvent);
             }
-            window.removeEventListener('popstate', handlePopState);
+            window.removeEventListener('popstate', popStateListenerRef.current);
 
-            // Ensure we clean up the history only if closing the lightbox
             if (isOpen) {
-                window.history.replaceState(null, ''); // Replace the current state to remove lightbox-specific state
+                window.history.replaceState(null, '', document.location.pathname); // Replace the current state to clean lightbox-specific state without altering the URL
             }
         };
     }, [isOpen, onClose]);
