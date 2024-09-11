@@ -897,33 +897,6 @@ io.on('connection', (socket) => {
 
 // ------------------- chat endpoints-------------------
 
-app.post('/api/record_visit', async (req, res) => {
-  const { page, userId } = req.body;
-
-  // Validation for required fields
-  if (!page || !userId) {
-    return res.status(400).json({ message: 'Missing required fields: page and userId are required' });
-  }
-
-  try {
-    // Create a new visit entry
-    const newVisit = new Visit({
-      userId,
-      page,
-      timestamp: new Date()  // Use the server's current date and time
-    });
-
-    // Save the new visit to the database
-    const savedVisit = await newVisit.save();
-
-    // Respond with the saved visit
-    res.status(201).json(savedVisit);
-  } catch (error) {
-    console.error('Error saving visit:', error);
-    res.status(500).json({ message: 'Failed to record visit', error: error.toString() });
-  }
-});
-
 app.post('/api/stop-stream', async (req, res) => {
   try {
     // Assuming stopStream is async, you need to await it

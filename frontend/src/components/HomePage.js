@@ -7,8 +7,6 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import HomePageHeader from './HomePageHeader';
 import Footer from './Footer';
-import { v4 as uuidv4 } from 'uuid';
-import Cookies from 'js-cookie';
 
 
 function isEmbeddedWebView() {
@@ -184,23 +182,6 @@ const HomePage = () => {
 
     useEffect(() => {
       setInWebView(isEmbeddedWebView());
-      let userId = Cookies.get('user_id');
-    
-      if (!userId) {
-        userId = uuidv4(); // Generate a new unique identifier
-        Cookies.set('user_id', userId, { expires: 365 }); // Set cookie for 1 year
-    
-        // Document the new user visit in the database
-        axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/record_visit`, { page: 'home', userId })
-          .then(response => {
-            // console.log('Visit recorded successfully:', response.data);
-          })
-          .catch(error => {
-            console.error('Error recording visit:', error);
-          });
-      } else {
-        // console.log('User has already visited, no need to document again.');
-      }
     }, []);
   
   return (
