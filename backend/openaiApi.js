@@ -255,7 +255,7 @@ const getGoogleBookData = async (title, author) => {
     if (response.data.items?.length) {
       // console.log("response.data.items is", response.data.items);
       
-      const book = response.data.items[0];
+      const book = response.data.items?.find(item => item.accessInfo.viewability !== 'NO_PAGES');
         
       if (book) {
         const { volumeInfo } = book;

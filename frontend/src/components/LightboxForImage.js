@@ -28,11 +28,17 @@ function LightboxForImage({ isOpen, onClose, imageUrl }) {
             }
         };
 
+        const handlePopState = () => {
+            // Close the lightbox when the back button is pressed
+            onClose();
+        };
+
         const overlay = overlayRef.current;
         if (overlay && isOpen) {
             disableBodyScroll();
             overlay.addEventListener('wheel', handleScrollEvent, { passive: false });
             overlay.addEventListener('touchmove', handleScrollEvent, { passive: false });
+            window.addEventListener('popstate', handlePopState);
         }
 
         return () => {
@@ -41,8 +47,9 @@ function LightboxForImage({ isOpen, onClose, imageUrl }) {
                 overlay.removeEventListener('wheel', handleScrollEvent);
                 overlay.removeEventListener('touchmove', handleScrollEvent);
             }
+            window.removeEventListener('popstate', handlePopState);
         };
-    }, [isOpen]);
+    }, [isOpen, onClose]);
 
     if (!isOpen || !imageUrl) return null;
 
