@@ -12,7 +12,7 @@ import '../App.css';
 import socket from './socket';
 import Header from './Header';
 import { useNavigate } from 'react-router-dom';
-import { useHandleStreamEnd, useHandleMessageLimitReached, useStreamChunkHandler } from './CommonHooks'; 
+import { useHandleStreamEnd, useStreamChunkHandler } from './CommonHooks'; 
 
 
 function Chat() {
@@ -255,16 +255,6 @@ function Chat() {
         setIsStreaming(true);
       }
     } 
-  );
-
-  useHandleMessageLimitReached(
-    socket,
-    () => currentSessionIdRef.current, // Getting the current session ID
-    ({ content, sessionId }, currentSessionId) => {
-      if (currentSessionId === sessionId) {
-        updateSessionMessages(content, 'streamed', false, null);
-      }
-    }
   );
   
   useEffect(() => {

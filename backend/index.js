@@ -735,9 +735,8 @@ io.on('connection', (socket) => {
         </div>`;
       }
      
-      // Emit a warning message to the client and set the limitMessage as the session name
-      socket.emit('messageLimitReached', { content: limitMessage, sessionId: currentSessionId, isMoreDetails, isKeyInsights, isAnecdotes, isQuotes });
-    
+      socket.emit('chunk', { content: limitMessage, sessionId: currentSessionId, isMoreDetails, isKeyInsights, isAnecdotes, isQuotes, moreBooks });
+      
       if(!isMoreDetails && message.isFirstQuery && !isKeyInsights && !isAnecdotes && !isQuotes) {
         // Update the session name with the limitMessage and save the session
         const newSessionName = 'Message limit reached';
@@ -1114,7 +1113,7 @@ app.post('/api/session', async (req, res) => {
 });
 
 // GET endpoint for retrieving all sessions with their messages
-if (process.env.NODE_ENV === 'production') { 
+// if (process.env.NODE_ENV === 'production') {
   app.get('/api/sessions', async (req, res) => {
     try {
       const userId = req.query.userId; // Get user ID from query parameter
@@ -1141,7 +1140,7 @@ if (process.env.NODE_ENV === 'production') {
       res.status(500).json({ message: 'Error retrieving sessions', error: error.toString() });
     }
   });
-}
+// }
 
 // DELETE endpoint for deleting a session
 app.delete('/api/session/:sessionId', async (req, res) => {

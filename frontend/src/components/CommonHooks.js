@@ -51,27 +51,6 @@ export const useStreamChunkHandler = (
   ]);
 };
 
-export const useHandleMessageLimitReached = (
-  socket,
-  getSessionId, // Function to get the session ID or User ID
-  onMessageLimitReached // Callback function to handle the event
-) => {
-  useEffect(() => {
-    const handleMessageLimitReached = (data) => {
-      const sessionIdOrUserId = getSessionId();
-
-      // The callback function decides how to compare IDs and what to do when they match
-      onMessageLimitReached(data, sessionIdOrUserId);
-    };
-
-    socket.on('messageLimitReached', handleMessageLimitReached);
-
-    return () => {
-      socket.off('messageLimitReached', handleMessageLimitReached);
-    };
-  }, [getSessionId, onMessageLimitReached, socket]);
-};
-
 export const useHandleStreamEnd = (
   socket,
   getSessionId, // Function to get the session ID or User ID
