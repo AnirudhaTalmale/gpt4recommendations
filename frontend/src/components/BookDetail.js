@@ -9,6 +9,7 @@ import { useStreamChunkHandler } from './CommonHooks';
 import { checkAuthStatus, renderStarRating, handleActionButtonClick } from './CommonFunctions';
 import BookDetailHeader from './BookDetailHeader'; 
 import LightboxForImage from './LightboxForImage';
+import UpgradePlanModalIndia from './UpgradePlanModalIndia';
 
 function BookDetail() {
     const { bookId, countryCode } = useParams();
@@ -27,6 +28,40 @@ function BookDetail() {
     const [userData, setUserData] = useState(null);
     const [lightboxImageUrl, setLightboxImageUrl] = useState(null);
     const [isLightboxForImageOpen, setIsLightboxForImageOpen] = useState(false);
+    const upgradeModalRef = useRef(null);
+    const [isUpgradeModalOpen, setIsUpgradeModalOpen] = useState(false);
+
+    useEffect(() => {
+      // Setup socket listener for opening the upgrade modal
+      socket.on('open_upgrade_modal', () => {
+        setIsUpgradeModalOpen(true);
+      });
+
+      return () => {
+        socket.off('open_upgrade_modal');
+      };
+    }, []);
+
+    
+
+    const handleCloseUpgradeModal = () => {
+      setIsUpgradeModalOpen(false);
+    };
+
+    useEffect(() => {
+      function handleOutsideClickForUpgradeModal(event) {
+        if (isUpgradeModalOpen && upgradeModalRef.current && !upgradeModalRef.current.contains(event.target)) {
+          setIsUpgradeModalOpen(false); // Close the upgrade modal
+        }
+      } 
+  
+      document.addEventListener('mousedown', handleOutsideClickForUpgradeModal);
+      return () => {
+        document.removeEventListener('mousedown', handleOutsideClickForUpgradeModal);
+      };
+    }, [isUpgradeModalOpen]);
+
+    const UpgradeModal = UpgradePlanModalIndia;
 
     useEffect(() => {
       window.scrollTo(0, 0);
@@ -488,7 +523,15 @@ function BookDetail() {
                 </div>
               
         </div>
-        </div>
+        <UpgradeModal
+          ref={upgradeModalRef}
+          isOpen={isUpgradeModalOpen}
+          onClose={handleCloseUpgradeModal}
+          userCountry={userData?.country}
+          userEmail={userData?.email}
+          userName={userData?.name}
+        />
+      </div>
     );
     
 }

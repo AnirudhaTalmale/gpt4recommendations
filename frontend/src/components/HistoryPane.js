@@ -4,6 +4,7 @@ import axios from 'axios';
 import ConfirmationDialog from './ConfirmationDialog'; 
 import UpgradePlanModal from './UpgradePlanModal';
 import UpgradePlanModalIndia from './UpgradePlanModalIndia';
+import socket from './socket';
 import '../App.css';
 
 const HistoryPane = forwardRef(({
@@ -54,6 +55,17 @@ const HistoryPane = forwardRef(({
   const userEntryRef = useRef(null);
   const confirmDialogRef = useRef(null);
   const upgradeModalRef = useRef(null);
+
+  useEffect(() => {
+    // Setup socket listener for opening the upgrade modal
+    socket.on('open_upgrade_modal', () => {
+      setIsUpgradeModalOpen(true);
+    });
+
+    return () => {
+      socket.off('open_upgrade_modal');
+    };
+  }, []);
 
   useEffect(() => {
     // Function to check if the click is outside the dropdown

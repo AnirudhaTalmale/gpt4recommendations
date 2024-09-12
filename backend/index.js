@@ -727,15 +727,17 @@ io.on('connection', (socket) => {
           <div style="border:1.3px solid red; background-color:#fff0f0; padding:10px; margin:10px 0; border-radius:8px; color:#444444; font-size: 0.95rem">
           You have reached the message limit of ${MESSAGE_LIMIT} messages per ${durationInHours(WINDOW_DURATION)} hours. Please try again after ${resetTimeString}.
           </div>`;
+
+          socket.emit('chunk', { content: limitMessage, sessionId: currentSessionId, isMoreDetails, isKeyInsights, isAnecdotes, isQuotes, moreBooks });
       } else {
-        limitMessage = `
-        <div style="border:1.3px solid red; background-color:#fff0f0; padding:10px; margin:10px 0; border-radius:8px; color:#444444; font-size: 0.95rem">
-        You have reached the message limit of ${MESSAGE_LIMIT} messages per ${durationInHours(WINDOW_DURATION)} hours.<br><br>
-        Consider upgrading your plan to increase the message limit to ${process.env.MESSAGE_LIMIT_SUBSCRIBED} messages per ${durationInHours(process.env.WINDOW_DURATION_SUBSCRIBED)} hours, at just Rs 9 per month.
-        </div>`;
+        // limitMessage = `
+        // <div style="border:1.3px solid red; background-color:#fff0f0; padding:10px; margin:10px 0; border-radius:8px; color:#444444; font-size: 0.95rem">
+        // You have reached the message limit of ${MESSAGE_LIMIT} messages per ${durationInHours(WINDOW_DURATION)} hours.<br><br>
+        // Consider upgrading your plan to increase the message limit to ${process.env.MESSAGE_LIMIT_SUBSCRIBED} messages per ${durationInHours(process.env.WINDOW_DURATION_SUBSCRIBED)} hours, at just Rs 9 per month.
+        // </div>`;
+
+        socket.emit('open_upgrade_modal');
       }
-     
-      socket.emit('chunk', { content: limitMessage, sessionId: currentSessionId, isMoreDetails, isKeyInsights, isAnecdotes, isQuotes, moreBooks });
       
       if(!isMoreDetails && message.isFirstQuery && !isKeyInsights && !isAnecdotes && !isQuotes) {
         // Update the session name with the limitMessage and save the session
@@ -744,6 +746,7 @@ io.on('connection', (socket) => {
         await session.save();
         socket.emit('updateSessionName', { sessionId: session._id, sessionName: newSessionName });
       }
+  
       return;
     }    
 
@@ -821,7 +824,7 @@ io.on('connection', (socket) => {
       user.totalMessageCount = 0;
     }
 
-    const isSubscribed = determinePremiumStatus(session.user).data.isPremiumActive;
+    const isSubscribed = determinePremiumStatus(user).data.isPremiumActive;
     const WINDOW_DURATION = isSubscribed ? parseInt(process.env.WINDOW_DURATION_SUBSCRIBED) : parseInt(process.env.WINDOW_DURATION_NON_SUBSCRIBED);
     const MESSAGE_LIMIT = isSubscribed ? parseInt(process.env.MESSAGE_LIMIT_SUBSCRIBED) : parseInt(process.env.MESSAGE_LIMIT_NON_SUBSCRIBED);
 
@@ -852,16 +855,15 @@ io.on('connection', (socket) => {
           <div style="border:1.3px solid red; background-color:#fff0f0; padding:10px; margin:10px 0; border-radius:8px; color:#444444; font-size: 0.95rem">
           You have reached the message limit of ${MESSAGE_LIMIT} messages per ${durationInHours(WINDOW_DURATION)} hours. Please try again after ${resetTimeString}.
           </div>`;
+        socket.emit('chunk', { content: limitMessage, sessionId: null, isMoreDetails, isKeyInsights, isAnecdotes, isQuotes, moreBooks: null });
       } else {
-        limitMessage = `
-        <div style="border:1.3px solid red; background-color:#fff0f0; padding:10px; margin:10px 0; border-radius:8px; color:#444444; font-size: 0.95rem">
-        You have reached the message limit of ${MESSAGE_LIMIT} messages per ${durationInHours(WINDOW_DURATION)} hours.<br><br>
-        Consider upgrading your plan to increase the message limit to ${process.env.MESSAGE_LIMIT_SUBSCRIBED} messages per ${durationInHours(process.env.WINDOW_DURATION_SUBSCRIBED)} hours, at just Rs 9 per month.
-        </div>`;
+        // limitMessage = `
+        // <div style="border:1.3px solid red; background-color:#fff0f0; padding:10px; margin:10px 0; border-radius:8px; color:#444444; font-size: 0.95rem">
+        // You have reached the message limit of ${MESSAGE_LIMIT} messages per ${durationInHours(WINDOW_DURATION)} hours.<br><br>
+        // Consider upgrading your plan to increase the message limit to ${process.env.MESSAGE_LIMIT_SUBSCRIBED} messages per ${durationInHours(process.env.WINDOW_DURATION_SUBSCRIBED)} hours, at just Rs 9 per month.
+        // </div>`;
+        socket.emit('open_upgrade_modal');
       }
-    
-      // Emit a warning message to the client and set the limitMessage as the session name
-      socket.emit('chunk', { content: limitMessage, sessionId: null, isMoreDetails, isKeyInsights, isAnecdotes, isQuotes, moreBooks: null });
       return;
     }    
 

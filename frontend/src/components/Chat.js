@@ -233,7 +233,6 @@ function Chat() {
       console.error('Error stopping the stream:', error);
     }
   }, []);
-  
 
   useHandleStreamEnd(
     socket,

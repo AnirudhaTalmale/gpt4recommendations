@@ -1091,7 +1091,7 @@ body:not(.history-pane-open) .input-area {
 
 .plans-container {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   justify-content: space-between;
 }
 
@@ -1134,9 +1134,12 @@ body:not(.history-pane-open) .input-area {
 }
 
 .upgrade-button {
-  border: 0.5px solid lightgrey;
-  background-color: white;
-  color: black;
+  background-color: #00a400; /* Initial green color */
+  color: white; /* White text color */
+}
+
+.upgrade-button:hover {
+  background-color: #008c00;
 }
 
 .current-plan-button, .cancel-plan-button {
@@ -1152,12 +1155,8 @@ body:not(.history-pane-open) .input-area {
   cursor: pointer;
 }
 
-.upgrade-button:hover {
-  background-color: rgb(187, 187, 187);
-}
-
 .current-plan-button:hover {
-  background-color: lightgrey;
+  background-color: rgb(242, 242, 242);
 }
 
 .close-button {
@@ -1197,19 +1196,6 @@ body:not(.history-pane-open) .input-area {
   margin-top: 10px; /* Space from the list above */
   cursor: pointer; /* Makes it clear it's clickable */
   text-decoration: underline; /* Underline text */
-}
-
-/* Media Query for smaller screens */
-@media (max-width: 610px) {
-  .plans-container {
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .upgrade-plan-option {
-    width: 82%; /* Adjust the width as necessary for smaller screens */
-    border-right: none !important; /* Remove the border for better display on small screens */
-  }
 }
 
 /* Manage subscription page */

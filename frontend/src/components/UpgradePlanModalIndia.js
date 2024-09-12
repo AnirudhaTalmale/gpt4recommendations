@@ -115,7 +115,7 @@ const UpgradePlanModalIndia = forwardRef(({ isOpen, onClose, userCountry, userEm
                         <p className="upgrade-amount">Rs 9/month</p>
                         {!isPremiumActive ?
                             <button className="upgrade-button" onClick={handleRazorpayPayment}>
-                                Pay Now
+                                Upgrade to Premium
                             </button> :
                             <div>
                                 <button className="current-plan-button">
@@ -127,6 +127,20 @@ const UpgradePlanModalIndia = forwardRef(({ isOpen, onClose, userCountry, userEm
                             <li><i className="fa-solid fa-check"></i> 30 messages per 3 hours</li>
                         </ul>
                     </div>
+                    {!isPremiumActive && (
+                        <div className="upgrade-plan-option premium">
+                            <h3>Free</h3>
+                            <p className="upgrade-amount">Rs 0/month</p>
+                            <div>
+                                <button className="current-plan-button">
+                                    Your current plan
+                                </button>
+                            </div>
+                            <ul className="features-list">
+                                <li><i className="fa-solid fa-check"></i> 2 messages per 24 hours</li>
+                            </ul>
+                        </div>
+                    )}
                 </div>
             </div>
         </div>
