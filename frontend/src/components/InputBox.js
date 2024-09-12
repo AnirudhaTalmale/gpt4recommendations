@@ -18,6 +18,11 @@ function InputBox({ onSubmit, isStreaming, onStopStreaming, isPaneOpen }) {
       window.fbq && window.fbq('track', 'Search', {
         search_string: input.trim()
       });
+
+      // Twitter conversion tracking event code
+      window.twq && window.twq('event', 'tw-omgwl-onouv', {
+        search_string: input.trim() // Pass the trimmed input as the search term
+      });
     }
     
     onSubmit(input);

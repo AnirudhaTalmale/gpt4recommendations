@@ -42,10 +42,19 @@ const UpgradePlanModalIndia = forwardRef(({ isOpen, onClose, userCountry, userEm
           if (verificationResponse.data.verified) {
             await axios.post(`${process.env.REACT_APP_BACKEND_URL}/update-premium`, { userEmail: userEmail });
             checkPremiumStatus();
+
+            // Facebook Pixel Tracking
             window.fbq('track', 'Subscribe', {
                 value: 9.00,
                 currency: 'INR',
                 subscription_id: order.id,
+            });
+
+            // Twitter Pixel Tracking
+            window.twq('track', 'tw-omgwl-onotj', {
+                value: 9.00, // Assuming you want to pass the same value as FB pixel
+                currency: 'INR',
+                conversion_id: order.id // Passing the order ID as the conversion ID for deduplication
             });
           }
         } catch (error) {
