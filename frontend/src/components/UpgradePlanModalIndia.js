@@ -133,7 +133,7 @@ const UpgradePlanModalIndia = forwardRef(({ isOpen, onClose, userCountry, userEm
                             </div>
                         }
                         <ul className="features-list">
-                            <li><i className="fa-solid fa-check"></i> 30 messages per 3 hours</li>
+                            <li><i className="fa-solid fa-check"></i> {process.env.REACT_APP_MESSAGE_LIMIT_SUBSCRIBED} messages per 3 hours</li>
                         </ul>
                     </div>
                     {!isPremiumActive && (
@@ -146,7 +146,7 @@ const UpgradePlanModalIndia = forwardRef(({ isOpen, onClose, userCountry, userEm
                                 </button>
                             </div>
                             <ul className="features-list">
-                                <li><i className="fa-solid fa-check"></i> 5 messages per 3 hours</li>
+                                <li><i className="fa-solid fa-check"></i> {process.env.REACT_APP_MESSAGE_LIMIT_NON_SUBSCRIBED} messages per 3 hours</li>
                             </ul>
                         </div>
                     )}
