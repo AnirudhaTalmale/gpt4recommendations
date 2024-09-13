@@ -1296,6 +1296,7 @@ body:not(.history-pane-open) .input-area {
   /* box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.1); */
 
   border: 0.7px solid lightgrey;
+  border-radius: 1rem;
 }
 
 .hero h2 {
@@ -1314,6 +1315,7 @@ body:not(.history-pane-open) .input-area {
   /* background-color: rgb(242, 242, 242); */
   /* box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.1); */
   border: 0.7px solid lightgrey;
+  border-radius: 1rem;
   padding: 0rem 0rem 1.25rem 0rem;
   margin: 6rem auto 5.7rem auto;
 }
@@ -1341,6 +1343,7 @@ body:not(.history-pane-open) .input-area {
   /* background-color: rgb(242, 242, 242); */
   /* box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);  */
   border: 0.7px solid lightgrey;
+  border-radius: 1rem;
   padding: 0rem 0rem 0.7rem 0rem;
 }
 
@@ -1448,7 +1451,6 @@ body:not(.history-pane-open) .input-area {
   width: 100%;
   border-collapse: collapse;
   table-layout: fixed;
-  border: 0.8px solid lightgrey;
   /* box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);  */
   border: 0.7px solid lightgrey;
 }
