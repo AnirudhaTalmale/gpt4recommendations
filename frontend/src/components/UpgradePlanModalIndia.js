@@ -12,7 +12,7 @@ const UpgradePlanModalIndia = forwardRef(({ isOpen, onClose, userCountry, userEm
     const createOrder = async () => {
         try {
             const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/orders`, {
-                amount: 900,  // Amount in paise for Rs 9
+                amount: 2900,  // Amount in paise for Rs 29
                 currency: "INR"
             });
             setOrder(response.data);
@@ -45,14 +45,14 @@ const UpgradePlanModalIndia = forwardRef(({ isOpen, onClose, userCountry, userEm
 
             // Facebook Pixel Tracking
             window.fbq('track', 'Subscribe', {
-                value: 9.00,
+                value: 29.00,
                 currency: 'INR',
                 subscription_id: order.id,
             });
 
             // Twitter Pixel Tracking
             window.twq('track', 'tw-omgwl-onotj', {
-                value: 9.00, // Assuming you want to pass the same value as FB pixel
+                value: 29.00, // Assuming you want to pass the same value as FB pixel
                 currency: 'INR',
                 conversion_id: order.id // Passing the order ID as the conversion ID for deduplication
             });
@@ -121,7 +121,7 @@ const UpgradePlanModalIndia = forwardRef(({ isOpen, onClose, userCountry, userEm
                 <div className="plans-container">
                     <div className="upgrade-plan-option premium">
                         <h3>Premium</h3>
-                        <p className="upgrade-amount">Rs 9/month</p>
+                        <p className="upgrade-amount">Rs 29/month</p>
                         {!isPremiumActive ?
                             <button className="upgrade-button" onClick={handleRazorpayPayment}>
                                 Upgrade to Premium
@@ -146,7 +146,7 @@ const UpgradePlanModalIndia = forwardRef(({ isOpen, onClose, userCountry, userEm
                                 </button>
                             </div>
                             <ul className="features-list">
-                                <li><i className="fa-solid fa-check"></i> 2 messages per 24 hours</li>
+                                <li><i className="fa-solid fa-check"></i> 5 messages per 3 hours</li>
                             </ul>
                         </div>
                     )}
