@@ -189,7 +189,7 @@ const HomePage = () => {
       <HomePageHeader />
 
       <section className="hero">
-        <h2>AI-Powered Book Recommendation App</h2>
+        <h2>Discover Your Next Favorite Book</h2>
           <div className="login-container">
             {!inWebView && (
               <>
@@ -272,7 +272,7 @@ const HomePage = () => {
           <tbody>
             <tr>
               <td>AI Model</td>
-              <td>Uses advanced GPT-4 for accurate recommendations</td>
+              <td>Uses GPT-4 Turbo for accurate recommendations</td>
               <td>Uses simpler AI models for basic recommendations</td>
             </tr>
             <tr>
