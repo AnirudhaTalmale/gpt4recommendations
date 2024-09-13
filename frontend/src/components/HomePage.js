@@ -239,11 +239,6 @@ const HomePage = () => {
         </Slider>
       </section>
 
-      <div className="features-div">
-        <h2 style={{ textAlign: 'center', marginBottom: '1.5rem', lineHeight: '2rem' }}>
-          Six Interactive Buttons for Each Recommendation
-        </h2>
-      </div>
       <section className="features-carousel">
       
         <Slider {...sliderSettings}>
@@ -259,55 +254,7 @@ const HomePage = () => {
         </Slider>
       </section>
 
-      <section className="comparison">
-        <h2>Why Choose Us</h2>
-        <table>
-          <thead>
-            <tr>
-              <th>Features</th>
-              <th>GetBooks.ai</th>
-              <th>Other Apps</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>AI Model</td>
-              <td>Uses GPT-4 Turbo for accurate recommendations</td>
-              <td>Uses simpler AI models for basic recommendations</td>
-            </tr>
-            <tr>
-            <td>Comprehensive Book Details</td>
-                <td>Single-click access to book summaries, author credibility, and endorsements</td>
-                <td>Additional queries required</td>
-            </tr>
-            <tr>
-              <td>Book Insights, Anecdotes & Quotes</td>
-              <td>Single-click access</td>
-              <td>Additional queries required</td>
-            </tr>
-            <tr>
-              <td>Amazon Star Ratings</td>
-              <td>Available</td>
-              <td>Not available</td>
-            </tr>
-            <tr>
-              <td>Direct Amazon Buy Now Links</td>
-              <td>Available for 9 Countries</td>
-              <td>Available only for Amazon US</td>
-            </tr>
-            <tr>
-              <td>Book Preview</td>
-              <td>Available</td>
-              <td>Not available</td>
-            </tr>
-            <tr>
-              <td>User Interface</td>
-              <td>Simple, intuitive chat interface</td>
-              <td>Generally more complex</td>
-            </tr>
-          </tbody>
-        </table>
-      </section>
+      
       <Footer />
     </div>
   );
