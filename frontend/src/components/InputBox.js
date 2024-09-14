@@ -88,7 +88,7 @@ function InputBox({ onSubmit, isStreaming, onStopStreaming, isPaneOpen }) {
           value={input}
           onChange={handleInputChange}
           onKeyDown={handleKeyDown}
-          placeholder="Message GPT-4 Turbo"
+          placeholder="Message GetBooks.ai"
           rows={rows}
         />
         {isStreaming ? (
