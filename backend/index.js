@@ -697,7 +697,7 @@ io.on('connection', (socket) => {
 
     const isSubscribed = determinePremiumStatus(session.user).data.isPremiumActive;
     const WINDOW_DURATION = isSubscribed ? parseInt(process.env.WINDOW_DURATION_SUBSCRIBED) : parseInt(process.env.WINDOW_DURATION_NON_SUBSCRIBED);
-    const MESSAGE_LIMIT = isSubscribed ? parseInt(process.env.MESSAGE_LIMIT_SUBSCRIBED) : parseInt(process.env.MESSAGE_LIMIT_NON_SUBSCRIBED);
+    // const MESSAGE_LIMIT = isSubscribed ? parseInt(process.env.MESSAGE_LIMIT_SUBSCRIBED) : parseInt(process.env.MESSAGE_LIMIT_NON_SUBSCRIBED);
 
     if (!session.user.firstMessageTimestamp || now - session.user.firstMessageTimestamp.getTime() > WINDOW_DURATION) {
       // Reset if more than WINDOW DURATION have passed
@@ -710,45 +710,45 @@ io.on('connection', (socket) => {
 
     session.user.totalMessageCount += 1;
 
-    if (session.user.messageCount > MESSAGE_LIMIT) {
-      const resetTime = new Date(session.user.firstMessageTimestamp.getTime() + WINDOW_DURATION);
+    // if (session.user.messageCount > MESSAGE_LIMIT) {
+    //   const resetTime = new Date(session.user.firstMessageTimestamp.getTime() + WINDOW_DURATION);
     
-      // Formatting the reset time in HH:MM format
-      const resetTimeString = resetTime.toLocaleString(locale, {
-        timeZone: timezone,
-        hour: '2-digit',
-        minute: '2-digit'
-      });
+    //   // Formatting the reset time in HH:MM format
+    //   const resetTimeString = resetTime.toLocaleString(locale, {
+    //     timeZone: timezone,
+    //     hour: '2-digit',
+    //     minute: '2-digit'
+    //   });
       
-      // Determine the appropriate message based on subscription status
-      let limitMessage = '';
-      if (isSubscribed) {
-        limitMessage = `
-          <div style="border:1.3px solid red; background-color:#fff0f0; padding:10px; margin:10px 0; border-radius:8px; color:#444444; font-size: 0.95rem">
-          You have reached the message limit of ${MESSAGE_LIMIT} messages per ${durationInHours(WINDOW_DURATION)} hours. Please try again after ${resetTimeString}.
-          </div>`;
+    //   // Determine the appropriate message based on subscription status
+    //   let limitMessage = '';
+    //   if (isSubscribed) {
+    //     limitMessage = `
+    //       <div style="border:1.3px solid red; background-color:#fff0f0; padding:10px; margin:10px 0; border-radius:8px; color:#444444; font-size: 0.95rem">
+    //       You have reached the message limit of ${MESSAGE_LIMIT} messages per ${durationInHours(WINDOW_DURATION)} hours. Please try again after ${resetTimeString}.
+    //       </div>`;
 
-          socket.emit('chunk', { content: limitMessage, sessionId: currentSessionId, isMoreDetails, isKeyInsights, isAnecdotes, isQuotes, moreBooks });
-      } else {
-        // limitMessage = `
-        // <div style="border:1.3px solid red; background-color:#fff0f0; padding:10px; margin:10px 0; border-radius:8px; color:#444444; font-size: 0.95rem">
-        // You have reached the message limit of ${MESSAGE_LIMIT} messages per ${durationInHours(WINDOW_DURATION)} hours.<br><br>
-        // Consider upgrading your plan to increase the message limit to ${process.env.MESSAGE_LIMIT_SUBSCRIBED} messages per ${durationInHours(process.env.WINDOW_DURATION_SUBSCRIBED)} hours, at just Rs 9 per month.
-        // </div>`;
+    //       socket.emit('chunk', { content: limitMessage, sessionId: currentSessionId, isMoreDetails, isKeyInsights, isAnecdotes, isQuotes, moreBooks });
+    //   } else {
+    //     // limitMessage = `
+    //     // <div style="border:1.3px solid red; background-color:#fff0f0; padding:10px; margin:10px 0; border-radius:8px; color:#444444; font-size: 0.95rem">
+    //     // You have reached the message limit of ${MESSAGE_LIMIT} messages per ${durationInHours(WINDOW_DURATION)} hours.<br><br>
+    //     // Consider upgrading your plan to increase the message limit to ${process.env.MESSAGE_LIMIT_SUBSCRIBED} messages per ${durationInHours(process.env.WINDOW_DURATION_SUBSCRIBED)} hours, at just Rs 9 per month.
+    //     // </div>`;
 
-        socket.emit('open_upgrade_modal');
-      }
+    //     socket.emit('open_upgrade_modal');
+    //   }
       
-      if(!isMoreDetails && message.isFirstQuery && !isKeyInsights && !isAnecdotes && !isQuotes) {
-        // Update the session name with the limitMessage and save the session
-        const newSessionName = 'Message limit reached';
-        session.sessionName = newSessionName;
-        await session.save();
-        socket.emit('updateSessionName', { sessionId: session._id, sessionName: newSessionName });
-      }
+    //   if(!isMoreDetails && message.isFirstQuery && !isKeyInsights && !isAnecdotes && !isQuotes) {
+    //     // Update the session name with the limitMessage and save the session
+    //     const newSessionName = 'Message limit reached';
+    //     session.sessionName = newSessionName;
+    //     await session.save();
+    //     socket.emit('updateSessionName', { sessionId: session._id, sessionName: newSessionName });
+    //   }
   
-      return;
-    }    
+    //   return;
+    // }    
 
     let completePrompt;
     if (isMoreDetails || message.content.startsWith("Explain the book - ")) {
@@ -826,7 +826,7 @@ io.on('connection', (socket) => {
 
     const isSubscribed = determinePremiumStatus(user).data.isPremiumActive;
     const WINDOW_DURATION = isSubscribed ? parseInt(process.env.WINDOW_DURATION_SUBSCRIBED) : parseInt(process.env.WINDOW_DURATION_NON_SUBSCRIBED);
-    const MESSAGE_LIMIT = isSubscribed ? parseInt(process.env.MESSAGE_LIMIT_SUBSCRIBED) : parseInt(process.env.MESSAGE_LIMIT_NON_SUBSCRIBED);
+    // const MESSAGE_LIMIT = isSubscribed ? parseInt(process.env.MESSAGE_LIMIT_SUBSCRIBED) : parseInt(process.env.MESSAGE_LIMIT_NON_SUBSCRIBED);
 
     if (!user.firstMessageTimestamp || now - user.firstMessageTimestamp.getTime() > WINDOW_DURATION) {
       // Reset if more than 3 hours have passed
@@ -839,33 +839,33 @@ io.on('connection', (socket) => {
 
     user.totalMessageCount += 1;
 
-    if (user.messageCount > MESSAGE_LIMIT) {
-      const resetTime = new Date(user.firstMessageTimestamp.getTime() + WINDOW_DURATION);
+    // if (user.messageCount > MESSAGE_LIMIT) {
+    //   const resetTime = new Date(user.firstMessageTimestamp.getTime() + WINDOW_DURATION);
     
-      // Formatting the reset time in HH:MM format
-      const resetTimeString = resetTime.toLocaleString(locale, {
-        timeZone: timezone,
-        hour: '2-digit',
-        minute: '2-digit'
-      });
+    //   // Formatting the reset time in HH:MM format
+    //   const resetTimeString = resetTime.toLocaleString(locale, {
+    //     timeZone: timezone,
+    //     hour: '2-digit',
+    //     minute: '2-digit'
+    //   });
 
-      let limitMessage = '';
-      if (isSubscribed) {
-        limitMessage = `
-          <div style="border:1.3px solid red; background-color:#fff0f0; padding:10px; margin:10px 0; border-radius:8px; color:#444444; font-size: 0.95rem">
-          You have reached the message limit of ${MESSAGE_LIMIT} messages per ${durationInHours(WINDOW_DURATION)} hours. Please try again after ${resetTimeString}.
-          </div>`;
-        socket.emit('chunk', { content: limitMessage, sessionId: null, isMoreDetails, isKeyInsights, isAnecdotes, isQuotes, moreBooks: null });
-      } else {
-        // limitMessage = `
-        // <div style="border:1.3px solid red; background-color:#fff0f0; padding:10px; margin:10px 0; border-radius:8px; color:#444444; font-size: 0.95rem">
-        // You have reached the message limit of ${MESSAGE_LIMIT} messages per ${durationInHours(WINDOW_DURATION)} hours.<br><br>
-        // Consider upgrading your plan to increase the message limit to ${process.env.MESSAGE_LIMIT_SUBSCRIBED} messages per ${durationInHours(process.env.WINDOW_DURATION_SUBSCRIBED)} hours, at just Rs 9 per month.
-        // </div>`;
-        socket.emit('open_upgrade_modal');
-      }
-      return;
-    }    
+    //   let limitMessage = '';
+    //   if (isSubscribed) {
+    //     limitMessage = `
+    //       <div style="border:1.3px solid red; background-color:#fff0f0; padding:10px; margin:10px 0; border-radius:8px; color:#444444; font-size: 0.95rem">
+    //       You have reached the message limit of ${MESSAGE_LIMIT} messages per ${durationInHours(WINDOW_DURATION)} hours. Please try again after ${resetTimeString}.
+    //       </div>`;
+    //     socket.emit('chunk', { content: limitMessage, sessionId: null, isMoreDetails, isKeyInsights, isAnecdotes, isQuotes, moreBooks: null });
+    //   } else {
+    //     // limitMessage = `
+    //     // <div style="border:1.3px solid red; background-color:#fff0f0; padding:10px; margin:10px 0; border-radius:8px; color:#444444; font-size: 0.95rem">
+    //     // You have reached the message limit of ${MESSAGE_LIMIT} messages per ${durationInHours(WINDOW_DURATION)} hours.<br><br>
+    //     // Consider upgrading your plan to increase the message limit to ${process.env.MESSAGE_LIMIT_SUBSCRIBED} messages per ${durationInHours(process.env.WINDOW_DURATION_SUBSCRIBED)} hours, at just Rs 9 per month.
+    //     // </div>`;
+    //     socket.emit('open_upgrade_modal');
+    //   }
+    //   return;
+    // }    
 
     let completePrompt;
     if (isMoreDetails || message.content.startsWith("Explain the book - ")) {

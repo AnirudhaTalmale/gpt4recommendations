@@ -183,12 +183,12 @@ const HistoryPane = forwardRef(({
 
   const [isUpgradeModalOpen, setIsUpgradeModalOpen] = useState(false);
 
-  const handleUpgradeClick = () => {
-    setIsUpgradeModalOpen(true);
-    if (isPaneOpen) {
-      togglePane(); // Close the history pane
-    }
-  };  
+  // const handleUpgradeClick = () => {
+  //   setIsUpgradeModalOpen(true);
+  //   if (isPaneOpen) {
+  //     togglePane(); // Close the history pane
+  //   }
+  // };  
 
   const handleCloseUpgradeModal = () => {
     setIsUpgradeModalOpen(false);
@@ -344,9 +344,9 @@ const HistoryPane = forwardRef(({
               <li onClick={handleDeleteAccount}>
                 <i className="fa-solid fa-trash"></i> Delete account
               </li>
-              <li onClick={handleUpgradeClick}>
+              {/* <li onClick={handleUpgradeClick}>
                 <i className="fa-solid fa-cart-shopping"></i> Upgrade Plan
-              </li>
+              </li> */}
               <li onClick={() => navigate('/contact-us')} >
                 <i className="fa-solid fa-address-book"></i> Contact us
               </li>
