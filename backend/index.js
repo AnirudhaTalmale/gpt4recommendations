@@ -939,7 +939,7 @@ app.post('/api/book-action', async (req, res) => {
 });
 
 
-app.get('/api/more-details', async (req, res) => {
+app.get('/api/more-details', async (req, res) => { 
   try {
     const { bookDataObjectId, bookTitle } = req.query;
     let cacheKey = `more-details:${bookDataObjectId || bookTitle}`;

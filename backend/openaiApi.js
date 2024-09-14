@@ -204,6 +204,16 @@ async function getAmazonBookData(title, author, country) {
 
       // console.log("response.data is", response.data);
 
+      // // Ensure both data objects exist before trying to access products
+      // if (response.data && response.data.data && response.data.data.products) {
+      //     response.data.data.products.forEach((product, index) => {
+      //         console.log(`Product ${index + 1}:`, product);
+      //     });
+      // } else {
+      //     console.log("No products found or 'products' is undefined.");
+      // }
+
+
       for (let i = 0; i < Math.min(1, response.data.data.products.length); i++) {
         const product = response.data.data.products[i];
         const { product_star_rating, product_num_ratings, product_url, product_photo } = product;
@@ -212,6 +222,8 @@ async function getAmazonBookData(title, author, country) {
         amazonStarRating = product_star_rating;
         amazonReviewCount = product_num_ratings.toLocaleString();
         amazonLink = product_url;
+
+        // console.log("amazon image is", amazonImage);
 
         return { amazonLink, amazonStarRating, amazonReviewCount, amazonImage };
       }
@@ -454,9 +466,8 @@ const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, is
     const userCountry = session ? session.user.country : undefined;
 
     const stream = await openai.chat.completions.create({
-      model: "gpt-4-0125-preview", 
+      model: "gpt-4o-mini-2024-07-18", 
       messages: filteredMessages,
-      max_tokens: 4096,
       stream: true,
     });    
 
@@ -632,7 +643,7 @@ openaiApi.getSummary = async (text) => {
     const prompt = `Summarize the following text in 4 words:\n\n"${text}"\n\nSummary:`;
 
     const response = await openai.chat.completions.create({
-      model: "gpt-3.5-turbo-0125",
+      model: "gpt-4o-mini-2024-07-18",
       messages: [{ role: 'system', content: prompt }],
       max_tokens: 10, // Adjust as needed to ensure brevity
     });
@@ -649,29 +660,29 @@ openaiApi.getSummary = async (text) => {
 };      
 
 openaiApi.getGenres = async (title, author) => {
-  try {
-    const prompt = `Provide the genres of the book - "${title}" by ${author}. The answer should just be a single array of strings and nothing else.`;
+  // try {
+  //   const prompt = `Provide the genres of the book - "${title}" by ${author}. The answer should just be a single array of strings and nothing else.`;
 
-    const response = await openai.chat.completions.create({
-      model: "gpt-4-0125-preview",
-      messages: [{ role: 'system', content: prompt }]
-    });
+  //   const response = await openai.chat.completions.create({
+  //     model: "gpt-4o-mini-2024-07-18",
+  //     messages: [{ role: 'system', content: prompt }]
+  //   });
 
-    let genresResponse = response.choices[0]?.message?.content || "[]";
+  //   let genresResponse = response.choices[0]?.message?.content || "[]";
 
-    // Parse the JSON string into an array
-    let genresArray = JSON.parse(genresResponse);
+  //   // Parse the JSON string into an array
+  //   let genresArray = JSON.parse(genresResponse);
 
-    // Ensure that genresArray is actually an array, if not, default to an empty array
-    if (!Array.isArray(genresArray)) {
-      genresArray = [];
-    }
+  //   // Ensure that genresArray is actually an array, if not, default to an empty array
+  //   if (!Array.isArray(genresArray)) {
+  //     genresArray = [];
+  //   }
  
-    return genresArray;
-  } catch (error) {
-    console.error('Error getting genres:', error);
+  //   return genresArray;
+  // } catch (error) {
+  //   console.error('Error getting genres:', error);
     return [];
-  }
+  // }
 };
 
 
