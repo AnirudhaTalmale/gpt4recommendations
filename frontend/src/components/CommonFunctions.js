@@ -209,9 +209,11 @@ export const BuyNowButton = ({ link, userEmail, bookTitle, author }) => {
     await handleActionButtonClick('buy-now-btn', bookTitle, author, userEmail);
   };
 
+  const amazonLink = `${link}/ref=nosim?tag=getbooksai-21`;
+
   return (
     <div>
-      <a href={link} target="_blank" rel="noreferrer">
+      <a href={amazonLink} target="_blank" rel="noreferrer">
         <button className="buy-now-button" onClick={handleBuyClick}>
           Buy Now
         </button>

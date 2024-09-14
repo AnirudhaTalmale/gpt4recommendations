@@ -448,7 +448,10 @@ const getBookData = async (title, author, userCountry, bookDataObjectId = '') =>
 };
 
 function createBuyNowButtonHtml(link, bookTitle, author, buttonText = 'Buy Now') {
-  return `<div><a href="${link}" target="_blank">
+
+  const amazonLink = `${link}/ref=nosim?tag=getbooksai-21`;
+
+  return `<div><a href="${amazonLink}" target="_blank">
             <button class="buy-now-button" data-book-title="${bookTitle}" data-author="${author}">
               ${buttonText}
             </button>

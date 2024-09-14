@@ -1135,13 +1135,18 @@ app.post('/api/session', async (req, res) => {
         query = { user: userId };
       }
 
-      const sessions = await Session.find(query);
+      // Find sessions with the specified query, sort them by creation date in descending order, and limit the results to 25
+      const sessions = await Session.find(query)
+                                    .sort({ createdAt: -1 }) // Sort by createdAt in descending order
+                                    .limit(25); // Limit to 25 sessions
+
       res.json(sessions);
     } catch (error) {
       console.error('GET /api/sessions - Error:', error);
       res.status(500).json({ message: 'Error retrieving sessions', error: error.toString() });
     }
   });
+
 // }
 
 // DELETE endpoint for deleting a session
