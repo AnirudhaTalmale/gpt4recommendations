@@ -163,22 +163,22 @@ function BookDetail() {
 
   const fetchSimilarBooks = useCallback(async (genres, countryCode) => {
     // Adding check for userData being null or undefined
-    if (!genres || !countryCode || !userData || !userData.id) {
+    if (!genres || !countryCode) {
+      console.log("genre or countryCode missing in BookDetail component");
       return;
     }
 
     try {
         const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/books`, {
           genre: genres,  // Assuming genres is an array of strings
-          countryCode: countryCode,
-          userId: userData.id  // Passing the user ID for context or authorization
+          countryCode: countryCode
         });
         const filteredBooks = response.data.filter(book => book._id !== bookId);
         setSimilarBooks(filteredBooks);
     } catch (error) {
         console.error('Failed to fetch similar books', error);
     }
-  }, [bookId, userData]);  // Notice userData instead of userData.id to capture the whole object
+  }, [bookId]);  // Notice userData instead of userData.id to capture the whole object
 
 
     // Adjust fetchBookDetails to include fetchSimilarBooks as a stable dependency
@@ -229,8 +229,6 @@ function BookDetail() {
     }
 
     const handleQuerySubmit = async (query, isMoreDetails = false, bookDataObjectId = null, bookTitle = null, author = null, moreBooks = false, isKeyInsights = false, isAnecdotes = false, isQuotes = false) => {
-      const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone; 
-      const locale = navigator.language;
 
       if (userData && userData.id) {
         socket.emit('book-detail', {
@@ -247,8 +245,7 @@ function BookDetail() {
           author,
           userId: userData.id,
           moreBooks,
-          timezone,
-          locale
+          userDataCountry: userData.country
         });
       } 
     };

@@ -19,7 +19,8 @@ const HistoryPane = forwardRef(({
   isPaneOpen, 
   togglePane,
   selectedSessionId,
-  setSelectedSessionId
+  setSelectedSessionId,
+  userData
 }, ref) => {
 
   // console.log("userCountry is", userCountry);
@@ -97,12 +98,16 @@ const HistoryPane = forwardRef(({
       setIsEntryActive(!isDropdownOpen); // Toggle the active state along with the dropdown
   };
 
+  const logInFunction = () => {
+    window.location.href = `${process.env.REACT_APP_FRONTEND_URL}/login`;
+  };
+
   const handleLogout = async () => {
     try {
       const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/auth/logout`, { withCredentials: true });
       if (response.data.message === 'Logged out successfully') {
         // Redirect to the home page or login page
-        window.location.href = `${process.env.REACT_APP_FRONTEND_URL}/home`;
+        window.location.href = `${process.env.REACT_APP_FRONTEND_URL}/chat`;
       }
     } catch (error) {
       console.error('Error during logout:', error);
@@ -207,7 +212,7 @@ const HistoryPane = forwardRef(({
     try {
       const response = await axios.delete(`${process.env.REACT_APP_BACKEND_URL}/api/user/delete`, { withCredentials: true });
       if (response.data.message === 'Account deleted successfully') {
-        window.location.href = `${process.env.REACT_APP_FRONTEND_URL}/home`;
+        window.location.href = `${process.env.REACT_APP_FRONTEND_URL}/chat`;
       }
     } catch (error) {
       console.error('Error during account deletion:', error);
@@ -335,10 +340,20 @@ const HistoryPane = forwardRef(({
         </div>
 
         <div className="user-info-container">
-          <div className={`user-entry ${isEntryActive ? 'active' : ''}`} onClick={toggleDropdown} ref={userEntryRef}>
-            <img src={getUserImage()} alt="" className="history-pane-image" />
-            <span>{userName}</span>
-          </div>
+
+          {
+            userData && userData.id === process.env.REACT_APP_EXCLUDE_DUMMY_ID ? (
+              <div className={`user-entry-sign-in ${isEntryActive ? 'active' : ''}`} onClick={logInFunction}>
+              <span>Log in</span>
+              </div>
+            ) : (
+              <div className={`user-entry ${isEntryActive ? 'active' : ''}`} onClick={toggleDropdown} ref={userEntryRef}>
+                <img src={getUserImage()} alt="" className="history-pane-image" />
+                <span>{userName}</span>
+              </div>
+            )
+          }
+
           {isDropdownOpen && (
             <ul className="dropdown-menu" ref={dropdownRef}>
               <li onClick={handleDeleteAccount}>

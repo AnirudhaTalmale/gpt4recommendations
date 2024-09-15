@@ -40,25 +40,6 @@ const Home = ({ userData }) => {
     const [selectedGenre, setSelectedGenre] = useState('All');
     const [loading, setLoading] = useState(false); 
 
-    // const fetchGenres = useCallback(async () => {
-    //     const countryCode = mapCountryNameToCode(userData.country);
-    //     if (!countryCode) {
-    //         console.error('Country not supported:', userData.country);
-    //         return; // Early return if country is not supported
-    //     }
-        
-    //     try {
-    //         const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/distinct-genres`, {
-    //             userId: userData.id, 
-    //             country: countryCode
-    //         });
-    //         const data = response.data;
-    //         setGenres(['All', ...data.genres]); // Prepend 'All' to the list of genres
-    //     } catch (error) {
-    //         console.error('Failed to fetch genres', error);
-    //     }
-    // }, [userData.id, userData.country]);
-
     const fetchGenres = useCallback(() => {
         // Prepend 'All' to the list of hardcoded genres
         setGenres(['All', ...hardcodedGenres]);
@@ -72,7 +53,6 @@ const Home = ({ userData }) => {
             console.error('Country not supported:', userData.country);
             return; // Early return if country is not supported
         }
-        
         try {
             const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/books`, {
                 genre: genre,

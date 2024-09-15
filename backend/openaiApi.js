@@ -460,13 +460,13 @@ function createBuyNowButtonHtml(link, bookTitle, author, buttonText = 'Buy Now')
 
 let isStreamingActive = false;
 
-const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, isKeyInsights, isAnecdotes, isQuotes, bookDataObjectId, bookTitle, author, moreBooks) => {
+const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, isKeyInsights, isAnecdotes, isQuotes, bookDataObjectId, bookTitle, author, moreBooks, userDataCountry) => {
 
   isStreamingActive = true;
 
   const filteredMessages = messages.map(({ role, content }) => ({ role, content }));
   try {
-    const userCountry = session ? session.user.country : undefined;
+    const userCountry = userDataCountry;
 
     const stream = await openai.chat.completions.create({
       model: "gpt-4o-mini-2024-07-18", 

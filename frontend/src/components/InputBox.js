@@ -24,7 +24,6 @@ function InputBox({ onSubmit, isStreaming, onStopStreaming, isPaneOpen }) {
         search_string: input.trim() // Pass the trimmed input as the search term
       });
     }
-    
     onSubmit(input);
     setInput('');
     setIsInputNotEmpty(false); // Add this line

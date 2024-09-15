@@ -62,66 +62,19 @@ ol li {
   font-size: 1em;
 }
 
-.header-title {
-  font-size: 1.05rem; /* Example font size */
-  color: #333; /* Example text color */
-  font-weight: bold;
-}
-
-
-/* .header {
-  display: flex;
-  width: 100dvw;
-  height: 2rem;
-  justify-content: space-between; 
-  padding: 0 10px;
-  border-bottom: 0.5px solid lightgrey;
-  margin-bottom: 0.1rem;
-}
-
-.header-title {
-  display: inline-block;
-  font-size: 1.15rem;
-  margin-top: 0.33rem;
-  font-weight: bold;
-}
-
-.new-session-button-small-screen {
-  border: none;
-  background: none;
-  font-size: 1.11rem;
+.country-select {
+  padding: 4px 8px;
+  border-radius: 4px;
+  border: 0.1px solid #ccc;
+  background-color: rgb(251, 251, 251);
   cursor: pointer;
-  color: black;
-  margin-right: 1.6rem;
-  margin-top: 0.05rem;
-} */
-
-/* .new-session-button-small-screen-book-detail {
-  border: none;
-  background: none;
-  font-size: 1.15rem;
-  cursor: pointer;
-  color: black;
-  margin-right: 0.7rem;
-  margin-left: 0.5rem;
-} */
-/* 
-.menu-button-small-screen {
-  border: none;
-  background: none;
-  cursor: pointer;
-  font-size: 1.1rem;
-  color: black;
-  margin-left: 0.25rem;
-  margin-right: 0.15rem;
-  margin-top: 0.1rem;
-} */
-
-.header-content {
-  display: flex; /* Use flexbox to align items side by side */
-  align-items: center; /* Center items vertically */
-  justify-content: flex-start; /* Align items to the left */
+  margin: 0 10px; /* Adjust spacing as needed */
 }
+
+.country-select:focus {
+  outline: none; /* Removes the default focus outline */
+}
+
 
 /* chat area */
 
@@ -728,8 +681,8 @@ body:not(.history-pane-open) .input-area {
 }
 
 .history-pane {
-  background-color: black;
-  color: #fff;
+  background-color: rgb(251, 251, 251);
+  /* color: #fff; */
   width: 244px; 
   padding: 0.8rem 0rem 0.5rem 0.5rem;
   position: fixed;
@@ -740,17 +693,18 @@ body:not(.history-pane-open) .input-area {
   display: flex;
   flex-direction: column;
   transition: transform 0.2s ease;
+  border-right: 1px solid lightgrey;
 }
 
 .history-pane::-webkit-scrollbar-thumb {
-  background-color: rgb(82, 82, 82);
+  background-color: rgb(236, 236, 236);
   border-radius: 5px;
 }
 
 /* Firefox */
 .history-pane {
   scrollbar-width: thin;
-  scrollbar-color: rgb(82, 82, 82) #f1f1f1;
+  scrollbar-color: rgb(236, 236, 236) #f1f1f1;
 }
 
 .history-pane.closed {
@@ -774,7 +728,7 @@ body:not(.history-pane-open) .input-area {
 }
 
 .new-session-button {
-  color: #d9d9e3;
+  color: rgb(101, 101, 101);
   border: none;
   cursor: pointer;
   background: none;
@@ -798,7 +752,7 @@ body:not(.history-pane-open) .input-area {
   right: 0;
   bottom: 0;
   width: 27%;
-  background: linear-gradient(to left, rgba(0, 0, 0, 1), transparent);
+  /* background: linear-gradient(to left, rgba(0, 0, 0, 1), transparent); */
   pointer-events: none; 
 }
 
@@ -818,7 +772,7 @@ body:not(.history-pane-open) .input-area {
 .history-entry:hover {
   position: relative;
   z-index: 2; 
-  background-color: hsla(0, 0%, 100%, 0.097); 
+  background-color: hsla(240, 51%, 79%, 0.213);
   border-radius: 0.5rem;
 }
 
@@ -829,8 +783,8 @@ body:not(.history-pane-open) .input-area {
   margin-left: 0.1rem;
   margin-right: 0.1rem;
   margin-right: 1rem !important;
-  font-size: 0.86rem !important;
-  font-family: Arial, Helvetica, sans-serif;
+  font-size: 0.88rem !important;
+  
 }
 
 .delete-session-button {
@@ -881,11 +835,29 @@ body:not(.history-pane-open) .input-area {
   cursor: pointer;
   font-weight: bold;
   font-size: 0.9rem;
-  &:hover, &.active { 
-      background-color: hsla(0,0%,100%,.1);
+  &:hover { 
+      background-color: hsla(240, 51%, 79%, 0.213);
       border-radius: 0.5rem;
   }
   user-select: none;
+}
+
+.user-entry-sign-in {
+  padding: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 0.9rem;
+  border-radius: 0.5rem;
+  border: 0.5px solid grey;
+  &:hover { 
+      background-color: hsla(0,0%,100%,.1);
+      
+  }
+  user-select: none;
+  margin-bottom: 0.2rem;
 }
 
 .history-pane-image {
@@ -905,10 +877,11 @@ body:not(.history-pane-open) .input-area {
   margin-left: 0.6%;
   margin-bottom: 0.3rem;
   z-index: 3;
-  background-color: hsla(0, 0%, 19%, 1);
+  background-color: white;
   border-radius: 0.5rem;
   overflow: hidden; /* Optional: In case of very long item names */
   font-size: 0.97rem;
+  border: 0.5px solid lightgrey;
 }
 
 .dropdown-menu li {
@@ -1267,6 +1240,16 @@ body:not(.history-pane-open) .input-area {
 
 /* Home page components */
 
+.homepage {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  /* border: 1px solid blue; */
+  overflow: hidden;
+  height: 100vh; /* Adjust this to the desired height or make it full viewport height */
+}
+
+
 .home-page-header {
   display: flex;
   align-items: center;
@@ -1301,7 +1284,7 @@ body:not(.history-pane-open) .input-area {
   /* background-color: rgb(242, 242, 242); */
   /* box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.1); */
 
-  border: 0.7px solid lightgrey;
+  /* border: 0.7px solid lightgrey; */
   border-radius: 1rem;
 }
 
@@ -2043,6 +2026,10 @@ body:not(.history-pane-open) .input-area {
 }
 
 /* AnswerDisplay component */
+
+.fa-user {
+  padding: 0.11rem;
+}
 
 .message {
   display: flex;

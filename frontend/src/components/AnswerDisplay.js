@@ -216,7 +216,7 @@ function AnswerDisplay({
               <div><img src={userImage} alt="" className="display-image" /></div> // Display user image
               
             ) : (
-              <span>U</span> // Fallback if no image is available
+              <span><i class="fa-solid fa-user"></i></span> // Fallback if no image is available
             )
           ) : (
             <div><img src="/GetBooks_64_64.png" className="display-image" alt="" /></div> // Icon for the assistant

@@ -169,12 +169,14 @@ export const handleMoreDetailsRequest = async (bookDataObjectId, bookTitle, auth
           return userData;
         }
       } else {
-        console.log("Authentication failed, redirecting to login page");
-        window.location.href = `${process.env.REACT_APP_FRONTEND_URL}/home`;
+        const userInfoResponse = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/user-info`, { withCredentials: true });
+        const userData = userInfoResponse.data.user;
+        return userData;   
       }
     } catch (error) {
-      console.error('Error checking authentication status:', error);
-      window.location.href = `${process.env.REACT_APP_FRONTEND_URL}/home`;
+      const userInfoResponse = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/user-info`, { withCredentials: true });
+      const userData = userInfoResponse.data.user;
+      return userData;   
     }
   };
 

@@ -26,7 +26,7 @@ function App() {
           <Route path="/onboarding" element={<OnboardingPage />} /> 
           <Route path="/chat/:sessionId" element={<Chat />} />
           <Route path="/chat" element={<Chat />} />
-          <Route path="/home" element={<HomePage />} />
+          <Route path="/login" element={<HomePage />} />
           <Route path="/blog" element={<BlogPage />} />
           <Route path="/blog/:postId" element={<BlogPostPage />} />
           <Route path="/about-us" element={<About />} />

@@ -173,8 +173,20 @@ app.get('/api/user-info', (req, res) => {
       user: userInfo
     });
   } else {
-    console.log('User is not authenticated');
-    res.status(401).json({ isAuthenticated: false });
+      console.log('User is not authenticated');
+      const emptyUserInfo = {
+        id: '66e6a960bd52282a83e31cfa',
+        name: 'dummyDisplayName',
+        email: 'dummy@gmail.com',
+        image: '',
+        role: 'user',
+        country: '', 
+        isAdmin: false
+      };
+      res.json({
+        isAuthenticated: false,
+        user: emptyUserInfo
+      });
   }
 });
 
@@ -646,11 +658,12 @@ function durationInHours(ms) {
 }
 
 io.on('connection', (socket) => {
+  
   console.log('A user connected');
   let currentSessionId;
   
   socket.on('query', async (data) => {
-    const { sessionId, message, isMoreDetails, isKeyInsights, isAnecdotes, isQuotes, bookDataObjectId, bookTitle, author, moreBooks, isEdit, timezone, locale } = data;
+    const { sessionId, message, isMoreDetails, isKeyInsights, isAnecdotes, isQuotes, bookDataObjectId, bookTitle, author, moreBooks, isEdit, userDataCountry } = data;
     currentSessionId = sessionId; 
 
     // console.log('Timezone:', timezone); 
@@ -789,7 +802,7 @@ io.on('connection', (socket) => {
 
       try {
         console.log("messagesForGPT4", messagesForGPT4);
-        await openaiApi(messagesForGPT4, socket, session, currentSessionId, isMoreDetails, isKeyInsights, isAnecdotes, isQuotes, bookDataObjectId, bookTitle, author, moreBooks);
+        await openaiApi(messagesForGPT4, socket, session, currentSessionId, isMoreDetails, isKeyInsights, isAnecdotes, isQuotes, bookDataObjectId, bookTitle, author, moreBooks, userDataCountry);
         await session.user.save();
 
         if (message.isFirstQuery && !isMoreDetails && !isKeyInsights && !isAnecdotes && !isQuotes && !moreBooks) {
@@ -807,7 +820,7 @@ io.on('connection', (socket) => {
   }); 
   
   socket.on('book-detail', async (data) => {
-    const { message, isMoreDetails, isKeyInsights, isAnecdotes, isQuotes, bookDataObjectId, bookTitle, author, userId, timezone, locale } = data;  
+    const { message, isMoreDetails, isKeyInsights, isAnecdotes, isQuotes, bookDataObjectId, bookTitle, author, userId, userDataCountry } = data;  
     
     const user = await User.findById(userId);
 
@@ -882,7 +895,7 @@ io.on('connection', (socket) => {
 
     try {
       console.log("messagesForGPT4", messagesForGPT4);
-      await openaiApi(messagesForGPT4, socket, null, null, isMoreDetails, isKeyInsights, isAnecdotes, isQuotes, bookDataObjectId, bookTitle, author, null);
+      await openaiApi(messagesForGPT4, socket, null, null, isMoreDetails, isKeyInsights, isAnecdotes, isQuotes, bookDataObjectId, bookTitle, author, null, userDataCountry);
       await user.save();
     } catch (error) {
       console.error('Error processing query:', error);
@@ -1119,8 +1132,6 @@ app.post('/api/session', async (req, res) => {
   app.get('/api/sessions', async (req, res) => {
     try {
       const userId = req.query.userId; // Get user ID from query parameter
-      
-      const excludeIds = process.env.EXCLUDE_SESSION_IDS.split(','); // Array of IDs to exclude
 
       if (!userId) {
         return res.status(400).json({ message: 'User ID is required' });
@@ -1128,7 +1139,7 @@ app.post('/api/session', async (req, res) => {
 
       let query = {};
       if (userId === process.env.ADMIN_ID) {
-        // Exclude sessions belonging to specified IDs when accessed by the admin
+        const excludeIds = process.env.EXCLUDE_SESSION_IDS.split(','); // Array of IDs to exclude
         query = { user: { $nin: excludeIds } };
       } else {
         // Non-admin users can only access their own sessions

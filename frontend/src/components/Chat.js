@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { useParams, useLocation } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import { handleAnecdotesRequest, handleKeyInsightsRequest, handleMoreDetailsRequest, handleQuotesRequest, checkAuthStatus } from './CommonFunctions';
 import InputBox from './InputBox';
@@ -20,8 +20,8 @@ function Chat() {
   const [sessions, setSessions] = useState([]);
   const [isPaneOpen, setIsPaneOpen] = useState(false);
   let { sessionId: urlSessionId } = useParams();
-  let location = useLocation(); 
-  const isHome = location.pathname === '/chat';
+  // let location = useLocation(); 
+  
   const [currentSessionId, setCurrentSessionId] = useState(urlSessionId || null);
   const [selectedSessionId, setSelectedSessionId] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -43,6 +43,7 @@ function Chat() {
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const [isAtBottomLightbox, setIsAtBottomLightbox] = useState(false);
   const [manualStop, setManualStop] = useState(false);
+  const [country, setCountry] = useState('India');
  
   const isUserAtBottomLightbox = useCallback(() => {
     if (!lightboxContentRef.current) return false;
@@ -223,7 +224,6 @@ function Chat() {
     try {
       const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/stop-stream`);
       if (response.data.success) {
-        console.log("response success");
         setIsStreaming(false);
         setManualStop(true); // Set manual stop flag
       } else {
@@ -260,8 +260,6 @@ function Chat() {
     // Find the current session by its ID
     const currentSessionId = currentSessionIdRef.current;
     const currentSession = sessions.find(session => session._id === currentSessionId);
-    const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone; 
-    const locale = navigator.language;
 
     if (lastUserMessage && currentSession?._id === lastUserMessage.sessionId) {
       const isFirstQuery = currentSession?.messages?.length === 1;
@@ -282,21 +280,17 @@ function Chat() {
         author: authorState,
         moreBooks: moreBooks,
         isEdit: isEdit,
-        timezone,
-        locale
+        userDataCountry: userData.country
       });
       // Reset lastUserMessage to avoid duplicate emissions
       setLastUserMessage(null);
     }
     
-  }, [lastUserMessage, sessions, isMoreDetailsState, isKeyInsightsState, isAnecdotesState, isQuotesState, bookTitleState, bookDataObjectIdState, authorState, moreBooks, isEdit]);
+  }, [lastUserMessage, sessions, isMoreDetailsState, isKeyInsightsState, isAnecdotesState, isQuotesState, bookTitleState, bookDataObjectIdState, authorState, moreBooks, isEdit, userData]);
   
   const handleQuerySubmit = async (query, isMoreDetails = false, bookDataObjectId = null, bookTitle = null, author = null, moreBooks = false, isKeyInsights = false, isAnecdotes = false, isQuotes = false, isEdit = false) => {
     setIsLoading(true);
     setManualStop(false);
-
-    const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone; 
-    const locale = navigator.language;
   
     // Get the current session's ID
     const currentSessionId = currentSessionIdRef.current;
@@ -342,8 +336,7 @@ function Chat() {
         author,
         moreBooks,
         isEdit,
-        timezone,
-        locale
+        userDataCountry: userData.country
       });
     }
   };
@@ -358,7 +351,9 @@ function Chat() {
         const lastSessionId = sessions[sessions.length - 1]._id;
         setCurrentSessionId(lastSessionId);
         currentSessionIdRef.current = lastSessionId;
-        navigate(`/chat/${lastSessionId}`); // Navigate to the session URL
+        if (userData.id !== process.env.REACT_APP_EXCLUDE_DUMMY_ID) {
+          navigate(`/chat/${lastSessionId}`); // Navigate to the session URL
+        }
         setSelectedSessionId(lastSessionId);
         return sessions[sessions.length - 1];
       } else {
@@ -372,7 +367,9 @@ function Chat() {
           setCurrentSessionId(newSession._id);
           currentSessionIdRef.current = newSession._id;
           setSelectedSessionId(newSession._id);
-          navigate(`/chat/${newSession._id}`); // Navigate to the new session URL
+          if (userData.id !== process.env.REACT_APP_EXCLUDE_DUMMY_ID) {
+            navigate(`/chat/${newSession._id}`); // Navigate to the new session URL
+          }
           return newSession;
         } catch (error) {
           console.error('Error creating new session:', error);
@@ -423,8 +420,14 @@ function Chat() {
 
   const loadSessions = useCallback(async (currentUserData) => {
     // Check if currentUserData.id is used instead of currentUserData.id
-    if (!currentUserData || !currentUserData.id) { // Changed from !_id to .id
+    if (!currentUserData || !currentUserData.id ) { // Changed from !_id to .id
       console.log('User data or ID not available.');
+      return;
+    }
+
+    if (currentUserData.id === process.env.REACT_APP_EXCLUDE_DUMMY_ID) {
+      setSessions([]); // Directly set sessions to an empty array
+      setIsInitialLoad(false);
       return;
     }
     
@@ -442,10 +445,21 @@ function Chat() {
     checkAuthStatus().then((userData) => {
       if (userData) {
         setUserData(userData);
+        if (userData.country) {
+          setCountry(userData.country); // Set country from userData if available
+        } else {
+          // If userData.country is not available, keep the existing country
+          // Optionally update userData with the country from the header
+          const updatedUserData = { ...userData, country };
+          setUserData(updatedUserData);
+          navigate('/chat', { replace: true });
+        }
         loadSessions(userData);
+      } else {
+        navigate('/chat', { replace: true }); // Optionally handle the case where userData is not available at all
       }
     });
-  }, [loadSessions, setUserData]);
+  }, [loadSessions, setUserData, setCountry, country, navigate]);
 
   const handleDeleteSession = async (sessionId) => {
     try {
@@ -677,7 +691,7 @@ function Chat() {
         />
         <HistoryPane
           ref={historyPaneRef}
-          sessions={sessions}
+          sessions={userData && userData.id === process.env.REACT_APP_EXCLUDE_ID ? [] : sessions}
           onSelectSession={setCurrentSessionIdWithStreamCheck}
           onDeleteSession={handleDeleteSession}
           userName={userData?.name}
@@ -689,10 +703,11 @@ function Chat() {
           togglePane={togglePane}
           selectedSessionId={selectedSessionId}
           setSelectedSessionId={setSelectedSessionId}
+          userData={userData}
         />
-        <Header togglePane={togglePane} />
+        <Header userData={userData} country={country} setCountry={setCountry} togglePane={togglePane} setCurrentSessionId={setCurrentSessionId} />
 
-        {isHome && userData && userData.country ? (
+        {!currentSessionId && userData && userData.country ? (
           <Home userData={userData} />
         ) : (
           <div className="chat-area" ref={chatAreaRef}>
