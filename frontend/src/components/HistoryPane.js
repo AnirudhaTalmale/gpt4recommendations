@@ -20,14 +20,17 @@ const HistoryPane = forwardRef(({
   togglePane,
   selectedSessionId,
   setSelectedSessionId,
-  userData
+  userData,
+  setCurrentSessionId, 
+  onStopStreaming, 
+  currentSessionIdRef
 }, ref) => {
+
+  const navigate = useNavigate();
 
   // console.log("userCountry is", userCountry);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isEntryActive, setIsEntryActive] = useState(false);
-
-  const navigate = useNavigate(); 
 
   const paneRef = useRef(null);
 
@@ -116,6 +119,9 @@ const HistoryPane = forwardRef(({
 
   const handleNewSessionCreation = async () => {
     navigate(`/chat`);
+    setCurrentSessionId(null);
+    currentSessionIdRef.current = null;
+    onStopStreaming();
     // if (window.innerWidth < 760) {
       togglePane(); // Close the pane on smaller screens
     // }

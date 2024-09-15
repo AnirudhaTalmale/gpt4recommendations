@@ -604,7 +604,7 @@ function Chat() {
         const processedLastMessageContent = "Previously recommended books are as follows: \n" + extractTags(lastTwoMessages[1].content);
 
         // Prepend the required text to the content of the second to last message and enclose the content in quotes
-        const userQueryContent = `My query - "${lastTwoMessages[0].content}"`;
+        const userQueryContent = `User query is "${lastTwoMessages[0].content}"`;
 
         // Concatenate the modified contents
         const concatenatedContent = `${userQueryContent}\n${processedLastMessageContent}\n`;
@@ -705,6 +705,9 @@ function Chat() {
           selectedSessionId={selectedSessionId}
           setSelectedSessionId={setSelectedSessionId}
           userData={userData}
+          setCurrentSessionId={setCurrentSessionId} 
+          onStopStreaming={handleStopStreaming} 
+          currentSessionIdRef={currentSessionIdRef}
         />
         <Header userData={userData} country={country} setCountry={setCountry} togglePane={togglePane} setCurrentSessionId={setCurrentSessionId} onStopStreaming={handleStopStreaming} currentSessionIdRef={currentSessionIdRef} />
 

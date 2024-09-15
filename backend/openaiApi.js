@@ -469,28 +469,13 @@ const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, is
     const userCountry = userDataCountry;
 
     const stream = await openai.chat.completions.create({
-      model: "gpt-4o-mini-2024-07-18", 
+      model: "gpt-4o-mini", 
       messages: filteredMessages,
       stream: true,
     });    
 
-    let messageIndex;
-    if (!isMoreDetails && !isKeyInsights && !isAnecdotes && !isQuotes) {
-      if (moreBooks) {
-        // Update the last message in the session instead of creating a new one
-        messageIndex = session.messages.length - 1;
-      } else {
-        // Create a new message entry for this stream.
-        messageIndex = session.messages.push({
-          role: 'assistant',
-          contentType: 'simple',
-          content: ''
-        }) - 1;
-      }
-      await session.save();
-    }
-
     let completeResponse = "";
+    let totalResponse = "";
     let pausedEmit = ""; // Variable to hold paused chunks
     let isPaused = false; // Flag to check if emitting is paused
 
@@ -513,6 +498,7 @@ const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, is
       if (!isStreamingActive) break; 
       let chunkContent = chunk.choices[0]?.delta?.content || "";
       // console.log(chunkContent);
+      totalResponse += chunkContent;
 
       if (chunkContent.includes('#')) {
         if (isPaused) {
@@ -558,11 +544,6 @@ const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, is
                     
           // Emit pausedEmit and reset
           completeResponse += pausedEmit;
-          if (moreBooks || (!isMoreDetails && !isKeyInsights && !isAnecdotes && !isQuotes) ) {
-            // Update the current message with the new chunk.
-            session.messages[messageIndex].content += pausedEmit;
-            await session.save();
-          }
           
           socket.emit('chunk', { content: pausedEmit, sessionId, isMoreDetails, isKeyInsights, isAnecdotes, isQuotes, moreBooks });
           pausedEmit = "";
@@ -577,17 +558,29 @@ const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, is
       } else {
         // Normal emit when not paused
         completeResponse += chunkContent;
-        
-        if (moreBooks || (!isMoreDetails && !isKeyInsights && !isAnecdotes && !isQuotes) ) {
-
-          // Update the current message with the new chunk.
-          session.messages[messageIndex].content += chunkContent;
-          await session.save();
-        }
         socket.emit('chunk', { content: chunkContent, sessionId, isMoreDetails, isKeyInsights, isAnecdotes, isQuotes, moreBooks });
       }
+      
       const finishReason = chunk.choices[0]?.finish_reason;
       if (finishReason === 'stop') {
+        // console.log("totalResponse is", totalResponse);
+        if (!isMoreDetails && !isKeyInsights && !isAnecdotes && !isQuotes) {
+          let messageIndex;
+          if (moreBooks) {
+            // Update the last message in the session instead of creating a new one
+            messageIndex = session.messages.length - 1;
+          } else {
+            // Create a new message entry for this stream.
+            messageIndex = session.messages.push({
+              role: 'assistant',
+              contentType: 'simple',
+              content: ''
+            }) - 1;
+          }
+          session.messages[messageIndex].content += completeResponse;
+          await session.save();
+        }
+
         if (isMoreDetails || messages[messages.length - 1].content.startsWith("Explain the book - ")) {
           const MoreDetails = require('./models/models-chat/MoreDetails');
           const newDetail = new MoreDetails({
@@ -646,7 +639,7 @@ openaiApi.getSummary = async (text) => {
     const prompt = `Summarize the following text in 4 words:\n\n"${text}"\n\nSummary:`;
 
     const response = await openai.chat.completions.create({
-      model: "gpt-4o-mini-2024-07-18",
+      model: "gpt-4o-mini",
       messages: [{ role: 'system', content: prompt }],
       max_tokens: 10, // Adjust as needed to ensure brevity
     });
