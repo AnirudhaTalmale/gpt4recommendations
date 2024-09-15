@@ -69,6 +69,7 @@ ol li {
   background-color: rgb(251, 251, 251);
   cursor: pointer;
   margin: 0 10px; /* Adjust spacing as needed */
+  color: black;
 }
 
 .country-select:focus {

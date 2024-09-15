@@ -4,13 +4,13 @@ const bookRecommendationPrompt = (userQuery) => {
   let prompt;
 
   if (process.env.NODE_ENV === 'local') {
-    prompt = `User query is "${userQuery}". Reply in English without including any introduction. If the user query specifically mentions a book, prioritize that exact book in the response. Suggest 5 books relevant to the query, strictly in the following format:
+    prompt = `User query is "${userQuery}". Reply in English without including any introduction. If the user query specifically mentions a book, prioritize that exact book in the response. Suggest 5 books for given user query, strictly in the following format:
     
     #Book Title by Author#
     <p>How the book is related to given user query</p>  
     `;
   } else {
-    prompt = `User query is "${userQuery}". Reply in English without including any introduction. If the user query specifically mentions a book, prioritize that exact book in the response. Suggest 5 books relevant to the query, strictly in the following format:
+    prompt = `User query is "${userQuery}". Reply in English without including any introduction. If the user query specifically mentions a book, prioritize that exact book in the response. Suggest 5 books for given user query, strictly in the following format:
     
     #Book Title by Author#
     <p>How the book is related to given user query</p>  
