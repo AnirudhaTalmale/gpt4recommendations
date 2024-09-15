@@ -343,9 +343,12 @@ const HistoryPane = forwardRef(({
 
           {
             userData && userData.id === process.env.REACT_APP_EXCLUDE_DUMMY_ID ? (
+              <>
+              <p className='history-pane-log-in-message'>Log in to save your conversation history</p>
               <div className={`user-entry-sign-in ${isEntryActive ? 'active' : ''}`} onClick={logInFunction}>
-              <span>Log in</span>
+                <span>Log in</span>
               </div>
+              </>
             ) : (
               <div className={`user-entry ${isEntryActive ? 'active' : ''}`} onClick={toggleDropdown} ref={userEntryRef}>
                 <img src={getUserImage()} alt="" className="history-pane-image" />

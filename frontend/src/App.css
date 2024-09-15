@@ -860,6 +860,14 @@ body:not(.history-pane-open) .input-area {
   margin-bottom: 0.2rem;
 }
 
+.history-pane-log-in-message {
+  font-size: 0.9rem;
+  font-weight: bold;
+  padding: 0.3rem;
+  line-height: 1.3rem;
+  /* border: 1px solid red; */
+}
+
 .history-pane-image {
   width: 2rem;
   height: 2rem;
