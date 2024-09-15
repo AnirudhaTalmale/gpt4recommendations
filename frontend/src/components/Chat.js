@@ -420,7 +420,7 @@ function Chat() {
 
   const loadSessions = useCallback(async (currentUserData) => {
     // Check if currentUserData.id is used instead of currentUserData.id
-    if (!currentUserData || !currentUserData.id ) { // Changed from !_id to .id
+    if (!currentUserData || !currentUserData.id) { // Changed from !_id to .id
       console.log('User data or ID not available.');
       return;
     }
