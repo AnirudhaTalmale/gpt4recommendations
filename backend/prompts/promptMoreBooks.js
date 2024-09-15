@@ -7,15 +7,13 @@ const bookRecommendationPrompt = (userQuery) => {
     prompt = `${userQuery} Provide 5 more books other than the previously recommended books, strictly in following format:
     
     #Book Title by Author#
-    <p> how the book is related to given user query </p>  
-    
+    <p>How the book is related to given user query</p>  
     `;
   } else {
     prompt = `${userQuery} Provide 5 more books other than the previously recommended books, strictly in following format:
     
     #Book Title by Author#
-    <p> how the book is related to given user query </p>  
-    
+    <p>How the book is related to given user query</p>  
     `;
   }
 
