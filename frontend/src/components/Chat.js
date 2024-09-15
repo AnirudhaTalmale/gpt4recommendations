@@ -294,6 +294,7 @@ function Chat() {
   
     // Get the current session's ID
     const currentSessionId = currentSessionIdRef.current;
+    // console.log("currentSessionId is", currentSessionId);
     let currentSession;
 
     // If there's no current session ID, create a new session
@@ -705,7 +706,7 @@ function Chat() {
           setSelectedSessionId={setSelectedSessionId}
           userData={userData}
         />
-        <Header userData={userData} country={country} setCountry={setCountry} togglePane={togglePane} setCurrentSessionId={setCurrentSessionId} />
+        <Header userData={userData} country={country} setCountry={setCountry} togglePane={togglePane} setCurrentSessionId={setCurrentSessionId} onStopStreaming={handleStopStreaming} currentSessionIdRef={currentSessionIdRef} />
 
         {!currentSessionId && userData && userData.country ? (
           <Home userData={userData} />

@@ -2,12 +2,14 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../App.css';
 
-function Header({ userData, country, setCountry, togglePane, setCurrentSessionId }) {
+function Header({ userData, country, setCountry, togglePane, setCurrentSessionId, onStopStreaming, currentSessionIdRef }) {
   const navigate = useNavigate();
 
   const onNewSession = async () => {
     navigate(`/chat`);
     setCurrentSessionId(null);
+    currentSessionIdRef.current = null;
+    onStopStreaming();
   };
 
   const handleCountryChange = (e) => {
