@@ -4,7 +4,6 @@ require('dotenv').config();
 const openai = new OpenAI(process.env.OPENAI_API_KEY);
 const axios = require('axios');
 const BookData = require('./models/models-chat/BookData'); 
-const BookDataErrorLog = require('./models/models-chat/BookDataErrorLog');
 const redisClient = require('./redisClient');
 const mongoose = require('mongoose');
 // const fs = require('fs');
@@ -419,31 +418,7 @@ const getBookData = async (title, author, userCountry, bookDataObjectId = '') =>
 
     return bookData;
   } catch (error) {
-    console.error('Error during book data aggregation:', error);
-
-    // Log the error in the BookDataErrorLog collection
-    const errorLogEntry = new BookDataErrorLog({
-      bookDataObjectId,
-      title,
-      author,
-      userCountry,
-      error: JSON.stringify(error, Object.getOwnPropertyNames(error))
-    });
-
-    // Save the error log asynchronously without waiting for it to finish
-    errorLogEntry.save().catch(logError => console.error('Error logging to BookDataErrorLog:', logError));
-
-    return {
-      bookDataObjectId: '',
-      title: '',
-      author: '',
-      bookImage: '',
-      previewLink: '',
-      amazonLink: '',
-      amazonStarRating: '',
-      amazonReviewCount: '',
-      genres: []  // Ensuring genres is included even in error scenarios
-    };    
+    console.error('Error during book data aggregation:', error);  
   }
 };
 
