@@ -684,7 +684,7 @@ body:not(.history-pane-open) .input-area {
   background-color: rgb(251, 251, 251);
   /* color: #fff; */
   width: 244px; 
-  padding: 0.8rem 0rem 0.5rem 0.5rem;
+  padding: 0.5rem 0rem 0.5rem 0.5rem;
   position: fixed;
   left: 0;
   top: 0;
