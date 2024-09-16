@@ -9,7 +9,10 @@ const anecdotesPrompt = (userQuery) => {
     <b>Anecdotes</b>
     <ol>
       <li>
-        <b>Anecdote Name</b>: Description of the anecdote.
+        <b>
+          Anecdote Name
+        </b> 
+        : Explain the anecdote
       </li>
     </ol>
     `;
@@ -19,7 +22,10 @@ const anecdotesPrompt = (userQuery) => {
     <b>Anecdotes</b>
     <ol>
       <li>
-        <b>Anecdote Name</b>: Description of the anecdote.
+        <b>
+          Anecdote Name
+        </b> 
+        : Explain the anecdote
       </li>
     </ol>
     `;

@@ -9,7 +9,10 @@ const keyInsightsPrompt = (userQuery) => {
     <b>Insights</b>
     <ol>
       <li>
-        <b>Insight name</b>: Description of the insight.
+        <b>
+          Insight name
+        </b>
+        : Explain the insight.
       </li>
     </ol>
     `;
@@ -19,11 +22,14 @@ const keyInsightsPrompt = (userQuery) => {
     <b>Insights</b>
     <ol>
       <li>
-        <b>Insight name</b>: Description of the insight.
+        <b>
+          Insight name
+        </b>
+        : Explain the insight.
       </li>
     </ol>
     `;
-  }  
+  } 
     return prompt;
 };
 
