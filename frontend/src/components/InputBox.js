@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import '../App.css';
 
-function InputBox({ onSubmit, isStreaming, onStopStreaming, isPaneOpen }) {
+function InputBox({ onSubmit, isStreaming, onStopStreaming, isPaneOpen, isAdmin }) {
   const [input, setInput] = useState('');
   const [isInputNotEmpty, setIsInputNotEmpty] = useState(false);
   const [rows, setRows] = useState(1);
@@ -12,27 +12,22 @@ function InputBox({ onSubmit, isStreaming, onStopStreaming, isPaneOpen }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
-    if (input.trim()) {
-      // Track the search event with the Facebook Pixel
-      window.fbq && window.fbq('track', 'Search', {
-        search_string: input.trim()
-      });
-
-      // Twitter conversion tracking event code
-      window.twq && window.twq('event', 'tw-omgwl-onouv', {
-        search_string: input.trim() // Pass the trimmed input as the search term
-      });
-    }
-    onSubmit(input);
+    const trimmedInput = input.trim();
+    onSubmit(trimmedInput);
     setInput('');
     setIsInputNotEmpty(false); // Add this line
     setRows(1);
     if (textareaRef.current) {
       textareaRef.current.scrollTop = 0;
     }
+
+    if (isAdmin) {
+      window.fbq && window.fbq('track', 'Search', {
+        search_string: trimmedInput
+      });
+    }
   };
-  
+
   const handleKeyDown = (e) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault(); // Prevent default to stop new line

@@ -156,7 +156,10 @@ app.get('/api/user-info', (req, res) => {
       image = getDefaultImage(req.user.displayName);
     }
 
-    let isAdmin = req.user._id.toString() === process.env.ADMIN_ID;
+    const adminIds = process.env.ADMIN_IDS.split(',');
+
+    // Check if the user's ID is in the list of admin IDs
+    let isAdmin = adminIds.includes(req.user._id.toString());
 
     const userInfo = {
       id: req.user._id,
@@ -1137,10 +1140,11 @@ app.post('/api/session', async (req, res) => {
         return res.status(400).json({ message: 'User ID is required' });
       }
 
+      const adminIds = process.env.ADMIN_IDS.split(',');
+
       let query = {};
-      if (userId === process.env.ADMIN_ID) {
-        const excludeIds = process.env.EXCLUDE_SESSION_IDS.split(','); // Array of IDs to exclude
-        query = { user: { $nin: excludeIds } };
+      if (adminIds.includes(userId)) {
+        query = { user: { $nin: adminIds } };
       } else {
         // Non-admin users can only access their own sessions
         query = { user: userId };
