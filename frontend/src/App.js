@@ -3,8 +3,6 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 import Chat from './components/Chat';
 import OnboardingPage from './components/OnboardingPage'; 
-import BlogPage from './components/BlogPage';
-import BlogPostPage from './components/BlogPostPage';
 import HomePage from './components/HomePage';
 import EmailVerificationPage from './components/EmailVerificationPage'; 
 import ManageSubscriptionPage from './components/ManageSubscriptionPage'; 
@@ -27,8 +25,6 @@ function App() {
           <Route path="/chat/:sessionId" element={<Chat />} />
           <Route path="/chat" element={<Chat />} />
           <Route path="/login" element={<HomePage />} />
-          <Route path="/blog" element={<BlogPage />} />
-          <Route path="/blog/:postId" element={<BlogPostPage />} />
           <Route path="/about-us" element={<About />} />
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
           <Route path="/books/:bookId/:countryCode" element={<BookDetail />} />
