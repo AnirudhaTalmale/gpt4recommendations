@@ -356,13 +356,8 @@ ol li {
 /* Hide scrollbar for IE and Edge */
 .genre-bar {
   -ms-overflow-style: none;  /* IE and Edge */
-}
-
-/* Hide scrollbar for Firefox */
-.genre-bar {
   scrollbar-width: none;  /* Firefox */
 }
-
 
 .genre-item {
   display: inline-block;
@@ -1944,6 +1939,15 @@ body:not(.history-pane-open) .input-area {
   line-height: 1.7rem;
 }
 
+.lightbox-content {
+  -ms-overflow-style: none;  /* Internet Explorer 10+ */
+  scrollbar-width: none;  /* Firefox */
+}
+
+.lightbox-content::-webkit-scrollbar { 
+  display: none;  /* Chrome, Safari, Opera*/
+}
+
 .lightbox-content-for-image img {
   max-width: 630px;
 }
@@ -1966,27 +1970,6 @@ body:not(.history-pane-open) .input-area {
 .fa-xmark {
   color: white;
   font-size: 0.95rem;
-}
-
-/* Custom scrollbar for lightbox-content */
-.lightbox-content::-webkit-scrollbar {
-  width: 12px; /* width of the entire scrollbar */
-}
-
-.lightbox-content::-webkit-scrollbar-track {
-  background: transparent; /* color of the tracking area */
-}
-
-.lightbox-content::-webkit-scrollbar-thumb {
-  background-color: #dcdcdc; /* very light grey color for the scroll thumb */
-  border-radius: 6px; /* roundness of the scroll thumb */
-  border: 3px solid #dcdcdc; /* Creates additional spacing from the scrollbar track */
-}
-
-/* For Firefox */
-.lightbox-content {
-  scrollbar-width: thin; 
-  scrollbar-color: #dcdcdc transparent; 
 }
 
 /* AnswerDisplay Edit functionality */
