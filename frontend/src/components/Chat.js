@@ -748,7 +748,7 @@ function Chat() {
           isStreaming={isStreaming}
           onStopStreaming={handleStopStreaming}
           isPaneOpen={isPaneOpen} 
-          sAdmin={userData?.isAdmin}
+          isAdmin={userData?.isAdmin}
         />
       </div>
   );

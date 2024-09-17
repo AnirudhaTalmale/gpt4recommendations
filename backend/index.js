@@ -1140,15 +1140,15 @@ app.post('/api/session', async (req, res) => {
         return res.status(400).json({ message: 'User ID is required' });
       }
 
-      const adminIds = process.env.ADMIN_IDS.split(',');
+      // const adminIds = process.env.ADMIN_IDS.split(',');
 
-      let query = {};
-      if (adminIds.includes(userId)) {
-        query = { user: { $nin: adminIds } };
-      } else {
-        // Non-admin users can only access their own sessions
+      // let query = {};
+      // if (adminIds.includes(userId)) {
+      //   query = { user: { $nin: adminIds } };
+      // } else {
+      //   // Non-admin users can only access their own sessions
         query = { user: userId };
-      }
+      // }
 
       // Find sessions with the specified query, sort them by creation date in descending order, and limit the results to 25
       const sessions = await Session.find(query)
