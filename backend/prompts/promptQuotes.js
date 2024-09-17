@@ -5,24 +5,16 @@ const quotesPrompt = (userQuery) => {
 
   if (process.env.NODE_ENV === 'local') {
     prompt = `Book name is "${userQuery}"
-    Provide a large number of important Quotes from the above book without including any introduction, strictly in the following format:
+    Provide up to 10 of the most important Quotes from the book mentioned above.
+    The response should be strictly in the following format, without any introduction:
     <b>Quotes</b>
-    <ol>
-      <li>
-        "Quote"
-      </li>
-    </ol>
-    `;
+    <ol><li><b>"Quote"</b>: Explain the Quote in detail</li></ol>`;
   } else {
     prompt = `Book name is "${userQuery}"
-    Provide a large number of important Quotes from the above book without including any introduction, strictly in the following format:
+    Provide up to 10 of the most important Quotes from the book mentioned above.
+    The response should be strictly in the following format, without any introduction:
     <b>Quotes</b>
-    <ol>
-      <li>
-        "Quote"
-      </li>
-    </ol>
-    `;
+    <ol><li><b>"Quote"</b>: Explain the Quote in detail</li></ol>`;
   }
 
   return prompt;

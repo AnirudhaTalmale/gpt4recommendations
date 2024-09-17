@@ -6,7 +6,7 @@ function Header({ userData, country, setCountry, togglePane, setCurrentSessionId
   const navigate = useNavigate();
 
   const onNewSession = async () => {
-    navigate(`/chat`);
+    navigate(`/`);
     setCurrentSessionId(null);
     currentSessionIdRef.current = null;
     onStopStreaming();

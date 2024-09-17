@@ -5,28 +5,14 @@ const moreDetailsPrompt = (userQuery) => {
 
   if (process.env.NODE_ENV === 'local') {
     prompt = `${userQuery} - strictly in the following format:
-    <b>Book Summary</b>
-    <p>Provide a brief summary of the book.</p>
-
-    <b>Author's Credibility</b>
-    <p>Discuss the author's background and credibility.</p>
-
-    <b>Endorsements and Praise</b>
-    <p>If you don't know about this then let me know or else provide the required details</p>
-
- `;
+    <b>Book Summary</b><p>Detailed</p>
+    <b>Author's Credibility</b><p>Details</p>
+    <b>Book Endorsements and Praise</b><p>Details</p>`;
   } else {
     prompt = `${userQuery} - strictly in the following format:
-    <b>Book Summary</b>
-    <p>Provide a brief summary of the book.</p>
-
-    <b>Author's Credibility</b>
-    <p>Discuss the author's background and credibility.</p>
-
-    <b>Endorsements and Praise</b>
-    <p>If you don't know about this then let me know or else provide the required details</p>
-
- `;
+    <b>Book Summary</b><p>Detailed</p>
+    <b>Author's Credibility</b><p>Details</p>
+    <b>Book Endorsements and Praise</b><p>Details</p>`;
   }
 
   return prompt;

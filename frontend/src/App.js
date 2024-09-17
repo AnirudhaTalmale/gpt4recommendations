@@ -23,7 +23,7 @@ function App() {
           <Route path="/verify-email" element={<EmailVerificationPage />} />
           <Route path="/onboarding" element={<OnboardingPage />} /> 
           <Route path="/chat/:sessionId" element={<Chat />} />
-          <Route path="/chat" element={<Chat />} />
+          <Route path="/" element={<Chat />} />
           <Route path="/login" element={<HomePage />} />
           <Route path="/about-us" element={<About />} />
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />

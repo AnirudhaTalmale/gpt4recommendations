@@ -8,7 +8,7 @@ const HeaderWithHomeButton = () => {
 
   return (
     <header className="header-with-back-button">
-      <button onClick={() => navigate('/chat')} className="home-button">
+      <button onClick={() => navigate('/')} className="home-button">
         <i class="fa-solid fa-house"></i>
       </button>
     </header>

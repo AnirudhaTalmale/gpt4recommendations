@@ -8,7 +8,7 @@ const HomePageHeader = () => {
 
   return (
     <header className="home-page-header">
-      <div className="clickable-area" onClick={() => navigate('/chat')}>
+      <div className="clickable-area" onClick={() => navigate('/')}>
         <img alt="logo" src="/GetBooks_32_32.png" />
         <span>GetBooks.ai</span>
       </div>

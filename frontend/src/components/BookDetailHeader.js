@@ -7,7 +7,7 @@ function BookDetailHeader() {
 
   const navigate = useNavigate(); 
   const onNewSession = async () => {
-    navigate(`/chat`);
+    navigate(`/`);
   };
 
   return (

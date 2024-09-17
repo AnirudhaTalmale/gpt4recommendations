@@ -444,13 +444,13 @@ const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, is
     const userCountry = userDataCountry;
 
     const stream = await openai.chat.completions.create({
-      model: "gpt-4o-mini", 
+      model: "gpt-4", 
       messages: filteredMessages,
       stream: true,
     });    
 
     let completeResponse = "";
-    let totalResponse = "";
+    // let totalResponse = "";
     let pausedEmit = ""; // Variable to hold paused chunks
     let isPaused = false; // Flag to check if emitting is paused
 
@@ -473,7 +473,7 @@ const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, is
       if (!isStreamingActive) break; 
       let chunkContent = chunk.choices[0]?.delta?.content || "";
       // console.log(chunkContent);
-      totalResponse += chunkContent;
+      // totalResponse += chunkContent;
 
       if (chunkContent.includes('#')) {
         if (isPaused) {
@@ -614,7 +614,7 @@ openaiApi.getSummary = async (text) => {
     const prompt = `Summarize the following text in 4 words:\n\n"${text}"\n\nSummary:`;
 
     const response = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
+      model: "gpt-4",
       messages: [{ role: 'system', content: prompt }],
       max_tokens: 10, // Adjust as needed to ensure brevity
     });

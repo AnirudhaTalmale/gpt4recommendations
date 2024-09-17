@@ -14,7 +14,7 @@ function AnswerDisplay({
   const [isAnecdotesClicked, setIsAnecdotesClicked] = useState(false);
   const [isQuotesClicked, setIsQuotesClicked] = useState(false);
   const [isPreviewClicked, setIsPreviewClicked] = useState(false);
-  // const [isContinueGeneratingClicked, setIsContinueGeneratingClicked] = useState(false);
+  const [isContinueGeneratingClicked, setIsContinueGeneratingClicked] = useState(false);
 
   const createMarkup = () => {
     let modifiedContent = content;
@@ -106,17 +106,17 @@ function AnswerDisplay({
   };
 
   
-  // const handleContinueGenerating = () => {
-  //   if (!isContinueGeneratingClicked && onContinueGenerating) {
-  //     setIsContinueGeneratingClicked(true);
+  const handleContinueGenerating = () => {
+    if (!isContinueGeneratingClicked && onContinueGenerating) {
+      setIsContinueGeneratingClicked(true);
       
-  //     onContinueGenerating();
+      onContinueGenerating();
   
-  //     setTimeout(() => {
-  //       setIsContinueGeneratingClicked(false);
-  //     }, 3500); // Adjust the delay as needed
-  //   }
-  // };  
+      setTimeout(() => {
+        setIsContinueGeneratingClicked(false);
+      }, 3500); // Adjust the delay as needed
+    }
+  };  
 
   const messageAnswerRef = useRef(null);  
 
@@ -295,13 +295,13 @@ function AnswerDisplay({
                   }
                 }}
               />
-              {/* {showContinueButton && !isStreaming && (
+              {showContinueButton && !isStreaming && (
                 <div className="button-container-continue-generating-btn">
                   <button className="continue-generating-btn" onClick={handleContinueGenerating}>
                     <i className="fa-solid fa-forward"></i> More books
                   </button>
                 </div>
-              )} */}
+              )}
             </>
           )}
         </div>

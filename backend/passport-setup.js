@@ -96,9 +96,9 @@ module.exports = (app) => {
   });
   
   app.get('/auth/google/callback', 
-    passport.authenticate('google', { failureRedirect: '/chat' }),
+    passport.authenticate('google', { failureRedirect: '/' }),
     (req, res) => {
-      res.redirect(`${process.env.FRONTEND_URL}/chat`); 
+      res.redirect(`${process.env.FRONTEND_URL}/`); 
     }
   );
 };

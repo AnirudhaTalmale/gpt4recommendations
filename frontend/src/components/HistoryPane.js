@@ -110,7 +110,7 @@ const HistoryPane = forwardRef(({
       const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/auth/logout`, { withCredentials: true });
       if (response.data.message === 'Logged out successfully') {
         // Redirect to the home page or login page
-        window.location.href = `${process.env.REACT_APP_FRONTEND_URL}/chat`;
+        window.location.href = `${process.env.REACT_APP_FRONTEND_URL}/`;
       }
     } catch (error) {
       console.error('Error during logout:', error);
@@ -118,7 +118,7 @@ const HistoryPane = forwardRef(({
   };
 
   const handleNewSessionCreation = async () => {
-    navigate(`/chat`);
+    navigate(`/`);
     setCurrentSessionId(null);
     currentSessionIdRef.current = null;
     onStopStreaming();
@@ -218,7 +218,7 @@ const HistoryPane = forwardRef(({
     try {
       const response = await axios.delete(`${process.env.REACT_APP_BACKEND_URL}/api/user/delete`, { withCredentials: true });
       if (response.data.message === 'Account deleted successfully') {
-        window.location.href = `${process.env.REACT_APP_FRONTEND_URL}/chat`;
+        window.location.href = `${process.env.REACT_APP_FRONTEND_URL}/`;
       }
     } catch (error) {
       console.error('Error during account deletion:', error);

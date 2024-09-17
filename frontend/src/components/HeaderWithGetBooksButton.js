@@ -8,7 +8,7 @@ const HeaderWithGetBooksButton = () => {
 
   return (
     <header className="header-with-back-button">
-      <button onClick={() => navigate('/chat')} className="home-button">
+      <button onClick={() => navigate('/')} className="home-button">
         <b>GetBooks.ai</b>
       </button>
     </header>

@@ -61,9 +61,6 @@ function checkFormatMoreDetails(content) {
   return true; // All checks passed
 }
 
-
-
-
 function checkFormatKeyInsights(content) {
   // console.log("content is", content);
   const dom = new JSDOM(content);
@@ -113,7 +110,6 @@ function checkFormatKeyInsights(content) {
   // console.log("All checks passed");
   return true; // All checks passed
 }
-
 
 function checkFormatAnecdotes(content) {
   // console.log("content is", content);
@@ -165,7 +161,6 @@ function checkFormatAnecdotes(content) {
   return true; // All checks passed
 }
 
-  
 function checkFormatQuotes(content) {
   // console.log("content is", content);
   const dom = new JSDOM(content);
@@ -222,9 +217,6 @@ function checkFormatQuotes(content) {
   // console.log("i am here 9");
   return true; // All checks passed
 }
-
-
-  
 
 module.exports = {
   checkFormatMoreDetails,

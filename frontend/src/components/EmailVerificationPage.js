@@ -24,7 +24,7 @@ function EmailVerificationPage() {
             // If the response indicates success
             if (response.data.success) {
                 if (response.data.redirectTo) {
-                    // If the user is fully onboarded, redirect to /chat
+                    // If the user is fully onboarded, redirect to /
                     navigate(response.data.redirectTo);
                 } else if (response.data.verificationToken) {
                     // If the user needs onboarding, use the verificationToken for onboarding

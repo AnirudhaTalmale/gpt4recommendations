@@ -453,11 +453,11 @@ function Chat() {
           // Optionally update userData with the country from the header
           const updatedUserData = { ...userData, country };
           setUserData(updatedUserData);
-          navigate('/chat', { replace: true });
+          navigate('/', { replace: true });
         }
         loadSessions(userData);
       } else {
-        navigate('/chat', { replace: true }); // Optionally handle the case where userData is not available at all
+        navigate('/', { replace: true }); // Optionally handle the case where userData is not available at all
       }
     });
   }, [loadSessions, setUserData, setCountry, country, navigate]);
@@ -470,7 +470,7 @@ function Chat() {
       // Update the current session ID after deletion
       setCurrentSessionId(prevCurrentSessionId => {
         if (prevCurrentSessionId === sessionId) {
-          navigate(`/chat`);
+          navigate(`/`);
           return null;
         }
         return prevCurrentSessionId; // Keep the current session ID unchanged if the deleted session was not the current one
@@ -623,7 +623,7 @@ function Chat() {
         if (lastMessage.role === 'assistant') {
             const bookCount = extractTags(lastMessage.content).split('\n').length;
             // console.log(bookCount);
-            setShowContinueButton(bookCount >= 5 && bookCount <= 20);
+            setShowContinueButton(bookCount === 5);
         } else {
             setShowContinueButton(false);
         }
@@ -715,11 +715,6 @@ function Chat() {
           <Home userData={userData} />
         ) : (
           <div className="chat-area" ref={chatAreaRef}>
-            {/* {location.pathname === "/chat" && (
-              <div className="chat-heading">
-                Discover Your Next Great Read!
-              </div>
-            )} */}
 
             {sessions.find(session => session._id === selectedSessionId)?.messages.map((msg, index, messageArray) => {
             const isLastMessage = index === messageArray.length - 1;

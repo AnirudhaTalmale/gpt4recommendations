@@ -5,26 +5,16 @@ const bookRecommendationPrompt = (userQuery) => {
 
   if (process.env.NODE_ENV === 'local') {
     prompt = `${userQuery} 
-    Observe the above previously recommended books and above given user's query. 
-    Now Suggest 10 books other than the previously recommended books and strictly adhering to the user's query.
-    The response should not contain any introduction or numbering.
-    The response should be strictly in following format: 
-    #Book Title by Author#
-    <p>
-      Explain how the book is perfect for the given user query
-    </p>
-    `;
+    Provide the 5 most accurate book recommendations (other than the previously recommended books) for the user query mentioned above.
+    The response should be strictly in the following format, without any introduction and numbering:
+    # To Kill a Mockingbird by Harper Lee #
+    <p>Reason for recommending the book</p>`;
   } else {
     prompt = `${userQuery} 
-    Observe the above previously recommended books and above given user's query. 
-    Now Suggest 10 books other than the previously recommended books and strictly adhering to the user's query.
-    The response should not contain any introduction or numbering.
-    The response should be strictly in following format: 
-    #Book Title by Author#
-    <p>
-      Explain how the book is perfect for the given user query
-    </p>
-    `;
+    Provide the 5 most accurate book recommendations (other than the previously recommended books) for the user query mentioned above.
+    The response should be strictly in the following format, without any introduction and numbering:
+    # To Kill a Mockingbird by Harper Lee #
+    <p>Reason for recommending the book</p>`;
   }
 
   return prompt;

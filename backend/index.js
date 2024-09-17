@@ -577,13 +577,13 @@ app.post('/verify-code', async (req, res) => {
         throw err; // For any other error, rethrow to be caught by the outer catch
       }
 
-      // If the user has completed profile setup, log them in and redirect to /chat
+      // If the user has completed profile setup, log them in and redirect to /
       if (user.displayName && user.country && user.image) {
         req.login(user, (err) => {
           if (err) {
             return res.status(500).json({ message: 'Error logging in' });
           }
-          return res.json({ success: true, redirectTo: '/chat' });
+          return res.json({ success: true, redirectTo: '/' });
         });
       } 
       // Otherwise, return the token for the onboarding process
@@ -626,7 +626,7 @@ app.post('/api/onboarding', async (req, res) => {
       if (err) { 
           return res.status(500).send('Error logging in'); 
       }
-      res.json({ success: true, redirectTo: '/chat' });
+      res.json({ success: true, redirectTo: '/' });
     });
   } catch (err) {
     console.error('Error in onboarding:', err);
