@@ -1236,7 +1236,7 @@ async function fetchAndProcessBooks(query, countryCode) {
     query[`countrySpecific.${countryCode}.bookImage`] = { $exists: true };
     const books = await BookData.aggregate([
       { $match: query },
-      { $limit: 80 },
+      { $limit: 30 },
       { $group: {
         _id: `$countrySpecific.${countryCode}.bookImage`,
         document: { $first: '$$ROOT' }
@@ -1270,23 +1270,35 @@ async function fetchAndProcessBooks(query, countryCode) {
 app.post('/api/books', async (req, res) => {
   const { genre, countryCode } = req.body;
 
-  // console.log("Received genre:", genre);  // Log the received genre
-
   if (typeof genre !== 'string') {
     console.error('Genre is not a string:', genre);
     return res.status(400).json({ message: 'Genre must be a string' });
   }
 
+  let cacheKey = `books:${genre}:${countryCode}`;
+
   try {
+    // First, try fetching the result from Redis
+    let cachedData = await redisClient.get(cacheKey);
+    if (cachedData) {
+      return res.json(JSON.parse(cachedData));
+    }
+
+    // If not in cache, continue with processing books
+    let booksWithCountryData;
     if (genre.toLowerCase() === 'all') {
-      res.json(await fetchAndProcessBooks({}, countryCode));
+      booksWithCountryData = await fetchAndProcessBooks({}, countryCode);
     } else {
       // Split the genre string by commas, trim whitespace and use regex for case-insensitive matching
       const genres = genre.split(',').map(g => g.trim());
       const regexGenres = genres.map(g => new RegExp(`^${g}$`, 'i'));
-      const booksWithCountryData = await fetchAndProcessBooks({ genres: { $in: regexGenres } }, countryCode);
-      res.json(booksWithCountryData);
+      booksWithCountryData = await fetchAndProcessBooks({ genres: { $in: regexGenres } }, countryCode);
     }
+
+    // Save the new data to Redis without an expiration time
+    await redisClient.set(cacheKey, JSON.stringify(booksWithCountryData));
+
+    res.json(booksWithCountryData);
   } catch (error) {
     console.error('Failed to fetch books:', error);
     res.status(500).json({ message: 'Error fetching books' });

@@ -176,10 +176,9 @@ const getCountryCode = (countryName) => {
   return countryCodes[countryName] || 'US'; // Default to 'US' if country not found
 };
 
-async function getAmazonBookData(title, author, country) {
+async function getAmazonBookData(title, author, country, countryCode) {
   const titleBeforeDelimiter = getTitleBeforeDelimiter(title);
   const authorBeforeAnd = getAuthorBeforeAnd(author);
-  const countryCode = getCountryCode(country);
   
   const searchTitles = [title];
   if (title !== titleBeforeDelimiter) {
@@ -401,11 +400,11 @@ const getBookData = async (title, author, userCountry, bookDataObjectId = '') =>
       return bookDetails;
     } else if (existingBook) {
 
-      const amazonData = await getAmazonBookData(title, author, userCountry);
+      const amazonData = await getAmazonBookData(title, author, userCountry, countryKey);
       updateBookWithAmazonData(existingBook, amazonData, countryKey, title, author);
     } else {
       
-      const amazonData = await getAmazonBookData(title, author, userCountry);
+      const amazonData = await getAmazonBookData(title, author, userCountry, countryKey);
       const googleData = await getGoogleBookData(title, author);
       const genres = await openaiApi.getGenres(title, author);
       existingBook = createNewBook(title, author, amazonData, googleData, countryKey, genres);
