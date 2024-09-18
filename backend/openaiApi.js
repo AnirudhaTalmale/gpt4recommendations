@@ -613,7 +613,7 @@ openaiApi.getSummary = async (text) => {
     const prompt = `Summarize the following text in 4 words:\n\n"${text}"\n\nSummary:`;
 
     const response = await openai.chat.completions.create({
-      model: "gpt-4",
+      model: "gpt-4o-mini",
       messages: [{ role: 'system', content: prompt }],
       max_tokens: 10, // Adjust as needed to ensure brevity
     });
