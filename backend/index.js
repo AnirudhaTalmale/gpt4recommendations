@@ -1130,6 +1130,38 @@ app.post('/api/session', async (req, res) => {
   } 
 });
 
+if (process.env.NODE_ENV === 'local') {
+  app.get('/api/sessions', async (req, res) => {
+    try {
+      const userId = req.query.userId; // Get user ID from query parameter
+
+      if (!userId) {
+        return res.status(400).json({ message: 'User ID is required' });
+      }
+
+      const adminIds = process.env.ADMIN_IDS.split(',');
+
+      let query = {};
+      if (adminIds.includes(userId)) {
+        query = { user: { $nin: adminIds } };
+      } else {
+        // Non-admin users can only access their own sessions
+        query = { user: userId };
+      }
+
+      // Find sessions with the specified query, sort them by creation date in descending order, and limit the results to 25
+      const sessions = await Session.find(query)
+                                    .sort({ createdAt: -1 }) // Sort by createdAt in descending order
+                                    .limit(25); // Limit to 25 sessions
+
+      res.json(sessions);
+    } catch (error) {
+      console.error('GET /api/sessions - Error:', error);
+      res.status(500).json({ message: 'Error retrieving sessions', error: error.toString() });
+    }
+  });
+}
+
 // GET endpoint for retrieving all sessions with their messages
 // if (process.env.NODE_ENV === 'production') {
   app.get('/api/sessions', async (req, res) => {
