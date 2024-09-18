@@ -43,7 +43,7 @@ function Chat() {
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const [isAtBottomLightbox, setIsAtBottomLightbox] = useState(false);
   const [manualStop, setManualStop] = useState(false);
-  const [country, setCountry] = useState('India');
+  const [country, setCountry] = useState('United States');
  
   const isUserAtBottomLightbox = useCallback(() => {
     if (!lightboxContentRef.current) return false;
