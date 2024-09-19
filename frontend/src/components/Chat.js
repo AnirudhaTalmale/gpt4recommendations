@@ -604,7 +604,7 @@ function Chat() {
         const processedLastMessageContent = "Previously recommended books are as follows: \n" + extractTags(lastTwoMessages[1].content);
 
         // Prepend the required text to the content of the second to last message and enclose the content in quotes
-        const userQueryContent = `User query is "${lastTwoMessages[0].content}"`;
+        const userQueryContent = `My query is "${lastTwoMessages[0].content}"`;
 
         // Concatenate the modified contents
         const concatenatedContent = `${userQueryContent}\n${processedLastMessageContent}\n`;
