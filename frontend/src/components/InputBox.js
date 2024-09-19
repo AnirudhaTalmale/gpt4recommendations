@@ -20,7 +20,7 @@ function InputBox({ onSubmit, isStreaming, onStopStreaming, isPaneOpen, isAdmin 
     if (textareaRef.current) {
       textareaRef.current.scrollTop = 0;
     }
-    if (!isAdmin) {
+    if (!isAdmin && process.env.REACT_APP_ENV !== 'local') {
       window.fbq && window.fbq('track', 'Search', {
         search_string: trimmedInput
       });
