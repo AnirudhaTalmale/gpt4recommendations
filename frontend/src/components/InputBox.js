@@ -9,7 +9,10 @@ function InputBox({ onSubmit, isStreaming, onStopStreaming, isPaneOpen, isAdmin 
   const textareaRef = useRef(null);
   const rowHeightRem = 1.75; // Estimated row height in rem
   const maxHeightRem = 12; // Max height in rem
+  
   // console.log("isAdmin is", isAdmin);
+  // console.log("process.env.REACT_APP_ENV is", process.env.REACT_APP_ENV);
+
   const handleSubmit = (e) => {
     e.preventDefault();
     const trimmedInput = input.trim();

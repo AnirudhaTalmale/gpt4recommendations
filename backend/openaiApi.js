@@ -469,7 +469,25 @@ const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, is
     }
 
     for await (const chunk of stream) {
-      if (!isStreamingActive) break; 
+      if (!isStreamingActive) {
+        if (!isMoreDetails && !isKeyInsights && !isAnecdotes && !isQuotes) {
+          let messageIndex;
+          if (moreBooks) {
+            // Update the last message in the session instead of creating a new one
+            messageIndex = session.messages.length - 1;
+          } else {
+            // Create a new message entry for this stream.
+            messageIndex = session.messages.push({
+              role: 'assistant',
+              contentType: 'simple',
+              content: ''
+            }) - 1;
+          }
+          session.messages[messageIndex].content += completeResponse;
+          await session.save();
+        }
+        break;
+      } 
       let chunkContent = chunk.choices[0]?.delta?.content || "";
       // console.log(chunkContent);
       // totalResponse += chunkContent;
