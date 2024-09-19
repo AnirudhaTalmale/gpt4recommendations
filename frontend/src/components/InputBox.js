@@ -9,7 +9,7 @@ function InputBox({ onSubmit, isStreaming, onStopStreaming, isPaneOpen, isAdmin 
   const textareaRef = useRef(null);
   const rowHeightRem = 1.75; // Estimated row height in rem
   const maxHeightRem = 12; // Max height in rem
-  
+  // console.log("isAdmin is", isAdmin);
   const handleSubmit = (e) => {
     e.preventDefault();
     const trimmedInput = input.trim();
@@ -20,7 +20,7 @@ function InputBox({ onSubmit, isStreaming, onStopStreaming, isPaneOpen, isAdmin 
     if (textareaRef.current) {
       textareaRef.current.scrollTop = 0;
     }
-    if (isAdmin) {
+    if (!isAdmin) {
       window.fbq && window.fbq('track', 'Search', {
         search_string: trimmedInput
       });
