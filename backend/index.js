@@ -666,7 +666,7 @@ io.on('connection', (socket) => {
   let currentSessionId;
   
   socket.on('query', async (data) => {
-    const { sessionId, message, isMoreDetails, isKeyInsights, isAnecdotes, isQuotes, bookDataObjectId, bookTitle, author, moreBooks, isEdit, userDataCountry } = data;
+    const { sessionId, message, isMoreDetails, isKeyInsights, isAnecdotes, isQuotes, bookDataObjectId, bookTitle, author, moreBooks, isEdit, userDataCountry, bookData } = data;
     currentSessionId = sessionId; 
 
     // console.log('Timezone:', timezone); 
@@ -805,7 +805,7 @@ io.on('connection', (socket) => {
 
       try {
         console.log("messagesForGPT4", messagesForGPT4);
-        await openaiApi(messagesForGPT4, socket, session, currentSessionId, isMoreDetails, isKeyInsights, isAnecdotes, isQuotes, bookDataObjectId, bookTitle, author, moreBooks, userDataCountry);
+        await openaiApi(messagesForGPT4, socket, session, currentSessionId, isMoreDetails, isKeyInsights, isAnecdotes, isQuotes, bookDataObjectId, bookTitle, author, moreBooks, userDataCountry, bookData);
         await session.user.save();
 
         if (message.isFirstQuery && !isMoreDetails && !isKeyInsights && !isAnecdotes && !isQuotes && !moreBooks) {
@@ -823,7 +823,7 @@ io.on('connection', (socket) => {
   }); 
   
   socket.on('book-detail', async (data) => {
-    const { message, isMoreDetails, isKeyInsights, isAnecdotes, isQuotes, bookDataObjectId, bookTitle, author, userId, userDataCountry } = data;  
+    const { message, isMoreDetails, isKeyInsights, isAnecdotes, isQuotes, bookDataObjectId, bookTitle, author, userId, userDataCountry, bookData } = data;  
     
     const user = await User.findById(userId);
 
@@ -898,7 +898,7 @@ io.on('connection', (socket) => {
 
     try {
       console.log("messagesForGPT4", messagesForGPT4);
-      await openaiApi(messagesForGPT4, socket, null, null, isMoreDetails, isKeyInsights, isAnecdotes, isQuotes, bookDataObjectId, bookTitle, author, null, userDataCountry);
+      await openaiApi(messagesForGPT4, socket, null, null, isMoreDetails, isKeyInsights, isAnecdotes, isQuotes, bookDataObjectId, bookTitle, author, null, userDataCountry, bookData);
       await user.save();
     } catch (error) {
       console.error('Error processing query:', error);

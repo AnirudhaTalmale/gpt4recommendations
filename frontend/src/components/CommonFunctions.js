@@ -29,12 +29,12 @@ export const fetchAnecdotes = async (bookDataObjectId, bookTitle) => {
   }
 };  
 
-export const handleAnecdotesRequest = async (bookDataObjectId, bookTitle, author, handleQuerySubmit, setIsLightboxOpen, setLightboxContent) => {
+export const handleAnecdotesRequest = async (bookDataObjectId, bookTitle, author, handleQuerySubmit, setIsLightboxOpen, setLightboxContent, bookData) => {
   try {
     const anecdotes = await fetchAnecdotes(bookDataObjectId, bookTitle);
     if (!anecdotes) {
       const userQuery = `${bookTitle} by ${author}`;
-      handleQuerySubmit(userQuery, false, bookDataObjectId, bookTitle, author, false, false, true);
+      handleQuerySubmit(bookData, userQuery, false, bookDataObjectId, bookTitle, author, false, false, true);
     } else {
       setLightboxContent(''); // Reset the content
       setLightboxContent(anecdotes);
@@ -42,7 +42,7 @@ export const handleAnecdotesRequest = async (bookDataObjectId, bookTitle, author
     }
   } catch (error) {
     const userQuery = `${bookTitle} by ${author}`;
-    handleQuerySubmit(userQuery, false, bookDataObjectId, bookTitle, author, false, false, true);
+    handleQuerySubmit(bookData, userQuery, false, bookDataObjectId, bookTitle, author, false, false, true);
   }
 };
 
@@ -57,12 +57,12 @@ export const fetchQuotes = async (bookDataObjectId, bookTitle) => {
     }
   };  
   
-  export const handleQuotesRequest = async (bookDataObjectId, bookTitle, author, handleQuerySubmit, setIsLightboxOpen, setLightboxContent) => {
+  export const handleQuotesRequest = async (bookDataObjectId, bookTitle, author, handleQuerySubmit, setIsLightboxOpen, setLightboxContent, bookData) => {
     try {
       const quotes = await fetchQuotes(bookDataObjectId, bookTitle);
       if (!quotes) {
         const userQuery = `${bookTitle} by ${author}`;
-        handleQuerySubmit(userQuery, false, bookDataObjectId, bookTitle, author, false, false, false, true);
+        handleQuerySubmit(bookData, userQuery, false, bookDataObjectId, bookTitle, author, false, false, false, true);
       } else {
         setLightboxContent(''); // Reset the content
         setLightboxContent(quotes);
@@ -70,7 +70,7 @@ export const fetchQuotes = async (bookDataObjectId, bookTitle) => {
       }
     } catch (error) {
       const userQuery = `${bookTitle} by ${author}`;
-      handleQuerySubmit(userQuery, false, bookDataObjectId, bookTitle, author, false, false, false, true);
+      handleQuerySubmit(bookData, userQuery, false, bookDataObjectId, bookTitle, author, false, false, false, true);
     }
   };
 
@@ -85,12 +85,12 @@ export const fetchKeyInsights = async (bookDataObjectId, bookTitle) => {
   }
 };
 
-export const handleKeyInsightsRequest = async (bookDataObjectId, bookTitle, author, handleQuerySubmit, setIsLightboxOpen, setLightboxContent) => {
+export const handleKeyInsightsRequest = async (bookDataObjectId, bookTitle, author, handleQuerySubmit, setIsLightboxOpen, setLightboxContent, bookData) => {
   try {
     const keyInsights = await fetchKeyInsights(bookDataObjectId, bookTitle);
     if (!keyInsights) {
       const userQuery = `${bookTitle} by ${author}`;
-      handleQuerySubmit(userQuery, false, bookDataObjectId, bookTitle, author, false, true);
+      handleQuerySubmit(bookData, userQuery, false, bookDataObjectId, bookTitle, author, false, true);
     } else {
       setLightboxContent(''); // Reset the content
       setLightboxContent(keyInsights);
@@ -98,7 +98,7 @@ export const handleKeyInsightsRequest = async (bookDataObjectId, bookTitle, auth
     }
   } catch (error) {
     const userQuery = `${bookTitle} by ${author}`;
-    handleQuerySubmit(userQuery, false, bookDataObjectId, bookTitle, author, false, true);
+    handleQuerySubmit(bookData, userQuery, false, bookDataObjectId, bookTitle, author, false, true);
   }
 };
 
@@ -114,12 +114,12 @@ export const fetchMoreDetails = async (bookDataObjectId, bookTitle) => {
   }
 };
 
-export const handleMoreDetailsRequest = async (bookDataObjectId, bookTitle, author, handleQuerySubmit, setIsLightboxOpen, setLightboxContent) => {
+export const handleMoreDetailsRequest = async (bookDataObjectId, bookTitle, author, handleQuerySubmit, setIsLightboxOpen, setLightboxContent, bookData) => {
   try {
     const detailedDescription = await fetchMoreDetails(bookDataObjectId, bookTitle);
     if (!detailedDescription) {
       const userQuery = `Explain the book - ${bookTitle} by ${author}`;
-      handleQuerySubmit(userQuery, true, bookDataObjectId, bookTitle, author);
+      handleQuerySubmit(bookData, userQuery, true, bookDataObjectId, bookTitle, author);
     } else {
       setLightboxContent(''); // Reset the content
       setLightboxContent(detailedDescription);
@@ -127,7 +127,7 @@ export const handleMoreDetailsRequest = async (bookDataObjectId, bookTitle, auth
     }
   } catch (error) {
     const userQuery = `Explain the book - ${bookTitle} by ${author}`;
-    handleQuerySubmit(userQuery, true, bookDataObjectId, bookTitle, author);
+    handleQuerySubmit(bookData, userQuery, true, bookDataObjectId, bookTitle, author);
   }
 };
 

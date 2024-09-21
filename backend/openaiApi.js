@@ -434,7 +434,7 @@ function createBuyNowButtonHtml(link, bookTitle, author, buttonText = 'Buy Now')
 
 let isStreamingActive = false;
 
-const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, isKeyInsights, isAnecdotes, isQuotes, bookDataObjectId, bookTitle, author, moreBooks, userDataCountry) => {
+const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, isKeyInsights, isAnecdotes, isQuotes, bookDataObjectId, bookTitle, author, moreBooks, userDataCountry, bookData) => {
 
   isStreamingActive = true;
 
@@ -454,8 +454,8 @@ const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, is
     let isPaused = false; // Flag to check if emitting is paused
 
     if (isKeyInsights || isAnecdotes || isQuotes || isMoreDetails) {
-      const { bookImage, amazonLink, amazonStarRating, amazonReviewCount } = await getBookData(bookTitle, author, userCountry, bookDataObjectId);
-      // console.log("bookImage is", bookImage);
+      const { bookImage, amazonLink, amazonStarRating, amazonReviewCount } = bookData;
+
       const bookInfoHtml = createBookInfoHtml(bookTitle, author, amazonStarRating, amazonReviewCount);
       let imageDiv = '';
       if (bookImage) {

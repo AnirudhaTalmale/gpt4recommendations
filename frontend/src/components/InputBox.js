@@ -16,7 +16,7 @@ function InputBox({ onSubmit, isStreaming, onStopStreaming, isPaneOpen, isAdmin 
   const handleSubmit = (e) => {
     e.preventDefault();
     const trimmedInput = input.trim();
-    onSubmit(trimmedInput);
+    onSubmit(null, trimmedInput);
     setInput('');
     setIsInputNotEmpty(false); // Add this line
     setRows(1);

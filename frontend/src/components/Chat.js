@@ -280,7 +280,8 @@ function Chat() {
         author: authorState,
         moreBooks: moreBooks,
         isEdit: isEdit,
-        userDataCountry: userData.country
+        userDataCountry: userData.country,
+        bookData: null
       });
       // Reset lastUserMessage to avoid duplicate emissions
       setLastUserMessage(null);
@@ -288,7 +289,7 @@ function Chat() {
     
   }, [lastUserMessage, sessions, isMoreDetailsState, isKeyInsightsState, isAnecdotesState, isQuotesState, bookTitleState, bookDataObjectIdState, authorState, moreBooks, isEdit, userData]);
   
-  const handleQuerySubmit = async (query, isMoreDetails = false, bookDataObjectId = null, bookTitle = null, author = null, moreBooks = false, isKeyInsights = false, isAnecdotes = false, isQuotes = false, isEdit = false) => {
+  const handleQuerySubmit = async (bookData, query, isMoreDetails = false, bookDataObjectId = null, bookTitle = null, author = null, moreBooks = false, isKeyInsights = false, isAnecdotes = false, isQuotes = false, isEdit = false) => {
     setIsLoading(true);
     setManualStop(false);
   
@@ -337,7 +338,8 @@ function Chat() {
         author,
         moreBooks,
         isEdit,
-        userDataCountry: userData.country
+        userDataCountry: userData.country,
+        bookData: bookData
       });
     }
   };
@@ -519,47 +521,51 @@ function Chat() {
     };
   }, [isPaneOpen, togglePane]);
 
-  const wrappedHandleAnecdotesRequest = (bookDataObjectId, bookTitle, author) => {
+  const wrappedHandleAnecdotesRequest = (bookDataObjectId, bookTitle, author, bookData) => {
     handleAnecdotesRequest(
       bookDataObjectId,
       bookTitle,
       author,
       handleQuerySubmit,
       setIsLightboxOpen,
-      setLightboxContent
+      setLightboxContent,
+      bookData
     );
   };
 
-  const wrappedHandleQuotesRequest = (bookDataObjectId, bookTitle, author) => {
+  const wrappedHandleQuotesRequest = (bookDataObjectId, bookTitle, author, bookData) => {
     handleQuotesRequest(
       bookDataObjectId,
       bookTitle,
       author,
       handleQuerySubmit,
       setIsLightboxOpen,
-      setLightboxContent
+      setLightboxContent,
+      bookData
     );
   };
 
-  const wrappedHandleKeyInsightsRequest = (bookDataObjectId, bookTitle, author) => {
+  const wrappedHandleKeyInsightsRequest = (bookDataObjectId, bookTitle, author, bookData) => {
     handleKeyInsightsRequest(
       bookDataObjectId,
       bookTitle,
       author,
       handleQuerySubmit,
       setIsLightboxOpen,
-      setLightboxContent
+      setLightboxContent,
+      bookData
     );
   };
 
-  const wrappedHandleMoreDetailsRequest = (bookDataObjectId, bookTitle, author) => {
+  const wrappedHandleMoreDetailsRequest = (bookDataObjectId, bookTitle, author, bookData) => {
     handleMoreDetailsRequest(
       bookDataObjectId,
       bookTitle,
       author,
       handleQuerySubmit,
       setIsLightboxOpen,
-      setLightboxContent
+      setLightboxContent,
+      bookData
     );
   };
 
@@ -609,7 +615,7 @@ function Chat() {
         // Concatenate the modified contents
         const concatenatedContent = `${userQueryContent}\n${processedLastMessageContent}\n`;
 
-        handleQuerySubmit(concatenatedContent, false, null, null, null, true);
+        handleQuerySubmit(null, concatenatedContent, false, null, null, null, true);
     }
   };
 
@@ -659,7 +665,7 @@ function Chat() {
           }
           return session;
         }));
-        handleQuerySubmit(newContent, false, null, null, null, false, false, false, false, true);
+        handleQuerySubmit(null, newContent, false, null, null, null, false, false, false, false, true);
       }
     } catch (error) {
       console.error('Error editing message:', error);

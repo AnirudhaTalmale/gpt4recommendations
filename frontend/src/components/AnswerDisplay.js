@@ -31,12 +31,33 @@ function AnswerDisplay({
     });
     return { __html: safeHTML };
   };
+
+  const extractBookData = (bookDataObjectId, actionButtonClass) => {
+    const button = document.querySelector(`[data-bookdataobjectid="${bookDataObjectId}"].${actionButtonClass}`);
+    const contentContainer = button.closest('.content-container');
+    const bookImage = contentContainer.querySelector('.image-container img').src;
+    const amazonLink = contentContainer.querySelector('.buttons-container a').href;
+    const ratingsContainer = contentContainer.previousElementSibling.querySelector('.ratings-and-review');
+    const starsContainer = ratingsContainer.querySelector('.star-rating');
+    const fullStars = starsContainer.querySelectorAll('.fa-solid.fa-star').length;
+    const halfStars = starsContainer.querySelectorAll('.fa-solid.fa-star-half-stroke').length;
+    const numericRating = fullStars + (halfStars * 0.5);
+    const amazonReviewCount = ratingsContainer.querySelector('.review-count').textContent;
+  
+    return {
+      bookImage,
+      amazonLink,
+      amazonStarRating: numericRating,
+      amazonReviewCount
+    };
+  };
   
   const handleKeyInsightsClick = (bookDataObjectId, bookTitle, author) => {
     if (!isKeyInsightsClicked && onKeyInsightsClick) {
       setIsKeyInsightsClicked(true);
       
-      onKeyInsightsClick(bookDataObjectId, bookTitle, author);
+      const bookData = extractBookData(bookDataObjectId, 'key-insights-btn');
+      onKeyInsightsClick(bookDataObjectId, bookTitle, author, bookData);
       handleActionButtonClick('key-insights-btn', bookTitle, author, userEmail);
 
       // Reset the state after a delay
@@ -50,7 +71,8 @@ function AnswerDisplay({
     if (!isMoreDetailsClicked && onMoreDetailsClick) {
       setIsMoreDetailsClicked(true);
       
-      onMoreDetailsClick(bookDataObjectId, bookTitle, author);
+      const bookData = extractBookData(bookDataObjectId, 'more-details-btn');
+      onMoreDetailsClick(bookDataObjectId, bookTitle, author, bookData);
       handleActionButtonClick('more-details-btn', bookTitle, author, userEmail);
 
       setTimeout(() => {
@@ -63,7 +85,8 @@ function AnswerDisplay({
     if (!isAnecdotesClicked && onAnecdotesClick) {
       setIsAnecdotesClicked(true);
       
-      onAnecdotesClick(bookDataObjectId, bookTitle, author);
+      const bookData = extractBookData(bookDataObjectId, 'anecdotes-btn');
+      onAnecdotesClick(bookDataObjectId, bookTitle, author, bookData);
       handleActionButtonClick('anecdotes-btn', bookTitle, author, userEmail);
 
       setTimeout(() => {
@@ -75,10 +98,11 @@ function AnswerDisplay({
   const handleQuotesClick = (bookDataObjectId, bookTitle, author) => {
     if (!isQuotesClicked && onQuotesClick) {
       setIsQuotesClicked(true);
-      
-      onQuotesClick(bookDataObjectId, bookTitle, author);
+
+      const bookData = extractBookData(bookDataObjectId, 'quotes-btn');
+      onQuotesClick(bookDataObjectId, bookTitle, author, bookData);
       handleActionButtonClick('quotes-btn', bookTitle, author, userEmail);
-  
+
       setTimeout(() => {
         setIsQuotesClicked(false);
       }, 3500); // Adjust the delay as needed

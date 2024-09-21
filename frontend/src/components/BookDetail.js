@@ -228,7 +228,7 @@ function BookDetail() {
         return <div>No country-specific data available.</div>;
     }
 
-    const handleQuerySubmit = async (query, isMoreDetails = false, bookDataObjectId = null, bookTitle = null, author = null, moreBooks = false, isKeyInsights = false, isAnecdotes = false, isQuotes = false) => {
+    const handleQuerySubmit = async (bookData, query, isMoreDetails = false, bookDataObjectId = null, bookTitle = null, author = null, moreBooks = false, isKeyInsights = false, isAnecdotes = false, isQuotes = false) => {
 
       if (userData && userData.id) {
         socket.emit('book-detail', {
@@ -245,55 +245,83 @@ function BookDetail() {
           author,
           userId: userData.id,
           moreBooks,
-          userDataCountry: userData.country
+          userDataCountry: userData.country,
+          bookData: bookData
         });
       } 
     };
 
-    const wrappedHandleKeyInsightsRequest = (bookDataObjectId, bookTitle, author) => {
+    const wrappedHandleKeyInsightsRequest = (bookDataObjectId, bookTitle, author, bookData) => {
         handleKeyInsightsRequest(
           bookDataObjectId,
           bookTitle,
           author,
           handleQuerySubmit,
           setIsLightboxOpen,
-          setLightboxContent
+          setLightboxContent,
+          bookData
         );
       };
 
-      const wrappedHandleAnecdotesRequest = (bookDataObjectId, bookTitle, author) => {
+      const wrappedHandleAnecdotesRequest = (bookDataObjectId, bookTitle, author, bookData) => {
         handleAnecdotesRequest(
           bookDataObjectId,
           bookTitle,
           author,
           handleQuerySubmit,
           setIsLightboxOpen,
-          setLightboxContent
+          setLightboxContent,
+          bookData
         );
       };
     
-      const wrappedHandleQuotesRequest = (bookDataObjectId, bookTitle, author) => {
+      const wrappedHandleQuotesRequest = (bookDataObjectId, bookTitle, author, bookData) => {
         handleQuotesRequest(
           bookDataObjectId,
           bookTitle,
           author,
           handleQuerySubmit,
           setIsLightboxOpen,
-          setLightboxContent
+          setLightboxContent,
+          bookData
         );
       };
     
-      const wrappedHandleMoreDetailsRequest = (bookDataObjectId, bookTitle, author) => {
+      const wrappedHandleMoreDetailsRequest = (bookDataObjectId, bookTitle, author, bookData) => {
         handleMoreDetailsRequest(
           bookDataObjectId,
           bookTitle,
           author,
           handleQuerySubmit,
           setIsLightboxOpen,
-          setLightboxContent
+          setLightboxContent,
+          bookData
         );
       };
 
+      const extractBookData = (bookDataObjectId, actionButtonClass) => {
+        const button = document.querySelector(`button[data-book-data-object-id="${bookDataObjectId}"].${actionButtonClass}`);
+        const bookItemContainer = button.closest('.main-book-container').querySelector('.book-item');
+    
+        const bookImage = bookItemContainer.querySelector('img').src;
+        const amazonLinkElement = button.closest('.main-book-container').querySelector('.book-buttons a');
+        const amazonLink = amazonLinkElement.href;
+    
+        const ratingsContainer = bookItemContainer.querySelector('.ratings-and-review');
+        const starsContainer = ratingsContainer.querySelector('.star-rating');
+        const fullStars = starsContainer.querySelectorAll('.fa-solid.fa-star').length;
+        const halfStars = starsContainer.querySelectorAll('.fa-solid.fa-star-half-stroke').length;
+        const numericRating = fullStars + (halfStars * 0.5);
+        const amazonReviewCount = ratingsContainer.querySelector('.review-count').textContent;
+    
+        return {
+            bookImage,
+            amazonLink,
+            amazonStarRating: numericRating,
+            amazonReviewCount
+        };
+      };
+    
       const handleKeyInsightsClick = (event) => {
         const button = event.currentTarget;
         const bookDataObjectId = button.getAttribute('data-book-data-object-id');
@@ -302,7 +330,8 @@ function BookDetail() {
 
         if (!isKeyInsightsClicked && wrappedHandleKeyInsightsRequest) {
           setIsKeyInsightsClicked(true);
-          wrappedHandleKeyInsightsRequest(bookDataObjectId, bookTitle, author);
+          const bookData = extractBookData(bookDataObjectId, 'key-insights-btn');
+          wrappedHandleKeyInsightsRequest(bookDataObjectId, bookTitle, author, bookData);
 
           handleActionButtonClick('key-insights-btn', bookTitle, author, userData?.email);
       
@@ -321,7 +350,8 @@ function BookDetail() {
 
         if (!isMoreDetailsClicked && wrappedHandleMoreDetailsRequest) {
           setIsMoreDetailsClicked(true);
-          wrappedHandleMoreDetailsRequest(bookDataObjectId, bookTitle, author);
+          const bookData = extractBookData(bookDataObjectId, 'more-details-btn');
+          wrappedHandleMoreDetailsRequest(bookDataObjectId, bookTitle, author, bookData);
 
           handleActionButtonClick('more-details-btn', bookTitle, author, userData?.email);
       
@@ -339,7 +369,8 @@ function BookDetail() {
 
         if (!isAnecdotesClicked && wrappedHandleAnecdotesRequest) {
           setIsAnecdotesClicked(true);
-          wrappedHandleAnecdotesRequest(bookDataObjectId, bookTitle, author);
+          const bookData = extractBookData(bookDataObjectId, 'anecdotes-btn');
+          wrappedHandleAnecdotesRequest(bookDataObjectId, bookTitle, author, bookData);
 
           handleActionButtonClick('anecdotes-btn', bookTitle, author, userData?.email);
       
@@ -357,7 +388,8 @@ function BookDetail() {
 
         if (!isQuotesClicked && wrappedHandleQuotesRequest) {
           setIsQuotesClicked(true);
-          wrappedHandleQuotesRequest(bookDataObjectId, bookTitle, author);
+          const bookData = extractBookData(bookDataObjectId, 'quotes-btn');
+          wrappedHandleQuotesRequest(bookDataObjectId, bookTitle, author, bookData);
 
           handleActionButtonClick('quotes-btn', bookTitle, author, userData?.email);
       
