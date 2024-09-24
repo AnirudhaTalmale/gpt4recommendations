@@ -423,7 +423,21 @@ const getBookData = async (title, author, userCountry, bookDataObjectId = '') =>
 
 function createBuyNowButtonHtml(link, bookTitle, author, buttonText = 'Buy Now') {
 
-  const amazonLink = `${link}/ref=nosim?tag=getbooksai-21`;
+  const domainMatch = link.match(/amazon\.([a-z\.]+)/i);
+  const amazonDomain = domainMatch ? domainMatch[1] : 'com'; // Default to 'com' if domain is not found
+
+  // Check if the link is a direct product link or a search query link
+  const isSearchLink = link.includes('/s?k=');
+
+  // Format the Amazon link based on the type of URL
+  let amazonLink;
+  if (isSearchLink) {
+    // For search links, directly append the affiliate tag
+    amazonLink = `https://www.amazon.${amazonDomain}/s?k=${encodeURIComponent(`${bookTitle.trim()} by ${author.trim()}`)}&tag=getbooksai-21`;
+  } else {
+    // For direct product links, append /ref=nosim and the affiliate tag as specified
+    amazonLink = `${link}/ref=nosim?tag=getbooksai-21`;
+  }
 
   return `<div><a href="${amazonLink}" target="_blank">
             <button class="buy-now-button" data-book-title="${bookTitle}" data-author="${author}">
