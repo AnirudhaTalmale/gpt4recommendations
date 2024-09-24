@@ -49,6 +49,21 @@
 
       gtag('config', 'AW-16524885939');
     </script>
+
+    <script>
+      function gtag_report_conversion(url) {
+        var callback = function () {
+          if (typeof(url) != 'undefined') {
+            window.location = url;
+          }
+        };
+        gtag('event', 'conversion', {
+            'send_to': 'AW-16524885939/-6LBCIGt6NUZELP_1sc9',
+            'event_callback': callback
+        });
+        return false;
+      }
+      </script>
     
     <!-- Meta Pixel Code -->
     <script>
