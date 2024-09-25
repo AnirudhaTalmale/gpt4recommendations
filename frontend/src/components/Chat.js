@@ -743,6 +743,7 @@ function Chat() {
                 sessionId={currentSessionId} // You need to pass the current session ID
                 messageId={msg._id} // Assuming each message has a unique ID
                 onEditMessage={handleEditMessage}
+                isAdmin={userData?.isAdmin}
               />
               );
             })}
