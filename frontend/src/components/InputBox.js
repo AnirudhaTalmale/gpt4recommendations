@@ -27,8 +27,6 @@ function InputBox({ onSubmit, isStreaming, onStopStreaming, isPaneOpen, isAdmin 
       window.fbq && window.fbq('track', 'Search', {
         search_string: trimmedInput
       });
-
-      window.gtag_report_conversion && window.gtag_report_conversion();
     }
   };
 
