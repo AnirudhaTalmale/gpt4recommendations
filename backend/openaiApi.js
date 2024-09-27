@@ -483,7 +483,7 @@ const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, is
     let isPaused = false; // Flag to check if emitting is paused
 
     if (isKeyInsights || isAnecdotes || isQuotes || isMoreDetails) {
-      const { bookImage, amazonLink, amazonStarRating, amazonReviewCount } = bookData;
+      const { bookImage, amazonLink, amazonStarRating, amazonReviewCount, buyNowButtonText } = bookData;
 
       const bookInfoHtml = createBookInfoHtml(bookTitle, author, amazonStarRating, amazonReviewCount);
       let imageDiv = '';
@@ -492,7 +492,7 @@ const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, is
       } else {
         imageDiv = `<div><img src="/blank_image.png" alt="" style="border: 0.7px solid grey;"></div>`;  
       }
-      const buyNowButtonHtml = createBuyNowButtonHtml(amazonLink, bookTitle, author);
+      const buyNowButtonHtml = createBuyNowButtonHtml(amazonLink, bookTitle, author, buyNowButtonText);
       completeResponse = bookInfoHtml + imageDiv + buyNowButtonHtml;
       socket.emit('chunk', { content: completeResponse, sessionId, isMoreDetails, isKeyInsights, isAnecdotes, isQuotes, moreBooks });
     }

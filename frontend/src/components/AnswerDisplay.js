@@ -36,7 +36,10 @@ function AnswerDisplay({
     const button = document.querySelector(`[data-bookdataobjectid="${bookDataObjectId}"].${actionButtonClass}`);
     const contentContainer = button.closest('.content-container');
     const bookImage = contentContainer.querySelector('.image-container img').src;
-    const amazonLink = contentContainer.querySelector('.buttons-container a').href;
+    const buyNowButton = contentContainer.querySelector('.buttons-container a');
+    const amazonLink = buyNowButton.href;
+    const buyNowButtonText = buyNowButton.textContent.trim(); 
+
     const ratingsContainer = contentContainer.previousElementSibling.querySelector('.ratings-and-review');
     const starsContainer = ratingsContainer.querySelector('.star-rating');
     const fullStars = starsContainer.querySelectorAll('.fa-solid.fa-star').length;
@@ -48,7 +51,8 @@ function AnswerDisplay({
       bookImage,
       amazonLink,
       amazonStarRating: numericRating,
-      amazonReviewCount
+      amazonReviewCount,
+      buyNowButtonText
     };
   };
   
