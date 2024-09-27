@@ -2091,7 +2091,7 @@ body:not(.history-pane-open) .input-area {
   display: flex;
   justify-content: space-between;
   align-items: flex-start; 
-  width: 16.7rem;
+  width: 18rem;
   margin-bottom: -0.4rem;
   /* border: 1px solid green; */
 }
@@ -2128,7 +2128,7 @@ body:not(.history-pane-open) .input-area {
   text-decoration: none;
   display: inline-block;
   transition: background-color 0.3s ease, border-color 0.3s ease;
-  width: 6rem;
+  width: 7rem;
   color: #0D0D0D;
 }
 

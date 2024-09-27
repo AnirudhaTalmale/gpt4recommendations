@@ -10,55 +10,64 @@ const bookSchema = new Schema({
           bookImage: String,
           amazonLink: String,
           amazonStarRating: Number,
-          amazonReviewCount: String
+          amazonReviewCount: String,
+          amazonPrice: String
         },
         US: {  // United States
           bookImage: String,
           amazonLink: String,
           amazonStarRating: Number,
-          amazonReviewCount: String
+          amazonReviewCount: String,
+          amazonPrice: String
         },
         GB: {  // United Kingdom
           bookImage: String,
           amazonLink: String,
           amazonStarRating: Number,
-          amazonReviewCount: String
+          amazonReviewCount: String,
+          amazonPrice: String
         },
         DE: {  // Germany
           bookImage: String,
           amazonLink: String,
           amazonStarRating: Number,
-          amazonReviewCount: String
+          amazonReviewCount: String,
+          amazonPrice: String
         },
         CA: {  // Canada
           bookImage: String,
           amazonLink: String,
           amazonStarRating: Number,
-          amazonReviewCount: String
+          amazonReviewCount: String,
+          amazonPrice: String
         },
         FR: {  // France
           bookImage: String,
           amazonLink: String,
           amazonStarRating: Number,
-          amazonReviewCount: String
+          amazonReviewCount: String,
+          amazonPrice: String
         },
         JP: {  // Japan
           bookImage: String,
           amazonLink: String,
           amazonStarRating: Number,
-          amazonReviewCount: String
+          amazonReviewCount: String,
+          amazonPrice: String
         },
         NL: {  // Netherlands
           bookImage: String,
           amazonLink: String,
           amazonStarRating: Number,
-          amazonReviewCount: String
+          amazonReviewCount: String,
+          amazonPrice: String
         },
         SE: {  // Sweden
           bookImage: String,
           amazonLink: String,
           amazonStarRating: Number,
-          amazonReviewCount: String
+          amazonReviewCount: String,
+          amazonPrice: String
         }        
     },
     

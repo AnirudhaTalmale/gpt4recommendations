@@ -185,7 +185,7 @@ async function getAmazonBookData(title, author, country, countryCode) {
     searchTitles.push(titleBeforeDelimiter);
   }
 
-  let amazonLink = '', amazonStarRating = '', amazonReviewCount = '', amazonImage = '';
+  let amazonLink = '', amazonStarRating = '', amazonReviewCount = '', amazonImage = '', amazonPrice = '';
   
   for (let searchTitle of searchTitles) {
     const query = `${searchTitle} by ${authorBeforeAnd}`;
@@ -211,19 +211,31 @@ async function getAmazonBookData(title, author, country, countryCode) {
       //     console.log("No products found or 'products' is undefined.");
       // }
 
-
       for (let i = 0; i < Math.min(1, response.data.data.products.length); i++) {
         const product = response.data.data.products[i];
-        const { product_star_rating, product_num_ratings, product_url, product_photo } = product;
+        const {
+          product_star_rating,
+          product_num_ratings,
+          product_url,
+          product_photo,
+          product_price,
+          product_minimum_offer_price
+      } = product;
+        // console.log("product_price is", product_price);
+        // console.log("product_minimum_offer_price is", product_minimum_offer_price);
 
         amazonImage = product_photo;
         amazonStarRating = product_star_rating;
         amazonReviewCount = product_num_ratings.toLocaleString();
         amazonLink = product_url;
+        
+        const amazon_product_price = product_price || product_minimum_offer_price;
+        const numericPrice = parseInt(amazon_product_price.replace(/[^0-9.]+/g, "")); // Remove non-numeric characters except decimal
+        amazonPrice = `₹${numericPrice.toLocaleString('en-IN')}`;  // Format with commas and reattach currency symbol
 
         // console.log("amazon image is", amazonImage);
 
-        return { amazonLink, amazonStarRating, amazonReviewCount, amazonImage };
+        return { amazonLink, amazonStarRating, amazonReviewCount, amazonImage, amazonPrice };
       }
     } catch (error) {
       console.error('Error during API request:', error);
@@ -231,7 +243,7 @@ async function getAmazonBookData(title, author, country, countryCode) {
   } 
 
   console.log('No suitable results found.');
-  return { amazonLink, amazonStarRating, amazonReviewCount, amazonImage};
+  return { amazonLink, amazonStarRating, amazonReviewCount, amazonImage, amazonPrice };
 }
 
 const extractTitleFromLink = (link) => {
@@ -321,7 +333,8 @@ function createBookDetails(book, countrySpecificData) {
     previewLink: book.previewLink,
     amazonLink: countrySpecificData.amazonLink,
     amazonStarRating: countrySpecificData.amazonStarRating,
-    amazonReviewCount: countrySpecificData.amazonReviewCount
+    amazonReviewCount: countrySpecificData.amazonReviewCount,
+    amazonPrice: countrySpecificData.amazonPrice
   };
 }
 
@@ -337,7 +350,8 @@ function updateBookWithAmazonData(book, amazonData, countryKey, title, author) {
   const countrySpecificData = {
     amazonLink: amazonData.amazonLink || fallbackAmazonLink,
     amazonStarRating: amazonData.amazonStarRating,
-    amazonReviewCount: amazonData.amazonReviewCount
+    amazonReviewCount: amazonData.amazonReviewCount,
+    amazonPrice: amazonData.amazonPrice
   };
 
   // Only add bookImage if amazonImage is not a blank string
@@ -362,7 +376,8 @@ function createNewBook(title, author, amazonData, googleData, countryKey, genres
         bookImage: amazonData.amazonImage || googleData.googleImage,
         amazonLink: amazonData.amazonLink || fallbackAmazonLink,
         amazonStarRating: amazonData.amazonStarRating,
-        amazonReviewCount: amazonData.amazonReviewCount
+        amazonReviewCount: amazonData.amazonReviewCount,
+        amazonPrice: amazonData.amazonPrice
       }
     },
     genres
@@ -393,7 +408,7 @@ const getBookData = async (title, author, userCountry, bookDataObjectId = '') =>
 
     let existingBook = await BookData.findOne(query);
 
-    if (existingBook && existingBook.countrySpecific && existingBook.countrySpecific[countryKey] && existingBook.countrySpecific[countryKey].amazonLink && existingBook.countrySpecific[countryKey].amazonLink.trim() !== '') {
+    if (existingBook && existingBook.countrySpecific && existingBook.countrySpecific[countryKey] && existingBook.countrySpecific[countryKey].amazonPrice && existingBook.countrySpecific[countryKey].amazonPrice.trim() !== '') {
       const countrySpecificData = existingBook.countrySpecific[countryKey];
       let bookDetails = createBookDetails(existingBook, countrySpecificData);
       await redisClient.set(cacheKey, JSON.stringify(bookDetails));
@@ -515,9 +530,10 @@ const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, is
           let bookTitleMatch = pausedEmit.match(/#(?:\d+\.\s)?(.*?)#/);
           const bookTitleWithAuthor = bookTitleMatch ? bookTitleMatch[1] : "";
           const { bookTitle, author } = parseBookTitle(bookTitleWithAuthor);
-          const { bookDataObjectId, bookImage, previewLink, amazonLink, amazonStarRating, amazonReviewCount } = await getBookData(bookTitle, author, userCountry);
+          const { bookDataObjectId, bookImage, previewLink, amazonLink, amazonStarRating, amazonReviewCount, amazonPrice } = await getBookData(bookTitle, author, userCountry);
           
-          const buyNowButtonHtml = createBuyNowButtonHtml(amazonLink, bookTitle, author);
+          const buyNowButtonText = `Amazon ${amazonPrice}`;
+          const buyNowButtonHtml = createBuyNowButtonHtml(amazonLink, bookTitle, author, buyNowButtonText);
 
           let imageSource = bookImage;
           let imageDiv = '';
