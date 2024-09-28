@@ -176,16 +176,20 @@ const getCountryCode = (countryName) => {
   return countryCodes[countryName] || 'US'; // Default to 'US' if country not found
 };
 
-async function getAmazonBookData(title, author, country, countryCode) {
+async function getAmazonBookData(title, author, countryCode, amazonDataChecked) {
+  let amazonLink = '', amazonStarRating = '', amazonReviewCount = '', amazonImage = '', amazonPrice = '';
+
+  if (amazonDataChecked) {
+    return { amazonLink, amazonStarRating, amazonReviewCount, amazonImage, amazonPrice };
+  }
+
   const titleBeforeDelimiter = getTitleBeforeDelimiter(title);
   const authorBeforeAnd = getAuthorBeforeAnd(author);
   
   const searchTitles = [title];
-  if (title !== titleBeforeDelimiter) {
-    searchTitles.push(titleBeforeDelimiter);
-  }
-
-  let amazonLink = '', amazonStarRating = '', amazonReviewCount = '', amazonImage = '', amazonPrice = '';
+  // if (title !== titleBeforeDelimiter) {
+  //   searchTitles.push(titleBeforeDelimiter);
+  // }
   
   for (let searchTitle of searchTitles) {
     const query = `${searchTitle} by ${authorBeforeAnd}`;
@@ -199,6 +203,8 @@ async function getAmazonBookData(title, author, country, countryCode) {
           'x-rapidapi-key': process.env.RAPIDAPI_KEY
         }
       });
+
+      // console.log("rapid api called for the title", title);
 
       // console.log("response.data is", response.data);
 
@@ -351,7 +357,8 @@ function updateBookWithAmazonData(book, amazonData, countryKey, title, author) {
     amazonLink: amazonData.amazonLink || fallbackAmazonLink,
     amazonStarRating: amazonData.amazonStarRating,
     amazonReviewCount: amazonData.amazonReviewCount,
-    amazonPrice: amazonData.amazonPrice
+    amazonPrice: amazonData.amazonPrice,
+    amazonDataChecked: true
   };
 
   // Only add bookImage if amazonImage is not a blank string
@@ -377,7 +384,8 @@ function createNewBook(title, author, amazonData, googleData, countryKey, genres
         amazonLink: amazonData.amazonLink || fallbackAmazonLink,
         amazonStarRating: amazonData.amazonStarRating,
         amazonReviewCount: amazonData.amazonReviewCount,
-        amazonPrice: amazonData.amazonPrice
+        amazonPrice: amazonData.amazonPrice,
+        amazonDataChecked: true
       }
     },
     genres
@@ -415,11 +423,12 @@ const getBookData = async (title, author, userCountry, bookDataObjectId = '') =>
       return bookDetails;
     } else if (existingBook) {
 
-      const amazonData = await getAmazonBookData(title, author, userCountry, countryKey);
+      const amazonDataChecked = existingBook.countrySpecific && existingBook.countrySpecific[countryKey] && existingBook.countrySpecific[countryKey].hasOwnProperty('amazonDataChecked') ? existingBook.countrySpecific[countryKey].amazonDataChecked : false;
+      const amazonData = await getAmazonBookData(title, author, countryKey, amazonDataChecked);
       updateBookWithAmazonData(existingBook, amazonData, countryKey, title, author);
     } else {
       
-      const amazonData = await getAmazonBookData(title, author, userCountry, countryKey);
+      const amazonData = await getAmazonBookData(title, author, countryKey, false);
       const googleData = await getGoogleBookData(title, author);
       const genres = await openaiApi.getGenres(title, author);
       existingBook = createNewBook(title, author, amazonData, googleData, countryKey, genres);
