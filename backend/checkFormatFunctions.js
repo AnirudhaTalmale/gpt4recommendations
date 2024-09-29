@@ -58,6 +58,9 @@ function checkFormatMoreDetails(content) {
   if (endorsementsH3.tagName !== "B" || endorsementsP.tagName !== "P") return false;
   // console.log("i am here 9");
 
+  // New Check: Ensure the last paragraph in endorsements ends with a full stop
+  if (endorsementsP.textContent.trim().slice(-1) !== ".") return false;
+
   return true; // All checks passed
 }
 
@@ -106,6 +109,10 @@ function checkFormatKeyInsights(content) {
   const insightsList = bodyChildren[4];
   if (insightsList.tagName !== "OL" || Array.from(insightsList.children).every(child => child.tagName !== "LI")) return false;
   // console.log("i am here 7");
+
+  // New Check: Ensure the last <li> in <ol> ends with a full stop
+  const lastItem = insightsList.children[insightsList.children.length - 1];
+  if (lastItem.textContent.trim().slice(-1) !== ".") return false;
 
   // console.log("All checks passed");
   return true; // All checks passed
@@ -156,6 +163,10 @@ function checkFormatAnecdotes(content) {
       if (item.tagName !== "LI") return false;
       // console.log("i am here 6");
   }
+
+  // New Check: Ensure the last <li> in <ol> ends with a full stop
+  const lastItem = listItems.children[listItems.children.length - 1];
+  if (lastItem.textContent.trim().slice(-1) !== ".") return false;
 
   // console.log("i am here 7");
   return true; // All checks passed
@@ -213,6 +224,10 @@ function checkFormatQuotes(content) {
   for (const item of listItems.children) {
       if (item.tagName !== "LI") return false; // Ensuring every child of the list is a list item
   }
+
+  // New Check: Ensure the last <li> in <ol> ends with a full stop
+  const lastItem = listItems.children[listItems.children.length - 1];
+  if (lastItem.textContent.trim().slice(-1) !== ".") return false;
   
   // console.log("i am here 9");
   return true; // All checks passed
