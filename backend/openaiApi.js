@@ -457,10 +457,10 @@ function createBuyNowButtonHtml(link, bookTitle, author, buttonText = 'Buy Now')
   let amazonLink;
   if (isSearchLink) {
     // For search links, directly append the affiliate tag
-    amazonLink = `https://www.amazon.${amazonDomain}/s?k=${encodeURIComponent(`${bookTitle.trim()} by ${author.trim()}`)}&tag=getbooksai-21&openinbrowser=true`;
+    amazonLink = `https://www.amazon.${amazonDomain}/s?k=${encodeURIComponent(`${bookTitle.trim()} by ${author.trim()}`)}&tag=getbooksai-21`;
   } else {
     // For direct product links, append /ref=nosim and the affiliate tag as specified
-    amazonLink = `${link}/ref=nosim?tag=getbooksai-21&openinbrowser=true`;
+    amazonLink = `${link}/ref=nosim?tag=getbooksai-21`;
   }
 
   return `<div><a href="${amazonLink}" target="_blank">
