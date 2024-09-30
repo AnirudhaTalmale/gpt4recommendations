@@ -183,71 +183,63 @@ async function getAmazonBookData(title, author, countryCode, amazonDataChecked) 
     return { amazonLink, amazonStarRating, amazonReviewCount, amazonImage, amazonPrice };
   }
 
-  const titleBeforeDelimiter = getTitleBeforeDelimiter(title);
   const authorBeforeAnd = getAuthorBeforeAnd(author);
   
-  const searchTitles = [title];
-  // if (title !== titleBeforeDelimiter) {
-  //   searchTitles.push(titleBeforeDelimiter);
-  // }
-  
-  for (let searchTitle of searchTitles) {
-    const query = `${searchTitle} by ${authorBeforeAnd}`;
-    const encodedQuery = encodeURIComponent(query);
-    const url = `https://real-time-amazon-data.p.rapidapi.com/search?query=${encodedQuery}&page=1&country=${countryCode}&sort_by=RELEVANCE&product_condition=ALL`;
+  const query = `${title} by ${authorBeforeAnd} paperback`;
+  const encodedQuery = encodeURIComponent(query);
+  const url = `https://real-time-amazon-data.p.rapidapi.com/search?query=${encodedQuery}&page=1&country=${countryCode}&sort_by=RELEVANCE&product_condition=ALL`;
 
-    try {
-      const response = await axios.get(url, {
-        headers: {
-          'x-rapidapi-host': process.env.RAPIDAPI_HOST,
-          'x-rapidapi-key': process.env.RAPIDAPI_KEY
-        }
-      });
-
-      // console.log("rapid api called for the title", title);
-
-      // console.log("response.data is", response.data);
-
-      // // Ensure both data objects exist before trying to access products
-      // if (response.data && response.data.data && response.data.data.products) {
-      //     response.data.data.products.forEach((product, index) => {
-      //         console.log(`Product ${index + 1}:`, product);
-      //     });
-      // } else {
-      //     console.log("No products found or 'products' is undefined.");
-      // }
-
-      for (let i = 0; i < Math.min(1, response.data.data.products.length); i++) {
-        const product = response.data.data.products[i];
-        const {
-          product_star_rating,
-          product_num_ratings,
-          product_url,
-          product_photo,
-          product_price,
-          product_minimum_offer_price
-      } = product;
-        // console.log("product_price is", product_price);
-        // console.log("product_minimum_offer_price is", product_minimum_offer_price);
-
-        amazonImage = product_photo;
-        amazonStarRating = product_star_rating;
-        amazonReviewCount = product_num_ratings.toLocaleString();
-        amazonLink = product_url;
-        
-        const amazon_product_price = product_price || product_minimum_offer_price;
-        const numericPrice = parseInt(amazon_product_price.replace(/[^0-9.]+/g, "")); // Remove non-numeric characters except decimal
-        amazonPrice = `₹${numericPrice.toLocaleString('en-IN')}`;  // Format with commas and reattach currency symbol
-
-        // console.log("amazon image is", amazonImage);
-
-        return { amazonLink, amazonStarRating, amazonReviewCount, amazonImage, amazonPrice };
+  try {
+    const response = await axios.get(url, {
+      headers: {
+        'x-rapidapi-host': process.env.RAPIDAPI_HOST,
+        'x-rapidapi-key': process.env.RAPIDAPI_KEY
       }
-    } catch (error) {
-      console.error('Error during API request:', error);
-    }
-  } 
+    });
 
+    // console.log("rapid api called for the title", title);
+
+    // console.log("response.data is", response.data);
+
+    // // Ensure both data objects exist before trying to access products
+    // if (response.data && response.data.data && response.data.data.products) {
+    //     response.data.data.products.forEach((product, index) => {
+    //         console.log(`Product ${index + 1}:`, product);
+    //     });
+    // } else {
+    //     console.log("No products found or 'products' is undefined.");
+    // }
+
+    for (let i = 0; i < Math.min(1, response.data.data.products.length); i++) {
+      const product = response.data.data.products[i];
+      const {
+        product_star_rating,
+        product_num_ratings,
+        product_url,
+        product_photo,
+        product_price,
+        product_minimum_offer_price
+    } = product;
+      // console.log("product_price is", product_price);
+      // console.log("product_minimum_offer_price is", product_minimum_offer_price);
+
+      amazonImage = product_photo;
+      amazonStarRating = product_star_rating;
+      amazonReviewCount = product_num_ratings.toLocaleString();
+      amazonLink = product_url;
+      
+      const amazon_product_price = product_price || product_minimum_offer_price;
+      const numericPrice = parseInt(amazon_product_price.replace(/[^0-9.]+/g, "")); // Remove non-numeric characters except decimal
+      amazonPrice = `₹${numericPrice.toLocaleString('en-IN')}`;  // Format with commas and reattach currency symbol
+
+      // console.log("amazon image is", amazonImage);
+
+      return { amazonLink, amazonStarRating, amazonReviewCount, amazonImage, amazonPrice };
+    }
+  } catch (error) {
+    console.error('Error during API request:', error);
+  }
+  
   console.log('No suitable results found.');
   return { amazonLink, amazonStarRating, amazonReviewCount, amazonImage, amazonPrice };
 }

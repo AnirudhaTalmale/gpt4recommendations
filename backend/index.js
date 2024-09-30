@@ -1428,6 +1428,66 @@ if (process.env.NODE_ENV === 'local') {
     }
   });
 
+  app.get('/api/books/amazon-price-in', async (req, res) => {
+    try {
+        // Fetch all books where amazonPrice for the IN country code exists and is not an empty string
+        const booksWithAmazonPriceIN = await BookData.find({
+            "countrySpecific.IN.amazonPrice": { $exists: true, $ne: '' } // Condition to match books where amazonPrice under IN exists and is not empty
+        }).select('title author countrySpecific.IN -_id'); // Select the title, author, and relevant country-specific fields, exclude the _id
+
+        const totalCount = booksWithAmazonPriceIN.length; // Use the length of the array for total count
+
+        if (totalCount === 0) {
+            return res.status(404).json({
+                message: 'No books found with Amazon price for IN.'
+            });
+        }
+
+        // Send the response with the data
+        res.json({
+            message: 'Successfully retrieved books with Amazon price for IN',
+            totalBooks: totalCount, // Include the total count of matching records
+            books: booksWithAmazonPriceIN // Return the list of books
+        });
+    } catch (error) {
+        console.error('Error fetching books with Amazon price for IN:', error);
+        res.status(500).json({
+            message: 'Server error occurred'
+        });
+    }
+  });
+
+  app.get('/api/books/clear-amazon-price-in', async (req, res) => {
+    try {
+        // Update the amazonPrice to an empty string for all records where it exists and is not an empty string
+        const updateResult = await BookData.updateMany({
+            "countrySpecific.IN.amazonPrice": { $exists: true, $ne: '' }
+        }, {
+            $set: { "countrySpecific.IN.amazonPrice": '' }
+        });
+
+        // Check if any documents were updated
+        if (updateResult.modifiedCount === 0) {
+            return res.status(404).json({
+                message: 'No books found with Amazon price for IN or no updates needed.'
+            });
+        }
+
+        // Send the response indicating success
+        res.json({
+            message: 'Successfully cleared Amazon price for IN records',
+            updatedBooks: updateResult.modifiedCount // Number of documents updated
+        });
+    } catch (error) {
+        console.error('Error updating books with Amazon price for IN:', error);
+        res.status(500).json({
+            message: 'Server error occurred'
+        });
+    }
+});
+
+
+
   app.get('/api/books/with-preview', async (req, res) => {
     try {
         // Fetch all books where previewLink is not an empty string
