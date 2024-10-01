@@ -185,7 +185,7 @@ async function getAmazonBookData(title, author, countryCode, amazonDataChecked) 
 
   const authorBeforeAnd = getAuthorBeforeAnd(author);
   
-  const query = `${title} by ${authorBeforeAnd} paperback`;
+  const query = `${title} by ${authorBeforeAnd}`;
   const encodedQuery = encodeURIComponent(query);
   const url = `https://real-time-amazon-data.p.rapidapi.com/search?query=${encodedQuery}&page=1&country=${countryCode}&sort_by=RELEVANCE&product_condition=ALL`;
 
