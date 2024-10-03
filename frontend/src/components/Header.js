@@ -25,7 +25,7 @@ function Header({ userData, country, setCountry, togglePane, setCurrentSessionId
             <i className="fa-solid fa-bars"></i>
           </button>
 
-          {shouldDisplayCountrySelect && (
+          {/* {shouldDisplayCountrySelect && (
             <select className="country-select" value={country} onChange={handleCountryChange}>
               <option value="Canada">Canada</option>
               <option value="France">France</option>
@@ -37,7 +37,7 @@ function Header({ userData, country, setCountry, togglePane, setCurrentSessionId
               <option value="United Kingdom">United Kingdom</option>
               <option value="United States">United States</option>
             </select>
-          )}
+          )} */}
 
           <button className="new-session-button-small-screen" onClick={onNewSession}>
             <i class="fa-solid fa-house"></i>
