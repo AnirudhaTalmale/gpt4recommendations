@@ -27,7 +27,7 @@ function App() {
           <Route path="/login" element={<HomePage />} />
           <Route path="/about-us" element={<About />} />
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-          <Route path="/books/:bookId/:countryCode" element={<BookDetail />} />
+          <Route path="/books/:bookId/:bookTitleParam/:countryCode" element={<BookDetail />} />
           <Route path="/manage-subscription" element={<ManageSubscriptionPage />} />
           <Route path="/contact-us" element={<ContactUs />} />
         </Routes>

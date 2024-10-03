@@ -12,7 +12,8 @@ import LightboxForImage from './LightboxForImage';
 import UpgradePlanModalIndia from './UpgradePlanModalIndia';
 
 function BookDetail() {
-    const { bookId, countryCode } = useParams();
+    const { bookId, bookTitleParam, countryCode } = useParams();
+
     const [book, setBook] = useState(null);
     const [similarBooks, setSimilarBooks] = useState([]);
     const [isKeyInsightsClicked, setIsKeyInsightsClicked] = useState(false);
@@ -188,7 +189,7 @@ function BookDetail() {
             return;
         }
         try {
-            const url = `${process.env.REACT_APP_BACKEND_URL}/api/books/${bookId}/${encodeURIComponent(countryCode)}`;
+            const url = `${process.env.REACT_APP_BACKEND_URL}/api/books/${bookId}/${encodeURIComponent(bookTitleParam)}/${encodeURIComponent(countryCode)}`;
             const response = await fetch(url);
             const data = await response.json();
             setBook(data);
@@ -200,7 +201,7 @@ function BookDetail() {
         } catch (error) {
             console.error('Failed to fetch book details', error);
         }
-    }, [bookId, countryCode, fetchSimilarBooks]); 
+    }, [bookId, countryCode, fetchSimilarBooks, bookTitleParam]); 
     
     // For fetching book details
     useEffect(() => {
@@ -490,6 +491,7 @@ function BookDetail() {
                           userEmail={userData?.email}
                           bookTitle={title}  // Ensure these are passed as props
                           author={author}
+                          price={countryData.amazonPrice}
                         />
                         <MoreDetailsButton
                             bookDataObjectId={bookId}
@@ -527,7 +529,7 @@ function BookDetail() {
               {similarBooks.length > 0 && (
                 <div className="book-list">
                     {similarBooks.map(similarBook => (
-                        <Link to={`/books/${similarBook._id}/${countryCode}`} key={similarBook._id} className="book-item" style={{ textDecoration: 'none' }}>
+                        <Link to={`/books/${similarBook._id}/${encodeURIComponent(similarBook.title)}/${countryCode}`} key={similarBook._id} className="book-item" style={{ textDecoration: 'none' }}>
                             <img src={similarBook.bookImage} alt="" />
                             <div
                                 className="title"

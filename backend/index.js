@@ -1266,6 +1266,8 @@ app.post('/api/session/:sessionId/edit-message/:messageId', async (req, res) => 
 async function fetchAndProcessBooks(query, countryCode) {
   try {
     query[`countrySpecific.${countryCode}.bookImage`] = { $exists: true };
+    // Ensure amazonPrice exists and is not an empty string
+    query[`countrySpecific.${countryCode}.amazonPrice`] = { $exists: true, $ne: "" };
     const books = await BookData.aggregate([
       { $match: query },
       { $limit: 30 },
@@ -1337,12 +1339,13 @@ app.post('/api/books', async (req, res) => {
   }
 });
 
-app.get('/api/books/:bookId/:country', async (req, res) => {
-  const { bookId, country } = req.params;
+app.get('/api/books/:bookId/:bookTitleParam/:country', async (req, res) => {
+  const { bookId, bookTitleParam, country } = req.params;
+
   try {
-    const book = await BookData.findById(bookId);
+    const book = await BookData.findOne({ title: (bookTitleParam) });
     if (!book) {
-      return res.status(404).send('Book not found');
+      return res.status(404).send('Book not found by ID or Title');
     }
 
     const baseResponse = {

@@ -206,7 +206,7 @@ export const handleMoreDetailsRequest = async (bookDataObjectId, bookTitle, auth
 };
 
 // Button Components
-export const BuyNowButton = ({ link, userEmail, bookTitle, author }) => {
+export const BuyNowButton = ({ link, userEmail, bookTitle, author, price }) => {
   const handleBuyClick = async () => {
     await handleActionButtonClick('buy-now-btn', bookTitle, author, userEmail);
   };
@@ -217,7 +217,7 @@ export const BuyNowButton = ({ link, userEmail, bookTitle, author }) => {
     <div>
       <a href={amazonLink} target="_blank" rel="noreferrer">
         <button className="buy-now-button" onClick={handleBuyClick}>
-          Buy Now
+          Amazon {price}
         </button>
       </a>
     </div>

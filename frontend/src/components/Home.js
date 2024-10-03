@@ -94,7 +94,7 @@ const Home = ({ userData }) => {
             )}
             <div className="book-list">
                 {books.map(book => (
-                    <Link to={`/books/${book._id}/${mapCountryNameToCode(userData.country)}`} key={book._id} className="book-item" style={{ textDecoration: 'none' }}>
+                    <Link to={`/books/${book._id}/${encodeURIComponent(book.title)}/${mapCountryNameToCode(userData.country)}`} key={book._id} className="book-item" style={{ textDecoration: 'none' }}>
                         <img src={book.bookImage} alt="" />
                         <div
                             className="title"
