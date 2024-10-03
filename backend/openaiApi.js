@@ -228,7 +228,7 @@ async function getAmazonBookData(title, author, countryCode, amazonDataChecked) 
       amazonReviewCount = product_num_ratings.toLocaleString();
       amazonLink = product_url;
       
-      const amazon_product_price = product_minimum_offer_price || product_price;
+      const amazon_product_price = product_price;
       const numericPrice = parseInt(amazon_product_price.replace(/[^0-9.]+/g, "")); // Remove non-numeric characters except decimal
       amazonPrice = `₹${numericPrice.toLocaleString('en-IN')}`;  // Format with commas and reattach currency symbol
 
