@@ -176,16 +176,7 @@ const getCountryCode = (countryName) => {
   return countryCodes[countryName] || 'US'; // Default to 'US' if country not found
 };
 
-async function getAmazonBookData(title, author, countryCode, amazonDataChecked) {
-  let amazonLink = '', amazonStarRating = '', amazonReviewCount = '', amazonImage = '', amazonPrice = '';
-
-  if (amazonDataChecked) {
-    return { amazonLink, amazonStarRating, amazonReviewCount, amazonImage, amazonPrice };
-  }
-
-  const authorBeforeAnd = getAuthorBeforeAnd(author);
-  
-  const query = `${title} by ${authorBeforeAnd}`;
+async function fetchAmazonData(query, countryCode) {
   const encodedQuery = encodeURIComponent(query);
   const url = `https://real-time-amazon-data.p.rapidapi.com/search?query=${encodedQuery}&page=1&country=${countryCode}&sort_by=RELEVANCE&product_condition=ALL`;
 
@@ -197,51 +188,58 @@ async function getAmazonBookData(title, author, countryCode, amazonDataChecked) 
       }
     });
 
-    // console.log("rapid api called for the title", title);
-
-    // console.log("response.data is", response.data);
-
-    // // Ensure both data objects exist before trying to access products
-    // if (response.data && response.data.data && response.data.data.products) {
-    //     response.data.data.products.forEach((product, index) => {
-    //         console.log(`Product ${index + 1}:`, product);
-    //     });
-    // } else {
-    //     console.log("No products found or 'products' is undefined.");
-    // }
-
-    for (let i = 0; i < Math.min(1, response.data.data.products.length); i++) {
-      const product = response.data.data.products[i];
+    if (response.data && response.data.data && response.data.data.products.length > 0) {
+      const product = response.data.data.products[0];
       const {
         product_star_rating,
         product_num_ratings,
         product_url,
         product_photo,
-        product_price,
-        product_minimum_offer_price
-    } = product;
-      // console.log("product_price is", product_price);
-      // console.log("product_minimum_offer_price is", product_minimum_offer_price);
+        product_price
+      } = product;
 
-      amazonImage = product_photo;
-      amazonStarRating = product_star_rating;
-      amazonReviewCount = product_num_ratings.toLocaleString();
-      amazonLink = product_url;
-      
-      const amazon_product_price = product_price;
-      const numericPrice = parseInt(amazon_product_price.replace(/[^0-9.]+/g, "")); // Remove non-numeric characters except decimal
-      amazonPrice = `₹${numericPrice.toLocaleString('en-IN')}`;  // Format with commas and reattach currency symbol
+      const numericPrice = parseInt(product_price.replace(/[^0-9.]+/g, ""));
+      const amazonPrice = `₹${numericPrice.toLocaleString('en-IN')}`;
 
-      // console.log("amazon image is", amazonImage);
-
-      return { amazonLink, amazonStarRating, amazonReviewCount, amazonImage, amazonPrice };
+      return {
+        amazonLink: product_url,
+        amazonStarRating: product_star_rating,
+        amazonReviewCount: product_num_ratings.toLocaleString(),
+        amazonImage: product_photo,
+        amazonPrice
+      };
+    } else {
+      console.log('No products found or "products" is undefined.');
     }
   } catch (error) {
     console.error('Error during API request:', error);
   }
-  
-  console.log('No suitable results found.');
-  return { amazonLink, amazonStarRating, amazonReviewCount, amazonImage, amazonPrice };
+
+  return {
+    amazonLink: '',
+    amazonStarRating: '',
+    amazonReviewCount: '',
+    amazonImage: '',
+    amazonPrice: ''
+  };
+}
+
+async function getAmazonBookData(title, author, countryCode, amazonDataChecked) {
+  if (amazonDataChecked) {
+    return { amazonLink: '', amazonStarRating: '', amazonReviewCount: '', amazonImage: '', amazonPrice: '' };
+  }
+
+  const authorBeforeAnd = getAuthorBeforeAnd(author);
+  const query_one = `${title} by ${authorBeforeAnd}`;
+  const query_two = `${title} by ${authorBeforeAnd} paperback`;  // Assuming this query is optimized to fetch price information
+
+  const amazonData = await fetchAmazonData(query_one, countryCode);
+  if (amazonData.amazonLink) {
+    const priceData = await fetchAmazonData(query_two, countryCode);
+    amazonData.amazonPrice = priceData.amazonPrice;
+  }
+
+  return amazonData;
 }
 
 const extractTitleFromLink = (link) => {
