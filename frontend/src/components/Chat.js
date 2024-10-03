@@ -715,7 +715,7 @@ function Chat() {
           onStopStreaming={handleStopStreaming} 
           currentSessionIdRef={currentSessionIdRef}
         />
-        <Header userData={userData} country={country} setCountry={setCountry} togglePane={togglePane} setCurrentSessionId={setCurrentSessionId} onStopStreaming={handleStopStreaming} currentSessionIdRef={currentSessionIdRef} />
+        <Header togglePane={togglePane} setCurrentSessionId={setCurrentSessionId} onStopStreaming={handleStopStreaming} currentSessionIdRef={currentSessionIdRef} />
 
         {!currentSessionId && userData && userData.country ? (
           <Home userData={userData} />

@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../App.css';
 
-function Header({ userData, country, setCountry, togglePane, setCurrentSessionId, onStopStreaming, currentSessionIdRef }) {
+function Header({ togglePane, setCurrentSessionId, onStopStreaming, currentSessionIdRef }) {
   const navigate = useNavigate();
 
   const onNewSession = async () => {
@@ -11,12 +11,6 @@ function Header({ userData, country, setCountry, togglePane, setCurrentSessionId
     currentSessionIdRef.current = null;
     onStopStreaming();
   };
-
-  const handleCountryChange = (e) => {
-    setCountry(e.target.value); // Update country in parent component
-  };
-
-  const shouldDisplayCountrySelect = userData && userData.id && userData.id === process.env.REACT_APP_EXCLUDE_DUMMY_ID;
 
   return (
     <div className="header">
