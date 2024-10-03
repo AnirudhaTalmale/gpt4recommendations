@@ -229,15 +229,27 @@ async function getAmazonBookData(title, author, countryCode, amazonDataChecked) 
     return { amazonLink: '', amazonStarRating: '', amazonReviewCount: '', amazonImage: '', amazonPrice: '' };
   }
 
-  const authorBeforeAnd = getAuthorBeforeAnd(author);
-  const query_one = `${title} by ${authorBeforeAnd}`;
-  const query_two = `${title} by ${authorBeforeAnd} paperback`;  // Assuming this query is optimized to fetch price information
-
-  const amazonData = await fetchAmazonData(query_one, countryCode);
-  if (amazonData.amazonLink) {
-    const priceData = await fetchAmazonData(query_two, countryCode);
-    amazonData.amazonPrice = priceData.amazonPrice;
+  function modifyTitle(title) {
+    const colonIndex = title.indexOf(':');
+    if (colonIndex !== -1) {
+      const subtitle = title.substring(colonIndex + 1).trim();
+      if (subtitle.length > 60) {
+        return title.substring(0, colonIndex).trim();
+      }
+    }
+    return title;
   }
+
+  const modifiedTitle = modifyTitle(title);
+  const authorBeforeAnd = getAuthorBeforeAnd(author);
+  const query_one = `${modifiedTitle} by ${authorBeforeAnd}`;
+  const query_two = `${modifiedTitle} by ${authorBeforeAnd} paperback`;
+
+  const amazonData = await fetchAmazonData(query_two, countryCode);
+  // if (amazonData.amazonLink) {
+  //   const priceData = await fetchAmazonData(query_two, countryCode);
+  //   amazonData.amazonPrice = priceData.amazonPrice;
+  // }
 
   return amazonData;
 }
