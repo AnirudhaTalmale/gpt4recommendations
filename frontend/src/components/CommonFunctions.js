@@ -287,7 +287,7 @@ export const handleRazorpayPayment = async (amount, bookTitle, customerInfo, aut
 };
 
 export const BuyNowButton = ({ link, userEmail, bookTitle, author, price }) => {
-  const numericPrice = Number(price.replace('₹', '').trim());
+  const numericPrice = Number(price.replace(/[^0-9.]+/g, ""));
   const getBooksPrice = Math.floor(numericPrice / 2);
   const amazonLink = `${link}/ref=nosim?tag=getbooksai-21`;
 
