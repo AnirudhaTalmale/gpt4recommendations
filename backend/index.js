@@ -636,11 +636,12 @@ app.post('/send-order-confirmation-email', async (req, res) => {
         to: email,
         subject: `Order Confirmation`,
         html: `
-          <div style="font-family: Arial, sans-serif; color: #333; padding: 20px;">
-            <p>Hi ${customerName},</p>
-            <p>Your order with order id <strong>${orderId}</strong> is placed successfully. Your estimated delivery date is <strong>${deliveryDate}</strong>.</p>
-            <p>If you have any questions related to your order, feel free to reply to this email.</p>
-            <p>Happy shopping!<br />Team GetBooks.ai</p>
+          <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #444; padding: 20px; border: 1px solid #DDD; max-width: 600px; margin: auto; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+            <h2 style="color: #4A90E2;">Order Confirmation</h2>
+            <p>Hi <strong>${customerName}</strong>,</p>
+            <p>Your order with ID <strong>${orderId}</strong> has been placed successfully and is being processed. Your estimated delivery date is <strong>${deliveryDate}</strong>.</p>
+            <p>If you have any questions or need assistance with your order, please feel free to reply to this email.</p>
+            <p>Thank you for shopping with us!<br /><strong>Team GetBooks.ai</strong></p>
           </div>
         `
       });
