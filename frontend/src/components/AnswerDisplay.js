@@ -1,6 +1,7 @@
 import React, { useCallback, useState, useEffect, useRef } from 'react';
 import DOMPurify from 'dompurify';
-import { handleActionButtonClick } from './CommonFunctions';
+import { handleActionButtonClick, handleRazorpayPayment } from './CommonFunctions';
+import CustomerInfoModal from './CustomerInfoModal';
 import '../App.css';
 
 
@@ -15,6 +16,26 @@ function AnswerDisplay({
   const [isQuotesClicked, setIsQuotesClicked] = useState(false);
   const [isPreviewClicked, setIsPreviewClicked] = useState(false);
   const [isContinueGeneratingClicked, setIsContinueGeneratingClicked] = useState(false);
+  const [getBooksButtonBookTitle, setGetBooksButtonBookTitle] = useState('');
+  const [getBooksButtonAuthor, setGetBooksButtonAuthor] = useState('');
+  const [getBooksButtonPrice, setGetBooksButtonPrice] = useState('');
+  const [getBooksButtonAmazonLink, setGetBooksButtonAmazonLink] = useState('');
+
+  const [customerInfo, setCustomerInfo] = useState({
+    name: '',
+    email: '',
+    contact: '',
+  });
+
+  const [showModal, setShowModal] = useState(false);
+
+  const handleSubmit = async (e) => {
+      e.preventDefault();
+      setShowModal(false); // Hide modal after submitting
+      await handleRazorpayPayment(getBooksButtonPrice, getBooksButtonBookTitle, customerInfo, getBooksButtonAuthor, getBooksButtonAmazonLink);
+  };
+
+  const toggleModal = () => setShowModal(!showModal);
 
   const createMarkup = () => {
     let modifiedContent = content;
@@ -173,7 +194,11 @@ function AnswerDisplay({
     }
   };
 
-  
+  const handleGetBooksBuyNowClick = async (bookTitle, author, getBooksPrice, amazonLink) => {
+    toggleModal();
+    await handleActionButtonClick('get-books-buy-now-btn', bookTitle, author, userEmail);
+  };
+
   const handleContinueGenerating = () => {
     if (!isContinueGeneratingClicked && onContinueGenerating) {
       setIsContinueGeneratingClicked(true);
@@ -290,6 +315,13 @@ function AnswerDisplay({
             <div><img src="/GetBooks_64_64.png" className="display-image" alt="" /></div> // Icon for the assistant
           )}
         </div>
+        <CustomerInfoModal
+            isVisible={showModal}
+            onClose={() => setShowModal(false)}
+            onSubmit={handleSubmit}
+            customerInfo={customerInfo}
+            setCustomerInfo={setCustomerInfo}
+        />
         <div className="message-content" onClick={(e) => {
           if (e.target.classList.contains('more-details-btn')) {
             const bookTitle = e.target.getAttribute('data-book-title');
@@ -320,6 +352,18 @@ function AnswerDisplay({
             const bookTitle = e.target.getAttribute('data-book-title');
             const author = e.target.getAttribute('data-author');
             handleBuyNowClick(bookTitle, author);
+          } else if (e.target.classList.contains('getbooks-buy-now-button')) {
+            const bookTitle = e.target.getAttribute('data-book-title');
+            const author = e.target.getAttribute('data-author');
+            const getBooksPrice = e.target.getAttribute('data-get-books-price');
+            const amazonLink = e.target.getAttribute('data-amazon-link');
+            
+            setGetBooksButtonBookTitle(bookTitle);
+            setGetBooksButtonAuthor(author);
+            setGetBooksButtonPrice(getBooksPrice);
+            setGetBooksButtonAmazonLink(amazonLink);
+
+            handleGetBooksBuyNowClick();
           } 
         }}>
           {role === 'user' && (

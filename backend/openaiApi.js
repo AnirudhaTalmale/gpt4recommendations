@@ -95,45 +95,6 @@ function createBookInfoHtml(bookTitle, author, amazonStarRating, amazonReviewCou
   return bookInfoHtml;
 }
 
-const normalizeTitle = (title) => {
-  return title
-    .toLowerCase()
-    .replace(/&/g, 'and')
-    .replace(/[‘’]/g, "'") // Replace curly single quotes with straight single quotes
-    .replace(/[“”]/g, '"') // Replace curly double quotes with straight double quotes
-    .replace(/–/g, '-') // Replace en dashes with hyphens
-    .replace(/—/g, '-') // Replace em dashes with hyphens
-    .replace(/,/g, '') // Remove commas
-    .replace(/-/g, ' ') // Replace all hyphens with spaces
-    .replace(/\bbuy\s+/g, '') // Remove the word 'buy' and any spaces following it
-    .replace(/\b(the|a|an)\b/g, '') // Remove articles
-    .replace(/\s+/g, ' ') // Replace multiple spaces with a single space
-    .replace(/s\b/g, '') // Remove trailing 's' for plurals
-    .replace(/o\b/g, 'on') // Normalize ending 'o' to 'on'
-    .replace(/aa/g, 'a') // Normalize double 'a' to single 'a'
-    .replace(/ee/g, 'e') // Normalize double 'e' to single 'e'
-    .replace(/ii/g, 'i') // Normalize double 'i' to single 'i'
-    .replace(/oo/g, 'u') // Normalize double 'o' to single 'u'
-    .replace(/uu/g, 'u') // Normalize double 'u' to single 'u'
-    .trim(); // Trim whitespace from the start and end of the string
-};
-
-function getTitleBeforeDelimiter(title) {
-  // Find the index of each delimiter in the title. If a delimiter is not found, -1 is returned.
-  const colonIndex = title.indexOf(':');
-  const questionMarkIndex = title.indexOf('?');
-  const dotIndex = title.indexOf('.');
-
-  // Filter out any -1 values, as they indicate the delimiter was not found in the title,
-  // and then find the minimum index which is the leftmost delimiter.
-  const delimiterIndexes = [colonIndex, questionMarkIndex, dotIndex].filter(index => index !== -1);
-  const minIndex = delimiterIndexes.length > 0 ? Math.min(...delimiterIndexes) : -1;
-
-  // If a delimiter is found (minIndex is not -1), split the title at that delimiter.
-  // Otherwise, use the whole title.
-  return minIndex !== -1 ? title.substring(0, minIndex).trim() : title;
-}
-
 function getAuthorBeforeAnd(author) {
   // Check if the author is a non-empty string
   if (typeof author === 'string' && author.trim() !== '') {
@@ -198,8 +159,8 @@ async function fetchAmazonData(query, countryCode) {
         product_price
       } = product;
 
-      const numericPrice = parseInt(product_price.replace(/[^0-9.]+/g, ""));
-      const amazonPrice = `₹${numericPrice.toLocaleString('en-IN')}`;
+      const numericPrice = product_price ? parseInt(product_price.replace(/[^0-9.]+/g, "")) : 0;
+      const amazonPrice = numericPrice ? `₹${numericPrice.toLocaleString('en-IN')}` : "";
 
       return {
         amazonLink: product_url,
@@ -243,9 +204,9 @@ async function getAmazonBookData(title, author, countryCode, amazonDataChecked) 
   const modifiedTitle = modifyTitle(title);
   const authorBeforeAnd = getAuthorBeforeAnd(author);
   const query_one = `${modifiedTitle} by ${authorBeforeAnd}`;
-  const query_two = `${modifiedTitle} by ${authorBeforeAnd} paperback`;
+  // const query_two = `${modifiedTitle} by ${authorBeforeAnd} paperback`;
 
-  const amazonData = await fetchAmazonData(query_two, countryCode);
+  const amazonData = await fetchAmazonData(query_one, countryCode);
   // if (amazonData.amazonLink) {
   //   const priceData = await fetchAmazonData(query_two, countryCode);
   //   amazonData.amazonPrice = priceData.amazonPrice;
@@ -253,24 +214,6 @@ async function getAmazonBookData(title, author, countryCode, amazonDataChecked) 
 
   return amazonData;
 }
-
-const extractTitleFromLink = (link) => {
-  try {
-    const url = new URL(link);
-    const queryParams = url.searchParams;
-    const rawQuery = queryParams.get('dq');
-
-    if (rawQuery) {
-      const intitleMatch = rawQuery.match(/intitle:([^+]+)/);
-      return intitleMatch ? decodeURIComponent(intitleMatch[1]) : "";
-    }
-    
-    return "";
-  } catch (error) {
-    console.error("Invalid URL provided:", error.message);
-    return ""; // Return an empty string or handle the error as needed
-  }
-};
 
 const getGoogleBookData = async (title, author) => {
   try {
@@ -447,7 +390,7 @@ const getBookData = async (title, author, userCountry, bookDataObjectId = '') =>
   }
 };
 
-function createBuyNowButtonHtml(link, bookTitle, author, buttonText = 'Buy Now') {
+function createBuyNowButtonHtml(link, bookTitle, author, getBooksPrice, AmazonButtonText = 'Buy Now', GetBooksButtonText = 'Buy Now', interactiveButton) {
 
   const domainMatch = link.match(/amazon\.([a-z\.]+)/i);
   const amazonDomain = domainMatch ? domainMatch[1] : 'com'; // Default to 'com' if domain is not found
@@ -465,9 +408,23 @@ function createBuyNowButtonHtml(link, bookTitle, author, buttonText = 'Buy Now')
     amazonLink = `${link}/ref=nosim?tag=getbooksai-21`;
   }
 
-  return `<div><a href="${amazonLink}" target="_blank">
+  let getBooksButtonHtml = '';
+  if (!interactiveButton) {
+     getBooksButtonHtml = GetBooksButtonText !== "GetBooks ₹0" ? `<div>
+            <button class="getbooks-buy-now-button" onClick={toggleModal} data-book-title="${bookTitle}" data-author="${author}" data-get-books-price="${getBooksPrice}" data-amazon-link="${amazonLink}">
+              ${GetBooksButtonText}
+            </button>
+          </div>` : `<div>
+          <button class="getbooks-buy-now-button-invisible" onClick={toggleModal} data-book-title="${bookTitle}" data-author="${author}" data-get-books-price="${getBooksPrice}" data-amazon-link="${amazonLink}">
+            GetBooks ₹99
+          </button>
+        </div>`;
+  }
+  
+  return `${getBooksButtonHtml}
+          <div><a href="${amazonLink}" target="_blank">
             <button class="buy-now-button" data-book-title="${bookTitle}" data-author="${author}">
-              ${buttonText}
+              ${AmazonButtonText}
             </button>
           </a></div>`;
 }
@@ -494,7 +451,7 @@ const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, is
     let isPaused = false; // Flag to check if emitting is paused
 
     if (isKeyInsights || isAnecdotes || isQuotes || isMoreDetails) {
-      const { bookImage, amazonLink, amazonStarRating, amazonReviewCount, buyNowButtonText } = bookData;
+      const { bookImage, amazonLink, amazonStarRating, amazonReviewCount, AmazonButtonText } = bookData;
 
       const bookInfoHtml = createBookInfoHtml(bookTitle, author, amazonStarRating, amazonReviewCount);
       let imageDiv = '';
@@ -503,7 +460,12 @@ const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, is
       } else {
         imageDiv = `<div><img src="/blank_image.png" alt="" style="border: 0.7px solid grey;"></div>`;  
       }
-      const buyNowButtonHtml = createBuyNowButtonHtml(amazonLink, bookTitle, author, buyNowButtonText);
+
+      const amazonPrice = AmazonButtonText ? AmazonButtonText.replace('Amazon ₹', '').trim() : '0'; // Extract the price from AmazonButtonText
+      const numericPrice = Number(amazonPrice); // Convert the extracted price to a number
+      const getBooksPrice = Math.floor(numericPrice / 2);
+      const GetBooksButtonText = `GetBooks ₹${getBooksPrice}`;
+      const buyNowButtonHtml = createBuyNowButtonHtml(amazonLink, bookTitle, author, getBooksPrice, AmazonButtonText, GetBooksButtonText, true);
       completeResponse = bookInfoHtml + imageDiv + buyNowButtonHtml;
       socket.emit('chunk', { content: completeResponse, sessionId, isMoreDetails, isKeyInsights, isAnecdotes, isQuotes, moreBooks });
     }
@@ -543,8 +505,11 @@ const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, is
           const { bookTitle, author } = parseBookTitle(bookTitleWithAuthor);
           const { bookDataObjectId, bookImage, previewLink, amazonLink, amazonStarRating, amazonReviewCount, amazonPrice } = await getBookData(bookTitle, author, userCountry);
           
-          const buyNowButtonText = `Amazon ${amazonPrice}`;
-          const buyNowButtonHtml = createBuyNowButtonHtml(amazonLink, bookTitle, author, buyNowButtonText);
+          const AmazonButtonText = `Amazon ${amazonPrice}`;
+          const numericPrice = Number(amazonPrice.replace('₹', '').trim());
+          const getBooksPrice = Math.floor(numericPrice / 2);
+          const GetBooksButtonText = `GetBooks ₹${getBooksPrice}`; 
+          const buyNowButtonHtml = createBuyNowButtonHtml(amazonLink, bookTitle, author, getBooksPrice, AmazonButtonText, GetBooksButtonText, false);
 
           let imageSource = bookImage;
           let imageDiv = '';

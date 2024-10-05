@@ -4,6 +4,7 @@ const Session = require('./models/models-chat/Session');
 const EmailRateLimit = require('./models/models-chat/EmailRateLimit');
 const MoreDetails = require('./models/models-chat/MoreDetails');
 const User = require('./models/models-chat/User');
+const Orders = require('./models/models-chat/Orders'); 
 const KeyInsightsModel = require('./models/models-chat/KeyInsights'); 
 const AnecdotesModel = require('./models/models-chat/Anecdotes'); 
 const QuotesModel = require('./models/models-chat/Quotes'); 
@@ -206,6 +207,8 @@ app.get('/auth/logout', (req, res, next) => {
   });
 });
 
+
+
 // ----------- Razorpay code ------------
 
 const Razorpay = require('razorpay');
@@ -257,6 +260,76 @@ app.post('/verify-payment', async (req, res) => {
     res.status(500).json({ message: 'Internal server error', error: error.toString() });
   }
 });
+
+app.post('/api/orders', async (req, res) => {
+  const { 
+    email, 
+    firstName, 
+    lastName, 
+    streetAddress, 
+    city, 
+    state, 
+    pinCode, 
+    phone, 
+    deliveryDate, 
+    bookTitle, 
+    author, 
+    amountPaid, 
+    amazonLink,
+    orderId 
+  } = req.body;
+
+  // Validation for required fields
+  if (
+    !email || 
+    !firstName || 
+    !lastName || 
+    !streetAddress || 
+    !city || 
+    !state || 
+    !pinCode || 
+    !phone || 
+    !deliveryDate || 
+    !bookTitle || 
+    !author || 
+    !amountPaid || 
+    !amazonLink ||
+    !orderId
+  ) {
+    return res.status(400).json({ message: 'All fields are required.' });
+  }
+
+  try {
+    // Create a new order
+    const newOrder = new Orders({
+      email,
+      firstName,
+      lastName,
+      streetAddress,
+      city,
+      state,
+      pinCode,
+      phone,
+      deliveryDate,
+      bookTitle,
+      author,
+      amountPaid,
+      amazonLink,
+      orderId,
+      createdAt: new Date() // This will default to the current date due to the schema default setting
+    });
+
+    // Save the new order to the database
+    const savedOrder = await newOrder.save();
+
+    // Respond with the saved order
+    res.status(201).json(savedOrder);
+  } catch (error) {
+    console.error('Error saving order:', error);
+    res.status(500).json({ message: 'Failed to create order', error: error.toString() });
+  }
+});
+
 
 app.post('/update-premium', async (req, res) => {
   const { userEmail } = req.body;
@@ -552,6 +625,33 @@ app.post('/send-verification-email', async (req, res) => {
       res.status(500).send('Internal Server Error');
   }
 });
+
+app.post('/send-order-confirmation-email', async (req, res) => {
+  const { email, customerName, orderId, deliveryDate } = req.body;
+
+  try {
+      // Send the order confirmation email
+      await transporter.sendMail({
+        from: `"GetBooks.ai" <${process.env.EMAIL_USER}>`,
+        to: email,
+        subject: `Order Confirmation`,
+        html: `
+          <div style="font-family: Arial, sans-serif; color: #333; padding: 20px;">
+            <p>Hi ${customerName},</p>
+            <p>Your order with order id <strong>${orderId}</strong> is placed successfully. Your estimated delivery date is <strong>${deliveryDate}</strong>.</p>
+            <p>If you have any questions related to your order, feel free to reply to this email.</p>
+            <p>Happy shopping!<br />Team GetBooks.ai</p>
+          </div>
+        `
+      });
+
+      res.json({ message: 'Order confirmation email sent' });
+  } catch (error) {
+      console.error('Error in sending email:', error);
+      res.status(500).send('Internal Server Error');
+  }
+});
+
 
 app.post('/verify-code', async (req, res) => {
   const { email, code } = req.body;

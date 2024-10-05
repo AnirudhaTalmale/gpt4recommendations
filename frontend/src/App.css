@@ -2105,11 +2105,17 @@ body:not(.history-pane-open) .input-area {
   width: 220px;
 }
 
+.image-container img {
+  height: 13.17rem;
+}
+
 .buttons-container {
   display: flex;
   flex-direction: column;
   gap: 0.63rem;
   margin: auto;
+  margin-top: -1.85rem;
+  margin-left: 2rem;
   padding-top: 0.1rem;
 }
 
@@ -2117,7 +2123,7 @@ body:not(.history-pane-open) .input-area {
   margin: 0;
 }
 
-.buy-now-button, .key-insights-btn, .anecdotes-btn, .quotes-btn, .preview-btn, .more-details-btn, .continue-generating-btn {
+.getbooks-buy-now-button-invisible, .getbooks-buy-now-button, .buy-now-button, .key-insights-btn, .anecdotes-btn, .quotes-btn, .preview-btn, .more-details-btn, .continue-generating-btn {
   background: none;
   border: 0.5px solid lightgrey;
   font-size: 0.82rem;
@@ -2128,8 +2134,13 @@ body:not(.history-pane-open) .input-area {
   text-decoration: none;
   display: inline-block;
   transition: background-color 0.3s ease, border-color 0.3s ease;
-  width: 7rem;
+  width: 7.8rem;
   color: #0D0D0D;
+}
+
+.getbooks-buy-now-button-invisible {
+
+  visibility: hidden;
 }
 
 .continue-generating-btn {
@@ -2144,15 +2155,15 @@ body:not(.history-pane-open) .input-area {
   font-size: 0.82rem !important;
 }
 
-.buy-now-button:hover, .key-insights-btn:hover, .anecdotes-btn:hover, .quotes-btn:hover, .preview-btn:hover, .more-details-btn:hover, .continue-generating-btn:hover {
+.getbooks-buy-now-button:hover, .buy-now-button:hover, .key-insights-btn:hover, .anecdotes-btn:hover, .quotes-btn:hover, .preview-btn:hover, .more-details-btn:hover, .continue-generating-btn:hover {
   background-color: rgba(0, 0, 0, 0.1);
 }
 
-.buy-now-button:active, .key-insights-btn:active, .anecdotes-btn:active, .quotes-btn:active, .preview-btn:active, .more-details-btn:active, .continue-generating-btn:active {
+.getbooks-buy-now-button:active, .buy-now-button:active, .key-insights-btn:active, .anecdotes-btn:active, .quotes-btn:active, .preview-btn:active, .more-details-btn:active, .continue-generating-btn:active {
   background-color: rgba(0, 0, 0, 0.2);
 }
 
-.buy-now-button:focus, .key-insights-btn:focus, .anecdotes-btn:focus, .quotes-btn:focus, .preview-btn:focus, .more-details-btn:focus, .continue-generating-btn:focus {
+.getbooks-buy-now-button:focus, .buy-now-button:focus, .key-insights-btn:focus, .anecdotes-btn:focus, .quotes-btn:focus, .preview-btn:focus, .more-details-btn:focus, .continue-generating-btn:focus {
   outline: none;
   box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
 }
@@ -2201,40 +2212,16 @@ body:not(.history-pane-open) .input-area {
 
 /* Active Streaming */
  
-.streaming .more-details-btn {
-  cursor: not-allowed;
-  opacity: 0.5;
-  pointer-events: none; /* Prevents clicking */
-}
-
-.streaming .key-insights-btn {
-  cursor: not-allowed;
-  opacity: 0.5;
-  pointer-events: none; /* Prevents clicking */
-}
-
-.streaming .anecdotes-btn {
-  cursor: not-allowed;
-  opacity: 0.5;
-  pointer-events: none; /* Prevents clicking */
-}
-
-.streaming .quotes-btn {
-  cursor: not-allowed;
-  opacity: 0.5;
-  pointer-events: none; /* Prevents clicking */
-}
-
-.streaming .preview-btn {
-  cursor: not-allowed;
-  opacity: 0.5;
-  pointer-events: none; 
-}
-
+.streaming .more-details-btn,
+.streaming .key-insights-btn,
+.streaming .anecdotes-btn,
+.streaming .quotes-btn,
+.streaming .preview-btn,
+.streaming .getbooks-buy-now-button,
 .streaming a {
   cursor: not-allowed;
   opacity: 0.5;
-  pointer-events: none; 
+  pointer-events: none; /* Prevents clicking */
 }
 
 .streaming img {

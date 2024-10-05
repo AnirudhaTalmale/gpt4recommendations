@@ -1,3 +1,6 @@
+
+import { useState } from 'react';
+import CustomerInfoModal from './CustomerInfoModal';
 import axios from 'axios';
 
 export const handleActionButtonClick = async (className, bookTitle, author, userEmail) => {
@@ -205,22 +208,127 @@ export const handleMoreDetailsRequest = async (bookDataObjectId, bookTitle, auth
     return <div className="star-rating">{stars}</div>; 
 };
 
-// Button Components
-export const BuyNowButton = ({ link, userEmail, bookTitle, author, price }) => {
-  const handleBuyClick = async () => {
-    await handleActionButtonClick('buy-now-btn', bookTitle, author, userEmail);
-  };
+export const handleRazorpayPayment = async (amount, bookTitle, customerInfo, author, amazonLink) => {
+  try {
+      const orderResponse = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/orders`, {
+          amount: amount * 100,  // Convert Rs to paise
+          currency: "INR"
+      });
 
+      const handlePaymentSuccess = async (response) => {
+        try {
+          const verificationResponse = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/verify-payment`, {
+            orderId: orderResponse.data.id,
+            paymentId: response.razorpay_payment_id,
+            signature: response.razorpay_signature
+          });
+
+          if (verificationResponse.data.verified) {
+
+            await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/orders`, {
+              email: customerInfo.email,
+              firstName: customerInfo.firstName,
+              lastName: customerInfo.lastName,
+              streetAddress: customerInfo.streetAddress,
+              city: customerInfo.city,
+              state: customerInfo.state,
+              pinCode: customerInfo.pinCode,
+              phone: customerInfo.phone,
+              deliveryDate: customerInfo.deliveryDate,
+              bookTitle: bookTitle,  
+              author: author,        
+              amountPaid: amount,    
+              amazonLink: amazonLink,
+              orderId: orderResponse.data.id
+            });
+
+            const deliveryDate = customerInfo.deliveryDate.replace("Free Delivery ", "");
+
+            // Send order confirmation email
+            await axios.post(`${process.env.REACT_APP_BACKEND_URL}/send-order-confirmation-email`, {
+              email: customerInfo.email,
+              customerName: `${customerInfo.firstName}`,
+              orderId: orderResponse.data.id,
+              deliveryDate: deliveryDate  // Send the modified delivery date
+            });
+
+            // // Facebook Pixel Tracking
+            // const trimmedInput = `To buy the book - ${bookTitle} by ${author}`;
+            // if (!isAdmin && process.env.REACT_APP_ENV !== 'local') {
+            //   window.fbq && window.fbq('track', 'Search', {
+            //     search_string: trimmedInput
+            //   });
+            // }
+          }
+        } catch (error) {
+          console.error('Error during payment process:', error);
+        }
+      };
+    
+      // Prepare Razorpay options
+      const options = {
+          "key": process.env.REACT_APP_RAZORPAY_KEY_ID,
+          "amount": orderResponse.data.amount, 
+          "currency": orderResponse.data.currency,
+          "name": "GetBooks.ai",
+          "description": `Book Purchase - ${bookTitle}`,
+          "image": "/GetBooks_64_64.png",
+          "order_id": orderResponse.data.id,
+          "handler": handlePaymentSuccess,
+      };
+      const rzp1 = new window.Razorpay(options);
+      rzp1.on('payment.failed', function (response) {
+          console.error(response.error.code);
+      });
+      rzp1.open();
+  } catch (error) {
+      console.error('Error creating order:', error);
+  }
+};
+
+export const BuyNowButton = ({ link, userEmail, bookTitle, author, price }) => {
+  const numericPrice = Number(price.replace('₹', '').trim());
+  const getBooksPrice = Math.floor(numericPrice / 2);
   const amazonLink = `${link}/ref=nosim?tag=getbooksai-21`;
 
+  const [customerInfo, setCustomerInfo] = useState({
+      name: '',
+      email: '',
+      contact: '',
+  });
+
+  const [showModal, setShowModal] = useState(false);
+
+  const handleSubmit = async (e) => {
+      e.preventDefault();
+      setShowModal(false); // Hide modal after submitting
+      await handleRazorpayPayment(getBooksPrice, bookTitle, customerInfo, author, link);
+  };
+
+  const toggleModal = () => setShowModal(!showModal);
+
   return (
-    <div>
-      <a href={amazonLink} target="_blank" rel="noreferrer">
-        <button className="buy-now-button" onClick={handleBuyClick}>
-          Amazon {price}
-        </button>
-      </a>
-    </div>
+      <>
+          <div>
+              <button className="buy-now-button" onClick={toggleModal}>
+                  GetBooks ₹{getBooksPrice}
+              </button>
+              <CustomerInfoModal
+                  isVisible={showModal}
+                  onClose={() => setShowModal(false)}
+                  onSubmit={handleSubmit}
+                  customerInfo={customerInfo}
+                  setCustomerInfo={setCustomerInfo}
+              />
+          </div>
+          <div>
+              <a href={amazonLink} target="_blank" rel="noreferrer">
+                  <button className="buy-now-button" onClick={() => handleActionButtonClick('buy-now-btn', bookTitle, author, userEmail)}>
+                      Amazon {price}
+                  </button>
+              </a>
+          </div>
+      </>
   );
 };
 
