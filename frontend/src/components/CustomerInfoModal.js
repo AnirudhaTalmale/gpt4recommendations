@@ -39,11 +39,11 @@ const CustomerInfoModal = ({ isVisible, onClose, onSubmit, customerInfo, setCust
                 transform: 'translate(-50%, -50%)',
                 zIndex: 1000,
                 background: 'white',
-                padding: '40px 40px 23px 40px',
+                padding: '40px 40px 23px 20px',
                 borderRadius: '10px',
                 boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
-                width: 'auto',
-                maxWidth: '500px', // Ensure modal is not too wide
+                width: '70vw',
+                maxWidth: '500px'
             }}>
                 <form onSubmit={onSubmit}>
                     <div style={{ marginBottom: '20px' }}>
@@ -66,7 +66,7 @@ const CustomerInfoModal = ({ isVisible, onClose, onSubmit, customerInfo, setCust
                         <input type="text" name="deliveryDate" placeholder="Delivery Date" value={customerInfo.deliveryDate || ''} 
                         style={{ width: '100%', padding: '10px', marginBottom: '10px', borderRadius: '5px', border: '1px solid #ccc', backgroundColor: '#f8f8f8', color: 'black', fontWeight: 'bold' }} disabled />
                     </div>
-                    <button type="submit" style={{ padding: '10px 20px', marginRight: '10px', background: '#007BFF', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer' }}>
+                    <button type="submit" style={{ padding: '10px 20px', marginRight: '10px', marginBottom: '10px', background: '#007BFF', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer' }}>
                         Proceed to Pay
                     </button>
                     <button type="button" onClick={onClose} style={{ padding: '10px 20px', background: 'grey', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer' }}>
