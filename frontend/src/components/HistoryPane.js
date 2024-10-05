@@ -350,7 +350,9 @@ const HistoryPane = forwardRef(({
           {
             userData && userData.id === process.env.REACT_APP_EXCLUDE_DUMMY_ID ? (
               <>
-              <p className='history-pane-log-in-message'>Log in to save your conversation history</p>
+              <p className='history-pane-log-in-message'>
+                Log in to save your conversation history. <br/> <br/> For assistance, contact us at getbooksai@gmail.com
+              </p>
               <div className={`user-entry-sign-in ${isEntryActive ? 'active' : ''}`} onClick={logInFunction}>
                 <span>Log in</span>
               </div>
