@@ -461,7 +461,7 @@ const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, is
         imageDiv = `<div><img src="/blank_image.png" alt="" style="border: 0.7px solid grey;"></div>`;  
       }
 
-      const amazonPrice = AmazonButtonText ? AmazonButtonText.replace('Amazon ₹', '').trim() : '0'; // Extract the price from AmazonButtonText
+      const amazonPrice = AmazonButtonText ? AmazonButtonText.replace(/[^0-9.]+/g, "") : '0'; // Extract the price from AmazonButtonText
       const numericPrice = Number(amazonPrice); // Convert the extracted price to a number
       const getBooksPrice = Math.floor(numericPrice / 2);
       const GetBooksButtonText = `GetBooks ₹${getBooksPrice}`;
@@ -506,7 +506,7 @@ const openaiApi = async (messages, socket, session, sessionId, isMoreDetails, is
           const { bookDataObjectId, bookImage, previewLink, amazonLink, amazonStarRating, amazonReviewCount, amazonPrice } = await getBookData(bookTitle, author, userCountry);
           
           const AmazonButtonText = `Amazon ${amazonPrice}`;
-          const numericPrice = Number(amazonPrice.replace('₹', '').trim());
+          const numericPrice = Number(amazonPrice.replace(/[^0-9.]+/g, ""));
           const getBooksPrice = Math.floor(numericPrice / 2);
           const GetBooksButtonText = `GetBooks ₹${getBooksPrice}`; 
           const buyNowButtonHtml = createBuyNowButtonHtml(amazonLink, bookTitle, author, getBooksPrice, AmazonButtonText, GetBooksButtonText, false);
