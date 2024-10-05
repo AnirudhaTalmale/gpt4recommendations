@@ -2224,6 +2224,10 @@ body:not(.history-pane-open) .input-area {
   pointer-events: none; /* Prevents clicking */
 }
 
+.lightbox-content .buy-now-button {
+  display: none;
+}
+
 .streaming img {
   cursor: not-allowed;
   pointer-events: none; 
