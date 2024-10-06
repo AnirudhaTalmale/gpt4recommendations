@@ -636,7 +636,7 @@ app.post('/send-order-confirmation-email', async (req, res) => {
         to: email,
         subject: `Order Confirmation`,
         html: `
-          <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #444; padding: 20px; border: 1px solid #DDD; max-width: 600px; margin: auto; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+          <div style="font-family: Arial, sans-serif; color: black; padding: 20px; border: 1px solid #DDD; max-width: 600px; margin: auto; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); font-size: 15.5px; line-height: 1.7;">
             <h2 style="color: #4A90E2;">Order Confirmation</h2>
             <p>Hi <strong>${customerName}</strong>,</p>
             <p>Your order with ID <strong>${orderId}</strong> has been placed successfully and is being processed. Your estimated delivery date is <strong>${deliveryDate}</strong>.</p>
