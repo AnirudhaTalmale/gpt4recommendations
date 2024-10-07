@@ -627,7 +627,7 @@ app.post('/send-verification-email', async (req, res) => {
 });
 
 app.post('/send-order-confirmation-email', async (req, res) => {
-  const { email, customerName, orderId, deliveryDate } = req.body;
+  const { email, customerName, orderId, deliveryDate, title, author } = req.body;
 
   try {
       // Send the order confirmation email
@@ -636,13 +636,13 @@ app.post('/send-order-confirmation-email', async (req, res) => {
         to: email,
         subject: `Order Confirmation`,
         html: `
-          <div style="font-family: Arial, sans-serif; color: black; padding: 20px; border: 1px solid #DDD; max-width: 600px; margin: auto; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); font-size: 15.5px; line-height: 1.7;">
-            <h2 style="color: #4A90E2;">Order Confirmation</h2>
-            <p>Hi <strong>${customerName}</strong>,</p>
-            <p>Your order with ID <strong>${orderId}</strong> has been placed successfully and is being processed. Your estimated delivery date is <strong>${deliveryDate}</strong>.</p>
-            <p>If you have any questions or need assistance with your order, please feel free to reply to this email.</p>
-            <p>Thank you for shopping with us!<br /><strong>Team GetBooks.ai</strong></p>
-          </div>
+        <div style="font-family: Arial, sans-serif; color: black; padding: 20px; border: 1px solid #DDD; max-width: 600px; margin: auto; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); font-size: 15.5px; line-height: 1.7;">
+          <h2 style="color: #4A90E2;">Order Confirmation</h2>
+          <p>Hi <strong>${customerName}</strong>,</p>
+          <p>Thank you for purchasing "<strong>${title}</strong>" by ${author}. Your order with ID <strong>${orderId}</strong> has been placed successfully and is being processed. Your estimated delivery date is <strong>${deliveryDate}</strong>.</p>
+          <p>If you have any questions or need assistance with your order, please feel free to reply to this email.</p>
+          <p>Thank you for shopping with us!<br /><strong>Team GetBooks.ai</strong></p>
+        </div>
         `
       });
 
@@ -652,7 +652,6 @@ app.post('/send-order-confirmation-email', async (req, res) => {
       res.status(500).send('Internal Server Error');
   }
 });
-
 
 app.post('/verify-code', async (req, res) => {
   const { email, code } = req.body;
@@ -1538,7 +1537,7 @@ if (process.env.NODE_ENV === 'local') {
       try {
         const allOrders = await Orders.find({
           email: { $nin: excludedEmails } // Excluding orders from certain emails
-      }).sort({ createdAt: -1 });
+        }).sort({ createdAt: -1 });
 
           // Convert each createdAt to IST before sending
           const convertedData = allOrders.map(order => {

@@ -183,8 +183,6 @@ function AnswerDisplay({
 
 
   const handleBuyNowClick = async (bookTitle, author) => {
-    await handleActionButtonClick('buy-now-btn', bookTitle, author, userEmail);
-
     const trimmedInput = `To buy the book - ${bookTitle} by ${author}`;
 
     if (!isAdmin && process.env.REACT_APP_ENV !== 'local') {
@@ -192,11 +190,13 @@ function AnswerDisplay({
         search_string: trimmedInput
       });
     }
+
+    handleActionButtonClick('buy-now-btn', bookTitle, author, userEmail);
   };
 
-  const handleGetBooksBuyNowClick = async (bookTitle, author, getBooksPrice, amazonLink) => {
+  const handleGetBooksBuyNowClick = async (bookTitle, author) => {
     toggleModal();
-    await handleActionButtonClick('get-books-buy-now-btn', bookTitle, author, userEmail);
+    handleActionButtonClick('get-books-buy-now-btn', bookTitle, author, userEmail);
   };
 
   const handleContinueGenerating = () => {
@@ -363,7 +363,7 @@ function AnswerDisplay({
             setGetBooksButtonPrice(getBooksPrice);
             setGetBooksButtonAmazonLink(amazonLink);
 
-            handleGetBooksBuyNowClick();
+            handleGetBooksBuyNowClick(bookTitle, author);
           } 
         }}>
           {role === 'user' && (

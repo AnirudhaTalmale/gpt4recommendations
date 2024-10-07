@@ -249,7 +249,9 @@ export const handleRazorpayPayment = async (amount, bookTitle, customerInfo, aut
               email: customerInfo.email,
               customerName: `${customerInfo.firstName}`,
               orderId: orderResponse.data.id,
-              deliveryDate: deliveryDate  // Send the modified delivery date
+              deliveryDate: deliveryDate,
+              title: bookTitle,
+              author: author
             });
 
             // // Facebook Pixel Tracking
@@ -271,7 +273,7 @@ export const handleRazorpayPayment = async (amount, bookTitle, customerInfo, aut
           "amount": orderResponse.data.amount, 
           "currency": orderResponse.data.currency,
           "name": "GetBooks.ai",
-          "description": `Book Purchase - ${bookTitle}`,
+          "description": `Item name - ${bookTitle} by ${author}`,
           "image": "/GetBooks_64_64.png",
           "order_id": orderResponse.data.id,
           "handler": handlePaymentSuccess,
@@ -307,10 +309,17 @@ export const BuyNowButton = ({ link, userEmail, bookTitle, author, price }) => {
 
   const toggleModal = () => setShowModal(!showModal);
 
+  const handleGetBooksBuyNowClick = async (e) => {
+    e.preventDefault(); // Prevent default action of the event
+    toggleModal();
+    handleActionButtonClick('get-books-buy-now-btn', bookTitle, author, userEmail);
+  };
+  
+
   return (
       <>
           <div>
-              <button className="buy-now-button" onClick={toggleModal}>
+              <button className="buy-now-button" onClick={(e) => handleGetBooksBuyNowClick(e)}>
                   GetBooks ₹{getBooksPrice}
               </button>
               <CustomerInfoModal
