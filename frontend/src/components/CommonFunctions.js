@@ -255,7 +255,7 @@ export const handleRazorpayPayment = async (amount, bookTitle, customerInfo, aut
             });
 
             // Facebook Pixel Tracking
-            if (!isAdmin && process.env.REACT_APP_ENV !== 'local') {
+            if (process.env.REACT_APP_ENV !== 'local') {
               window.fbq && window.fbq('track', 'Purchase', {
                 value: amount,
                 currency: 'INR',
