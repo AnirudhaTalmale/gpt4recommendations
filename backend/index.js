@@ -1057,8 +1057,8 @@ app.post('/api/book-action', async (req, res) => {
 
 app.get('/api/more-details', async (req, res) => { 
   try {
-    const { bookDataObjectId, bookTitle } = req.query;
-    let cacheKey = `more-details:${bookDataObjectId || bookTitle}`;
+    const { bookTitle } = req.query;
+    let cacheKey = `more-details:${bookTitle}`;
 
     // Try fetching the result from Redis first
     let cachedData = await redisClient.get(cacheKey);
@@ -1067,16 +1067,10 @@ app.get('/api/more-details', async (req, res) => {
     }
 
     let query = {};
-    if (bookDataObjectId) {
-      // Ensure the bookDataObjectId is a valid ObjectId before querying
-      if (!mongoose.Types.ObjectId.isValid(bookDataObjectId)) {
-        return res.status(400).json({ message: 'Invalid bookDataObjectId provided' });
-      }
-      query.bookDataObjectId = bookDataObjectId; // Use the ObjectId directly without RegExp
-    } else if (bookTitle) {
-      query.bookTitle = new RegExp(bookTitle, 'i');
+    if (bookTitle) {
+      query.bookTitle = bookTitle;  // Use a direct string comparison for an exact match
     } else {
-      return res.status(400).json({ message: 'bookDataObjectId or book title must be provided' });
+      return res.status(400).json({ message: 'Book title must be provided' });
     }
 
     const bookDetails = await MoreDetails.findOne(query);
@@ -1096,8 +1090,8 @@ app.get('/api/more-details', async (req, res) => {
 
 app.get('/api/key-insights', async (req, res) => {
   try {
-    const { bookDataObjectId, bookTitle } = req.query;
-    let cacheKey = `key-insights:${bookDataObjectId || bookTitle}`;
+    const { bookTitle } = req.query;
+    let cacheKey = `key-insights:${bookTitle}`;
 
     // Try fetching the result from Redis first
     let cachedData = await redisClient.get(cacheKey);
@@ -1106,16 +1100,10 @@ app.get('/api/key-insights', async (req, res) => {
     }
 
     let query = {};
-    if (bookDataObjectId) {
-      // Ensure the bookDataObjectId is a valid ObjectId before querying
-      if (!mongoose.Types.ObjectId.isValid(bookDataObjectId)) {
-        return res.status(400).json({ message: 'Invalid bookDataObjectId provided' });
-      }
-      query.bookDataObjectId = bookDataObjectId; // Use the ObjectId directly without RegExp
-    } else if (bookTitle) {
-      query.bookTitle = new RegExp(bookTitle, 'i');
+    if (bookTitle) {
+      query.bookTitle = bookTitle;  // Use a direct string comparison for an exact match
     } else {
-      return res.status(400).json({ message: 'bookDataObjectId or book title must be provided' });
+      return res.status(400).json({ message: 'Book title must be provided' });
     }
 
     const keyInsightsResult = await KeyInsightsModel.findOne(query);
@@ -1125,7 +1113,6 @@ app.get('/api/key-insights', async (req, res) => {
 
     // Save the result in Redis without an expiration time
     await redisClient.set(cacheKey, JSON.stringify(keyInsightsResult));
-
     res.json(keyInsightsResult);
   } catch (error) {
     console.error('Server error:', error);
@@ -1135,8 +1122,8 @@ app.get('/api/key-insights', async (req, res) => {
 
 app.get('/api/quotes', async (req, res) => {
   try {
-    const { bookDataObjectId, bookTitle } = req.query;
-    let cacheKey = `quotes:${bookDataObjectId || bookTitle}`;
+    const { bookTitle } = req.query;
+    let cacheKey = `quotes:${bookTitle}`;
 
     // Try fetching the result from Redis first
     let cachedData = await redisClient.get(cacheKey);
@@ -1146,16 +1133,10 @@ app.get('/api/quotes', async (req, res) => {
 
     // If not in cache, continue with MongoDB query
     let query = {};
-    if (bookDataObjectId) {
-      // Ensure the bookDataObjectId is a valid ObjectId before querying
-      if (!mongoose.Types.ObjectId.isValid(bookDataObjectId)) {
-        return res.status(400).json({ message: 'Invalid bookDataObjectId provided' });
-      }
-      query.bookDataObjectId = bookDataObjectId; // Use the ObjectId directly without RegExp
-    } else if (bookTitle) {
-      query.bookTitle = new RegExp(bookTitle, 'i'); // Case-insensitive search for bookTitle is fine
+    if (bookTitle) {
+      query.bookTitle = bookTitle;  // Use a direct string comparison for an exact match
     } else {
-      return res.status(400).json({ message: 'bookDataObjectId or book title must be provided' });
+      return res.status(400).json({ message: 'Book title must be provided' });
     }
 
     const QuotesResult = await QuotesModel.findOne(query);
@@ -1165,7 +1146,6 @@ app.get('/api/quotes', async (req, res) => {
 
     // Save the result in Redis without an expiration time
     await redisClient.set(cacheKey, JSON.stringify(QuotesResult));
-
     res.json(QuotesResult);
   } catch (error) {
     console.error('Server error:', error);
@@ -1175,8 +1155,8 @@ app.get('/api/quotes', async (req, res) => {
 
 app.get('/api/anecdotes', async (req, res) => {
   try {
-    const { bookDataObjectId, bookTitle } = req.query;
-    let cacheKey = `anecdotes:${bookDataObjectId || bookTitle}`;
+    const { bookTitle } = req.query;
+    let cacheKey = `anecdotes:${bookTitle}`;
 
     // Try fetching the result from Redis first
     let cachedData = await redisClient.get(cacheKey);
@@ -1186,16 +1166,10 @@ app.get('/api/anecdotes', async (req, res) => {
 
     // If not in cache, continue with MongoDB query
     let query = {};
-    if (bookDataObjectId) {
-      // Ensure the bookDataObjectId is a valid ObjectId before querying
-      if (!mongoose.Types.ObjectId.isValid(bookDataObjectId)) {
-        return res.status(400).json({ message: 'Invalid bookDataObjectId provided' });
-      }
-      query.bookDataObjectId = bookDataObjectId; // Use the ObjectId directly without RegExp
-    } else if (bookTitle) {
-      query.bookTitle = new RegExp(bookTitle, 'i');
+    if (bookTitle) {
+      query.bookTitle = bookTitle;  // Use a direct string comparison for an exact match
     } else {
-      return res.status(400).json({ message: 'bookDataObjectId or book title must be provided' });
+      return res.status(400).json({ message: 'Book title must be provided' });
     }
 
     const AnecdotesResult = await AnecdotesModel.findOne(query);
@@ -1205,7 +1179,6 @@ app.get('/api/anecdotes', async (req, res) => {
 
     // Save the result in Redis without an expiration time
     await redisClient.set(cacheKey, JSON.stringify(AnecdotesResult));
-
     res.json(AnecdotesResult);
   } catch (error) {
     console.error('Server error:', error);

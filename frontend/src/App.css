@@ -1965,11 +1965,12 @@ body:not(.history-pane-open) .input-area {
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 0.1rem;
 }
 
 .fa-xmark {
   color: white;
-  font-size: 0.95rem;
+  font-size: 0.8rem !important;
 }
 
 /* AnswerDisplay Edit functionality */

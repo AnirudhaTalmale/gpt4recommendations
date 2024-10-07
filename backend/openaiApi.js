@@ -337,17 +337,10 @@ function createNewBook(title, author, amazonData, googleData, countryKey, genres
   });
 }
 
-function escapeRegExp(string) {
-  // This function adds a backslash before special characters for RegExp
-  return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-}
-
-const getBookData = async (title, author, userCountry, bookDataObjectId = '') => {
+const getBookData = async (title, author, userCountry) => {
   try {
-    const escapedTitle = escapeRegExp(title);
-    const escapedAuthor = escapeRegExp(author);
     const countryKey = getCountryCode(userCountry);
-    let cacheKey = `book-data:${bookDataObjectId || title.toLowerCase()}:${countryKey}`;
+    let cacheKey = `book-data:${title}:${countryKey}`;
 
     // Check if the data is available in Redis cache
     let cachedData = await redisClient.get(cacheKey);
@@ -355,13 +348,12 @@ const getBookData = async (title, author, userCountry, bookDataObjectId = '') =>
       return JSON.parse(cachedData);
     }
 
-    let query = bookDataObjectId 
-      ? { _id: new ObjectId(bookDataObjectId) }
-      : { title: { $regex: new RegExp('^' + escapedTitle + '$', 'i') }, author: { $regex: new RegExp('^' + escapedAuthor + '$', 'i') } };
+    let query = { title: title };
 
     let existingBook = await BookData.findOne(query);
 
     if (existingBook && existingBook.countrySpecific && existingBook.countrySpecific[countryKey] && existingBook.countrySpecific[countryKey].amazonPrice && existingBook.countrySpecific[countryKey].amazonPrice.trim() !== '') {
+ 
       const countrySpecificData = existingBook.countrySpecific[countryKey];
       let bookDetails = createBookDetails(existingBook, countrySpecificData);
       await redisClient.set(cacheKey, JSON.stringify(bookDetails));

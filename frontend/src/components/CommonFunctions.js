@@ -21,10 +21,10 @@ export const handleActionButtonClick = async (className, bookTitle, author, user
   }
 };
 
-export const fetchAnecdotes = async (bookDataObjectId, bookTitle) => {
+export const fetchAnecdotes = async (bookTitle) => {
   try {
     const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/anecdotes`, {
-      params: { bookDataObjectId, bookTitle }
+      params: { bookTitle }
     });
     return response.data.anecdotes; 
   } catch (error) {
@@ -34,7 +34,7 @@ export const fetchAnecdotes = async (bookDataObjectId, bookTitle) => {
 
 export const handleAnecdotesRequest = async (bookDataObjectId, bookTitle, author, handleQuerySubmit, setIsLightboxOpen, setLightboxContent, bookData) => {
   try {
-    const anecdotes = await fetchAnecdotes(bookDataObjectId, bookTitle);
+    const anecdotes = await fetchAnecdotes(bookTitle);
     if (!anecdotes) {
       const userQuery = `${bookTitle} by ${author}`;
       handleQuerySubmit(bookData, userQuery, false, bookDataObjectId, bookTitle, author, false, false, true);
@@ -49,10 +49,10 @@ export const handleAnecdotesRequest = async (bookDataObjectId, bookTitle, author
   }
 };
 
-export const fetchQuotes = async (bookDataObjectId, bookTitle) => {
+export const fetchQuotes = async (bookTitle) => {
     try {
       const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/quotes`, {
-        params: { bookDataObjectId, bookTitle }
+        params: { bookTitle }
       });
       return response.data.quotes; 
     } catch (error) {
@@ -62,7 +62,7 @@ export const fetchQuotes = async (bookDataObjectId, bookTitle) => {
   
   export const handleQuotesRequest = async (bookDataObjectId, bookTitle, author, handleQuerySubmit, setIsLightboxOpen, setLightboxContent, bookData) => {
     try {
-      const quotes = await fetchQuotes(bookDataObjectId, bookTitle);
+      const quotes = await fetchQuotes(bookTitle);
       if (!quotes) {
         const userQuery = `${bookTitle} by ${author}`;
         handleQuerySubmit(bookData, userQuery, false, bookDataObjectId, bookTitle, author, false, false, false, true);
@@ -77,10 +77,10 @@ export const fetchQuotes = async (bookDataObjectId, bookTitle) => {
     }
   };
 
-export const fetchKeyInsights = async (bookDataObjectId, bookTitle) => {
+export const fetchKeyInsights = async (bookTitle) => {
   try {
     const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/key-insights`, {
-      params: { bookDataObjectId, bookTitle }
+      params: { bookTitle }
     });
     return response.data.keyInsights; 
   } catch (error) {
@@ -90,7 +90,7 @@ export const fetchKeyInsights = async (bookDataObjectId, bookTitle) => {
 
 export const handleKeyInsightsRequest = async (bookDataObjectId, bookTitle, author, handleQuerySubmit, setIsLightboxOpen, setLightboxContent, bookData) => {
   try {
-    const keyInsights = await fetchKeyInsights(bookDataObjectId, bookTitle);
+    const keyInsights = await fetchKeyInsights(bookTitle);
     if (!keyInsights) {
       const userQuery = `${bookTitle} by ${author}`;
       handleQuerySubmit(bookData, userQuery, false, bookDataObjectId, bookTitle, author, false, true);
@@ -105,11 +105,11 @@ export const handleKeyInsightsRequest = async (bookDataObjectId, bookTitle, auth
   }
 };
 
-export const fetchMoreDetails = async (bookDataObjectId, bookTitle) => {
+export const fetchMoreDetails = async (bookTitle) => {
   try {
     
     const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/more-details`, {
-      params: { bookDataObjectId, bookTitle }
+      params: { bookTitle }
     });
     return response.data.detailedDescription; 
   } catch (error) {
@@ -119,7 +119,7 @@ export const fetchMoreDetails = async (bookDataObjectId, bookTitle) => {
 
 export const handleMoreDetailsRequest = async (bookDataObjectId, bookTitle, author, handleQuerySubmit, setIsLightboxOpen, setLightboxContent, bookData) => {
   try {
-    const detailedDescription = await fetchMoreDetails(bookDataObjectId, bookTitle);
+    const detailedDescription = await fetchMoreDetails(bookTitle);
     if (!detailedDescription) {
       const userQuery = `Explain the book - ${bookTitle} by ${author}`;
       handleQuerySubmit(bookData, userQuery, true, bookDataObjectId, bookTitle, author);
@@ -431,4 +431,3 @@ export const mapCountryNameToCode = (countryName) => {
 
   return countryMapping[countryName] || null; // returns null if no match found
 };
-
