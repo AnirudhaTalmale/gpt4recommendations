@@ -855,7 +855,6 @@ body:not(.history-pane-open) .input-area {
   margin-bottom: 0.8rem;
   line-height: 1.4rem;
   /* border: 1px solid red; */
-  font-family: Arial, Helvetica, sans-serif;
 }
 
 .history-pane-image {
