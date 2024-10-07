@@ -254,13 +254,13 @@ export const handleRazorpayPayment = async (amount, bookTitle, customerInfo, aut
               author: author
             });
 
-            // // Facebook Pixel Tracking
-            // const trimmedInput = `To buy the book - ${bookTitle} by ${author}`;
-            // if (!isAdmin && process.env.REACT_APP_ENV !== 'local') {
-            //   window.fbq && window.fbq('track', 'Search', {
-            //     search_string: trimmedInput
-            //   });
-            // }
+            // Facebook Pixel Tracking
+            if (!isAdmin && process.env.REACT_APP_ENV !== 'local') {
+              window.fbq && window.fbq('track', 'Purchase', {
+                value: amount,
+                currency: 'INR',
+              });
+            }
 
           }
         } catch (error) {
