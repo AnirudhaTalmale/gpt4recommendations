@@ -1532,6 +1532,30 @@ if (process.env.NODE_ENV === 'local') {
     }
   });
 
+  app.get('/api/orders', async (req, res) => {
+      const IST_OFFSET = 5.5 * 60 * 60 * 1000; // IST is UTC + 5:30, in milliseconds
+
+      try {
+        const allOrders = await Orders.find({
+          email: { $nin: excludedEmails } // Excluding orders from certain emails
+      }).sort({ createdAt: -1 });
+
+          // Convert each createdAt to IST before sending
+          const convertedData = allOrders.map(order => {
+              let date = new Date(order.createdAt.getTime() + IST_OFFSET);
+              return {
+                  ...order.toObject(),
+                  createdAt: date.toISOString().replace('Z', '+05:30') // Adjusting ISO string to show IST offset explicitly
+              };
+          });
+
+          res.status(200).json(convertedData);
+      } catch (error) {
+          console.error('Error retrieving orders:', error);
+          res.status(500).json({ message: 'Failed to retrieve orders', error: error.toString() });
+      }
+  });
+
   app.get('/api/books/amazon-price-in', async (req, res) => {
     try {
         // Fetch all books where amazonPrice for the IN country code exists and is not an empty string

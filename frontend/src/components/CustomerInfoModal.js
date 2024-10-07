@@ -64,7 +64,10 @@ const CustomerInfoModal = ({ isVisible, onClose, onSubmit, customerInfo, setCust
                         <input type="text" name="phone" placeholder="Phone" value={customerInfo.phone} onChange={handleInputChange} required 
                             style={{ width: '100%', padding: '10px', marginBottom: '10px', borderRadius: '5px', border: '1px solid #ccc' }} />
                         <input type="text" name="deliveryDate" placeholder="Delivery Date" value={customerInfo.deliveryDate || ''} 
-                        style={{ width: '100%', padding: '10px', marginBottom: '10px', borderRadius: '5px', border: '1px solid #ccc', backgroundColor: '#f8f8f8', color: 'black', fontWeight: 'bold' }} disabled />
+                            style={{ width: '100%', padding: '10px', marginBottom: '0px', borderRadius: '5px', border: '1px solid #ccc', backgroundColor: '#f8f8f8', color: 'black', fontWeight: 'bold' }} disabled />
+                    </div>
+                    <div style={{ fontSize: '15px', marginBottom: '15px', marginLeft: '0px', marginTop: '0px', fontWeight: 'bold' }}>
+                        Every purchase comes with a 10-day replacement guarantee. For more information, contact us at getbooksai@gmail.com.
                     </div>
                     <button type="submit" style={{ padding: '10px 20px', marginRight: '10px', marginBottom: '10px', background: '#007BFF', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer' }}>
                         Proceed to Pay
