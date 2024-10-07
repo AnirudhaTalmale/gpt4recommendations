@@ -351,10 +351,12 @@ const HistoryPane = forwardRef(({
             userData && userData.id === process.env.REACT_APP_EXCLUDE_DUMMY_ID ? (
               <>
               <p className='history-pane-log-in-message'>
-                Log in to save your conversation history. <br/> <br/> For assistance, contact us at getbooksai@gmail.com
+                Log in to save your conversation history
               </p>
-              <div className={`user-entry-sign-in ${isEntryActive ? 'active' : ''}`} onClick={logInFunction}>
-                <span>Log in</span>
+              <div className={`user-entry dummy-user-entry ${isEntryActive ? 'active' : ''}`} onClick={toggleDropdown} ref={userEntryRef}>
+                <img src="/user-128-64-black-background.png" alt="" className="history-pane-image" />
+                {/* <span><i class="fa-solid fa-user history-pane-image"></i></span> */}
+                <span>You</span>
               </div>
               </>
             ) : (
@@ -367,18 +369,32 @@ const HistoryPane = forwardRef(({
 
           {isDropdownOpen && (
             <ul className="dropdown-menu" ref={dropdownRef}>
-              <li onClick={handleDeleteAccount}>
-                <i className="fa-solid fa-trash"></i> Delete account
-              </li>
+              {userData && userData.id === process.env.REACT_APP_EXCLUDE_DUMMY_ID ? (
+                <></>
+              ) : (
+                <li onClick={handleDeleteAccount}>
+                 Delete account
+                </li>
+              )}
+              
               {/* <li onClick={handleUpgradeClick}>
                 <i className="fa-solid fa-cart-shopping"></i> Upgrade Plan
               </li> */}
+              <li onClick={() => navigate('/about-us')} >
+                 About us
+              </li>
               <li onClick={() => navigate('/contact-us')} >
-                <i className="fa-solid fa-address-book"></i> Contact us
+                 Contact us
               </li>
-              <li onClick={handleLogout}>
-                <i class="fa-solid fa-arrow-right-from-bracket"></i> Log out
-              </li>
+              {userData && userData.id === process.env.REACT_APP_EXCLUDE_DUMMY_ID ? (
+                <li onClick={logInFunction}>
+                  Log in
+                </li>
+              ) : (
+                <li onClick={handleLogout}>
+                  Log out
+                </li>
+              )}
             </ul>   
           )}
         </div>

@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom'; 
 import axios from 'axios';
 import '../App.css';
+import HomePageHeader from './HomePageHeader';
+import Footer from './Footer';
 
 function isEmbeddedWebView() {
   const userAgent = navigator.userAgent; // Directly using userAgent
@@ -64,7 +66,10 @@ const HomePage = () => {
     }, []);
   
   return (
+    <div className='homepage-parent-container'>
+    <HomePageHeader></HomePageHeader>
     <div className="homepage">
+      
       <section className="hero">
         <h2>Login to GetBooks.ai</h2>
           <div className="login-container">
@@ -103,6 +108,8 @@ const HomePage = () => {
             </form>
           </div>
       </section>
+    </div>
+    <Footer></Footer>
     </div>
   );
 };
