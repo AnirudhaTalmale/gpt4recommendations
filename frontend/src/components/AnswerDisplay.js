@@ -85,14 +85,6 @@ function AnswerDisplay({
       onKeyInsightsClick(bookDataObjectId, bookTitle, author, bookData);
       handleActionButtonClick('key-insights-btn', bookTitle, author, userEmail);
 
-      const trimmedInput = `Provide key insights of the book - ${bookTitle} by ${author}`;
-
-      if (!isAdmin && process.env.REACT_APP_ENV !== 'local') {
-        window.fbq && window.fbq('track', 'Search', {
-          search_string: trimmedInput
-        });
-      }
-
       // Reset the state after a delay
       setTimeout(() => {
         setIsKeyInsightsClicked(false);
@@ -108,14 +100,6 @@ function AnswerDisplay({
       onMoreDetailsClick(bookDataObjectId, bookTitle, author, bookData);
       handleActionButtonClick('more-details-btn', bookTitle, author, userEmail);
 
-      const trimmedInput = `Provide summary of the book - ${bookTitle} by ${author}`;
-
-      if (!isAdmin && process.env.REACT_APP_ENV !== 'local') {
-        window.fbq && window.fbq('track', 'Search', {
-          search_string: trimmedInput
-        });
-      }
-
       setTimeout(() => {
         setIsMoreDetailsClicked(false);
       }, 3500); // Adjust the delay as needed
@@ -130,14 +114,6 @@ function AnswerDisplay({
       onAnecdotesClick(bookDataObjectId, bookTitle, author, bookData);
       handleActionButtonClick('anecdotes-btn', bookTitle, author, userEmail);
 
-      const trimmedInput = `Provide anecdotes from the book - ${bookTitle} by ${author}`;
-
-      if (!isAdmin && process.env.REACT_APP_ENV !== 'local') {
-        window.fbq && window.fbq('track', 'Search', {
-          search_string: trimmedInput
-        });
-      }
-
       setTimeout(() => {
         setIsAnecdotesClicked(false);
       }, 3500); // Adjust the delay as needed
@@ -151,14 +127,6 @@ function AnswerDisplay({
       const bookData = extractBookData(bookDataObjectId, 'quotes-btn');
       onQuotesClick(bookDataObjectId, bookTitle, author, bookData);
       handleActionButtonClick('quotes-btn', bookTitle, author, userEmail);
-
-      const trimmedInput = `Provide quotes from the book - ${bookTitle} by ${author}`;
-
-      if (!isAdmin && process.env.REACT_APP_ENV !== 'local') {
-        window.fbq && window.fbq('track', 'Search', {
-          search_string: trimmedInput
-        });
-      }
 
       setTimeout(() => {
         setIsQuotesClicked(false);
@@ -183,14 +151,6 @@ function AnswerDisplay({
 
 
   const handleBuyNowClick = async (bookTitle, author) => {
-    const trimmedInput = `To buy the book - ${bookTitle} by ${author}`;
-
-    if (!isAdmin && process.env.REACT_APP_ENV !== 'local') {
-      window.fbq && window.fbq('track', 'Search', {
-        search_string: trimmedInput
-      });
-    }
-
     handleActionButtonClick('buy-now-btn', bookTitle, author, userEmail);
   };
 
