@@ -1998,6 +1998,7 @@ body:not(.history-pane-open) .input-area {
   align-items: center; 
   margin-top: -0.55rem !important;
   margin-bottom: 0.4rem;
+  border: 1px solid red;
 }
 
 .fa-pen {
@@ -2115,7 +2116,6 @@ body:not(.history-pane-open) .input-area {
   flex-direction: column;
   gap: 0.63rem;
   margin: auto;
-  margin-top: -1.85rem;
   margin-left: 2rem;
   padding-top: 0.1rem;
 }
