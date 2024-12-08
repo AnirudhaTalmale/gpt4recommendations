@@ -61,12 +61,22 @@ function AnswerDisplay({
     const amazonLink = buyNowButton.href;
     const buyNowButtonText = buyNowButton.textContent.trim(); 
 
-    const ratingsContainer = contentContainer.previousElementSibling.querySelector('.ratings-and-review');
-    const starsContainer = ratingsContainer.querySelector('.star-rating');
+    // Handle potential null values for ratingsContainer and starsContainer
+  const ratingsContainer = contentContainer.previousElementSibling.querySelector('.ratings-and-review');
+  const starsContainer = ratingsContainer?.querySelector('.star-rating');
+
+  let numericRating = 0;
+  let amazonReviewCount = 0;
+
+  if (starsContainer) {
     const fullStars = starsContainer.querySelectorAll('.fa-solid.fa-star').length;
     const halfStars = starsContainer.querySelectorAll('.fa-solid.fa-star-half-stroke').length;
-    const numericRating = fullStars + (halfStars * 0.5);
-    const amazonReviewCount = ratingsContainer.querySelector('.review-count').textContent;
+    numericRating = fullStars + (halfStars * 0.5);
+  }
+
+  if (ratingsContainer) {
+    amazonReviewCount = ratingsContainer.querySelector('.review-count')?.textContent || 0;
+  }
   
     return {
       bookImage,
