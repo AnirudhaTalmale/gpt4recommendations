@@ -401,17 +401,17 @@ function createBuyNowButtonHtml(link, bookTitle, author, getBooksPrice, AmazonBu
   }
 
   let getBooksButtonHtml = '';
-  if (!interactiveButton) {
-     getBooksButtonHtml = GetBooksButtonText !== "GetBooks ₹0" ? `<div>
-            <button class="getbooks-buy-now-button" onClick={toggleModal} data-book-title="${bookTitle}" data-author="${author}" data-get-books-price="${getBooksPrice}" data-amazon-link="${amazonLink}">
-              ${GetBooksButtonText}
-            </button>
-          </div>` : `<div>
-          <button class="getbooks-buy-now-button-invisible" onClick={toggleModal} data-book-title="${bookTitle}" data-author="${author}" data-get-books-price="${getBooksPrice}" data-amazon-link="${amazonLink}">
-            GetBooks ₹99
-          </button>
-        </div>`;
-  }
+  // if (!interactiveButton) {
+  //    getBooksButtonHtml = GetBooksButtonText !== "GetBooks ₹0" ? `<div>
+  //           <button class="getbooks-buy-now-button" onClick={toggleModal} data-book-title="${bookTitle}" data-author="${author}" data-get-books-price="${getBooksPrice}" data-amazon-link="${amazonLink}">
+  //             ${GetBooksButtonText}
+  //           </button>
+  //         </div>` : `<div>
+  //         <button class="getbooks-buy-now-button-invisible" onClick={toggleModal} data-book-title="${bookTitle}" data-author="${author}" data-get-books-price="${getBooksPrice}" data-amazon-link="${amazonLink}">
+  //           GetBooks ₹99
+  //         </button>
+  //       </div>`;
+  // }
   
   return `${getBooksButtonHtml}
           <div><a href="${amazonLink}" target="_blank">
