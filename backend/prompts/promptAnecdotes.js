@@ -5,13 +5,13 @@ const anecdotesPrompt = (userQuery) => {
 
   if (process.env.NODE_ENV === 'local') {
     prompt = `Book name is "${userQuery}"
-    Provide up to 10 of the most important anecdotes from the book mentioned above.
+    Provide up to 5 of the most important anecdotes from the book mentioned above.
     The response should be strictly in the following format, without any introduction:
     <b>Anecdotes</b>
     <ol><li><b>Anecdote Name</b>: Explain the Anecdote in detail</li></ol>`;
   } else {
     prompt = `Book name is "${userQuery}"
-    Provide up to 10 of the most important anecdotes from the book mentioned above.
+    Provide up to 5 of the most important anecdotes from the book mentioned above.
     The response should be strictly in the following format, without any introduction:
     <b>Anecdotes</b>
     <ol><li><b>Anecdote Name</b>: Explain the Anecdote in detail</li></ol>`;
