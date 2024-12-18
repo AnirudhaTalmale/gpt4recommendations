@@ -643,41 +643,36 @@ openaiApi.getSummary = async (text) => {
     console.error('Error getting summary:', error);
     return "Brief Summary";
   }
-};      
+};    
 
 openaiApi.getGenres = async (title, author) => {
-  // try {
-  //   const prompt = `Provide the genres of the book - "${title}" by ${author}. The answer should just be a single array of strings and nothing else.`;
+  try {
+    const prompt = `Provide the genres of the book - "${title}" by ${author}. The answer should just be a single array of strings and nothing else.`;
 
-  //   const response = await openai.chat.completions.create({
-  //     model: "gpt-4o-mini-2024-07-18",
-  //     messages: [{ role: 'system', content: prompt }]
-  //   });
+    const response = await openai.chat.completions.create({
+      model: "gpt-4",
+      messages: [{ role: 'system', content: prompt }]
+    });
 
-  //   let genresResponse = response.choices[0]?.message?.content || "[]";
+    let genresResponse = response.choices[0]?.message?.content || "[]";
 
-  //   // Parse the JSON string into an array
-  //   let genresArray = JSON.parse(genresResponse);
+    // Parse the JSON string into an array
+    let genresArray = JSON.parse(genresResponse);
 
-  //   // Ensure that genresArray is actually an array, if not, default to an empty array
-  //   if (!Array.isArray(genresArray)) {
-  //     genresArray = [];
-  //   }
+    // Ensure that genresArray is actually an array, if not, default to an empty array
+    if (!Array.isArray(genresArray)) {
+      genresArray = [];
+    }
  
-  //   return genresArray;
-  // } catch (error) {
-  //   console.error('Error getting genres:', error);
+    return genresArray;
+  } catch (error) {
+    console.error('Error getting genres:', error);
     return [];
-  // }
+  }
 };
-
 
 openaiApi.stopStream = () => {
   isStreamingActive = false; // Set the flag to false to stop the stream
 };
 
 module.exports = openaiApi;
-
-
-
-
