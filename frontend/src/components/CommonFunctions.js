@@ -320,9 +320,6 @@ export const BuyNowButton = ({ link, userEmail, bookTitle, author, price }) => {
   return (
       <>
           <div>
-              <button className="buy-now-button" onClick={(e) => handleGetBooksBuyNowClick(e)}>
-                  GetBooks ₹{getBooksPrice}
-              </button>
               <CustomerInfoModal
                   isVisible={showModal}
                   onClose={() => setShowModal(false)}
