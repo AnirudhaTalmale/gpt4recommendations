@@ -307,16 +307,7 @@ export const BuyNowButton = ({ link, userEmail, bookTitle, author, price }) => {
       setShowModal(false); // Hide modal after submitting
       await handleRazorpayPayment(getBooksPrice, bookTitle, customerInfo, author, link);
   };
-
-  const toggleModal = () => setShowModal(!showModal);
-
-  const handleGetBooksBuyNowClick = async (e) => {
-    e.preventDefault(); // Prevent default action of the event
-    toggleModal();
-    handleActionButtonClick('get-books-buy-now-btn', bookTitle, author, userEmail);
-  };
   
-
   return (
       <>
           <div>
